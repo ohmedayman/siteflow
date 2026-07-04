@@ -366,11 +366,16 @@ def admin_panel(admin):
 MAIN_DOMAIN = Config.MAIN_DOMAIN
 
 def _get_root_domain(host):
-    """Extract root domain from host. e.g. my-site.example.com → example.com"""
+    """Extract root domain. Works with any TLD. e.g. my.site.example.com → example.com"""
     parts = host.split('.')
     if len(parts) < 3:
         return host
-    return '.'.join(parts[-2:]) if len(parts[-1]) <= 3 else '.'.join(parts[-2:])
+    # If last part is 2-3 chars (com, net, org, app, etc), root is 2 parts
+    # If last part is 2 chars + second-to-last is 2-3 chars (co.uk, com.au), root is 3 parts
+    tld = parts[-1]
+    if len(tld) <= 3 and len(parts[-2]) <= 3 and len(parts) > 3:
+        return '.'.join(parts[-3:])
+    return '.'.join(parts[-2:])
 
 @app.before_request
 def handle_subdomain():
