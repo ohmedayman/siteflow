@@ -2,9 +2,9 @@
  * Site Flow — Data Layer
  * Primary: Supabase | Fallback: LocalStorage
  */
-const API_BASE = 'https://siteflow.vexonet.online/api'
-const MAIN_DOMAIN = (typeof SITE_DOMAIN !== 'undefined' ? SITE_DOMAIN : 'siteflow.vexonet.online')
-function subdomainUrl(slug) { return `https://${slug}.${MAIN_DOMAIN}` }
+const API_BASE = '/api'
+const MAIN_DOMAIN = window.location.hostname
+function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${MAIN_DOMAIN}` }
 function getDaysLeft() { return 999 }
 function isExpired() { return false }
 

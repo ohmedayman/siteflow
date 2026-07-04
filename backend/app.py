@@ -440,6 +440,32 @@ def add_cors(response):
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
     return response
 
+# ─────────────── Serve SPA for main domain ───────────────
+
+import os as _os, mimetypes
+
+_BASE = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_spa(path):
+    if path.startswith('api/') or path.startswith('admin'):
+        return jsonify({'error': 'Not found'}), 404
+    file_path = _os.path.join(_BASE, path)
+    if _os.path.exists(file_path) and _os.path.isfile(file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            resp = make_response(f.read())
+            resp.content_type = mimetypes.guess_type(file_path)[0] or 'text/html'
+            return resp
+    # SPA fallback — serve index.html for all non-file routes
+    spa_path = _os.path.join(_BASE, 'index.html')
+    if _os.path.exists(spa_path):
+        with open(spa_path, 'r', encoding='utf-8') as f:
+            resp = make_response(f.read())
+            resp.content_type = 'text/html'
+            return resp
+    return jsonify({'error': 'Not found'}), 404
+
 # ─────────────── error handlers ───────────────
 
 @app.errorhandler(404)
