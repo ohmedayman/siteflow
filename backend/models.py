@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 
 db = SQLAlchemy()
@@ -47,6 +47,7 @@ class Site(db.Model):
     custom_domain = db.Column(db.String(200), default='')
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    expires_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc) + timedelta(days=getattr(__import__('config', fromlist=['Config']).Config, 'TRIAL_DAYS', 14)))
 
     sections = db.relationship('Section', backref='site', lazy='joined', cascade='all, delete-orphan', order_by='Section.sort_order')
     seo = db.relationship('SEO', backref='site', uselist=False, lazy='joined', cascade='all, delete-orphan')
@@ -59,6 +60,7 @@ class Site(db.Model):
             'custom_domain': self.custom_domain,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'expires_at': self.expires_at.isoformat() if self.expires_at else None,
         }
         if include_sections:
             d['sections'] = [s.to_dict() for s in self.sections] if self.sections else []

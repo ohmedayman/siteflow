@@ -1,7 +1,7 @@
-import json, re, hashlib, uuid, jwt as pyjwt
+import json, re, hashlib, uuid, jwt as pyjwt, urllib.parse
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session, make_response
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
@@ -359,6 +359,72 @@ def get_translations(code):
 @admin_required
 def admin_panel(admin):
     return render_template('admin.html', user=admin)
+
+# ─────────────── Subdomain hosting ───────────────
+# Handles *.siteflow.vexonet.online requests
+# Each subdomain = site slug, auto-expires after 14 days
+
+MAIN_DOMAIN = 'siteflow.vexonet.online'
+
+@app.before_request
+def handle_subdomain():
+    host = request.headers.get('Host', '')
+    # Only process subdomain requests
+    if not host.endswith('.' + MAIN_DOMAIN) or host == MAIN_DOMAIN:
+        return None
+
+    subdomain = host[: -len('.' + MAIN_DOMAIN)]
+    if not subdomain or subdomain.startswith('www'):
+        return None
+
+    # Look up site by slug
+    site = Site.query.filter_by(slug=subdomain, published=True).first()
+    if not site:
+        return make_response(render_template('site_page.html',
+            expired=True, title='Not Found', slug=subdomain,
+            seo_title='404 - Site Not Found', seo_desc='',
+            sections=[], theme_color='#6366f1', font='Inter',
+            font_family='Inter', lang='en', dir='ltr',
+            created_ago=0, days_left=0, year=datetime.now().year,
+            main_url=f'https://{MAIN_DOMAIN}'
+        ), 404)
+
+    now = datetime.now(timezone.utc)
+    expires_at = site.expires_at or (site.created_at + timedelta(days=14))
+    days_left = (expires_at - now).days
+    expired = now > expires_at
+
+    # Increment views
+    site.views = (site.views or 0) + 1
+    db.session.commit()
+
+    sections = site.sections or []
+    seo = site.seo
+    theme = site.theme
+
+    return make_response(render_template('site_page.html',
+        expired=expired,
+        title=site.title,
+        slug=site.slug,
+        seo_title=(seo.title if seo else site.title) or site.title,
+        seo_desc=(seo.description if seo else '') or '',
+        sections=[s.to_dict() for s in sections] if sections else [],
+        theme_color=(theme.color if theme else '#6366f1') or '#6366f1',
+        font=(theme.font if theme else 'Inter') or 'Inter',
+        font_family=(theme.font if theme else 'Inter') or 'Inter',
+        lang='en', dir='ltr',
+        created_ago=(now - site.created_at).days,
+        days_left=max(0, days_left),
+        year=datetime.now().year,
+        main_url=f'https://{MAIN_DOMAIN}'
+    ))
+
+@app.after_request
+def add_cors(response):
+    response.headers['Access-Control-Allow-Origin'] = f'https://{MAIN_DOMAIN}'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+    return response
 
 # ─────────────── error handlers ───────────────
 

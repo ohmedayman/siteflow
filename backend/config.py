@@ -7,6 +7,8 @@ class Config:
     JWT_SECRET = os.environ.get('JWT_SECRET', 'jwt-secret-change-me')
     JWT_EXPIRY_HOURS = 24
     SITE_URL = os.environ.get('SITE_URL', 'https://siteflow.vexonet.online')
+    MAIN_DOMAIN = 'siteflow.vexonet.online'
+    TRIAL_DAYS = int(os.environ.get('TRIAL_DAYS', 14))
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@siteflow.app')
 
     # Plans

@@ -40,14 +40,19 @@ const Router = {
     try {
       const s = await API.getSite(id)
       document.getElementById('app').innerHTML =
-        `<div class="preview-bar"><span>Preview: ${s.title}</span><div class="actions"><button class="btn btn-outline btn-sm" onclick="window.close()">Close</button><a href="#/builder/${s.id}" class="btn btn-primary btn-sm">Back to Editor</a></div></div><div style="margin-top:60px">${T.publicPage(s)}</div>`
+        `<div class="preview-bar"><span>Preview: ${s.title}</span><div class="actions"><a href="${subdomainUrl(s.slug)}" target="_blank" class="btn btn-outline btn-sm">Open Live</a><button class="btn btn-outline btn-sm" onclick="window.close()">Close</button><a href="#/builder/${s.id}" class="btn btn-primary btn-sm">Back to Editor</a></div></div><div style="margin-top:60px">${T.publicPage(s)}</div>`
     } catch(e) { Toast.show(e.message,'error'); this.navigate('dashboard') }
   },
 
   async _public(slug) {
+    // Redirect to subdomain URL for published sites
     try {
       const s = await API.getPublicPage(slug)
       if (!s) throw new Error('404')
+      if (s.published) {
+        window.location.href = subdomainUrl(s.slug)
+        return
+      }
       document.title = s.seo?.title||s.title
       document.getElementById('app').innerHTML = T.publicPage(s)
       const m = document.querySelector('meta[name="description"]')
@@ -180,14 +185,18 @@ const Dash = {
       container.innerHTML = `<div class="sites-grid">${sites.map(p=>{
         const tc = p.theme?.color || '#6366f1'
         const isNum = !isNaN(p.id)
+        const createdAt = p.createdAt || p.created_at
+        const daysLeft = getDaysLeft(createdAt)
+        const expired = isExpired(createdAt)
+        const siteUrl = subdomainUrl(p.slug)
         return `<div class="site-card card card-hover">
           <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}88,${tc}44)"><span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span><span class="view-badge">👁 ${p.views||0}</span></div>
           <h3>${p.title}</h3>
-          <span class="site-url">${p.customDomain||p.custom_domain||p.slug+'.siteflow.app'}</span>
-          <div class="site-meta"><span>${p.published?'✅ Published':'📝 Draft'}</span><span>${new Date(p.updatedAt||p.updated_at||p.createdAt).toLocaleDateString()}</span></div>
+          <span class="site-url">${siteUrl}</span>
+          <div class="site-meta"><span>${p.published?'✅ Published':'📝 Draft'}</span><span>${new Date(createdAt).toLocaleDateString()}</span>${p.published?`<span class="${expired?'expired-tag':'expiring-tag'}">${expired?'⏰ Expired':'⏱ '+daysLeft+'d left'}</span>`:''}</div>
           <div class="site-card-actions">
             <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">Edit</a>
-            ${p.published?`<a href="#/p/${p.slug}" target="_blank" class="btn btn-outline btn-sm">View</a>`:''}
+            ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">View</a>`:''}
             <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')">Delete</button>
           </div>
         </div>`

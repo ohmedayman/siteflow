@@ -207,7 +207,7 @@ const Builder = {
     document.getElementById('pageTitleInput')?.addEventListener('input',e=>{this.page.title=e.target.value;this._saveNow();const tb=document.querySelector('.builder-toolbar .truncate');if(tb)tb.textContent=e.target.value})
     document.getElementById('pageSlugInput')?.addEventListener('input',e=>{
       this.page.slug=e.target.value.replace(/[^a-z0-9-]/g,'').toLowerCase(); const p=document.getElementById('slugPreview')
-      if(p)p.textContent=this.page.slug+'.siteflow.app'; this._saveNow()
+      if(p)p.textContent=this.page.slug+'.'+MAIN_DOMAIN; this._saveNow()
     })
     document.getElementById('customDomainInput')?.addEventListener('input',e=>{this.page.customDomain=e.target.value;this._saveNow()})
     document.getElementById('deleteSiteBtn')?.addEventListener('click',()=>this._deleteSite())

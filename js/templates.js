@@ -182,7 +182,8 @@ const T = {
         </div>
         <div class="sidebar-content hidden" id="sidebarSettings">
           <div class="settings-group"><label>Site Title</label><input class="input" id="pageTitleInput" value="${page.title}"></div>
-          <div class="settings-group"><label>Slug</label><input class="input" id="pageSlugInput" value="${page.slug||''}"><div class="hint">URL: <span id="slugPreview" style="color:var(--primary)">${page.slug||'my-site'}.siteflow.app</span></div></div>
+          <div class="settings-group"><label>Slug</label><input class="input" id="pageSlugInput" value="${page.slug||''}"><div class="hint">URL: <span id="slugPreview" style="color:var(--primary)">${page.slug||'my-site'}.${MAIN_DOMAIN}</span></div></div>
+          <div class="settings-group ${getDaysLeft(page.createdAt||page.created_at)<=0?'expired-bg':''}"><label>Free Hosting</label><div class="hint">${getDaysLeft(page.createdAt||page.created_at)<=0?'⏰ This site has expired. ':'⏱ Expires in <span id="expiryPreview" style="color:var(--primary);font-weight:600">'+getDaysLeft(page.createdAt||page.created_at)+'</span> days. '}Renew by publishing again. <a href="#/plans" style="color:var(--primary);text-decoration:underline">Upgrade</a> for permanent hosting.</div></div>
           <div class="settings-group"><label>Custom Domain</label><input class="input" id="customDomainInput" value="${page.customDomain||page.custom_domain||''}" placeholder="yourdomain.com"><div class="hint">Connect your own domain (Pro+ plans)</div></div>
           <div style="padding-top:12px;border-top:1px solid var(--gray-200)"><label style="font-size:.82rem;font-weight:600;color:var(--gray-700);display:block;margin-bottom:8px">Danger Zone</label><button class="btn btn-danger btn-sm w-full" id="deleteSiteBtn">Delete This Site</button></div>
         </div>
