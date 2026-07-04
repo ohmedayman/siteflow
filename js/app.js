@@ -57,8 +57,8 @@ const Router = {
       document.getElementById('app').innerHTML = T.publicPage(s)
       const m = document.querySelector('meta[name="description"]')
       if (m) m.content = s.seo?.description||''
-    } catch {
-      document.getElementById('app').innerHTML = `<div style="text-align:center;padding:100px 24px"><div style="font-size:4rem;margin-bottom:16px">404</div><h1 style="font-size:1.8rem;margin-bottom:8px">Page Not Found</h1><p style="color:var(--gray-500);margin-bottom:24px">This page hasn't been published yet.</p><a href="/" class="btn btn-primary">Go Home</a></div>`
+    } catch(e) {
+      document.getElementById('app').innerHTML = T.notFound('Not Published', 'This site has not been published yet.')
     }
   },
 

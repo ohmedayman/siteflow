@@ -1,5 +1,14 @@
 const T = {
   loading() { return `<div class="loading-screen"><div class="spinner"></div><p style="color:var(--gray-500)">Loading Site Flow...</p></div>` },
+  notFound(title, msg) { return `
+<div style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px);padding:40px 24px">
+  <div style="text-align:center;max-width:480px">
+    <div style="font-size:6rem;font-weight:800;color:var(--gray-200);line-height:1;margin-bottom:8px">404</div>
+    <h1 style="font-size:1.8rem;margin-bottom:8px">${title||'Page Not Found'}</h1>
+    <p style="color:var(--gray-500);margin-bottom:32px">${msg||'The page you are looking for does not exist or has been moved.'}</p>
+    <a href="/" class="btn btn-primary btn-lg" onclick="Router.navigate('')">Go Home</a>
+  </div>
+</div>` },
 
   // ── Landing ──
   landing() { return `

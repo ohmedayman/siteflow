@@ -449,6 +449,7 @@ def handle_subdomain():
     site = Site.query.filter_by(slug=subdomain, published=True).first()
     if not site:
         return make_response(render_template('site_page.html',
+            not_found=True,
             title='Not Found', slug=subdomain,
             seo_title='404 - Site Not Found', seo_desc='',
             sections=[], theme_color='#6366f1', font='Inter',
@@ -517,6 +518,28 @@ def serve_spa(path):
 
 @app.errorhandler(404)
 def not_found(e):
+    host = request.headers.get('Host', '').split(':')[0]
+    # If subdomain request — show nice 404 page
+    if host.endswith('.' + Config.MAIN_DOMAIN) and host != Config.MAIN_DOMAIN:
+        return make_response(render_template('site_page.html',
+            not_found=True, title='Not Found', slug=host.split('.')[0],
+            seo_title='404 - Not Found', seo_desc='',
+            sections=[], theme_color='#6366f1', font='Inter',
+            font_family='Inter', lang='en', dir='ltr',
+            year=datetime.now().year,
+            main_url=f'https://{Config.MAIN_DOMAIN}'
+        ), 404)
+    # API requests — return JSON
+    accept = request.headers.get('Accept', '')
+    if 'text/html' in accept:
+        return render_template('site_page.html',
+            not_found=True, title='Not Found', slug='',
+            seo_title='404 - Not Found', seo_desc='',
+            sections=[], theme_color='#6366f1', font='Inter',
+            font_family='Inter', lang='en', dir='ltr',
+            year=datetime.now().year,
+            main_url=f'https://{Config.MAIN_DOMAIN}'
+        ), 404
     return jsonify({'error': 'Not found'}), 404
 
 @app.errorhandler(500)
