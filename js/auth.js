@@ -27,6 +27,7 @@ const Auth = {
     const r = await API.login(email, password)
     this.user = r.user
     this._ui()
+    API.syncToBackend()
     return r
   },
 
@@ -34,6 +35,7 @@ const Auth = {
     const r = await API.signup(name, email, password)
     this.user = r.user
     this._ui()
+    API.syncToBackend()
     return r
   },
 

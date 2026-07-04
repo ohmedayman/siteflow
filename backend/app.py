@@ -205,6 +205,64 @@ def publish_site(user, site_id):
     db.session.commit()
     return jsonify(site.to_dict())
 
+# ─────────────── Health & Sync ───────────────
+
+@app.route('/api/health', methods=['GET'])
+def health():
+    try:
+        db.session.execute(db.text('SELECT 1'))
+        db_ok = True
+    except:
+        db_ok = False
+    return jsonify({'ok': True, 'db': db_ok})
+
+@app.route('/api/sites/import', methods=['POST'])
+@login_required
+def import_site(user):
+    """Import a site from frontend (localStorage → backend). Creates or updates by slug."""
+    data = request.get_json() or {}
+    slug = slugify(data.get('slug', ''))
+    if not slug:
+        return jsonify({'error': 'Slug required'}), 400
+
+    site = Site.query.filter_by(slug=slug).first()
+    if site and site.user_id != user.id:
+        # Slug taken by another user — generate new one
+        slug = gen_unique_slug(slug)
+        site = None
+
+    if not site:
+        site = Site(user_id=user.id, title=data.get('title', 'My Site'), slug=slug)
+        db.session.add(site)
+        db.session.flush()
+
+    if 'title' in data: site.title = data['title']
+    if 'published' in data: site.published = data['published']
+    if 'custom_domain' in data: site.custom_domain = data['custom_domain']
+
+    # Sections
+    if 'sections' in data:
+        Section.query.filter_by(site_id=site.id).delete()
+        for i, s in enumerate(data['sections']):
+            db.session.add(Section(site_id=site.id, type=s['type'], data=json.dumps(s.get('data',{})), sort_order=i))
+
+    # SEO
+    if 'seo' in data:
+        seo = site.seo or SEO(site_id=site.id)
+        seo.title = data['seo'].get('title', '')
+        seo.description = data['seo'].get('description', '')
+        if not site.seo: db.session.add(seo)
+
+    # Theme
+    if 'theme' in data:
+        theme = site.theme or Theme(site_id=site.id)
+        theme.color = data['theme'].get('color', '#6366f1')
+        theme.font = data['theme'].get('font', 'Inter')
+        if not site.theme: db.session.add(theme)
+
+    db.session.commit()
+    return jsonify(site.to_dict(include_sections=True)), 201
+
 # ─────────────── Public API ───────────────
 
 @app.route('/api/p/<slug>', methods=['GET'])

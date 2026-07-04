@@ -220,8 +220,9 @@ const Builder = {
   },
 
   async _saveNow() {
-    try { this.page = await API.updateSite(this.page.id, { title:this.page.title, slug:this.page.slug, sections:this.page.sections, seo:this.page.seo, theme:this.page.theme, customDomain:this.page.customDomain }) }
-    catch(e) { console.error('Save failed:',e) }
+    try {
+      this.page = await API.updateSite(this.page.id, { title:this.page.title, slug:this.page.slug, sections:this.page.sections, seo:this.page.seo, theme:this.page.theme, customDomain:this.page.customDomain })
+    } catch(e) { console.error('Save failed:',e) }
   },
 
   async _publish() {
