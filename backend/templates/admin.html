@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Site Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0f172a}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#0f172a;color:#fff;padding:24px;flex-shrink:0}
+.sidebar h2{font-size:1.2rem;margin-bottom:24px;display:flex;align-items:center;gap:8px}
+.sidebar h2 span{background:#6366f1;padding:2px 8px;border-radius:4px;font-size:.7rem}
+.sidebar nav{display:flex;flex-direction:column;gap:4px}
+.sidebar a{padding:10px 14px;border-radius:8px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:500;transition:.2s}
+.sidebar a:hover,.sidebar a.active{background:#1e293b;color:#fff}
+.main{flex:1;padding:32px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.header h1{font-size:1.6rem}
+.header .badge{background:#6366f1;color:#fff;padding:4px 12px;border-radius:20px;font-size:.8rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
+.stat-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px}
+.stat-card .num{font-size:2rem;font-weight:800;color:#6366f1}
+.stat-card .label{font-size:.85rem;color:#64748b;margin-top:4px}
+table{width:100%;background:#fff;border-radius:12px;border:1px solid #e2e8f0;border-collapse:collapse;overflow:hidden}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid #f1f5f9;font-size:.88rem}
+th{background:#f8fafc;font-weight:600;color:#475569}
+td{color:#334155}
+.status{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.78rem;font-weight:600}
+.status.active{background:#d1fae5;color:#065f46}
+.status.inactive{background:#fee2e2;color:#991b1b}
+.edit-btn{padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;cursor:pointer;font-size:.8rem;transition:.2s}
+.edit-btn:hover{background:#f1f5f9}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100}
+.modal.open{display:flex}
+.modal-content{background:#fff;border-radius:12px;padding:32px;max-width:480px;width:90%}
+.modal-content h3{margin-bottom:16px}
+.modal-content select,input{margin-bottom:12px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:.85rem;font-weight:600;margin-bottom:4px;color:#475569}
+.form-group select,.form-group input{width:100%;padding:10px 14px;border:2px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:.88rem}
+.form-group select:focus,.form-group input:focus{outline:none;border-color:#6366f1}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-weight:600;cursor:pointer;font-family:inherit;font-size:.88rem;transition:.2s}
+.btn-primary{background:#6366f1;color:#fff}
+.btn-primary:hover{background:#4f46e5}
+.btn-secondary{background:#f1f5f9;color:#475569}
+.btn-secondary:hover{background:#e2e8f0}
+.tabs{display:flex;gap:4px;background:#f1f5f9;padding:4px;border-radius:10px;margin-bottom:24px;width:fit-content}
+.tab{padding:8px 20px;border:none;background:transparent;border-radius:8px;font-weight:600;font-size:.85rem;cursor:pointer;color:#64748b;font-family:inherit;transition:.2s}
+.tab.active{background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <h2>Site<span>Flow</span> <span style="font-size:.65rem;background:#059669;padding:2px 8px;border-radius:20px">Admin</span></h2>
+    <nav>
+      <a href="#" class="active" data-tab="overview">Overview</a>
+      <a href="#" data-tab="users">Users</a>
+      <a href="#" data-tab="sites">Sites</a>
+      <a href="#" data-tab="payments">Payments</a>
+      <a href="https://siteflow.vexonet.online" target="_blank" style="margin-top:auto;border-top:1px solid #1e293b;padding-top:16px">View Site →</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="header">
+      <h1 id="pageTitle">Admin Dashboard</h1>
+      <span class="badge" id="liveBadge">🔴 Live</span>
+    </div>
+
+    <div id="tabOverview" class="tab-content active">
+      <div class="stats" id="statsContainer"></div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px">
+        <h3 style="margin-bottom:16px">Recent Users</h3>
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Joined</th></tr></thead>
+          <tbody id="recentUsersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tabUsers" class="tab-content">
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px">
+        <h3 style="margin-bottom:16px">All Users</h3>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Plan</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tabSites" class="tab-content">
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px">
+        <h3 style="margin-bottom:16px">All Sites</h3>
+        <table>
+          <thead><tr><th>ID</th><th>Title</th><th>Owner</th><th>Views</th><th>Status</th></tr></thead>
+          <tbody id="sitesTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tabPayments" class="tab-content">
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px">
+        <h3 style="margin-bottom:16px">Payments</h3>
+        <table>
+          <thead><tr><th>ID</th><th>User</th><th>Amount</th><th>Plan</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody id="paymentsTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="userModal">
+  <div class="modal-content">
+    <h3>Edit User</h3>
+    <input type="hidden" id="editUserId">
+    <div class="form-group"><label>Plan</label><select id="editUserPlan"><option value="free">Free</option><option value="pro">Pro</option><option value="business">Business</option></select></div>
+    <div class="form-group"><label>Status</label><select id="editUserStatus"><option value="true">Active</option><option value="false">Inactive</option></select></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://siteflow.vexonet.online/api'
+let token = ''
+let currentTab = 'overview'
+
+async function api(path, opts={}) {
+  const headers = {'Content-Type':'application/json'}
+  if (token) headers['Authorization'] = `Bearer ${token}`
+  const r = await fetch(API+path, {...opts, headers, credentials:'include'})
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error) }
+  return r.json()
+}
+
+async function init() {
+  try {
+    // Try to login as admin
+    const auth = await api('/auth/login', {method:'POST', body:JSON.stringify({email:'admin@siteflow.app', password:'admin123'})})
+    token = auth.token
+    document.getElementById('liveBadge').textContent = '🟢 Authenticated'
+    loadTab('overview')
+  } catch(e) {
+    document.getElementById('liveBadge').textContent = '🔴 ' + e.message
+  }
+}
+
+async function loadTab(tab) {
+  currentTab = tab
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'))
+  document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active')
+  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'))
+  document.querySelector(`.sidebar a[data-tab="${tab}"]`)?.classList.add('active')
+  document.getElementById('pageTitle').textContent = tab.charAt(0).toUpperCase() + tab.slice(1)
+
+  try {
+    if (tab === 'overview') {
+      const stats = await api('/admin/stats');
+      document.getElementById('statsContainer').innerHTML = `
+        <div class="stat-card"><div class="num">${stats.users}</div><div class="label">Total Users</div></div>
+        <div class="stat-card"><div class="num">${stats.sites}</div><div class="label">Total Sites</div></div>
+        <div class="stat-card"><div class="num">${stats.published}</div><div class="label">Published</div></div>
+        <div class="stat-card"><div class="num">${stats.payments}</div><div class="label">Payments</div></div>
+        <div class="stat-card"><div class="num">$${stats.revenue.toFixed(2)}</div><div class="label">Revenue</div></div>
+        <div class="stat-card"><div class="num">${stats.plans_breakdown.free}</div><div class="label">Free</div></div>
+        <div class="stat-card"><div class="num">${stats.plans_breakdown.pro}</div><div class="label">Pro</div></div>
+        <div class="stat-card"><div class="num">${stats.plans_breakdown.business}</div><div class="label">Business</div></div>
+      `;
+      document.getElementById('recentUsersTable').innerHTML = stats.recent_users.map(u =>
+        `<tr><td>${u.name}</td><td>${u.email}</td><td><span class="status active">${u.plan}</span></td><td>${new Date(u.created_at).toLocaleDateString()}</td></tr>`
+      ).join('')
+    }
+    if (tab === 'users') {
+      const users = await api('/admin/users')
+      document.getElementById('usersTable').innerHTML = users.map(u =>
+        `<tr>
+          <td>${u.id}</td><td>${u.name}</td><td>${u.email}</td>
+          <td><span class="status active">${u.plan}</span></td>
+          <td><span class="status ${u.is_active?'active':'inactive'}">${u.is_active?'Active':'Inactive'}</span></td>
+          <td><button class="edit-btn" onclick="editUser(${u.id},'${u.plan}',${u.is_active})">Edit</button></td>
+        </tr>`
+      ).join('')
+    }
+    if (tab === 'sites') {
+      const sites = await api('/admin/sites')
+      document.getElementById('sitesTable').innerHTML = sites.map(s =>
+        `<tr><td>${s.id}</td><td>${s.title}</td><td>User #${s.user_id}</td><td>${s.views||0}</td><td><span class="status ${s.published?'active':'inactive'}">${s.published?'Published':'Draft'}</span></td></tr>`
+      ).join('')
+    }
+    if (tab === 'payments') {
+      const payments = await api('/admin/payments')
+      document.getElementById('paymentsTable').innerHTML = payments.map(p =>
+        `<tr><td>#${p.id}</td><td>User #${p.user_id}</td><td>$${p.amount}</td><td>${p.plan}</td><td><span class="status ${p.status==='completed'?'active':'inactive'}">${p.status}</span></td><td>${new Date(p.created_at).toLocaleDateString()}</td></tr>`
+      ).join('')
+    }
+  } catch(e) { alert('Error loading '+tab+': '+e.message) }
+}
+
+document.querySelectorAll('.sidebar a[data-tab]').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); loadTab(a.dataset.tab) })
+})
+
+function editUser(id, plan, active) {
+  document.getElementById('editUserId').value = id
+  document.getElementById('editUserPlan').value = plan
+  document.getElementById('editUserStatus').value = active ? 'true' : 'false'
+  document.getElementById('userModal').classList.add('open')
+}
+
+function closeModal() { document.getElementById('userModal').classList.remove('open') }
+
+async function saveUser() {
+  const id = document.getElementById('editUserId').value
+  const plan = document.getElementById('editUserPlan').value
+  const active = document.getElementById('editUserStatus').value === 'true'
+  await api(`/admin/users/${id}`, {method:'PUT', body:JSON.stringify({plan, is_active:active})})
+  closeModal()
+  loadTab('users')
+}
+
+init()
+</script>
+</body>
+</html>
