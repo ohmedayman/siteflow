@@ -5,20 +5,8 @@
 const API_BASE = 'https://siteflow.vexonet.online/api'
 const MAIN_DOMAIN = 'siteflow.vexonet.online'
 function subdomainUrl(slug) { return `https://${slug}.${MAIN_DOMAIN}` }
-const TRIAL_DAYS = 14
-function getExpiresAt(createdAt) {
-  const d = new Date(createdAt || Date.now())
-  d.setDate(d.getDate() + TRIAL_DAYS)
-  return d.toISOString()
-}
-function getDaysLeft(createdAt) {
-  if (!createdAt) return TRIAL_DAYS
-  const expires = new Date(getExpiresAt(createdAt))
-  return Math.max(0, Math.floor((expires - new Date()) / (1000*60*60*24)))
-}
-function isExpired(createdAt) {
-  return getDaysLeft(createdAt) <= 0
-}
+function getDaysLeft() { return 999 }
+function isExpired() { return false }
 
 // ── LocalStorage DB ──
 const LocalDB = {
@@ -36,7 +24,7 @@ const LocalDB = {
     const t = template || PRESETS.find(p => p.id === 'blank') || PRESETS[0]
     return this.clone({
       id:'', slug:'', userId:'', title:title||t.name||'My Site',
-      published:false, createdAt:'', updatedAt:'', expiresAt:'', views:0, customDomain:'',
+      published:false, createdAt:'', updatedAt:'', views:0, customDomain:'',
       template_type: t.id || 'blank',
       sections: this.clone(t.sections || []),
       seo: this.clone(t.seo || {title:'',description:''}),
@@ -49,7 +37,7 @@ const LocalDB = {
     p.id = this.genId()
     p.slug = (p.title||'site').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,30) || 'site'
     p.slug += '-' + this.genId().slice(0,4)
-    p.createdAt = new Date().toISOString(); p.updatedAt = new Date().toISOString(); p.expiresAt = getExpiresAt(p.createdAt)
+    p.createdAt = new Date().toISOString(); p.updatedAt = new Date().toISOString()
     pages.push(p); this.pages.save(pages); return p
   },
 

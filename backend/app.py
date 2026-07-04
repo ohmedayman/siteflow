@@ -381,18 +381,13 @@ def handle_subdomain():
     site = Site.query.filter_by(slug=subdomain, published=True).first()
     if not site:
         return make_response(render_template('site_page.html',
-            expired=True, title='Not Found', slug=subdomain,
+            title='Not Found', slug=subdomain,
             seo_title='404 - Site Not Found', seo_desc='',
             sections=[], theme_color='#6366f1', font='Inter',
             font_family='Inter', lang='en', dir='ltr',
-            created_ago=0, days_left=0, year=datetime.now().year,
+            year=datetime.now().year,
             main_url=f'https://{MAIN_DOMAIN}'
         ), 404)
-
-    now = datetime.now(timezone.utc)
-    expires_at = site.expires_at or (site.created_at + timedelta(days=14))
-    days_left = (expires_at - now).days
-    expired = now > expires_at
 
     # Increment views
     site.views = (site.views or 0) + 1
@@ -403,7 +398,6 @@ def handle_subdomain():
     theme = site.theme
 
     return make_response(render_template('site_page.html',
-        expired=expired,
         title=site.title,
         slug=site.slug,
         seo_title=(seo.title if seo else site.title) or site.title,
@@ -413,8 +407,6 @@ def handle_subdomain():
         font=(theme.font if theme else 'Inter') or 'Inter',
         font_family=(theme.font if theme else 'Inter') or 'Inter',
         lang='en', dir='ltr',
-        created_ago=(now - site.created_at).days,
-        days_left=max(0, days_left),
         year=datetime.now().year,
         main_url=f'https://{MAIN_DOMAIN}'
     ))

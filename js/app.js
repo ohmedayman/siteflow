@@ -184,16 +184,12 @@ const Dash = {
       }
       container.innerHTML = `<div class="sites-grid">${sites.map(p=>{
         const tc = p.theme?.color || '#6366f1'
-        const isNum = !isNaN(p.id)
-        const createdAt = p.createdAt || p.created_at
-        const daysLeft = getDaysLeft(createdAt)
-        const expired = isExpired(createdAt)
         const siteUrl = subdomainUrl(p.slug)
         return `<div class="site-card card card-hover">
           <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}88,${tc}44)"><span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span><span class="view-badge">👁 ${p.views||0}</span></div>
           <h3>${p.title}</h3>
           <span class="site-url">${siteUrl}</span>
-          <div class="site-meta"><span>${p.published?'✅ Published':'📝 Draft'}</span><span>${new Date(createdAt).toLocaleDateString()}</span>${p.published?`<span class="${expired?'expired-tag':'expiring-tag'}">${expired?'⏰ Expired':'⏱ '+daysLeft+'d left'}</span>`:''}</div>
+          <div class="site-meta"><span>${p.published?'✅ Published':'📝 Draft'}</span><span>${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString()}</span></div>
           <div class="site-card-actions">
             <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">Edit</a>
             ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">View</a>`:''}
