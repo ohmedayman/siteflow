@@ -363,22 +363,34 @@ def admin_panel(admin):
 # ─────────────── Subdomain hosting ───────────────
 # Handles *.siteflow.vexonet.online requests
 
-MAIN_DOMAIN = 'siteflow.vexonet.online'
+MAIN_DOMAIN = Config.MAIN_DOMAIN
+
+def _get_root_domain(host):
+    """Extract root domain from host. e.g. my-site.example.com → example.com"""
+    parts = host.split('.')
+    if len(parts) < 3:
+        return host
+    return '.'.join(parts[-2:]) if len(parts[-1]) <= 3 else '.'.join(parts[-2:])
 
 @app.before_request
 def handle_subdomain():
-    host = request.headers.get('Host', '').split(':')[0]  # strip port
-    # Only process subdomain GET/HEAD for non-API paths
+    host = request.headers.get('Host', '').split(':')[0]
     if request.method not in ('GET', 'HEAD', 'OPTIONS'):
         return None
-    if not host.endswith('.' + MAIN_DOMAIN) or host == MAIN_DOMAIN:
+
+    root = _get_root_domain(host)
+    # If host == root domain (no subdomain), pass through
+    if host == root or host == 'www.' + root:
         return None
-    # Skip API, static, admin routes — let Flask handle normally
+    # If host has a subdomain prefix, process it
+    if not host.endswith('.' + root):
+        return None
+
     path = request.path
     if path.startswith('/api/') or path.startswith('/admin') or path.startswith('/static/'):
         return None
 
-    subdomain = host[: -len('.' + MAIN_DOMAIN)]
+    subdomain = host[: -len('.' + root)]
     if not subdomain or subdomain.startswith('www'):
         return None
 
@@ -390,7 +402,7 @@ def handle_subdomain():
             sections=[], theme_color='#6366f1', font='Inter',
             font_family='Inter', lang='en', dir='ltr',
             year=datetime.now().year,
-            main_url=f'https://{MAIN_DOMAIN}'
+            main_url=f'https://{root}'
         ), 404)
 
     site.views = (site.views or 0) + 1
@@ -411,14 +423,13 @@ def handle_subdomain():
         font_family=(theme.font if theme else 'Inter') or 'Inter',
         lang='en', dir='ltr',
         year=datetime.now().year,
-        main_url=f'https://{MAIN_DOMAIN}'
+        main_url=f'https://{root}'
     ))
 
 @app.after_request
 def add_cors(response):
     origin = request.headers.get('Origin', '')
-    # Allow subdomains + main domain
-    if origin and (MAIN_DOMAIN in origin or origin.endswith('.' + MAIN_DOMAIN)):
+    if origin:
         response.headers['Access-Control-Allow-Origin'] = origin
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'

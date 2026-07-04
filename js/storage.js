@@ -3,7 +3,7 @@
  * Primary: Supabase | Fallback: LocalStorage
  */
 const API_BASE = 'https://siteflow.vexonet.online/api'
-const MAIN_DOMAIN = 'siteflow.vexonet.online'
+const MAIN_DOMAIN = (typeof SITE_DOMAIN !== 'undefined' ? SITE_DOMAIN : 'siteflow.vexonet.online')
 function subdomainUrl(slug) { return `https://${slug}.${MAIN_DOMAIN}` }
 function getDaysLeft() { return 999 }
 function isExpired() { return false }
