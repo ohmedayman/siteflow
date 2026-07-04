@@ -422,18 +422,8 @@ def admin_panel(admin):
 # Handles *.siteflow.vexonet.online requests
 
 MAIN_DOMAIN = Config.MAIN_DOMAIN
-
-def _get_root_domain(host):
-    """Extract root domain. Works with any TLD. e.g. my.site.example.com → example.com"""
-    parts = host.split('.')
-    if len(parts) < 3:
-        return host
-    # If last part is 2-3 chars (com, net, org, app, etc), root is 2 parts
-    # If last part is 2 chars + second-to-last is 2-3 chars (co.uk, com.au), root is 3 parts
-    tld = parts[-1]
-    if len(tld) <= 3 and len(parts[-2]) <= 3 and len(parts) > 3:
-        return '.'.join(parts[-3:])
-    return '.'.join(parts[-2:])
+# Also accept www.MAIN_DOMAIN and MAIN_DOMAIN itself
+_WWW_DOMAIN = 'www.' + MAIN_DOMAIN
 
 @app.before_request
 def handle_subdomain():
@@ -441,19 +431,18 @@ def handle_subdomain():
     if request.method not in ('GET', 'HEAD', 'OPTIONS'):
         return None
 
-    root = _get_root_domain(host)
-    # If host == root domain (no subdomain), pass through
-    if host == root or host == 'www.' + root:
+    # Main domain or www — pass through to serve SPA
+    if host == MAIN_DOMAIN or host == _WWW_DOMAIN:
         return None
-    # If host has a subdomain prefix, process it
-    if not host.endswith('.' + root):
+    # Not a subdomain of our domain — pass through
+    if not host.endswith('.' + MAIN_DOMAIN):
         return None
 
     path = request.path
     if path.startswith('/api/') or path.startswith('/admin') or path.startswith('/static/'):
         return None
 
-    subdomain = host[: -len('.' + root)]
+    subdomain = host[: -len('.' + MAIN_DOMAIN)]
     if not subdomain or subdomain.startswith('www'):
         return None
 
@@ -465,7 +454,7 @@ def handle_subdomain():
             sections=[], theme_color='#6366f1', font='Inter',
             font_family='Inter', lang='en', dir='ltr',
             year=datetime.now().year,
-            main_url=f'https://{root}'
+            main_url=f'https://{MAIN_DOMAIN}'
         ), 404)
 
     site.views = (site.views or 0) + 1
@@ -486,7 +475,7 @@ def handle_subdomain():
         font_family=(theme.font if theme else 'Inter') or 'Inter',
         lang='en', dir='ltr',
         year=datetime.now().year,
-        main_url=f'https://{root}'
+        main_url=f'https://{MAIN_DOMAIN}'
     ))
 
 @app.after_request
