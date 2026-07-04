@@ -71,6 +71,6 @@ body{font-family:'{{ font }}',sans-serif;color:#0f172a;line-height:1.6;min-heigh
 {% endfor %}
 </div>
 <footer class="site-footer">&copy; {{ year }} {{ title }}. All rights reserved.</footer>
-<script>fetch('/api/p/{{ slug }}/view',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ip:'',ua:navigator.userAgent})})</script>
+<script>fetch('{{ main_url }}/api/p/{{ slug }}/view',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ip:'',ua:navigator.userAgent})})</script>
 </body>
 </html>

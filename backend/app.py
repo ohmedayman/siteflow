@@ -362,22 +362,26 @@ def admin_panel(admin):
 
 # ─────────────── Subdomain hosting ───────────────
 # Handles *.siteflow.vexonet.online requests
-# Each subdomain = site slug, auto-expires after 14 days
 
 MAIN_DOMAIN = 'siteflow.vexonet.online'
 
 @app.before_request
 def handle_subdomain():
-    host = request.headers.get('Host', '')
-    # Only process subdomain requests
+    host = request.headers.get('Host', '').split(':')[0]  # strip port
+    # Only process subdomain GET/HEAD for non-API paths
+    if request.method not in ('GET', 'HEAD', 'OPTIONS'):
+        return None
     if not host.endswith('.' + MAIN_DOMAIN) or host == MAIN_DOMAIN:
+        return None
+    # Skip API, static, admin routes — let Flask handle normally
+    path = request.path
+    if path.startswith('/api/') or path.startswith('/admin') or path.startswith('/static/'):
         return None
 
     subdomain = host[: -len('.' + MAIN_DOMAIN)]
     if not subdomain or subdomain.startswith('www'):
         return None
 
-    # Look up site by slug
     site = Site.query.filter_by(slug=subdomain, published=True).first()
     if not site:
         return make_response(render_template('site_page.html',
@@ -389,7 +393,6 @@ def handle_subdomain():
             main_url=f'https://{MAIN_DOMAIN}'
         ), 404)
 
-    # Increment views
     site.views = (site.views or 0) + 1
     db.session.commit()
 
@@ -413,7 +416,10 @@ def handle_subdomain():
 
 @app.after_request
 def add_cors(response):
-    response.headers['Access-Control-Allow-Origin'] = f'https://{MAIN_DOMAIN}'
+    origin = request.headers.get('Origin', '')
+    # Allow subdomains + main domain
+    if origin and (MAIN_DOMAIN in origin or origin.endswith('.' + MAIN_DOMAIN)):
+        response.headers['Access-Control-Allow-Origin'] = origin
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
     return response
