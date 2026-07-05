@@ -27,7 +27,10 @@ const Router = {
     else if (r==='help') { this._help() }
     else if (r==='about') { this._about() }
     else if (r==='privacy') { this._privacy() }
+    else if (r==='admin') { if(!Auth.requireAuth()||!Auth.isAdmin())return; this._admin() }
+    else if (r==='admin-payments') { if(!Auth.requireAuth()||!Auth.isAdmin())return; this._adminPayments() }
     else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._checkoutRoute(pts[1]) }
+    else if (r==='pay') { if(!Auth.requireAuth())return; this._pay() }
     else if (r==='submissions'&&pts[1]) { if(!Auth.requireAuth())return; this._submissions(pts[1]) }
     else if (r==='analytics'&&pts[1]) { if(!Auth.requireAuth())return; this._analytics(pts[1]) }
     else { this._render('landing') }
@@ -96,27 +99,25 @@ const Router = {
     <div style="margin-bottom:24px">
       <div style="width:64px;height:64px;border-radius:16px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--primary)">${ICONS.wrap(ICONS.dollar,32)}</div>
       <h2 style="font-size:1.5rem;margin-bottom:4px">اشتراك ${plan.name}</h2>
-      <p style="color:var(--gray-500)">خطة ${plan.name_en} — ${plan.currency === 'EGP' ? 'ج.م' : '$'}${plan.price}/شهرياً</p>
+      <p style="color:var(--gray-500)">خطة ${plan.name_en} — ج.م ${plan.price}/شهرياً</p>
     </div>
     <div style="background:var(--gray-50);border-radius:12px;padding:20px;margin-bottom:24px;text-align:right">
       <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--gray-500)">الخطة</span><strong>${plan.name}</strong></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--gray-500)">السعر</span><strong>${plan.currency === 'EGP' ? 'ج.م' : '$'}${plan.price}/شهر</strong></div>
-      ${plan.yearly_price ? `<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px dashed var(--gray-200)"><span style="color:var(--gray-500)">السعر السنوي</span><strong style="color:var(--primary)">${plan.currency === 'EGP' ? 'ج.م' : '$'}${plan.yearly_price}/سنة</strong></div>` : ''}
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--gray-500)">السعر</span><strong>ج.م ${plan.price}/شهر</strong></div>
+      ${plan.yearly_price ? `<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px dashed var(--gray-200)"><span style="color:var(--gray-500)">السعر السنوي</span><strong style="color:var(--primary)">ج.م ${plan.yearly_price.toLocaleString()}/سنة (خصم ${Math.round((1 - plan.yearly_price/(plan.price*12))*100)}%)</strong></div>` : ''}
     </div>
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;margin-bottom:24px;text-align:right">
       <p style="font-size:.88rem;color:#166534;font-weight:600;margin-bottom:4px">طرق الدفع المتاحة:</p>
       <p style="font-size:.82rem;color:#166534">فوري • إنستاباي • فودافون كاش • فيزا/ماستركارد</p>
     </div>
-    <button id="confirmPaymentBtn" class="btn btn-primary btn-lg w-full" style="font-size:1.1rem;padding:16px">
-      ادفع ${plan.currency === 'EGP' ? 'ج.م' : '$'}${plan.price} الآن
-    </button>
-    <p style="font-size:.78rem;color:var(--gray-400);margin-top:12px">يمكنك الإلغاء في أي وقت</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-primary btn-lg w-full" onclick="API.createPayment('${planKey}').then(()=>Router.navigate('pay'))" style="font-size:1.05rem;padding:16px">
+        اختار طريقة الدفع
+      </button>
+      <a href="#/plans" class="btn btn-ghost" style="font-size:.88rem">رجوع للأسعار</a>
+    </div>
   </div>
 </div>`
-    document.getElementById('confirmPaymentBtn')?.addEventListener('click', async () => {
-      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show(`تم الترقية إلى ${plan.name}!`,'success'); Router.navigate('dashboard') }
-      catch(e) { Toast.show(e.message,'error') }
-    })
   },
 
   async _billing() {
@@ -228,6 +229,111 @@ const Router = {
   _privacy() { document.getElementById('app').innerHTML = T.privacy() },
 
   async _checkoutRoute(planKey) { this._checkout(planKey) },
+
+  async _pay() {
+    const plans = await API.getPlans()
+    const planKeys = Object.keys(plans).filter(k => plans[k].price > 0)
+    document.getElementById('app').innerHTML = `
+<div style="max-width:800px;margin:0 auto;padding:40px 24px">
+  <div style="text-align:center;margin-bottom:32px">
+    <h1 style="font-size:1.8rem;margin-bottom:8px">اختار طريقة الدفع</h1>
+    <p style="color:var(--gray-500)">ادفع بأي طريقة تناسبك — بدون فيزا دولية</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px">
+    <div class="card" style="padding:24px;text-align:center;cursor:pointer;border:2px solid var(--primary)" onclick="Router._showPaymentMethod('fawry')">
+      <div style="font-size:2.5rem;margin-bottom:8px">🏦</div>
+      <h3 style="font-size:1rem;margin-bottom:4px">فوري</h3>
+      <p style="font-size:.82rem;color:var(--gray-500)">ادفع من أي فرع فوري أو أونلاين</p>
+    </div>
+    <div class="card" style="padding:24px;text-align:center;cursor:pointer;border:2px solid var(--primary)" onclick="Router._showPaymentMethod('instapay')">
+      <div style="font-size:2.5rem;margin-bottom:8px">📱</div>
+      <h3 style="font-size:1rem;margin-bottom:4px">إنستاباي</h3>
+      <p style="font-size:.82rem;color:var(--gray-500)">تحويل مباشر من بنكك</p>
+    </div>
+    <div class="card" style="padding:24px;text-align:center;cursor:pointer;border:2px solid var(--primary)" onclick="Router._showPaymentMethod('vodafone')">
+      <div style="font-size:2.5rem;margin-bottom:8px">💚</div>
+      <h3 style="font-size:1rem;margin-bottom:4px">فودافون كاش</h3>
+      <p style="font-size:.82rem;color:var(--gray-500)">ادفع من محفظتك الإلكترونية</p>
+    </div>
+  </div>
+
+  <div id="paymentDetails" class="card" style="padding:32px;display:none">
+  </div>
+</div>`
+  },
+
+  _showPaymentMethod(method) {
+    const el = document.getElementById('paymentDetails')
+    if (!el) return
+    el.style.display = 'block'
+    const methods = {
+      fawry: {
+        title: 'الدفع عبر فوري',
+        icon: '🏦',
+        steps: [
+          'روّح لأي فرع فوري قريب منك',
+          'قولهم عايز تدفع لـ Site Flow',
+          'ادفع المبلغ المطلوب',
+          'احتفظ بالرقم المرجعي',
+          'ابعتلنا الرقم المرجعي على واتساب: 01012345678',
+          'هنتأكد ونشغّل اشتراكك خلال ساعة'
+        ],
+        note: 'ممكن كمان تدفع أونلاين من fawry.com'
+      },
+      instapay: {
+        title: 'الدفع عبر إنستاباي',
+        icon: '📱',
+        steps: [
+          'افتح تطبيق البنك بتاعك',
+          'اختار إنستاباي (InstaPay)',
+          'ابعت المبلغ لـ: 01012345678',
+          'في الملاحظات اكتب: اسمك + الخطة (مثلاً: أحمد - احترافي)',
+          'ابعتلنا سcreenshot التحويل على واتساب',
+          'هنتأكد ونشغّل اشتراكك خلال ساعة'
+        ],
+        note: 'متوفر في: CIB، الأهلي، بنك مصر، QNB، وباقي البنوك'
+      },
+      vodafone: {
+        title: 'الدفع عبر فودافون كاش',
+        icon: '💚',
+        steps: [
+          'افتح فودافون كاش',
+          'اختار "دفع فواتير" أو "تحويل"',
+          'ادفع لـ: 01012345678',
+          'ادفع المبلغ المطلوب',
+          'احتفظ بالرقم المرجعي',
+          'ابعتلنا الرقم على واتساب: 01012345678'
+        ],
+        note: 'ممكن كمان تستخدم فودافون كاش من أي فرع فودافون'
+      }
+    }
+    const m = methods[method]
+    el.innerHTML = `
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:3rem;margin-bottom:8px">${m.icon}</div>
+        <h2 style="font-size:1.4rem;margin-bottom:4px">${m.title}</h2>
+      </div>
+      <div style="background:var(--gray-50);border-radius:12px;padding:24px;margin-bottom:20px">
+        <ol style="list-style:none;counter-reset:step;padding:0;display:flex;flex-direction:column;gap:12px">
+          ${m.steps.map((s,i)=>`<li style="display:flex;align-items:start;gap:12px;font-size:.92rem">
+            <span style="min-width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700">${i+1}</span>
+            ${s}
+          </li>`).join('')}
+        </ol>
+      </div>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;font-size:.88rem;color:#166534">
+        <strong>ملاحظة:</strong> ${m.note}
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <p style="color:var(--gray-500);font-size:.85rem">بعد الدفع، ابعتلنا الإثبات على واتساب</p>
+        <a href="https://wa.me/201012345678" target="_blank" class="btn btn-success btn-lg" style="margin-top:8px">
+          📱 ابعت على واتساب
+        </a>
+      </div>
+    `
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  },
 
   _bindAuth() {
     const tabs = document.querySelectorAll('.auth-tab')
@@ -485,3 +591,122 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   setTimeout(initAnimations, 100)
 })
+
+// ── Admin Dashboard ──
+Router._admin = async function() {
+  const users = LocalDB.users.get()
+  const pages = LocalDB.pages.get()
+  const payments = LocalDB.payments ? LocalDB.payments.get() : []
+  document.getElementById('app').innerHTML = `
+<div style="max-width:1200px;margin:0 auto;padding:40px 24px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
+    <div>
+      <h1 style="font-size:1.8rem">لوحة التحكم الإدارية</h1>
+      <p style="color:var(--gray-500)">إدارة المستخدمين والمواقع والمدفوعات</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a href="#/admin-payments" class="btn btn-primary">المدفوعات</a>
+      <a href="#/dashboard" class="btn btn-ghost">الوحة العادية</a>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px">
+    <div class="card" style="padding:20px;text-align:center">
+      <div style="font-size:2rem;font-weight:800;color:var(--primary)">${users.length}</div>
+      <div style="color:var(--gray-500);font-size:.85rem">المستخدمين</div>
+    </div>
+    <div class="card" style="padding:20px;text-align:center">
+      <div style="font-size:2rem;font-weight:800;color:#059669">${pages.length}</div>
+      <div style="color:var(--gray-500);font-size:.85rem">المواقع</div>
+    </div>
+    <div class="card" style="padding:20px;text-align:center">
+      <div style="font-size:2rem;font-weight:800;color:#d97706">${pages.filter(p=>p.published).length}</div>
+      <div style="color:var(--gray-500);font-size:.85rem">منشورة</div>
+    </div>
+    <div class="card" style="padding:20px;text-align:center">
+      <div style="font-size:2rem;font-weight:800;color:#dc2626">${payments.length}</div>
+      <div style="color:var(--gray-500);font-size:.85rem">المدفوعات</div>
+    </div>
+  </div>
+  <div class="card" style="padding:24px">
+    <h3 style="margin-bottom:16px">المستخدمين</h3>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:2px solid var(--gray-200)">
+        <th style="text-align:right;padding:10px;font-size:.85rem">الاسم</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">الإيميل</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">الخطة</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">المواقع</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">الدور</th>
+      </tr></thead>
+      <tbody>${users.map(u=>{
+        const userPages = pages.filter(p=>p.userId===u.id)
+        const planNames = {free:'مجاني',basic:'أساسي',pro:'احترافي',business:'بيزنس'}
+        return `<tr style="border-bottom:1px solid var(--gray-100)">
+          <td style="padding:10px;font-weight:600">${u.name}</td>
+          <td style="padding:10px;color:var(--gray-500)">${u.email}</td>
+          <td style="padding:10px"><span style="background:var(--primary-light);color:var(--primary-dark);padding:3px 10px;border-radius:8px;font-size:.78rem;font-weight:600">${planNames[u.plan]||u.plan}</span></td>
+          <td style="padding:10px">${userPages.length}</td>
+          <td style="padding:10px">${u.isAdmin?'<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:8px;font-size:.78rem">admin</span>':'—'}</td>
+        </tr>`
+      }).join('')}</tbody>
+    </table>
+  </div>
+</div>`
+}
+
+Router._adminPayments = async function() {
+  const payments = LocalDB.payments ? LocalDB.payments.get() : []
+  const users = LocalDB.users.get()
+  document.getElementById('app').innerHTML = `
+<div style="max-width:1000px;margin:0 auto;padding:40px 24px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
+    <div>
+      <h1 style="font-size:1.8rem">المدفوعات</h1>
+      <p style="color:var(--gray-500)">إدارة طلبات الاشتراك والمدفوعات</p>
+    </div>
+    <a href="#/admin" class="btn btn-ghost">رجوع</a>
+  </div>
+  ${payments.length === 0 ? `
+  <div class="card" style="padding:60px 24px;text-align:center">
+    <div style="font-size:3rem;margin-bottom:16px">💰</div>
+    <h3 style="margin-bottom:8px">لا توجد مدفوعات بعد</h3>
+    <p style="color:var(--gray-500)">هتظهر هنا أول ما عملاء يشتركوا في خطط مدفوعة</p>
+  </div>` : `
+  <div class="card" style="padding:24px">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:2px solid var(--gray-200)">
+        <th style="text-align:right;padding:10px;font-size:.85rem">التاريخ</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">المستخدم</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">الخطة</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">المبلغ</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">الحالة</th>
+        <th style="text-align:right;padding:10px;font-size:.85rem">إجراءات</th>
+      </tr></thead>
+      <tbody>${payments.map(p=>{
+        const user = users.find(u=>u.id===p.userId)
+        return `<tr style="border-bottom:1px solid var(--gray-100)">
+          <td style="padding:10px">${new Date(p.created_at||p.createdAt).toLocaleDateString('ar-EG')}</td>
+          <td style="padding:10px">${user?.name||p.userId}</td>
+          <td style="padding:10px">${p.plan}</td>
+          <td style="padding:10px;font-weight:700">ج.م ${p.amount}</td>
+          <td style="padding:10px"><span style="background:${p.status==='completed'?'#d1fae5;color:#065f46':'#fef3c7;color:#92400e'};padding:3px 10px;border-radius:8px;font-size:.78rem">${p.status==='completed'?'مكتمل':p.status||'معلق'}</span></td>
+          <td style="padding:10px">${p.status!=='completed'?`<button class="btn btn-success btn-sm" onclick="Router._confirmPayment('${p.id}')">تأكيد</button>`:'—'}</td>
+        </tr>`
+      }).join('')}</tbody>
+    </table>
+  </div>`}
+</div>`
+}
+
+Router._confirmPayment = function(paymentId) {
+  const payments = LocalDB.payments.get()
+  const p = payments.find(x=>x.id===paymentId)
+  if (p) {
+    p.status = 'completed'
+    LocalDB.payments.save(payments)
+    const users = LocalDB.users.get()
+    const u = users.find(x=>x.id===p.userId)
+    if (u) { u.plan = p.plan; LocalDB.users.save(users) }
+    Toast.show('تم تأكيد الدفع!','success')
+    Router._adminPayments()
+  }
+}

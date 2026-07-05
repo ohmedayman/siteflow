@@ -438,6 +438,7 @@ const T = {
       <button class="btn btn-sm filter-btn active" data-filter="all">All</button>
       <button class="btn btn-sm filter-btn" data-filter="business">Business</button>
       <button class="btn btn-sm filter-btn" data-filter="food">Food & Drink</button>
+      <button class="btn btn-sm filter-btn" data-filter="ar">عربي</button>
       <button class="btn btn-sm filter-btn" data-filter="health">Health</button>
       <button class="btn btn-sm filter-btn" data-filter="fitness">Fitness</button>
       <button class="btn btn-sm filter-btn" data-filter="beauty">Beauty</button>

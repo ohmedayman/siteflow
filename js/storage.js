@@ -329,7 +329,15 @@ const API = {
       if (r.ok) return (await r.json())
     }
     if (mode === 'supabase') { try { const uid=SB.getSession()?.data?.session?.user?.id; if(uid) return await SB.createPayment(uid, planKey, planKey==='pro'?9:29) } catch {} }
-    return {payment_id:'local_'+LocalDB.genId(),plan:planKey}
+    // local mode — save payment request
+    const plans = await this.getPlans()
+    const plan = plans[planKey]
+    const uid=(this.token||'').replace('local_','')
+    const payment = {id:LocalDB.genId(), userId:uid, plan:planKey, amount:plan?.price||0, status:'pending', currency:'EGP', created_at:new Date().toISOString()}
+    const payments = LocalDB.payments.get()
+    payments.push(payment)
+    LocalDB.payments.save(payments)
+    return payment
   },
 
   async confirmPayment(id) {
@@ -352,7 +360,9 @@ const API = {
       if (r.ok) return (await r.json())
     }
     if (mode === 'supabase') { try { const r = await SB.client.from('payments').select('*').order('created_at',{ascending:false}); if(r.data) return r.data } catch {} }
-    return []
+    // local mode — return user's payments
+    const uid=(this.token||'').replace('local_','')
+    return LocalDB.payments.get().filter(p=>p.userId===uid).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
   },
 
   async submitForm(slug, name, email, message) {

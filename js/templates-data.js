@@ -1136,6 +1136,177 @@ const TEMPLATE_DATA = (() => {
     SEC.footer()
   ]));
 
+  /* ======================== ARABIC TEMPLATES ======================== */
+
+  // Restaurant / مطعم
+  const arRestaurant = C.food;
+  templates.push({
+    id: 'ar-restaurant',
+    name: 'مطعم / مطبخ عربي',
+    desc: 'قائمة أطباق، حجز طاولات، صور الأطباق',
+    icon: ICONS.utensils,
+    category: 'food',
+    arabic: true,
+    theme: { color: arRestaurant.color, font: 'Cairo', icon: 'utensils' },
+    sections: [
+      { type: 'hero', data: { heading: 'مطعم الأصالة', description: 'أكل بيتي أصيل — طعم بيتكم عندنا. احجز طاولتك دلوقتي.', image: '' } },
+      { type: 'about', data: { heading: 'عن المطعم', content: 'مطعم الأصالة اتأسس سنة 2015. بنقدم أكل مصري أصيل من وصفات جداتنا. كل طبخة عندنا ليها قصة وطعم مميز. المكونات طازجة من السوق كل يوم.' } },
+      { type: 'services', data: { heading: 'قائمة الطعام', items: [
+        { title: 'مشاوي مشكلة', desc: 'لحم كفتة، كباب، شيش طاووق — served with rice and salad', price: '250 ج.م', category: 'المشويات' },
+        { title: 'أم علي', desc: 'وصفة مصرية أصيلة بالقشطة والمكسرات', price: '60 ج.م', category: 'الحلويات' },
+        { title: 'محشي ورق عنب', desc: 'ورق عنب محشي أرز بالبقدونس والنعناع', price: '80 ج.م', category: 'المقليات' },
+        { title: 'ساندويتش كفتة', desc: 'كفتة مشوية على العيش البلدي مع الطحينة', price: '70 ج.م', category: 'الساندويتشات' }
+      ] } },
+      { type: 'testimonials', data: { heading: 'عملاؤنا بيقولوا إيه', items: [
+        { name: 'أحمد محمد', text: 'أحسن مطعم أكلت فيه في القاهرة. الكفتة مميزة جداً.', role: 'عميل دائم' },
+        { name: 'سارة علي', text: 'الخدمة سريعة والأسعار معقولة. أنصح بالمحشي.', role: 'زبونة' },
+        { name: 'خالد حسن', text: 'حجزت عشية عيد ميلادي وكانت تجربة ممتازة. الأكل تحفة.', role: 'زبون' }
+      ] } },
+      { type: 'contact', data: { heading: 'تواصل معانا', email: 'info@alasala.com', phone: '01012345678', address: 'شارع التحرير، وسط البلد، القاهرة' } },
+      { type: 'location', data: { heading: 'المكان', address: 'شارع التحرير 45، وسط البلد، القاهرة', phone: '01012345678', hours: 'يومياً من 12 ظهراً لـ 12 بالليل' } },
+      { type: 'footer', data: { copyright: '© 2026 مطعم الأصالة. جميع الحقوق محفوظة.', text: 'صُنع بـ Site Flow' } }
+    ]
+  });
+
+  // Cafe / كافيه
+  const arCafe = C.food;
+  templates.push({
+    id: 'ar-cafe',
+    name: 'كافيه / مقهى',
+    desc: 'قهوات، حلوى، أجواء مريحة',
+    icon: ICONS.coffee || ICONS.utensils,
+    category: 'food',
+    arabic: true,
+    theme: { color: '#8B4513', font: 'Cairo', icon: 'utensils' },
+    sections: [
+      { type: 'hero', data: { heading: 'كافيه آرت', description: 'قهوة مختصة، حلوى طازجة، أجواء هادية. المكان المثالي للشغل أو القعدة مع الصحاب.', image: '' } },
+      { type: 'about', data: { heading: 'عن الكافيه', content: 'كافيه آرت افتتحنا 2022. بنجيب أحسن أنواع القهوة من كل أنحاء العالم. كل كوباية ليها طعم خاص. عندنا تحلية وحلويات محضرة يومياً.' } },
+      { type: 'services', data: { heading: 'القائمة', items: [
+        { title: 'إسبريسو', desc: 'قهوة قوية concentrated', price: '35 ج.م' },
+        { title: 'لاتيه', desc: 'قهوة بالحليب المбит', price: '50 ج.م' },
+        { title: 'موكا شوكولاتة', desc: 'قهوة + شوكولاتة + حليب', price: '55 ج.م' },
+        { title: 'كيك العسل', desc: 'كيك طازج بالعسل والمكسرات', price: '45 ج.م' }
+      ] } },
+      { type: 'pricing', data: { heading: 'الأسعار', plans: [
+        { name: 'كوباية صغيرة', price: '35 ج.م', features: ['إسبريسو', 'أمريكانو'] },
+        { name: 'كوباية كبيرة', price: '50 ج.م', features: ['لاتيه', 'موكا', 'كابتشينو'] },
+        { name: 'باقة صحاب', price: '120 ج.م', features: ['4 كوبايات', 'كيك', 'قعدة ساعة'] }
+      ] } },
+      { type: 'testimonials', data: { heading: 'الناس بتقول إيه', items: [
+        { name: 'نورا', text: 'أحلى كافيه في المنطقة. القهوة تحفة والجو هادي.', role: 'طالبة' },
+        { name: 'مروان', text: 'بشتغل هنا كل يوم. الواي فاي سريع والقهوة ممتازة.', role: 'فريلانسر' },
+        { name: 'ياسمين', text: 'الحلويات طازجة كل يوم. أنصح بكيك العسل.', role: 'زبونة' }
+      ] } },
+      { type: 'contact', data: { heading: 'تواصل معانا', email: 'hello@artcafe.com', phone: '01112345678', address: 'شارع المعادي، القاهرة' } },
+      { type: 'footer', data: { copyright: '© 2026 كافيه آرت. جميع الحقوق محفوظة.', text: 'صُنع بـ Site Flow' } }
+    ]
+  });
+
+  // Clinic / عيادة
+  const arHealth = C.health;
+  templates.push({
+    id: 'ar-clinic',
+    name: 'عيادة / مركز صحي',
+    desc: 'دكاترة، مواعيد، خدمات طبية',
+    icon: ICONS.heart,
+    category: 'health',
+    arabic: true,
+    theme: { color: '#059669', font: 'Cairo', icon: 'heart' },
+    sections: [
+      { type: 'hero', data: { heading: 'المركز الطبي المتقدم', description: 'صحتك أمانة عندنا. أفضل دكاترة وأحدث معدات. احجز موعدك دلوقتي.', image: '' } },
+      { type: 'about', data: { heading: 'عن المركز', content: 'المركز الطبي المتقدم افتتحنا 2018. عندنا فريق من أفضل الدكاترة في مصر. بنستخدم أحدث التقنيات الطبية. رضا المريض عندنا أهم حاجة.' } },
+      { type: 'services', data: { heading: 'خدماتنا', items: [
+        { title: 'طب عام', desc: 'فحوصات شاملة وتشخيص دقيق', price: '300 ج.م' },
+        { title: 'طب أسنان', desc: 'تقويم، تركيبات، علاج عصب', price: 'يبدأ من 500 ج.م' },
+        { title: 'طب عيون', desc: 'فحص نظرة، نظارات طبية', price: '200 ج.م' },
+        { title: 'تحاليل طبية', desc: 'تحاليل مخبرية نتائج في نفس اليوم', price: 'يبدأ من 100 ج.م' }
+      ] } },
+      { type: 'team', data: { heading: 'فريقنا الطبي', items: [
+        { name: 'د. أحمد سمير', role: 'استشاري طب عام' },
+        { name: 'د. Fatma Hassan', role: 'استشارية أسنان' },
+        { name: 'د. محمد علي', role: 'استشاري عيون' }
+      ] } },
+      { type: 'contact', data: { heading: 'احجز موعدك', email: 'info@medicalcenter.com', phone: '01234567890', address: 'شارع رمسيس، القاهرة' } },
+      { type: 'location', data: { heading: 'المكان', address: 'شارع رمسيس 10، القاهرة', phone: '01234567890', hours: 'السبت-الخميس: 9 صباحاً - 9 بالليل' } },
+      { type: 'footer', data: { copyright: '© 2026 المركز الطبي المتقدم. جميع الحقوق محفوظة.', text: 'صُنع بـ Site Flow' } }
+    ]
+  });
+
+  // Clothing Store / محل ملابس
+  const arRetail = C.retail;
+  templates.push({
+    id: 'ar-clothing',
+    name: 'محل ملابس / أزياء',
+    desc: 'ملابس رجالي وحريمي، عروض وخصومات',
+    icon: ICONS.bag,
+    category: 'retail',
+    arabic: true,
+    theme: { color: '#7c3aed', font: 'Cairo', icon: 'bag' },
+    sections: [
+      { type: 'hero', data: { heading: 'ستايل ستور', description: 'أحدث صيحات الموضة بأسعار مناسبة. توصيل لحد البيت.', image: '' } },
+      { type: 'about', data: { heading: 'عنّا', content: 'ستايل ستور من 2020. بنوفر أحدث صيحات الموضة للرجالي والحريمي. كل موسم بنجيب كولكشن جديد. الجودة عندنا أولوية.' } },
+      { type: 'services', data: { heading: 'الأقسام', items: [
+        { title: 'ملابس رجالي', desc: 'قمصان، بنطلونات، جواكيت — كل المقاسات', price: '' },
+        { title: 'ملابس حريمي', desc: 'فساتين، بلوزات، بنطلونات — أحدث الموديلات', price: '' },
+        { title: 'أحذية', desc: 'حذاء رجالي وحريمي — كاجوال ورسمي', price: '' },
+        { title: 'إكسسوارات', desc: 'ساعات، محافظ، نظارات — لوك كومplet', price: '' }
+      ] } },
+      { type: 'counters', data: { heading: 'إنجازاتنا', items: [
+        { number: '10K+', label: 'عميل سعيد' },
+        { number: '500+', label: 'منتج' },
+        { number: '50+', label: 'ماركة عالمية' },
+        { number: '4.9', label: 'تقييم العملاء' }
+      ] } },
+      { type: 'testimonials', data: { heading: 'العملاء بيقولوا إيه', items: [
+        { name: 'مريم', text: 'أحلى محل ملابس في المنطقة. الجودة ممتازة والأسعار معقولة.', role: 'زبونة' },
+        { name: 'عمر', text: 'كل شوية بيجيبوا موديلات جديدة. دايماً في اللي يعجبني.', role: 'عميل دائم' },
+        { name: 'هدى', text: 'التوصيل سريع والتغليف ممتاز. أنصح بالتسوق من عندهم.', role: 'زبونة أونلاين' }
+      ] } },
+      { type: 'contact', data: { heading: 'تواصل معانا', email: 'info@stylestore.com', phone: '01098765432', address: 'سيتي ستارز، القاهرة' } },
+      { type: 'footer', data: { copyright: '© 2026 ستايل ستور. جميع الحقوق محفوظة.', text: 'صُنع بـ Site Flow' } }
+    ]
+  });
+
+  // Portfolio / بورتفوليو شخصي
+  const arCreative = C.creative;
+  templates.push({
+    id: 'ar-portfolio',
+    name: 'بورتفوليو شخصي',
+    desc: 'صفحة شخصية للمصممين والمصورين',
+    icon: ICONS.image,
+    category: 'creative',
+    arabic: true,
+    theme: { color: '#9333ea', font: 'Cairo', icon: 'image' },
+    sections: [
+      { type: 'hero', data: { heading: 'أنا محمد — مصمم جرافيك', description: 'بحوّل أفكارك لتصميمات مبهرة. خبرة 5 سنين في التصميم.' } },
+      { type: 'about', data: { heading: 'عنّي', content: 'أنا محمد، مصمم جرافيك من القاهرة. بحب أصمم هويات بصرية، سوشيال ميديا، وواجهات ويب. بشتغل مع شركات كبرى وبرضه رواد أعمال صغار.' } },
+      { type: 'portfolio', data: { heading: 'أعمالي', items: [
+        { title: 'هوية بصرية — شركة تقنية', desc: 'تصميم لوجو وهوية كاملة لشركة ناشئة', image: '' },
+        { title: 'حملة سوشيال ميديا', desc: 'تصميمات لإنستجرام وفيس بوك لعلامة تجارية', image: '' },
+        { title: 'تصميم ويب', desc: 'تصميم واجهة مستخدم لموقع إلكتروني', image: '' }
+      ] } },
+      { type: 'counters', data: { heading: 'بالأرقام', items: [
+        { number: '120+', label: 'مشروع منجز' },
+        { number: '80+', label: 'عميل سعيد' },
+        { number: '5', label: 'سنوات خبرة' },
+        { number: '15+', label: 'جائزة تصميم' }
+      ] } },
+      { type: 'testimonials', data: { heading: 'عملائي بيقولوا إيه', items: [
+        { name: 'أحمد', text: 'محمد صمملي الهوية البصرية وكانت تحفة. أنصح بيه جداً.', role: 'صاحب شركة' },
+        { name: 'سارة', text: 'التسليم كان في الوقت المحدد والجودة عالية جداً.', role: 'عميلة' },
+        { name: 'خالد', text: 'أحسن مصمم اتعاملت معاه. فاهم اللي عايزه وبيزود عليه.', role: 'روائد أعمال' }
+      ] } },
+      { type: 'pricing', data: { heading: 'الأسعار', plans: [
+        { name: 'لوجو بس', price: '2,000 ج.م', features: ['3 تصميمات', 'تعديلات غير محدودة', 'ملف PSD'] },
+        { name: 'هوية كاملة', price: '5,000 ج.م', features: ['لوجو + بروفايل شركة', 'كرت شخصي', 'بروشور'] },
+        { name: 'تصميم ويب', price: '8,000 ج.م', features: ['5 صفحات', 'متجاوب', 'ملفات التصميم'] }
+      ] } },
+      { type: 'contact', data: { heading: 'تواصل معايا', email: 'mohamed@design.com', phone: '01155556666', address: 'القاهرة، مصر' } },
+      { type: 'cta', data: { heading: 'عندك مشروع؟', subheading: 'ابعتلي ونتكلم', buttonText: 'تواصل معايا' } },
+      { type: 'footer', data: { copyright: '© 2026 محمد — مصمم جرافيك. جميع الحقوق محفوظة.', text: 'صُنع بـ Site Flow' } }
+    ]
+  });
+
   return templates;
 })();
 

@@ -563,7 +563,7 @@ const Builder = {
 
     function getFiltered() {
       return allTemplates.filter(t => {
-        const matchFilter = currentFilter === 'all' || t.category === currentFilter
+        const matchFilter = currentFilter === 'all' || t.category === currentFilter || (currentFilter === 'ar' && t.arabic)
         const matchSearch = !searchQuery || t.name.toLowerCase().includes(searchQuery) || t.desc.toLowerCase().includes(searchQuery)
         return matchFilter && matchSearch
       })
