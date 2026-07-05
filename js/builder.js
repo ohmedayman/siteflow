@@ -1,22 +1,25 @@
-/** Site Flow — Page Builder */
-
 const Builder = {
   page: null, editingIdx: 0, mobileMode: false, siteId: null,
-  undoStack: [], redoStack: [],
-  _pushUndo() { this.undoStack.push(JSON.parse(JSON.stringify(this.page.sections))); this.redoStack = [] },
+  undoStack: [], redoStack: [], dragSrc: null, dragOver: null, autoSaveTimer: null,
+
+  _pushUndo() {
+    this.undoStack.push(JSON.parse(JSON.stringify(this.page.sections)))
+    this.redoStack = []
+    if (this.undoStack.length > 50) this.undoStack.shift()
+  },
   _undo() {
     if (!this.undoStack.length) return
     this.redoStack.push(JSON.parse(JSON.stringify(this.page.sections)))
     this.page.sections = this.undoStack.pop()
     if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
-    this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll()
+    this._render(); Toast.show('Undo','info')
   },
   _redo() {
     if (!this.redoStack.length) return
     this.undoStack.push(JSON.parse(JSON.stringify(this.page.sections)))
     this.page.sections = this.redoStack.pop()
     if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
-    this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll()
+    this._render(); Toast.show('Redo','info')
   },
 
   async load(id) {
@@ -25,88 +28,227 @@ const Builder = {
     try {
       this.page = await API.getSite(id)
       if (!this.page) throw new Error('Site not found')
+      if (!this.page.theme) this.page.theme = { color: '#6366f1', font: 'Inter', bgColor: '#ffffff', textColor: '#111827' }
+      if (!this.page.seo) this.page.seo = { title: '', description: '', keywords: '' }
       this.editingIdx = 0; this.mobileMode = false; this.undoStack = []; this.redoStack = []
-      this.render(); this.bindAll()
-    } catch(e) { Toast.show(e.message,'error'); Router.navigate('dashboard') }
+      this.render()
+    } catch (e) { Toast.show(e.message, 'error'); Router.navigate('dashboard') }
   },
 
   render() {
     document.getElementById('app').innerHTML = T.builder(this.page)
-    this._renderSections(); this._renderCanvas(); this._updateSeoPreview()
+    this._render()
+  },
+
+  _render() {
+    this._renderSections()
+    this._renderCanvas()
+    this._updateSeoPreview()
+    this._initDrag()
+    this.bindAll()
   },
 
   _renderSections() {
     const list = document.getElementById('sectionList')
     if (!list) return
-    const icons = { hero:'🏠', about:'👤', gallery:'🖼️', contact:'📧', services:'💼', testimonials:'💬', pricing:'💰', faq:'❓', team:'👥', footer:'📋' }
-    const descs = { hero:'Header & intro',about:'About text',gallery:'Image gallery',contact:'Contact form',services:'What you offer',testimonials:'Client reviews',pricing:'Price plans',faq:'FAQ questions',team:'Team members',footer:'Page footer' }
-    list.innerHTML = this.page.sections.map((s,i) =>
-      `<div class="section-item ${i===this.editingIdx?'active':''}" data-index="${i}" draggable="true">
-        <span class="drag-handle">⠿</span>
-        <div class="section-item-icon" style="background:${i===this.editingIdx?'var(--primary-light)':'var(--gray-100)'}">${icons[s.type]||'📄'}</div>
-        <div class="section-item-info"><h4>${s.type.charAt(0).toUpperCase()+s.type.slice(1)}</h4><p>${descs[s.type]||''}</p></div>
-        <button class="dup-section" data-dup="${i}" title="Duplicate">⧉</button>
-        <button class="del-section" data-del="${i}" title="Delete">✕</button>
+    const icons = { hero: '🏠', about: '👤', gallery: '🖼️', contact: '📧', services: '💼', testimonials: '💬', pricing: '💰', faq: '❓', team: '👥', footer: '📋', cta: '🎯', features: '✨', stats: '📊', menu: '🍽️', location: '📍', hours: '🕐' }
+    const descs = { hero: 'Header & intro', about: 'About text', gallery: 'Image gallery', contact: 'Contact form', services: 'What you offer', testimonials: 'Client reviews', pricing: 'Price plans', faq: 'FAQ questions', team: 'Team members', footer: 'Page footer', cta: 'Call to action', features: 'Feature list', stats: 'Statistics', menu: 'Menu items', location: 'Map & address', hours: 'Business hours' }
+
+    list.innerHTML = this.page.sections.map((s, i) => `
+      <div class="section-item ${i === this.editingIdx ? 'active' : ''}" data-index="${i}" draggable="true" data-type="${s.type}">
+        <div class="drag-handle" title="Drag to reorder">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="6" r="1"/><circle cx="16" cy="6" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/><circle cx="8" cy="18" r="1"/><circle cx="16" cy="18" r="1"/></svg>
+        </div>
+        <div class="section-item-icon" style="background:${i === this.editingIdx ? 'var(--primary-light)' : 'var(--gray-100)'}">${icons[s.type] || '📄'}</div>
+        <div class="section-item-info">
+          <h4>${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</h4>
+          <p>${descs[s.type] || 'Custom section'}</p>
+        </div>
+        <div class="section-item-actions">
+          <button class="move-up-btn" data-up="${i}" title="Move up" ${i === 0 ? 'disabled' : ''}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+          </button>
+          <button class="move-down-btn" data-down="${i}" title="Move down" ${i === this.page.sections.length - 1 ? 'disabled' : ''}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="dup-section" data-dup="${i}" title="Duplicate section">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="del-section" data-del="${i}" title="Delete section">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          </button>
+        </div>
       </div>`).join('')
-    this._initDrag()
   },
 
   _renderCanvas() {
     const frame = document.getElementById('canvasFrame')
     if (!frame) return
     frame.classList.toggle('mobile', this.mobileMode)
-    frame.innerHTML = '<div style="padding:0">' + this.page.sections.map((s,i) => {
-      switch(s.type) {
-        case 'hero': return T.heroSection(s.data, i===this.editingIdx)
-        case 'about': return T.aboutSection(s.data, i===this.editingIdx)
-        case 'gallery': return T.gallerySection(s.data, i===this.editingIdx)
-        case 'contact': return T.contactSection(s.data, i===this.editingIdx)
-        case 'services': return T.servicesSection(s.data, i===this.editingIdx)
-        case 'testimonials': return T.testimonialsSection(s.data, i===this.editingIdx)
-        case 'pricing': return T.pricingSection(s.data, i===this.editingIdx)
-        case 'faq': return T.faqSection(s.data, i===this.editingIdx)
-        case 'team': return T.teamSection(s.data, i===this.editingIdx)
-        case 'footer': return T.footerSection(s.data, i===this.editingIdx)
-        default: return ''
-      }
-    }).join('') + '</div>'
+    frame.innerHTML = '<div class="canvas-sections">' + this.page.sections.map((s, i) => {
+      const isActive = i === this.editingIdx
+      const wrapper = `<div class="canvas-section-wrapper ${isActive ? 'editing' : ''}" data-cidx="${i}">
+        <div class="canvas-section-overlay"><span>${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</span></div>
+        ${this._renderSection(s, i)}
+      </div>`
+      return wrapper
+    }).join('') + `
+      <div class="canvas-add-section" id="canvasAddSection">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Add Section</span>
+      </div>
+    </div>`
     this._applyTheme()
+
+    // Click on canvas section to select it
+    frame.querySelectorAll('.canvas-section-wrapper').forEach(el => {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('input, textarea, select, a, button')) return
+        this.editingIdx = parseInt(el.dataset.cidx)
+        this._renderSections()
+        frame.querySelectorAll('.canvas-section-wrapper').forEach(w => w.classList.remove('editing'))
+        el.classList.add('editing')
+        this.bindAll()
+      })
+    })
+
+    // Canvas add section button
+    document.getElementById('canvasAddSection')?.addEventListener('click', () => this._showAddSectionPanel())
+  },
+
+  _renderSection(s, i) {
+    switch (s.type) {
+      case 'hero': return T.heroSection(s.data, i === this.editingIdx)
+      case 'about': return T.aboutSection(s.data, i === this.editingIdx)
+      case 'gallery': return T.gallerySection(s.data, i === this.editingIdx)
+      case 'contact': return T.contactSection(s.data, i === this.editingIdx)
+      case 'services': return T.servicesSection(s.data, i === this.editingIdx)
+      case 'testimonials': return T.testimonialsSection(s.data, i === this.editingIdx)
+      case 'pricing': return T.pricingSection(s.data, i === this.editingIdx)
+      case 'faq': return T.faqSection(s.data, i === this.editingIdx)
+      case 'team': return T.teamSection(s.data, i === this.editingIdx)
+      case 'footer': return T.footerSection(s.data, i === this.editingIdx)
+      case 'cta': return T.ctaSection ? T.ctaSection(s.data, i === this.editingIdx) : `<div class="editable-section" style="text-align:center;padding:60px 40px;background:var(--p-color,#6366f1);color:#fff"><h2>${s.data.heading || 'Call to Action'}</h2><p>${s.data.subheading || ''}</p></div>`
+      case 'features': return T.featuresSection ? T.featuresSection(s.data, i === this.editingIdx) : `<div class="editable-section" style="padding:60px 40px"><h2 style="text-align:center">${s.data.heading || 'Features'}</h2></div>`
+      case 'stats': return T.statsSection ? T.statsSection(s.data, i === this.editingIdx) : `<div class="editable-section" style="padding:60px 40px;text-align:center;background:#f8fafc"><h2>${s.data.heading || 'Statistics'}</h2></div>`
+      default: return `<div class="editable-section" style="padding:40px;text-align:center;color:#999">Unknown section type: ${s.type}</div>`
+    }
   },
 
   _applyTheme() {
-    const f=document.getElementById('canvasFrame')
+    const f = document.getElementById('canvasFrame')
     if (!f) return
-    const t=this.page.theme||{color:'#6366f1',font:'Inter'}
-    f.style.setProperty('--p-color',t.color); f.style.setProperty('--p-font',t.font)
-    f.style.fontFamily=`${t.font},sans-serif`
-    f.querySelectorAll('.hero-heading').forEach(el=>el.style.color=t.color)
+    const t = this.page.theme || {}
+    f.style.setProperty('--p-color', t.color || '#6366f1')
+    f.style.fontFamily = `${t.font || 'Inter'},sans-serif`
+  },
+
+  _initDrag() {
+    const list = document.getElementById('sectionList')
+    if (!list) return
+
+    list.querySelectorAll('.section-item[draggable]').forEach(el => {
+      el.addEventListener('dragstart', (e) => {
+        this.dragSrc = parseInt(el.dataset.index)
+        el.classList.add('dragging')
+        e.dataTransfer.effectAllowed = 'move'
+        e.dataTransfer.setData('text/plain', el.dataset.index)
+        // Ghost element
+        const ghost = el.cloneNode(true)
+        ghost.style.opacity = '0.7'
+        ghost.style.position = 'absolute'
+        ghost.style.top = '-9999px'
+        document.body.appendChild(ghost)
+        e.dataTransfer.setDragImage(ghost, 0, 0)
+        setTimeout(() => ghost.remove(), 0)
+      })
+
+      el.addEventListener('dragend', () => {
+        el.classList.remove('dragging')
+        list.querySelectorAll('.section-item').forEach(item => item.classList.remove('drag-over', 'drag-above', 'drag-below'))
+        this.dragSrc = null
+      })
+
+      el.addEventListener('dragover', (e) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+        const rect = el.getBoundingClientRect()
+        const midY = rect.top + rect.height / 2
+        el.classList.remove('drag-above', 'drag-below')
+        if (e.clientY < midY) {
+          el.classList.add('drag-above')
+        } else {
+          el.classList.add('drag-below')
+        }
+      })
+
+      el.addEventListener('dragleave', () => {
+        el.classList.remove('drag-above', 'drag-below')
+      })
+
+      el.addEventListener('drop', (e) => {
+        e.preventDefault()
+        el.classList.remove('drag-above', 'drag-below')
+        if (this.dragSrc === null) return
+
+        const target = parseInt(el.dataset.index)
+        if (this.dragSrc === target) return
+
+        const rect = el.getBoundingClientRect()
+        const midY = rect.top + rect.height / 2
+        const insertBefore = e.clientY < midY
+
+        this._pushUndo()
+        const items = this.page.sections
+        const [removed] = items.splice(this.dragSrc, 1)
+        let insertIdx = insertBefore ? target : target + 1
+        if (this.dragSrc < target) insertIdx--
+        items.splice(insertIdx, 0, removed)
+        this.editingIdx = insertIdx
+        this._saveNow()
+        this._renderSections()
+        this._renderCanvas()
+        this.bindAll()
+        this.dragSrc = null
+      })
+    })
   },
 
   bindAll() {
-    this._bindToolbar(); this._bindTabs(); this._bindSectionList(); this._bindEditing(); this._bindTheme(); this._bindSeo(); this._bindSettings()
+    this._bindToolbar()
+    this._bindTabs()
+    this._bindSectionList()
+    this._bindEditing()
+    this._bindTheme()
+    this._bindSeo()
+    this._bindSettings()
   },
 
   _bindToolbar() {
-    document.getElementById('undoBtn')?.addEventListener('click',()=>this._undo())
-    document.getElementById('redoBtn')?.addEventListener('click',()=>this._redo())
-    document.addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey) && e.key==='z') { e.preventDefault(); if (e.shiftKey) this._redo(); else this._undo() } if ((e.ctrlKey||e.metaKey) && e.key==='y') { e.preventDefault(); this._redo() } })
-    document.getElementById('previewBtn')?.addEventListener('click',()=>{this._saveNow();window.open('#/preview/'+this.page.id,'_blank')})
-    document.getElementById('publishBtn')?.addEventListener('click',()=>this._publish())
-    document.getElementById('saveBtn')?.addEventListener('click',()=>{this._saveNow();Toast.show('Saved!','success')})
-    document.getElementById('deviceToggle')?.addEventListener('click',e=>{
-      const btn=e.target.closest('.device-btn'); if(!btn) return
-      document.querySelectorAll('.device-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active')
-      this.mobileMode=btn.dataset.device==='mobile'
-      document.getElementById('canvasFrame')?.classList.toggle('mobile',this.mobileMode)
+    document.getElementById('undoBtn')?.addEventListener('click', () => this._undo())
+    document.getElementById('redoBtn')?.addEventListener('click', () => this._redo())
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) this._redo(); else this._undo() }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); this._redo() }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this._saveNow(); Toast.show('Saved!', 'success') }
+    })
+    document.getElementById('previewBtn')?.addEventListener('click', () => { this._saveNow(); window.open('#/preview/' + this.page.id, '_blank') })
+    document.getElementById('publishBtn')?.addEventListener('click', () => this._publish())
+    document.getElementById('saveBtn')?.addEventListener('click', () => { this._saveNow(); Toast.show('Saved!', 'success') })
+    document.getElementById('deviceToggle')?.addEventListener('click', e => {
+      const btn = e.target.closest('.device-btn'); if (!btn) return
+      document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active')
+      this.mobileMode = btn.dataset.device === 'mobile'
+      document.getElementById('canvasFrame')?.classList.toggle('mobile', this.mobileMode)
     })
   },
 
   _bindTabs() {
-    document.querySelectorAll('[data-stab]').forEach(tab=>{
-      tab.addEventListener('click',()=>{
-        document.querySelectorAll('.sidebar-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active')
-        document.querySelectorAll('.sidebar-content').forEach(c=>c.classList.add('hidden'))
-        const id='sidebar'+tab.dataset.stab.charAt(0).toUpperCase()+tab.dataset.stab.slice(1)
+    document.querySelectorAll('[data-stab]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active')
+        document.querySelectorAll('.sidebar-content').forEach(c => c.classList.add('hidden'))
+        const id = 'sidebar' + tab.dataset.stab.charAt(0).toUpperCase() + tab.dataset.stab.slice(1)
         document.getElementById(id)?.classList.remove('hidden')
       })
     })
@@ -114,191 +256,293 @@ const Builder = {
 
   _bindSectionList() {
     const list = document.getElementById('sectionList')
-    list?.addEventListener('click',e=>{
-      const item=e.target.closest('.section-item'), del=e.target.closest('.del-section'), dup=e.target.closest('.dup-section')
+    list?.addEventListener('click', e => {
+      const del = e.target.closest('.del-section')
+      const dup = e.target.closest('.dup-section')
+      const upBtn = e.target.closest('.move-up-btn')
+      const downBtn = e.target.closest('.move-down-btn')
+      const item = e.target.closest('.section-item')
+
       if (del) {
-        const idx=parseInt(del.dataset.del); this._pushUndo(); this.page.sections.splice(idx,1)
-        if (this.editingIdx>=this.page.sections.length) this.editingIdx=Math.max(0,this.page.sections.length-1)
-        this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll(); Toast.show('Section deleted','info'); return
+        const idx = parseInt(del.dataset.del)
+        if (this.page.sections.length <= 1) { Toast.show('Cannot delete the last section', 'error'); return }
+        this._pushUndo(); this.page.sections.splice(idx, 1)
+        if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
+        this._saveNow(); this._render(); Toast.show('Section deleted', 'info'); return
       }
       if (dup) {
-        const idx=parseInt(dup.dataset.dup); this._pushUndo()
-        const copy=JSON.parse(JSON.stringify(this.page.sections[idx]))
-        this.page.sections.splice(idx+1,0,copy)
-        this.editingIdx=idx+1; this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll(); Toast.show('Section duplicated','info'); return
+        const idx = parseInt(dup.dataset.dup); this._pushUndo()
+        const copy = JSON.parse(JSON.stringify(this.page.sections[idx]))
+        this.page.sections.splice(idx + 1, 0, copy)
+        this.editingIdx = idx + 1; this._saveNow(); this._render(); Toast.show('Section duplicated', 'info'); return
       }
-      if (!item) return
-      this.editingIdx=parseInt(item.dataset.index); this._renderSections(); this._renderCanvas(); this.bindAll()
+      if (upBtn) {
+        const idx = parseInt(upBtn.dataset.up); if (idx <= 0) return
+        this._pushUndo()
+        const [item] = this.page.sections.splice(idx, 1)
+        this.page.sections.splice(idx - 1, 0, item)
+        this.editingIdx = idx - 1; this._saveNow(); this._render(); return
+      }
+      if (downBtn) {
+        const idx = parseInt(downBtn.dataset.down); if (idx >= this.page.sections.length - 1) return
+        this._pushUndo()
+        const [item] = this.page.sections.splice(idx, 1)
+        this.page.sections.splice(idx + 1, 0, item)
+        this.editingIdx = idx + 1; this._saveNow(); this._render(); return
+      }
+      if (item && !del && !dup && !upBtn && !downBtn) {
+        this.editingIdx = parseInt(item.dataset.index)
+        this._renderSections(); this._renderCanvas(); this.bindAll()
+      }
     })
-    document.getElementById('addSectionBtn')?.addEventListener('click',()=>this._addSection())
+    document.getElementById('addSectionBtn')?.addEventListener('click', () => this._showAddSectionPanel())
   },
 
-  _initDrag() {
-    let dragged=null
-    document.querySelectorAll('.section-item[draggable]').forEach(el=>{
-      el.addEventListener('dragstart',e=>{dragged=parseInt(el.dataset.index);el.classList.add('dragging');e.dataTransfer.effectAllowed='move'})
-      el.addEventListener('dragend',()=>el.classList.remove('dragging'))
-      el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drag-over')})
-      el.addEventListener('dragleave',()=>el.classList.remove('drag-over'))
-      el.addEventListener('drop',e=>{
-        e.preventDefault(); el.classList.remove('drag-over')
-        const target=parseInt(el.dataset.index)
-        if (dragged===null||dragged===target) return
-        this._pushUndo(); const items=this.page.sections; const [removed]=items.splice(dragged,1); items.splice(target,0,removed)
-        this.editingIdx=target; this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll(); dragged=null
+  _showAddSectionPanel() {
+    const types = [
+      { type: 'hero', icon: '🏠', name: 'Hero', desc: 'Big header with image' },
+      { type: 'about', icon: '👤', name: 'About', desc: 'About text block' },
+      { type: 'services', icon: '💼', name: 'Services', desc: 'Service cards' },
+      { type: 'features', icon: '✨', name: 'Features', desc: 'Feature highlights' },
+      { type: 'pricing', icon: '💰', name: 'Pricing', desc: 'Price plans' },
+      { type: 'testimonials', icon: '💬', name: 'Testimonials', desc: 'Client reviews' },
+      { type: 'gallery', icon: '🖼️', name: 'Gallery', desc: 'Image grid' },
+      { type: 'faq', icon: '❓', name: 'FAQ', desc: 'Questions & answers' },
+      { type: 'team', icon: '👥', name: 'Team', desc: 'Team members' },
+      { type: 'stats', icon: '📊', name: 'Stats', desc: 'Statistics numbers' },
+      { type: 'cta', icon: '🎯', name: 'Call to Action', desc: 'Action button section' },
+      { type: 'contact', icon: '📧', name: 'Contact', desc: 'Contact form' },
+      { type: 'footer', icon: '📋', name: 'Footer', desc: 'Page footer' },
+    ]
+
+    const existing = document.getElementById('addSectionPanel')
+    if (existing) { existing.remove(); return }
+
+    const panel = document.createElement('div')
+    panel.id = 'addSectionPanel'
+    panel.className = 'add-section-panel'
+    panel.innerHTML = `
+      <div class="asp-header">
+        <h3>Add Section</h3>
+        <button class="asp-close" id="closeAddPanel">✕</button>
+      </div>
+      <div class="asp-search">
+        <input type="text" placeholder="Search sections..." id="sectionSearchInput" />
+      </div>
+      <div class="asp-grid" id="aspGrid">
+        ${types.map(t => `
+          <div class="asp-card" data-type="${t.type}">
+            <span class="asp-icon">${t.icon}</span>
+            <h4>${t.name}</h4>
+            <p>${t.desc}</p>
+          </div>
+        `).join('')}
+      </div>
+    `
+    document.body.appendChild(panel)
+
+    document.getElementById('closeAddPanel')?.addEventListener('click', () => panel.remove())
+    panel.addEventListener('click', e => { if (e.target === panel) panel.remove() })
+
+    document.getElementById('sectionSearchInput')?.addEventListener('input', e => {
+      const q = e.target.value.toLowerCase()
+      panel.querySelectorAll('.asp-card').forEach(card => {
+        card.style.display = card.dataset.type.includes(q) || card.querySelector('h4').textContent.toLowerCase().includes(q) ? '' : 'none'
+      })
+    })
+
+    panel.querySelectorAll('.asp-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const type = card.dataset.type
+        const defs = {
+          hero: { heading: 'Welcome to Our Site', description: 'We build amazing things', buttonText: 'Get Started', image: '' },
+          about: { heading: 'About Us', content: 'We are a creative team passionate about building great products.' },
+          services: { heading: 'Our Services', items: [{ title: 'Web Design', desc: 'Beautiful, responsive websites' }, { title: 'Development', desc: 'Fast, reliable code' }, { title: 'SEO', desc: 'Rank higher on Google' }] },
+          features: { heading: 'Why Choose Us', items: [{ title: 'Fast', desc: 'Lightning quick performance' }, { title: 'Secure', desc: 'Enterprise-grade security' }, { title: 'Easy', desc: 'Simple to use' }] },
+          pricing: { heading: 'Pricing Plans', plans: [{ name: 'Starter', price: '$9/mo', features: ['5 Pages', 'Basic Support', 'Analytics'] }, { name: 'Pro', price: '$29/mo', features: ['Unlimited Pages', 'Priority Support', 'Advanced Analytics', 'Custom Domain'] }] },
+          testimonials: { heading: 'What Our Clients Say', items: [{ name: 'Sarah Johnson', text: 'Amazing service! Highly recommended.', role: 'CEO, TechCo' }, { name: 'Mike Chen', text: 'Best experience working with this team.', role: 'Founder, StartupX' }] },
+          gallery: { heading: 'Our Work', images: [] },
+          faq: { heading: 'Frequently Asked Questions', items: [{ q: 'How do I get started?', a: 'Simply sign up and choose a template!' }, { q: 'Can I cancel anytime?', a: 'Yes, no long-term contracts.' }] },
+          team: { heading: 'Meet Our Team', items: [{ name: 'John Doe', role: 'CEO & Founder' }, { name: 'Jane Smith', role: 'Lead Designer' }] },
+          stats: { heading: 'By the Numbers', items: [{ number: '10K+', label: 'Happy Clients' }, { number: '500+', label: 'Projects Done' }, { number: '99%', label: 'Satisfaction' }] },
+          cta: { heading: 'Ready to Get Started?', subheading: 'Join thousands of satisfied customers today.', buttonText: 'Start Free Trial' },
+          contact: { heading: 'Get In Touch', email: '', phone: '', address: '' },
+          footer: { copyright: '© 2026 Your Company. All rights reserved.', text: 'Built with SiteFlow' },
+        }
+        this._pushUndo()
+        this.page.sections.push({ type, data: defs[type] || {} })
+        this.editingIdx = this.page.sections.length - 1
+        this._saveNow(); this._render(); panel.remove()
+        Toast.show(`${type.charAt(0).toUpperCase() + type.slice(1)} section added`, 'success')
       })
     })
   },
 
   _bindEditing() {
-    document.querySelectorAll('[contenteditable]').forEach(el=>{
-      el.addEventListener('blur',()=>{
-        const s=this.page.sections[this.editingIdx]; if(!s) return
-        const f=el.dataset.field; if(!f) return
-        const parts=f.split('.')
-        if (parts.length===3) {
-          const [arr,idx,prop]=parts
-          if(s.data[arr]&&s.data[arr][parseInt(idx)]) s.data[arr][parseInt(idx)][prop]=el.innerText
-        } else if (parts.length===2) {
-          const [arr,idx]=parts
-          if(s.data[arr]) s.data[arr][parseInt(idx)]=el.innerText
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+      el.addEventListener('blur', () => {
+        const s = this.page.sections[this.editingIdx]; if (!s) return
+        const f = el.dataset.field; if (!f) return
+        const parts = f.split('.')
+        if (parts.length === 3) {
+          const [arr, idx, prop] = parts
+          if (s.data[arr] && s.data[arr][parseInt(idx)]) s.data[arr][parseInt(idx)][prop] = el.innerText
+        } else if (parts.length === 2) {
+          const [arr, idx] = parts
+          if (s.data[arr]) s.data[arr][parseInt(idx)] = el.innerText
         } else {
-          s.data[f]=el.innerText
+          s.data[f] = el.innerText
         }
-        this._saveNow()
+        this._saveLater()
       })
-      el.addEventListener('keydown',e=>{
-        if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.execCommand('insertLineBreak')}
+      el.addEventListener('focus', () => { el.classList.add('editing') })
+      el.addEventListener('blur', () => { el.classList.remove('editing') })
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.execCommand('insertLineBreak') }
       })
     })
-    document.getElementById('heroImagePlaceholder')?.addEventListener('click',()=>document.getElementById('heroImageInput')?.click())
-    document.getElementById('heroImageInput')?.addEventListener('change',e=>{
-      const file=e.target.files[0]; if(!file) return
-      const reader=new FileReader()
-      reader.onload=ev=>{const s=this.page.sections.find(x=>x.type==='hero'); if(s){s.data.image=ev.target.result;this._saveNow();this._renderCanvas();this.bindAll()}}
+
+    document.querySelectorAll('.section-editor-input').forEach(el => {
+      el.addEventListener('input', () => {
+        const s = this.page.sections[this.editingIdx]; if (!s) return
+        const f = el.dataset.field; if (!f) return
+        const parts = f.split('.')
+        if (parts.length === 3) {
+          const [arr, idx, prop] = parts
+          if (s.data[arr] && s.data[arr][parseInt(idx)]) s.data[arr][parseInt(idx)][prop] = el.value
+        } else if (parts.length === 2) {
+          const [arr, idx] = parts
+          if (s.data[arr]) s.data[arr][parseInt(idx)] = el.value
+        } else {
+          s.data[f] = el.value
+        }
+        this._saveLater()
+      })
+    })
+
+    document.getElementById('heroImagePlaceholder')?.addEventListener('click', () => document.getElementById('heroImageInput')?.click())
+    document.getElementById('heroImageInput')?.addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return
+      const reader = new FileReader()
+      reader.onload = ev => { const s = this.page.sections[this.editingIdx]; if (s) { s.data.image = ev.target.result; this._saveNow(); this._render() } }
       reader.readAsDataURL(file)
     })
-    document.querySelector('[data-hero-remove]')?.addEventListener('click',()=>{
-      const s=this.page.sections.find(x=>x.type==='hero'); if(s){s.data.image='';this._saveNow();this._renderCanvas();this.bindAll()}
+    document.querySelector('[data-hero-remove]')?.addEventListener('click', () => {
+      const s = this.page.sections[this.editingIdx]; if (s) { s.data.image = ''; this._saveNow(); this._render() }
     })
-    document.getElementById('galleryGrid')?.addEventListener('click',e=>{
+    document.getElementById('galleryGrid')?.addEventListener('click', e => {
       if (e.target.closest('#addGalleryBtn')) document.getElementById('galleryImageInput')?.click()
-      const rm=e.target.closest('.remove-img')
-      if (rm&&rm.dataset.index!==undefined){const s=this.page.sections.find(x=>x.type==='gallery');if(s){s.data.images.splice(parseInt(rm.dataset.index),1);this._saveNow();this._renderCanvas();this.bindAll()}}
+      const rm = e.target.closest('.remove-img')
+      if (rm && rm.dataset.index !== undefined) { const s = this.page.sections[this.editingIdx]; if (s) { s.data.images.splice(parseInt(rm.dataset.index), 1); this._saveNow(); this._render() } }
     })
-    document.getElementById('galleryImageInput')?.addEventListener('change',e=>{
-      const files=Array.from(e.target.files); if(!files.length) return
-      const s=this.page.sections.find(x=>x.type==='gallery'); if(!s) return
-      let loaded=0
-      files.forEach(file=>{const r=new FileReader(); r.onload=ev=>{s.data.images.push(ev.target.result);loaded++;if(loaded===files.length){this._saveNow();this._renderCanvas();this.bindAll()}}; r.readAsDataURL(file)})
+    document.getElementById('galleryImageInput')?.addEventListener('change', e => {
+      const files = Array.from(e.target.files); if (!files.length) return
+      const s = this.page.sections[this.editingIdx]; if (!s) return
+      let loaded = 0
+      files.forEach(file => { const r = new FileReader(); r.onload = ev => { s.data.images.push(ev.target.result); loaded++; if (loaded === files.length) { this._saveNow(); this._render() } }; r.readAsDataURL(file) })
     })
   },
 
   _bindTheme() {
-    document.querySelectorAll('.color-swatch').forEach(el=>{
-      el.addEventListener('click',()=>{
-        document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active')); el.classList.add('active')
-        this.page.theme.color=el.dataset.color; document.getElementById('customColor').value=el.dataset.color; document.getElementById('colorHexInput').value=el.dataset.color
-        this._saveNow(); this._renderCanvas(); this.bindAll()
+    document.querySelectorAll('.color-swatch').forEach(el => {
+      el.addEventListener('click', () => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active')); el.classList.add('active')
+        this.page.theme.color = el.dataset.color; document.getElementById('customColor').value = el.dataset.color; document.getElementById('colorHexInput').value = el.dataset.color
+        this._saveLater(); this._renderCanvas()
       })
     })
-    document.getElementById('customColor')?.addEventListener('input',e=>{
-      this.page.theme.color=e.target.value; document.getElementById('colorHexInput').value=e.target.value
-      document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active')); this._saveNow(); this._renderCanvas(); this.bindAll()
+    document.getElementById('customColor')?.addEventListener('input', e => {
+      this.page.theme.color = e.target.value; document.getElementById('colorHexInput').value = e.target.value
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active')); this._saveLater(); this._renderCanvas()
     })
-    document.getElementById('colorHexInput')?.addEventListener('input',e=>{
-      if(/^#[0-9a-f]{6}$/i.test(e.target.value)){this.page.theme.color=e.target.value;document.getElementById('customColor').value=e.target.value;document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));this._saveNow();this._renderCanvas();this.bindAll()}
+    document.getElementById('colorHexInput')?.addEventListener('input', e => {
+      if (/^#[0-9a-f]{6}$/i.test(e.target.value)) { this.page.theme.color = e.target.value; document.getElementById('customColor').value = e.target.value; document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active')); this._saveLater(); this._renderCanvas() }
     })
-    document.getElementById('fontSelect')?.addEventListener('change',e=>{this.page.theme.font=e.target.value;this._saveNow();this._renderCanvas();this.bindAll()})
+    document.getElementById('fontSelect')?.addEventListener('change', e => { this.page.theme.font = e.target.value; this._saveLater(); this._renderCanvas() })
+    document.getElementById('bgColorInput')?.addEventListener('input', e => { this.page.theme.bgColor = e.target.value; this._saveLater(); this._renderCanvas() })
   },
 
   _bindSeo() {
-    const st=document.getElementById('seoTitle'), sd=document.getElementById('seoDesc')
-    st?.addEventListener('input',()=>{if(!this.page.seo)this.page.seo={title:'',description:''};this.page.seo.title=st.value;const p=document.getElementById('seoTitlePreview');if(p)p.textContent=st.value||'My Site';this._saveNow()})
-    sd?.addEventListener('input',()=>{if(!this.page.seo)this.page.seo={title:'',description:''};this.page.seo.description=sd.value;const c=document.getElementById('seoDescCounter');if(c)c.textContent=sd.value.length+'/160';this._saveNow()})
+    const st = document.getElementById('seoTitle'), sd = document.getElementById('seoDesc')
+    st?.addEventListener('input', () => { if (!this.page.seo) this.page.seo = {}; this.page.seo.title = st.value; const p = document.getElementById('seoTitlePreview'); if (p) p.textContent = st.value || 'My Site'; this._saveLater() })
+    sd?.addEventListener('input', () => { if (!this.page.seo) this.page.seo = {}; this.page.seo.description = sd.value; const c = document.getElementById('seoDescCounter'); if (c) c.textContent = sd.value.length + '/160'; this._saveLater() })
   },
 
   _bindSettings() {
-    document.getElementById('pageTitleInput')?.addEventListener('input',e=>{this.page.title=e.target.value;this._saveNow();const tb=document.querySelector('.builder-toolbar .truncate');if(tb)tb.textContent=e.target.value})
-    document.getElementById('pageSlugInput')?.addEventListener('input',e=>{
-      this.page.slug=e.target.value.replace(/[^a-z0-9-]/g,'').toLowerCase(); const p=document.getElementById('slugPreview')
-      if(p)p.textContent=this.page.slug+'.'+MAIN_DOMAIN; this._saveNow()
+    document.getElementById('pageTitleInput')?.addEventListener('input', e => { this.page.title = e.target.value; this._saveLater(); const tb = document.querySelector('.builder-toolbar .truncate'); if (tb) tb.textContent = e.target.value })
+    document.getElementById('pageSlugInput')?.addEventListener('input', e => {
+      this.page.slug = e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase(); const p = document.getElementById('slugPreview')
+      if (p) p.textContent = this.page.slug + '.' + MAIN_DOMAIN; this._saveLater()
     })
-    document.getElementById('customDomainInput')?.addEventListener('input',e=>{this.page.customDomain=e.target.value;this._saveNow()})
-    document.getElementById('deleteSiteBtn')?.addEventListener('click',()=>this._deleteSite())
+    document.getElementById('customDomainInput')?.addEventListener('input', e => { this.page.customDomain = e.target.value; this._saveLater() })
+    document.getElementById('deleteSiteBtn')?.addEventListener('click', () => this._deleteSite())
   },
 
   _updateSeoPreview() {
-    const p=document.getElementById('seoTitlePreview'), c=document.getElementById('seoDescCounter')
-    if (p&&this.page.seo) p.textContent=this.page.seo.title||'My Site'
-    if (c&&this.page.seo) c.textContent=(this.page.seo.description||'').length+'/160'
+    const p = document.getElementById('seoTitlePreview'), c = document.getElementById('seoDescCounter')
+    if (p && this.page.seo) p.textContent = this.page.seo.title || this.page.title || 'My Site'
+    if (c && this.page.seo) c.textContent = (this.page.seo.description || '').length + '/160'
+  },
+
+  _saveLater() {
+    clearTimeout(this.autoSaveTimer)
+    this.autoSaveTimer = setTimeout(() => this._saveNow(), 800)
   },
 
   async _saveNow() {
     try {
-      this.page = await API.updateSite(this.page.id, { title:this.page.title, slug:this.page.slug, sections:this.page.sections, seo:this.page.seo, theme:this.page.theme, customDomain:this.page.customDomain })
-    } catch(e) { console.error('Save failed:',e) }
+      this.page = await API.updateSite(this.page.id, {
+        title: this.page.title, slug: this.page.slug, sections: this.page.sections,
+        seo: this.page.seo, theme: this.page.theme, customDomain: this.page.customDomain
+      })
+    } catch (e) { console.error('Save failed:', e) }
   },
 
   async _publish() {
     try {
       await this._saveNow()
       this.page = await API.publishSite(this.page.id)
-      Toast.show('Published successfully!','success')
-      const b=document.querySelector('.badge-status'); if(b){b.textContent='Published';b.style.background='#d1fae5';b.style.color='#065f46'}
-      const btn=document.getElementById('publishBtn'); if(btn)btn.textContent='Update'
-    } catch(e) { Toast.show(e.message,'error') }
+      Toast.show('Published! Visit ' + subdomainUrl(this.page.slug), 'success')
+      const b = document.querySelector('.badge-status'); if (b) { b.textContent = 'Published'; b.style.background = '#d1fae5'; b.style.color = '#065f46' }
+      const btn = document.getElementById('publishBtn'); if (btn) btn.textContent = 'Update'
+    } catch (e) { Toast.show(e.message, 'error') }
   },
 
   async createNew() {
-    if(!Auth.requireAuth()) return
+    if (!Auth.requireAuth()) return
     const existing = document.getElementById('templateModal')
     if (existing) existing.closest('.modal-overlay')?.remove()
-    const div = document.createElement('div'); div.id='templateModalWrap'
+    const div = document.createElement('div'); div.id = 'templateModalWrap'
     div.innerHTML = T.templatePicker()
     document.body.appendChild(div)
 
-    // Filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
+    document.querySelectorAll('.template-filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'))
+        document.querySelectorAll('.template-filter-btn').forEach(b => b.classList.remove('active'))
         btn.classList.add('active')
         const filter = btn.dataset.filter
         document.querySelectorAll('.template-card').forEach(card => {
-          card.style.display = (filter==='all' || card.dataset.category===filter) ? '' : 'none'
+          card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none'
         })
       })
     })
 
-    // Template selection
     document.querySelectorAll('.template-card').forEach(card => {
       card.addEventListener('click', async () => {
-        const templateId = card.dataset.template
         try {
           div.remove()
-          const site = await API.createSite({title:'My New Site', template_type: templateId})
-          Toast.show('Site created!','success'); Router.navigate('builder/'+site.id)
-        } catch(e) { Toast.show(e.message,'error') }
+          const site = await API.createSite({ title: card.querySelector('h3')?.textContent || 'My New Site', template_type: card.dataset.template })
+          Toast.show('Site created!', 'success'); Router.navigate('builder/' + site.id)
+        } catch (e) { Toast.show(e.message, 'error') }
       })
     })
 
-    // Close on overlay click
-    div.querySelector('.modal-overlay')?.addEventListener('click', e => {
-      if (e.target.classList.contains('modal-overlay')) div.remove()
-    })
-  },
-
-  _addSection() {
-    const types=['hero','about','services','testimonials','pricing','gallery','faq','team','contact','footer']
-    const next=types[(types.indexOf(this.page.sections[this.editingIdx]?.type)+1)%types.length]
-    const defs={hero:{heading:'New Section',description:'Add your content here...',image:''},about:{heading:'About',content:'Write about yourself...'},services:{heading:'Our Services',items:[{title:'Service 1',desc:'Description'},{title:'Service 2',desc:'Description'}]},testimonials:{heading:'Testimonials',items:[{name:'Client',text:'Great work!',role:'CEO'}]},pricing:{heading:'Pricing',plans:[{name:'Basic',price:'$9/mo',features:['Feature 1','Feature 2']}]},gallery:{heading:'Gallery',images:[]},faq:{heading:'FAQ',items:[{q:'Question here?',a:'Answer here'}]},team:{heading:'Our Team',items:[{name:'Team Member',role:'Role'}]},contact:{heading:'Contact',email:'',phone:'',address:''},footer:{copyright:'© 2026 All rights reserved.',text:'Powered by Site Flow'}}
-    this._pushUndo(); this.page.sections.push({type:next,data:defs[next]}); this.editingIdx=this.page.sections.length-1
-    this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll()
+    div.querySelector('.modal-overlay')?.addEventListener('click', e => { if (e.target.classList.contains('modal-overlay')) div.remove() })
   },
 
   async _deleteSite() {
-    if (!confirm('Delete this site forever?')) return
-    try { await API.deleteSite(this.page.id); Toast.show('Deleted','info'); Router.navigate('dashboard') }
-    catch(e) { Toast.show(e.message,'error') }
+    if (!confirm('Delete this site forever? This cannot be undone.')) return
+    try { await API.deleteSite(this.page.id); Toast.show('Site deleted', 'info'); Router.navigate('dashboard') }
+    catch (e) { Toast.show(e.message, 'error') }
   }
 }

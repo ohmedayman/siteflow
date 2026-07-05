@@ -191,10 +191,12 @@ const T = {
   dashboard() { return `
 <div class="dashboard">
   <div class="dashboard-header">
-    <div><h1>My Sites</h1><p>Manage your websites</p></div>
+    <div>
+      <h1 style="font-size:1.8rem;margin-bottom:4px">Welcome back, <span class="js-user-name"></span> 👋</h1>
+      <p style="color:var(--gray-500)">Here's what's happening with your websites</p>
+    </div>
     <div style="display:flex;gap:8px;align-items:center">
-      <span class="js-user-name" style="font-size:.85rem;color:var(--gray-500)"></span>
-      <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">Upgrade</a>
+      <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">⚡ Upgrade</a>
       <button class="btn btn-primary" id="createSiteBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Site</button>
     </div>
   </div>
@@ -263,50 +265,134 @@ const T = {
     const t=page.theme||{color:'#6366f1',font:'Inter'}
     return `<div class="builder-toolbar">
       <div class="left">
-        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">← Back</button>
-        <span class="truncate" style="font-weight:600;margin-left:4px;max-width:160px">${page.title}</span>
-        <span class="badge-status" style="font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600;${page.published?'background:#d1fae5;color:#065f46':'background:#fef3c7;color:#92400e'}">${page.published?'Published':'Draft'}</span>
+        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="truncate" style="font-weight:600;max-width:180px">${page.title}</span>
+        <span class="badge-status" style="font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600;${page.published?'background:#dcfce7;color:#16a34a':'background:#fef3c7;color:#d97706'}">${page.published?'Published':'Draft'}</span>
       </div>
       <div class="right">
-        <button class="btn btn-ghost btn-sm" id="undoBtn" title="Undo (Ctrl+Z)">↩</button>
-        <button class="btn btn-ghost btn-sm" id="redoBtn" title="Redo (Ctrl+Y)">↪</button>
+        <button class="btn btn-ghost btn-sm" id="undoBtn" title="Undo (Ctrl+Z)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="redoBtn" title="Redo (Ctrl+Y)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        </button>
         <div class="device-toggle" id="deviceToggle">
-          <button class="device-btn active" data-device="desktop" title="Desktop">🖥</button>
-          <button class="device-btn" data-device="mobile" title="Mobile">📱</button>
+          <button class="device-btn active" data-device="desktop" title="Desktop">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </button>
+          <button class="device-btn" data-device="mobile" title="Mobile">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </button>
         </div>
-        <button class="btn btn-outline btn-sm" id="previewBtn">Preview</button>
-        <button class="btn btn-primary btn-sm" id="publishBtn">${page.published?'Update':'Publish'}</button>
+        <button class="btn btn-outline btn-sm" id="previewBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Preview
+        </button>
+        <button class="btn btn-ghost btn-sm" id="saveBtn" style="color:var(--gray-600)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save
+        </button>
+        <button class="btn btn-primary btn-sm" id="publishBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          ${page.published?'Update':'Publish'}
+        </button>
       </div>
     </div>
     <div class="builder-layout">
-      <div class="builder-sidebar">
+      <div class="builder-sidebar" id="builderSidebar">
         <div class="sidebar-tabs">
-          <button class="sidebar-tab active" data-stab="sections">Sections</button>
-          <button class="sidebar-tab" data-stab="theme">Theme</button>
-          <button class="sidebar-tab" data-stab="seo">SEO</button>
-          <button class="sidebar-tab" data-stab="settings">Settings</button>
+          <button class="sidebar-tab active" data-stab="sections">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Sections
+          </button>
+          <button class="sidebar-tab" data-stab="theme">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            Theme
+          </button>
+          <button class="sidebar-tab" data-stab="seo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            SEO
+          </button>
+          <button class="sidebar-tab" data-stab="settings">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Settings
+          </button>
         </div>
         <div class="sidebar-content" id="sidebarSections">
           <div class="section-list" id="sectionList"></div>
-          <button class="btn btn-secondary btn-sm w-full mt-8" id="addSectionBtn">+ Add Section</button>
-          <div style="margin-top:12px;padding:12px;background:var(--gray-50);border-radius:8px;font-size:.78rem;color:var(--gray-500);text-align:center">Drag to reorder. Click to edit.</div>
+          <button class="btn btn-primary btn-sm w-full" id="addSectionBtn" style="margin-top:12px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Section
+          </button>
+          <div class="sidebar-hint">Click to edit • Drag to reorder</div>
         </div>
         <div class="sidebar-content hidden" id="sidebarTheme">
-          <div class="theme-option"><label>Primary Color</label><div class="color-picker" id="colorPresets">${['#6366f1','#3b82f6','#06b6d4','#059669','#d97706','#dc2626','#8b5cf6','#ec4899','#f97316','#14b8a6'].map(c=>`<div class="color-swatch ${t.color===c?'active':''}" style="background:${c}" data-color="${c}"></div>`).join('')}</div><div class="color-input-wrap"><input type="color" id="customColor" value="${t.color}"><input class="input" id="colorHexInput" value="${t.color}"></div></div>
-          <div class="theme-option"><label>Font</label><select class="font-select" id="fontSelect">${['Inter','Arial','Georgia','Helvetica','Merriweather','Verdana','Roboto','Open Sans','Cairo','Tajawal'].map(f=>`<option value="${f}" ${t.font===f?'selected':''}>${f}</option>`).join('')}</select></div>
+          <div class="theme-option">
+            <label>Primary Color</label>
+            <div class="color-picker" id="colorPresets">
+              ${['#6366f1','#3b82f6','#06b6d4','#059669','#d97706','#dc2626','#8b5cf6','#ec4899','#f97316','#14b8a6'].map(c=>`<div class="color-swatch ${t.color===c?'active':''}" style="background:${c}" data-color="${c}"></div>`).join('')}
+            </div>
+            <div class="color-input-wrap">
+              <input type="color" id="customColor" value="${t.color}">
+              <input class="input" id="colorHexInput" value="${t.color}">
+            </div>
+          </div>
+          <div class="theme-option">
+            <label>Font</label>
+            <select class="font-select" id="fontSelect">
+              ${['Inter','Arial','Georgia','Helvetica','Merriweather','Verdana','Roboto','Open Sans','Cairo','Tajawal'].map(f=>`<option value="${f}" ${t.font===f?'selected':''}>${f}</option>`).join('')}
+            </select>
+          </div>
+          <div class="theme-option">
+            <label>Background Color</label>
+            <div class="color-input-wrap">
+              <input type="color" id="bgColorInput" value="${t.bgColor||'#ffffff'}">
+            </div>
+          </div>
         </div>
         <div class="sidebar-content hidden" id="sidebarSeo">
-          <div class="seo-field"><label>SEO Title</label><input class="input" id="seoTitle" value="${page.seo?.title||''}" maxlength="60"><div class="seo-preview"><div class="url">${page.slug||'my-site'}.${MAIN_DOMAIN}</div><div class="title" id="seoTitlePreview">${page.seo?.title||'My Site'}</div></div></div>
-          <div class="seo-field"><label>Meta Description</label><textarea class="input textarea" id="seoDesc" maxlength="160">${page.seo?.description||''}</textarea><div class="seo-preview" id="seoDescCounter">0 / 160</div></div>
+          <div class="seo-field">
+            <label>SEO Title</label>
+            <input class="input" id="seoTitle" value="${page.seo?.title||''}" maxlength="60" placeholder="Page title for search engines">
+            <div class="seo-preview">
+              <div class="url">${page.slug||'my-site'}.${MAIN_DOMAIN}</div>
+              <div class="title" id="seoTitlePreview">${page.seo?.title||page.title||'My Site'}</div>
+            </div>
+          </div>
+          <div class="seo-field">
+            <label>Meta Description</label>
+            <textarea class="input textarea" id="seoDesc" maxlength="160" placeholder="Brief description for search results">${page.seo?.description||''}</textarea>
+            <div class="seo-counter" id="seoDescCounter">${(page.seo?.description||'').length} / 160</div>
+          </div>
         </div>
         <div class="sidebar-content hidden" id="sidebarSettings">
-          <div class="settings-group" style="margin-bottom:16px"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:6px">Site Title</label><input class="input" id="pageTitleInput" value="${page.title}"></div>
-          <div class="settings-group" style="margin-bottom:16px"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:6px">Slug</label><input class="input" id="pageSlugInput" value="${page.slug||''}"><div class="hint" style="font-size:.78rem;color:var(--gray-500);margin-top:4px">URL: <span id="slugPreview" style="color:var(--primary)">${page.slug||'my-site'}.${MAIN_DOMAIN}</span></div></div>
-          <div class="settings-group" style="margin-bottom:16px"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:6px">Custom Domain</label><input class="input" id="customDomainInput" value="${page.customDomain||page.custom_domain||''}" placeholder="yourdomain.com"><div class="hint" style="font-size:.78rem;color:var(--gray-500);margin-top:4px">Connect your own domain (Pro+)</div></div>
-          <div style="padding-top:16px;border-top:1px solid var(--gray-200)"><button class="btn btn-danger btn-sm w-full" id="deleteSiteBtn">Delete This Site</button></div>
+          <div class="settings-group">
+            <label>Site Title</label>
+            <input class="input" id="pageTitleInput" value="${page.title}">
+          </div>
+          <div class="settings-group">
+            <label>Slug</label>
+            <input class="input" id="pageSlugInput" value="${page.slug||''}">
+            <div class="hint">URL: <span id="slugPreview" style="color:var(--primary)">${page.slug||'my-site'}.${MAIN_DOMAIN}</span></div>
+          </div>
+          <div class="settings-group">
+            <label>Custom Domain</label>
+            <input class="input" id="customDomainInput" value="${page.customDomain||page.custom_domain||''}" placeholder="yourdomain.com">
+            <div class="hint">Connect your own domain (Pro+)</div>
+          </div>
+          <div class="settings-danger">
+            <button class="btn btn-danger btn-sm w-full" id="deleteSiteBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+              Delete This Site
+            </button>
+          </div>
         </div>
       </div>
-      <div class="builder-canvas" id="builderCanvas"><div class="canvas-frame" id="canvasFrame"></div></div>
+      <div class="builder-canvas" id="builderCanvas">
+        <div class="canvas-frame" id="canvasFrame"></div>
+      </div>
     </div>`
   },
 

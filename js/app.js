@@ -202,31 +202,97 @@ const Dash = {
       const container = document.getElementById('sitesContainer')
       const published = sites.filter(s=>s.published).length
       const totalViews = sites.reduce((s,p)=>s+(p.views||0),0)
-      statsEl.innerHTML = `<div class="stats-row"><div class="stat-card card"><div class="num">${sites.length}</div><div class="label">Total Sites</div></div><div class="stat-card card"><div class="num">${published}</div><div class="label">Published</div></div><div class="stat-card card"><div class="num">${totalViews}</div><div class="label">Views</div></div><div class="stat-card card"><div class="num">${sites.filter(s=>!s.published).length}</div><div class="label">Drafts</div></div></div>`
+      const drafts = sites.filter(s=>!s.published).length
+
+      statsEl.innerHTML = `
+        <div class="stats-row">
+          <div class="stat-card card"><div class="num">${sites.length}</div><div class="label">Total Sites</div></div>
+          <div class="stat-card card"><div class="num">${published}</div><div class="label">Published</div></div>
+          <div class="stat-card card"><div class="num">${totalViews}</div><div class="label">Total Views</div></div>
+          <div class="stat-card card"><div class="num">${drafts}</div><div class="label">Drafts</div></div>
+        </div>`
 
       if (sites.length === 0) {
-        container.innerHTML = `<div class="empty-state"><div class="icon-wrap">🌐</div><h2>No sites yet</h2><p>Create your first website and publish it to the world.</p><button class="btn btn-primary btn-lg" id="emptyCreateBtn">Create Your First Site</button></div>`
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🌐</div>
+            <h2>No sites yet</h2>
+            <p>Create your first website and publish it to the world.</p>
+            <button class="btn btn-primary btn-lg" id="emptyCreateBtn">Create Your First Site</button>
+          </div>
+          <div class="quick-start">
+            <h3>Quick Start Templates</h3>
+            <div class="quick-templates">
+              ${PRESETS.filter(t=>t.id!=='blank').slice(0,4).map(t=>`
+                <div class="quick-template-card" data-quick-template="${t.id}">
+                  <div class="qt-icon">${t.icon}</div>
+                  <div class="qt-info"><h4>${t.name}</h4><p>${t.desc}</p></div>
+                  <span class="qt-arrow">→</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>`
         document.getElementById('emptyCreateBtn')?.addEventListener('click',()=>Builder.createNew())
+        document.querySelectorAll('[data-quick-template]').forEach(card=>{
+          card.addEventListener('click',async()=>{
+            try{
+              const site = await API.createSite({title:card.querySelector('h4').textContent, template_type:card.dataset.quickTemplate})
+              Toast.show('Site created!','success'); Router.navigate('builder/'+site.id)
+            }catch(e){Toast.show(e.message,'error')}
+          })
+        })
         return
       }
-      container.innerHTML = `<div class="sites-grid">${sites.map(p=>{
-        const tc = p.theme?.color || '#6366f1'
-        const siteUrl = subdomainUrl(p.slug)
-        return `<div class="site-card card card-hover">
-          <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}88,${tc}44)"><span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span><span class="view-badge">👁 ${p.views||0}</span></div>
-          <h3>${p.title}</h3>
-          <span class="site-url">${siteUrl}</span>
-          <div class="site-meta"><span>${p.published?'✅ Published':'📝 Draft'}</span><span>${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString()}</span></div>
-          <div class="site-card-actions">
-            <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">Edit</a>
-            ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">View</a>`:''}
-            <a href="#/submissions/${p.id}" class="btn btn-outline btn-sm">Messages</a>
-            <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')">Delete</button>
+
+      container.innerHTML = `
+        <div class="sites-header">
+          <h2>Your Sites</h2>
+          <div class="sites-filter">
+            <button class="filter-btn active" data-sfilter="all">All (${sites.length})</button>
+            <button class="filter-btn" data-sfilter="published">Published (${published})</button>
+            <button class="filter-btn" data-sfilter="draft">Drafts (${drafts})</button>
           </div>
-        </div>`
-      }).join('')}</div>`
+        </div>
+        <div class="sites-grid">${sites.map(p=>{
+          const tc = p.theme?.color || '#6366f1'
+          const siteUrl = subdomainUrl(p.slug)
+          return `<div class="site-card card card-hover" data-site-status="${p.published?'published':'draft'}">
+            <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}88,${tc}44)">
+              <span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span>
+              <span class="view-badge">👁 ${p.views||0}</span>
+            </div>
+            <div class="site-card-body">
+              <h3>${p.title}</h3>
+              <span class="site-url">${siteUrl}</span>
+              <div class="site-meta">
+                <span class="status-badge ${p.published?'status-published':'status-draft'}">${p.published?'Published':'Draft'}</span>
+                <span>${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+            <div class="site-card-actions">
+              <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">✏️ Edit</a>
+              ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">🔗 View</a>`:''}
+              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm">💬</a>
+              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626">🗑</button>
+            </div>
+          </div>`
+        }).join('')}</div>`
+
       document.getElementById('createSiteBtn')?.addEventListener('click',()=>Builder.createNew())
       document.getElementById('upgradeBtn')?.addEventListener('click',()=>Router.navigate('plans'))
+
+      // Site filter
+      document.querySelectorAll('[data-sfilter]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('[data-sfilter]').forEach(b=>b.classList.remove('active'))
+          btn.classList.add('active')
+          const f = btn.dataset.sfilter
+          document.querySelectorAll('.site-card').forEach(card=>{
+            if(f==='all') card.style.display=''
+            else card.style.display=card.dataset.siteStatus===f?'':'none'
+          })
+        })
+      })
     } catch(e) { Toast.show(e.message,'error') }
   },
 
