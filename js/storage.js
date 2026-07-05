@@ -4,7 +4,8 @@
  */
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 const API_BASE = IS_LOCAL ? 'http://localhost:5000/api' : '/api'
-const BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : ''
+const PROD_API = 'https://siteflow-api.onrender.com/api'
+const BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://siteflow-api.onrender.com'
 const MAIN_DOMAIN = 'siteflow.vexonet.online'
 function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${MAIN_DOMAIN}` }
 function getDaysLeft() { return 999 }
@@ -79,18 +80,23 @@ const API = {
   // Try backends in order: Flask → Supabase → LocalStorage
   async _init() {
     if (this.mode) return this.mode
-    // In production, skip backend attempts — use LocalStorage directly
-    if (!IS_LOCAL) { this.mode = 'local'; return 'local' }
-    // Try Flask backend
+    // Try Flask backend (production: use Render API; local: localhost:5000)
     try {
-      const r = await fetch(API_BASE + '/health', { signal: AbortSignal.timeout(2000) })
+      const r = await fetch(PROD_API + '/health', { signal: AbortSignal.timeout(3000) })
       if (r.ok) { this.mode = 'flask'; return 'flask' }
     } catch {}
-    // Try Supabase (only on localhost)
-    try {
-      await SB.init()
-      if (SB.isReady()) { this.mode = 'supabase'; return 'supabase' }
-    } catch {}
+    // Try local Flask
+    if (IS_LOCAL) {
+      try {
+        const r = await fetch(API_BASE + '/health', { signal: AbortSignal.timeout(2000) })
+        if (r.ok) { this.mode = 'flask'; return 'flask' }
+      } catch {}
+      // Try Supabase
+      try {
+        await SB.init()
+        if (SB.isReady()) { this.mode = 'supabase'; return 'supabase' }
+      } catch {}
+    }
     this.mode = 'local'; return 'local'
   },
 
@@ -98,8 +104,9 @@ const API = {
     if (this.mode === 'local') return { ok: false, status: 404, json: async () => ({}) }
     const headers = {'Content-Type': 'application/json'}
     if (this.token) headers['Authorization'] = 'Bearer ' + this.token
+    const baseUrl = IS_LOCAL ? API_BASE : PROD_API
     try {
-      const r = await fetch(API_BASE + path, {...opts, headers})
+      const r = await fetch(baseUrl + path, {...opts, headers})
       if (r.status === 401) { this._saveToken(null); this.mode = null }
       return r
     } catch {
@@ -314,6 +321,10 @@ const API = {
   },
 
   async getPlans() {
+    const mode = await this._init()
+    if (mode === 'flask') {
+      try { const r = await this._fetch('/plans'); if (r.ok) return (await r.json()) } catch {}
+    }
     return {
       free: { name:'مجاني', name_en:'Free', price:0, yearly_price:0, currency:'EGP', max_sites:1, pages:2, custom_domain:false, analytics:false, premium_themes:false, priority_support:false, remove_branding:false, ecommerce:false, payment_gateway:false, whatsapp_support:false, features:['دومين فرعي','صفحتين','علامة Made with Site Flow','استضافة مجانية'] },
       basic: { name:'أساسي', name_en:'Basic', price:129, yearly_price:999, currency:'EGP', max_sites:3, pages:10, custom_domain:true, analytics:true, premium_themes:false, priority_support:false, remove_branding:true, ecommerce:false, payment_gateway:false, whatsapp_support:false, features:['دومين خاص (.com)','10 صفحات','إزالة العلامة','SSL مجاني','تحليلات أساسية'] },
@@ -347,9 +358,10 @@ const API = {
       if (r.ok) { const d=await r.json(); return d }
     }
     if (mode === 'supabase') { try { await SB.confirmPayment(id); return } catch {} }
-    // local mode — upgrade user plan
-    const uid=(this.token||'').replace('local_',''); const users=LocalDB.users.get(); const u=users.find(x=>x.id===uid)
-    if (u) { u.plan=id; LocalDB.users.save(users) }
+    // local mode — find payment and upgrade user plan
+    const payments = LocalDB.payments.get()
+    const p = payments.find(x=>x.id===id)
+    if (p) { p.status='completed'; LocalDB.payments.save(payments); const uid=(this.token||'').replace('local_',''); const users=LocalDB.users.get(); const u=users.find(x=>x.id===uid); if(u){u.plan=p.plan;LocalDB.users.save(users)} }
     return {ok: true}
   },
 
@@ -476,7 +488,7 @@ const API = {
       const formData = new FormData()
       formData.append('file', file)
       try {
-        const r = await fetch(API_BASE + '/upload', {
+        const r = await fetch(IS_LOCAL ? API_BASE : PROD_API + '/upload', {
           method: 'POST',
           headers: { 'Authorization': 'Bearer ' + this.token },
           body: formData

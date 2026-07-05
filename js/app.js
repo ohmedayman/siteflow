@@ -54,7 +54,6 @@ const Router = {
     try {
       const s = await API.getPublicPage(slug)
       if (!s) throw new Error('404')
-      if (s.published && API.mode !== 'local') { window.location.href = subdomainUrl(s.slug); return }
       document.title = s.seo?.title||s.title
       document.getElementById('app').innerHTML = T.publicPage(s)
       this._bindPublicContactForm(s.slug)
@@ -89,7 +88,7 @@ const Router = {
     const allPlans = await API.getPlans()
     const plan = allPlans[planKey]
     if (!plan || plan.price === 0) {
-      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show('تم الترقية!','success'); Router.navigate('dashboard') }
+      try { const p = await API.createPayment(planKey); await API.confirmPayment(p.id); Auth.user = await API.getMe(); Toast.show('تم الترقية!','success'); Router.navigate('dashboard') }
       catch(e) { Toast.show(e.message,'error') }
       return
     }

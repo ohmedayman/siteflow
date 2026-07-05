@@ -614,7 +614,7 @@ const T = {
         <div class="sidebar-content" id="sidebarSections">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <span style="font-size:.78rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em">Sections</span>
-            <span style="font-size:.72rem;color:var(--gray-400)">${this.page.sections.length} items</span>
+            <span style="font-size:.72rem;color:var(--gray-400)">${page.sections.length} items</span>
           </div>
           <div class="section-list" id="sectionList"></div>
           <button class="btn btn-primary btn-sm w-full" id="addSectionBtn" style="margin-top:14px;padding:10px;border-radius:10px;font-weight:700">

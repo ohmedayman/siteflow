@@ -3,12 +3,14 @@ import os
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'siteflow-secret-key-change-in-production')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///siteflow.db')
+    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('postgres://'):
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('postgres://', 'postgresql://', 1)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET = os.environ.get('JWT_SECRET', 'jwt-secret-change-me')
     JWT_EXPIRY_HOURS = 24
     SITE_URL = os.environ.get('SITE_URL', 'https://siteflow.vexonet.online')
     MAIN_DOMAIN = os.environ.get('MAIN_DOMAIN', 'siteflow.vexonet.online')
-    FRONTEND_DOMAINS = ['siteflow.vexonet.online', 'siteflow.app', 'localhost']
+    FRONTEND_DOMAINS = ['siteflow.vexonet.online', 'siteflow-roan.vercel.app', 'siteflow-api.onrender.com', 'siteflow.app', 'localhost', '127.0.0.1']
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@siteflow.app')
 
     # Plans — Egyptian Market Pricing (EGP)

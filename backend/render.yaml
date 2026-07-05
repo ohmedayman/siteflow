@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: siteflow-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: siteflow-db
+          property: connectionString
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+        value: reqe54ky
+      - key: CLOUDINARY_API_KEY
+        sync: false
+        value: "433413431167268"
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+        value: _HKYCJFA0ICqgaFgu9v8JPEih94
+      - key: ADMIN_EMAIL
+        value: admin@siteflow.app
+      - key: MAIN_DOMAIN
+        value: siteflow.vexonet.online
+      - key: SITE_URL
+        value: https://siteflow.vexonet.online
+databases:
+  - name: siteflow-db
+    plan: free
+    databaseName: siteflow
