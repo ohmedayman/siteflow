@@ -432,12 +432,15 @@ const T = {
 <div class="dashboard">
   <div class="dashboard-header">
     <div>
-      <h1 style="font-size:1.8rem;margin-bottom:4px">Welcome back, <span class="js-user-name"></span> ${ICONS.wrap(ICONS.sparkles,24)}</h1>
-      <p style="color:var(--gray-500)">Here's what's happening with your websites</p>
+      <h1>Welcome back, <span class="js-user-name"></span> ${ICONS.wrap(ICONS.sparkles,22)}</h1>
+      <p>Here's what's happening with your websites</p>
     </div>
-    <div style="display:flex;gap:8px;align-items:center">
+    <div class="header-actions">
       <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">${ICONS.wrap(ICONS.trendingUp,14)} Upgrade</a>
-      <button class="btn btn-primary" id="createSiteBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Site</button>
+      <button class="btn btn-primary btn-sm" id="createSiteBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Site
+      </button>
     </div>
   </div>
   <div id="dashStats"></div>

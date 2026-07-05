@@ -10,18 +10,13 @@ const SB = {
   ready: false,
 
   async init() {
+    if (typeof IS_LOCAL !== 'undefined' && !IS_LOCAL) return
     try {
-      if (window.supabase) {
+      if (window.supabase && !this.client) {
         this.client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
           auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
         })
-        // Test connection
-        const { data, error } = await this.client.from('sites').select('count', { count: 'exact', head: true })
-        if (error && error.code !== 'PGRST116') throw error
         this.ready = true
-        console.log('Supabase connected')
-      } else {
-        console.warn('Supabase SDK not loaded, using localStorage fallback')
       }
     } catch (e) {
       console.warn('Supabase unavailable:', e.message)

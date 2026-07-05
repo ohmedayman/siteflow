@@ -17,7 +17,7 @@ const Auth = {
       return
     }
     if (API.token) {
-      try { this.user = await API.getMe() } catch { API.logout() }
+      try { this.user = await API.getMe() } catch { this.user = null }
     }
     this._ui()
   },

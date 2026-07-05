@@ -51,7 +51,7 @@ const Router = {
     try {
       const s = await API.getPublicPage(slug)
       if (!s) throw new Error('404')
-      if (s.published) { window.location.href = subdomainUrl(s.slug); return }
+      if (s.published && API.mode !== 'local') { window.location.href = subdomainUrl(s.slug); return }
       document.title = s.seo?.title||s.title
       document.getElementById('app').innerHTML = T.publicPage(s)
       this._bindPublicContactForm(s.slug)
@@ -265,10 +265,26 @@ const Dash = {
 
       statsEl.innerHTML = `
         <div class="stats-row">
-          <div class="stat-card card"><div class="num">${sites.length}</div><div class="label">Total Sites</div></div>
-          <div class="stat-card card"><div class="num">${published}</div><div class="label">Published</div></div>
-          <div class="stat-card card"><div class="num">${totalViews}</div><div class="label">Total Views</div></div>
-          <div class="stat-card card"><div class="num">${drafts}</div><div class="label">Drafts</div></div>
+          <div class="stat-card">
+            <div class="stat-icon">${ICONS.wrap(ICONS.globe,22)}</div>
+            <div class="num">${sites.length}</div>
+            <div class="label">Total Sites</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">${ICONS.wrap(ICONS.published,22)}</div>
+            <div class="num">${published}</div>
+            <div class="label">Published</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">${ICONS.wrap(ICONS.eye,22)}</div>
+            <div class="num">${totalViews}</div>
+            <div class="label">Total Views</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">${ICONS.wrap(ICONS.pencil,22)}</div>
+            <div class="num">${drafts}</div>
+            <div class="label">Drafts</div>
+          </div>
         </div>`
 
       if (sites.length === 0) {
@@ -315,25 +331,25 @@ const Dash = {
         <div class="sites-grid">${sites.map(p=>{
           const tc = p.theme?.color || '#6366f1'
           const siteUrl = subdomainUrl(p.slug)
-          return `<div class="site-card card card-hover" data-site-status="${p.published?'published':'draft'}">
-            <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}88,${tc}44)">
+          return `<div class="site-card card" data-site-status="${p.published?'published':'draft'}">
+            <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}cc,${tc}66)">
               <span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span>
-              <span class="view-badge">${ICONS.wrap(ICONS.eye,14)} ${p.views||0}</span>
+              <span class="view-badge">${ICONS.wrap(ICONS.eye,13)} ${p.views||0}</span>
             </div>
             <div class="site-card-body">
               <h3>${p.title}</h3>
               <span class="site-url">${siteUrl}</span>
               <div class="site-meta">
                 <span class="status-badge ${p.published?'status-published':'status-draft'}">${p.published?'Published':'Draft'}</span>
-                <span>${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString()}</span>
+                <span style="font-size:.78rem;color:var(--gray-400)">${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString()}</span>
               </div>
             </div>
             <div class="site-card-actions">
               <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">${ICONS.wrap(ICONS.pencil,14)} Edit</a>
               ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">${ICONS.wrap(ICONS.external,14)} View</a>`:''}
-              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm" title="Submissions">${ICONS.wrap(ICONS.message,16)}</a>
-              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm" title="Analytics">${ICONS.wrap(ICONS.chart,16)}</a>
-              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="Delete">${ICONS.wrap(ICONS.trash,16)}</button>
+              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm" title="Submissions">${ICONS.wrap(ICONS.message,15)}</a>
+              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm" title="Analytics">${ICONS.wrap(ICONS.chart,15)}</a>
+              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="Delete">${ICONS.wrap(ICONS.trash,15)}</button>
             </div>
           </div>`
         }).join('')}</div>`
@@ -366,8 +382,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Detect subdomain — render public site directly
   const host = window.location.hostname
   const mainDomain = MAIN_DOMAIN
-  if (host !== mainDomain && host !== 'localhost' && host.endsWith('.' + mainDomain)) {
-    const slug = host.slice(0, -('.' + mainDomain).length)
+  const isSubdomain = (host !== mainDomain && host !== 'localhost' && host !== '127.0.0.1' && host.endsWith('.' + mainDomain)) ||
+                      (host !== mainDomain && host.endsWith('.vercel.app') && host.split('.').length > 2 && !host.startsWith('www'))
+  if (isSubdomain) {
+    const slug = host.endsWith('.' + mainDomain)
+      ? host.slice(0, -('.' + mainDomain).length)
+      : host.split('.')[0]
     if (slug && slug !== 'www') {
       document.querySelector('.app-header')?.classList.add('hidden')
       const app = document.getElementById('app')
@@ -379,9 +399,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           app.innerHTML = T.publicPage(site)
           Router._bindPublicContactForm(slug)
           // Track view
-          try { await API._fetch('/p/' + slug + '/view', { method: 'POST', body: JSON.stringify({ ip: '', ua: navigator.userAgent }) }) } catch (e) {}
+          if (API.mode !== 'local') {
+            try { await API._fetch('/p/' + slug + '/view', { method: 'POST', body: JSON.stringify({ ip: '', ua: navigator.userAgent }) }) } catch (e) {}
+          }
           // Also increment local views
-          if (API.mode === 'local') LocalDB.incrementViews(slug)
+          LocalDB.incrementViews(slug)
           return
         }
       } catch {}
