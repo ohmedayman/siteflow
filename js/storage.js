@@ -99,16 +99,25 @@ const API = {
     }
   },
 
-  // ── Auth ──
+  // ── Auth (Supabase first, then Flask, then localStorage) ──
   async login(email, password) {
     const mode = await this._init()
+    // Supabase auth first
+    try {
+      await SB.init()
+      if (SB.isReady()) {
+        const d = await SB.signIn(email, password)
+        this._saveToken(d.session.access_token)
+        this.mode = 'supabase'
+        return {user:{id:d.user.id,name:d.user.email,email:d.user.email,plan:'free',lang:'en',isAdmin:false}}
+      }
+    } catch(e) {}
+    // Flask fallback
     if (mode === 'flask') {
       const r = await this._fetch('/auth/login', {method:'POST', body:JSON.stringify({email,password})})
       if (r.ok) { const d = await r.json(); this._saveToken(d.token); return {user: d.user} }
     }
-    if (mode === 'supabase') {
-      try { const d=await SB.signIn(email,password); this._saveToken(d.session.access_token); return {user:{id:d.user.id,name:d.user.email,email:d.user.email,plan:'free',lang:'en',isAdmin:false}} } catch(e) { if (mode !== 'local') throw e }
-    }
+    // localStorage fallback
     const users=LocalDB.users.get(); const u=users.find(x=>x.email===email&&x.password===password)
     if (!u) throw new Error('Invalid email or password')
     this._saveToken('local_'+u.id); this.mode = 'local'
@@ -117,14 +126,23 @@ const API = {
 
   async signup(name, email, password) {
     const mode = await this._init()
+    // Supabase signup first
+    try {
+      await SB.init()
+      if (SB.isReady()) {
+        const d = await SB.signUp(email, password)
+        this.mode = 'supabase'
+        if (d.session?.access_token) this._saveToken(d.session.access_token)
+        return {user:{id:d.user.id,name,email,plan:'free',lang:'en',isAdmin:false}}
+      }
+    } catch(e) { if (e.message.includes('already')) throw new Error('Email already registered') }
+    // Flask fallback
     if (mode === 'flask') {
       const r = await this._fetch('/auth/signup', {method:'POST', body:JSON.stringify({name,email,password})})
       if (r.ok) { const d = await r.json(); this._saveToken(d.token); return {user: d.user} }
       if (r.status === 409) throw new Error('Email already registered')
     }
-    if (mode === 'supabase') {
-      try { const d=await SB.signUp(email,password); this._saveToken(d.session.access_token); return {user:{id:d.user.id,name,email,plan:'free',lang:'en',isAdmin:false}} } catch(e) { if (e.message.includes('already')) throw new Error('Email already registered'); if (mode !== 'local') throw e }
-    }
+    // localStorage fallback
     const users=LocalDB.users.get()
     if (users.find(x=>x.email===email)) throw new Error('Email already registered')
     const u={id:LocalDB.genId(),name,email,password,plan:'free',lang:'en',isAdmin:false}
@@ -133,21 +151,36 @@ const API = {
   },
 
   async googleLogin() {
-    const mode = await this._init()
-    if (mode === 'flask') return this.login('demo@siteflow.app', 'demo123')
-    if (mode === 'supabase') { try { await SB.signInWithGoogle(); return true } catch { return false } }
+    try {
+      await SB.init()
+      if (SB.isReady()) {
+        await SB.signInWithGoogle()
+        return true
+      }
+    } catch {}
     return this.login('demo@siteflow.app', 'demo123')
   },
 
   async getMe() {
     const mode = await this._init()
+    // Supabase session first
+    try {
+      await SB.init()
+      if (SB.isReady()) {
+        const s = SB.getSession()
+        if (s?.data?.session) {
+          const uid = s.data.session.user.id
+          this.mode = 'supabase'
+          return {id:uid,name:s.data.session.user.email,email:s.data.session.user.email,plan:'free',lang:'en',isAdmin:false}
+        }
+      }
+    } catch {}
+    // Flask fallback
     if (mode === 'flask') {
       const r = await this._fetch('/auth/me')
       if (r.ok) return (await r.json())
     }
-    if (mode === 'supabase') {
-      try { const s=SB.getSession(); if(s?.data?.session){const uid=s.data.session.user.id; return {id:uid,name:s.data.session.user.email,email:s.data.session.user.email,plan:'free',lang:'en',isAdmin:false}} } catch {}
-    }
+    // localStorage fallback
     const uid=(this.token||'').replace('local_','')
     const u=LocalDB.users.get().find(x=>x.id===uid)
     if (!u) throw new Error('Not logged in')
