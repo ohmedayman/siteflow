@@ -15,16 +15,21 @@ const T = {
 <div class="landing-hero">
   <div class="badge">🚀 No-Code Website Builder</div>
   <h1>Create Professional Websites<br>Without Writing Code</h1>
-  <p>Site Flow lets you build stunning, SEO-optimized websites in minutes. Choose from professional templates, customize with drag & drop, and publish instantly.</p>
+  <p>Build stunning, SEO-optimized websites in minutes. Choose from professional templates, customize with drag & drop, and publish instantly.</p>
   <div class="cta-buttons">
     <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">Get Started Free</a>
     <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
     <a href="#/plans" class="btn btn-outline btn-lg">See Plans</a>
   </div>
-  <div style="margin-top:48px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;color:var(--gray-400);font-size:.85rem">
-    <span>✅ No coding</span><span>🎨 8+ Templates</span><span>🔗 Custom domain</span><span>📱 Responsive</span><span>🌐 RTL Support</span>
+  <div class="trust-bar">
+    <span>✅ No coding required</span>
+    <span>🎨 8+ Templates</span>
+    <span>🔗 Custom domains</span>
+    <span>📱 Fully responsive</span>
+    <span>🌐 RTL support</span>
   </div>
 </div>
+
 <div class="features-grid">
   ${[
     ['🎨','Visual Builder','Drag-and-drop with real-time inline editing. No coding required.'],
@@ -36,7 +41,73 @@ const T = {
     ['📊','Analytics','Track views and visitors for all your published sites.'],
     ['🌐','Arabic Support','Full Arabic interface and RTL support for your audience.']
   ].map(([i,t,d]) => `<div class="feature-card card card-hover"><div class="icon" style="background:var(--primary-light);color:var(--primary)">${i}</div><h3>${t}</h3><p>${d}</p></div>`).join('')}
-</div>` },
+</div>
+
+<div class="landing-section">
+  <div class="landing-section-inner">
+    <h2>How It Works</h2>
+    <p style="color:var(--gray-500);margin-bottom:48px">Three simple steps to launch your website</p>
+    <div class="steps-grid">
+      <div class="step-card"><div class="step-num">1</div><h3>Choose Template</h3><p>Pick from 8+ professional templates designed for different industries.</p></div>
+      <div class="step-card"><div class="step-num">2</div><h3>Customize</h3><p>Edit content, change colors, add sections with our visual drag & drop editor.</p></div>
+      <div class="step-card"><div class="step-num">3</div><h3>Publish</h3><p>Click publish and your site is live instantly with a free subdomain.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="landing-section" style="background:var(--gray-50)">
+  <div class="landing-section-inner">
+    <h2>What Our Users Say</h2>
+    <p style="color:var(--gray-500);margin-bottom:48px">Trusted by creators worldwide</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card"><p>"Site Flow made it so easy to build my portfolio. No coding needed!"</p><div class="testimonial-author"><strong>Sarah Ahmed</strong><span>Freelance Designer</span></div></div>
+      <div class="testimonial-card"><p>"I launched my restaurant website in 20 minutes. The templates are beautiful."</p><div class="testimonial-author"><strong>Mohammed Ali</strong><span>Restaurant Owner</span></div></div>
+      <div class="testimonial-card"><p>"The Arabic support is perfect. My clients love the RTL layout."</p><div class="testimonial-author"><strong>Fatima Hassan</strong><span>Business Consultant</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="landing-section">
+  <div class="landing-section-inner text-center">
+    <h2>Ready to Build Your Website?</h2>
+    <p style="color:var(--gray-500);margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto">Start for free today. No credit card required.</p>
+    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">Get Started Free</a>
+    <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
+  </div>
+</div>
+
+<footer class="landing-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="logo" style="margin-bottom:12px;display:inline-flex">
+          <img src="assets/sitflow.svg" alt="Site Flow" width="28" height="28">
+          Site<span>Flow</span>
+        </a>
+        <p style="color:var(--gray-400);font-size:.85rem;line-height:1.6">Build professional websites without code. Free to start, powerful when you grow.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Product</h4>
+        <a href="#/plans">Pricing</a>
+        <a href="#/help">Help Center</a>
+        <a href="#/about">About</a>
+      </div>
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <a href="#/privacy">Privacy Policy</a>
+        <a href="mailto:support@siteflow.vexonet.online">Contact</a>
+      </div>
+      <div class="footer-links">
+        <h4>Connect</h4>
+        <a href="https://github.com/ohmedayman/siteflow" target="_blank">GitHub</a>
+        <a href="mailto:support@siteflow.vexonet.online">Email</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; ${new Date().getFullYear()} Site Flow. All rights reserved.</p>
+    </div>
+  </div>
+</footer>` },
 
   // ── Login ──
   login() { return `

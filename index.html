@@ -14,9 +14,12 @@
   <header class="app-header">
     <div class="header-inner">
       <a href="/" class="logo" onclick="Router.navigate('')">
-        <img src="assets/sitflow.svg" alt="Site Flow" width="28" height="28" style="filter:hue-rotate(0deg)">
+        <img src="assets/sitflow.svg" alt="Site Flow" width="28" height="28">
         Site<span>Flow</span>
       </a>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
       <nav class="nav-links">
         <a href="#/plans" class="btn btn-ghost btn-sm">Pricing</a>
         <a href="#/help" class="btn btn-ghost btn-sm">Help</a>
