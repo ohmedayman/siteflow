@@ -5,12 +5,11 @@ const T = {
   <div style="text-align:center;max-width:480px">
     <div style="font-size:6rem;font-weight:800;color:var(--gray-200);line-height:1;margin-bottom:8px">404</div>
     <h1 style="font-size:1.8rem;margin-bottom:8px">${title||'Page Not Found'}</h1>
-    <p style="color:var(--gray-500);margin-bottom:32px">${msg||'The page you are looking for does not exist or has been moved.'}</p>
-    <a href="/" class="btn btn-primary btn-lg" onclick="Router.navigate('')">Go Home</a>
+    <p style="color:var(--gray-500);margin-bottom:32px">${msg||'The page you are looking for does not exist.'}</p>
+    <a href="#/" class="btn btn-primary btn-lg">Go Home</a>
   </div>
 </div>` },
 
-  // ── Landing ──
   landing() { return `
 <div class="landing-hero">
   <div class="badge">🚀 No-Code Website Builder</div>
@@ -29,7 +28,6 @@ const T = {
     <span>🌐 RTL support</span>
   </div>
 </div>
-
 <div class="features-grid">
   ${[
     ['🎨','Visual Builder','Drag-and-drop with real-time inline editing. No coding required.'],
@@ -42,7 +40,6 @@ const T = {
     ['🌐','Arabic Support','Full Arabic interface and RTL support for your audience.']
   ].map(([i,t,d]) => `<div class="feature-card card card-hover"><div class="icon" style="background:var(--primary-light);color:var(--primary)">${i}</div><h3>${t}</h3><p>${d}</p></div>`).join('')}
 </div>
-
 <div class="landing-section">
   <div class="landing-section-inner">
     <h2>How It Works</h2>
@@ -54,7 +51,6 @@ const T = {
     </div>
   </div>
 </div>
-
 <div class="landing-section" style="background:var(--gray-50)">
   <div class="landing-section-inner">
     <h2>What Our Users Say</h2>
@@ -66,7 +62,6 @@ const T = {
     </div>
   </div>
 </div>
-
 <div class="landing-section">
   <div class="landing-section-inner text-center">
     <h2>Ready to Build Your Website?</h2>
@@ -75,15 +70,14 @@ const T = {
     <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
   </div>
 </div>
-
 <footer class="landing-footer">
   <div class="footer-inner">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="/" class="logo" style="margin-bottom:12px;display:inline-flex">
+        <div class="logo" style="margin-bottom:12px;display:inline-flex">
           <img src="assets/sitflow.svg" alt="Site Flow" width="28" height="28">
           Site<span>Flow</span>
-        </a>
+        </div>
         <p style="color:var(--gray-400);font-size:.85rem;line-height:1.6">Build professional websites without code. Free to start, powerful when you grow.</p>
       </div>
       <div class="footer-links">
@@ -109,7 +103,6 @@ const T = {
   </div>
 </footer>` },
 
-  // ── Login ──
   login() { return `
 <div class="auth-page">
   <div class="auth-left">
@@ -143,37 +136,39 @@ const T = {
         <div class="input-group"><label>Password</label><input type="password" class="input" id="signupPassword" placeholder="Create a password" required></div>
         <button type="submit" class="btn btn-primary btn-lg w-full">Create Account</button>
       </form>
-      <div class="auth-demo">
-        <strong>🔑 Demo Accounts</strong>
-        User: <code>demo@siteflow.app</code> / <code>demo123</code><br>
-        Admin: <code>admin@siteflow.app</code> / <code>admin123</code>
-      </div>
     </div>
   </div>
 </div>` },
 
-  // ── Template Picker Modal ──
   templatePicker() { return `
 <div class="modal-overlay open" id="templateModal">
-  <div class="modal" style="max-width:900px;padding:24px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <h3 style="font-size:1.3rem">Choose a Template</h3>
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('templateModal').classList.remove('open')">✕</button>
+  <div class="modal" style="max-width:960px;padding:32px;max-height:85vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h2 style="font-size:1.5rem;font-weight:800">Choose a Template</h2>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('templateModal').classList.remove('open')" style="font-size:1.2rem">✕</button>
     </div>
-    <p style="color:var(--gray-500);margin-bottom:20px">Start with a pre-built template or a blank canvas</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+    <p style="color:var(--gray-500);margin-bottom:24px">Start with a pre-built template or a blank canvas</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="templateFilters">
+      <button class="btn btn-sm filter-btn active" data-filter="all">All</button>
+      <button class="btn btn-sm filter-btn" data-filter="business">Business</button>
+      <button class="btn btn-sm filter-btn" data-filter="personal">Personal</button>
+      <button class="btn btn-sm filter-btn" data-filter="creative">Creative</button>
+      <button class="btn btn-sm filter-btn" data-filter="food">Food</button>
+      <button class="btn btn-sm filter-btn" data-filter="other">Other</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px" id="templateGrid">
       ${PRESETS.map(t => `
-        <div class="card card-hover template-card" data-template="${t.id}" style="padding:20px;cursor:pointer;text-align:center;${t.id==='blank'?'border:2px dashed var(--gray-300)':''}">
-          <div style="font-size:2.5rem;margin-bottom:8px">${t.icon}</div>
-          <h4 style="font-size:.95rem;margin-bottom:4px">${t.name}</h4>
-          <p style="font-size:.78rem;color:var(--gray-500)">${t.desc}</p>
+        <div class="card card-hover template-card" data-template="${t.id}" data-category="${t.category||'other'}" style="padding:24px;cursor:pointer;text-align:center;transition:all .2s;${t.id==='blank'?'border:2px dashed var(--gray-300)':''}">
+          <div style="font-size:2.5rem;margin-bottom:12px">${t.icon}</div>
+          <h4 style="font-size:1rem;margin-bottom:6px;font-weight:700">${t.name}</h4>
+          <p style="font-size:.8rem;color:var(--gray-500);line-height:1.5">${t.desc}</p>
+          <div style="margin-top:12px"><span style="background:var(--primary-light);color:var(--primary);padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:600">${(t.category||'other').charAt(0).toUpperCase()+(t.category||'other').slice(1)}</span></div>
         </div>
       `).join('')}
     </div>
   </div>
 </div>` },
 
-  // ── Dashboard ──
   dashboard() { return `
 <div class="dashboard">
   <div class="dashboard-header">
@@ -195,30 +190,29 @@ const T = {
       <h1 style="font-size:1.6rem">Form Submissions</h1>
       <p style="color:var(--gray-500);font-size:.9rem">Messages from ${site.title}</p>
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
+    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">← Back</button>
   </div>
-  ${subs.length===0?'<div class="card" style="text-align:center;padding:60px 24px"><p style="color:var(--gray-500);font-size:1rem">No submissions yet.</p><p style="color:var(--gray-400);font-size:.85rem;margin-top:8px">When visitors submit your contact form, messages will appear here.</p></div>':
+  ${subs.length===0?'<div class="card" style="text-align:center;padding:60px 24px"><p style="color:var(--gray-500)">No submissions yet.</p></div>':
   `<div style="display:flex;flex-direction:column;gap:12px">${subs.map(s=>`
     <div class="card" style="padding:20px;${!s.read?'border-left:3px solid var(--primary)':''}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1">
           <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px">
-            <strong style="color:var(--gray-800)">${s.name}</strong>
+            <strong>${s.name}</strong>
             <span style="color:var(--gray-400);font-size:.8rem">${s.email}</span>
             ${!s.read?'<span style="background:var(--primary);color:#fff;font-size:.7rem;padding:2px 8px;border-radius:10px">New</span>':''}
           </div>
-          <p style="color:var(--gray-600);font-size:.95rem;line-height:1.6">${s.message}</p>
+          <p style="color:var(--gray-600);line-height:1.6">${s.message}</p>
           <p style="color:var(--gray-400);font-size:.78rem;margin-top:8px">${new Date(s.created_at).toLocaleString()}</p>
         </div>
         <div style="display:flex;gap:4px">
-          ${!s.read?`<button class="btn btn-ghost btn-sm" data-read="${s.id}" title="Mark read">✓</button>`:''}
-          <button class="btn btn-ghost btn-sm" data-del-sub="${s.id}" title="Delete" style="color:#dc2626">✕</button>
+          ${!s.read?`<button class="btn btn-ghost btn-sm" data-read="${s.id}">✓</button>`:''}
+          <button class="btn btn-ghost btn-sm" data-del-sub="${s.id}" style="color:#dc2626">✕</button>
         </div>
       </div>
     </div>`).join('')}</div>`}
 </div>` },
 
-  // ── Plans / Pricing ──
   plans(plans) { return `
 <div style="max-width:1100px;margin:0 auto;padding:60px 24px">
   <div class="text-center mb-24">
@@ -246,24 +240,21 @@ const T = {
   </div>
 </div>` },
 
-  // ── Builder ──
   builder(page) {
     const t=page.theme||{color:'#6366f1',font:'Inter'}
     return `<div class="builder-toolbar">
       <div class="left">
-        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
+        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">← Back</button>
         <span class="truncate" style="font-weight:600;margin-left:4px;max-width:160px">${page.title}</span>
         <span class="badge-status" style="font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600;${page.published?'background:#d1fae5;color:#065f46':'background:#fef3c7;color:#92400e'}">${page.published?'Published':'Draft'}</span>
       </div>
       <div class="right">
-        <button class="btn btn-ghost btn-sm" id="undoBtn" title="Undo">↩</button>
-        <button class="btn btn-ghost btn-sm" id="redoBtn" title="Redo">↪</button>
+        <button class="btn btn-ghost btn-sm" id="undoBtn" title="Undo (Ctrl+Z)">↩</button>
+        <button class="btn btn-ghost btn-sm" id="redoBtn" title="Redo (Ctrl+Y)">↪</button>
         <div class="device-toggle" id="deviceToggle">
           <button class="device-btn active" data-device="desktop" title="Desktop">🖥</button>
           <button class="device-btn" data-device="mobile" title="Mobile">📱</button>
-          <button class="device-btn" data-device="tablet" title="Tablet">📟</button>
         </div>
-        <button class="btn btn-outline btn-sm" id="saveBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
         <button class="btn btn-outline btn-sm" id="previewBtn">Preview</button>
         <button class="btn btn-primary btn-sm" id="publishBtn">${page.published?'Update':'Publish'}</button>
       </div>
@@ -279,73 +270,56 @@ const T = {
         <div class="sidebar-content" id="sidebarSections">
           <div class="section-list" id="sectionList"></div>
           <button class="btn btn-secondary btn-sm w-full mt-8" id="addSectionBtn">+ Add Section</button>
-          <div style="margin-top:12px;padding:12px;background:var(--gray-50);border-radius:8px;font-size:.78rem;color:var(--gray-500);text-align:center">Drag sections to reorder. Click to edit.</div>
+          <div style="margin-top:12px;padding:12px;background:var(--gray-50);border-radius:8px;font-size:.78rem;color:var(--gray-500);text-align:center">Drag to reorder. Click to edit.</div>
         </div>
         <div class="sidebar-content hidden" id="sidebarTheme">
           <div class="theme-option"><label>Primary Color</label><div class="color-picker" id="colorPresets">${['#6366f1','#3b82f6','#06b6d4','#059669','#d97706','#dc2626','#8b5cf6','#ec4899','#f97316','#14b8a6'].map(c=>`<div class="color-swatch ${t.color===c?'active':''}" style="background:${c}" data-color="${c}"></div>`).join('')}</div><div class="color-input-wrap"><input type="color" id="customColor" value="${t.color}"><input class="input" id="colorHexInput" value="${t.color}"></div></div>
-          <div class="theme-option"><label>Font</label><select class="font-select" id="fontSelect">${['Inter','Arial','Georgia','Helvetica','Merriweather','Times New Roman','Verdana','Roboto','Open Sans','Cairo','Tajawal'].map(f=>`<option value="${f}" ${t.font===f?'selected':''}>${f}</option>`).join('')}</select></div>
-          <div class="theme-option"><label>Background</label><div style="display:flex;gap:8px"><input type="color" id="bgColor" value="#ffffff" class="color-swatch" style="border-radius:8px;width:44px;height:44px;padding:0;border:2px solid var(--gray-200)"><input class="input" id="bgColorInput" value="#ffffff" placeholder="#ffffff"></div></div>
+          <div class="theme-option"><label>Font</label><select class="font-select" id="fontSelect">${['Inter','Arial','Georgia','Helvetica','Merriweather','Verdana','Roboto','Open Sans','Cairo','Tajawal'].map(f=>`<option value="${f}" ${t.font===f?'selected':''}>${f}</option>`).join('')}</select></div>
         </div>
         <div class="sidebar-content hidden" id="sidebarSeo">
-          <div class="seo-field"><label>SEO Title</label><input class="input" id="seoTitle" value="${page.seo?.title||''}" maxlength="60"><div class="seo-preview"><div class="url">${page.slug||'my-site'}.siteflow.app</div><div class="title" id="seoTitlePreview">${page.seo?.title||'My Site'}</div></div></div>
+          <div class="seo-field"><label>SEO Title</label><input class="input" id="seoTitle" value="${page.seo?.title||''}" maxlength="60"><div class="seo-preview"><div class="url">${page.slug||'my-site'}.${MAIN_DOMAIN}</div><div class="title" id="seoTitlePreview">${page.seo?.title||'My Site'}</div></div></div>
           <div class="seo-field"><label>Meta Description</label><textarea class="input textarea" id="seoDesc" maxlength="160">${page.seo?.description||''}</textarea><div class="seo-preview" id="seoDescCounter">0 / 160</div></div>
         </div>
         <div class="sidebar-content hidden" id="sidebarSettings">
-          <div class="settings-group"><label>Site Title</label><input class="input" id="pageTitleInput" value="${page.title}"></div>
-          <div class="settings-group"><label>Slug</label><input class="input" id="pageSlugInput" value="${page.slug||''}"><div class="hint">URL: <span id="slugPreview" style="color:var(--primary)">${page.slug||'my-site'}.${MAIN_DOMAIN}</span></div></div>
-          <div class="settings-group"><label>Custom Domain</label><input class="input" id="customDomainInput" value="${page.customDomain||page.custom_domain||''}" placeholder="yourdomain.com"><div class="hint">Connect your own domain (Pro+ plans)</div></div>
-          <div style="padding-top:12px;border-top:1px solid var(--gray-200)"><label style="font-size:.82rem;font-weight:600;color:var(--gray-700);display:block;margin-bottom:8px">Danger Zone</label><button class="btn btn-danger btn-sm w-full" id="deleteSiteBtn">Delete This Site</button></div>
+          <div class="settings-group" style="margin-bottom:16px"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:6px">Site Title</label><input class="input" id="pageTitleInput" value="${page.title}"></div>
+          <div class="settings-group" style="margin-bottom:16px"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:6px">Slug</label><input class="input" id="pageSlugInput" value="${page.slug||''}"><div class="hint" style="font-size:.78rem;color:var(--gray-500);margin-top:4px">URL: <span id="slugPreview" style="color:var(--primary)">${page.slug||'my-site'}.${MAIN_DOMAIN}</span></div></div>
+          <div class="settings-group" style="margin-bottom:16px"><label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:6px">Custom Domain</label><input class="input" id="customDomainInput" value="${page.customDomain||page.custom_domain||''}" placeholder="yourdomain.com"><div class="hint" style="font-size:.78rem;color:var(--gray-500);margin-top:4px">Connect your own domain (Pro+)</div></div>
+          <div style="padding-top:16px;border-top:1px solid var(--gray-200)"><button class="btn btn-danger btn-sm w-full" id="deleteSiteBtn">Delete This Site</button></div>
         </div>
       </div>
       <div class="builder-canvas" id="builderCanvas"><div class="canvas-frame" id="canvasFrame"></div></div>
     </div>`
   },
 
-  // ── Sections ──
-  heroSection(d,a) { return `<div class="editable-section hero-section ${a?'editing':''}" data-section="hero"><div class="section-label">Hero</div><h1 contenteditable="true" data-field="heading" class="hero-heading">${d.heading||'Welcome'}</h1><p contenteditable="true" data-field="description" style="font-size:1.15rem;color:var(--gray-500);max-width:550px;line-height:1.7">${d.description||''}</p>${d.image?`<div class="hero-image-wrap"><img src="${d.image}"><button class="remove-img" style="position:absolute;top:6px;right:6px;z-index:2" data-hero-remove>✕</button></div>`:`<div class="hero-image-wrap" id="heroImagePlaceholder"><span>+</span></div>`}<input type="file" accept="image/*" id="heroImageInput" style="display:none"></div>` },
+  heroSection(d,a) { return `<div class="editable-section hero-section ${a?'editing':''}" data-section="hero"><div class="section-label">Hero</div><h1 contenteditable="true" data-field="heading" class="hero-heading">${d.heading||'Welcome'}</h1><p contenteditable="true" data-field="description" style="font-size:1.15rem;color:var(--gray-500);max-width:550px;line-height:1.7">${d.description||''}</p>${d.image?`<div class="hero-image-wrap"><img src="${d.image}"><button class="remove-img" style="position:absolute;top:6px;right:6px;z-index:2;background:#fff;border-radius:50%;width:24px;height:24px;border:none;cursor:pointer" data-hero-remove>✕</button></div>`:`<div class="hero-image-wrap" id="heroImagePlaceholder"><span>+</span></div>`}<input type="file" accept="image/*" id="heroImageInput" style="display:none"></div>` },
   aboutSection(d,a) { return `<div class="editable-section about-section ${a?'editing':''}" data-section="about"><div class="section-label">About</div><h2 contenteditable="true" data-field="heading">${d.heading||'About'}</h2><p contenteditable="true" data-field="content" style="font-size:1.05rem;line-height:1.8">${d.content||''}</p></div>` },
-  gallerySection(d,a) { const im=d.images||[]; return `<div class="editable-section gallery-section ${a?'editing':''}" data-section="gallery"><div class="section-label">Gallery</div><h2 contenteditable="true" data-field="heading">${d.heading||'Gallery'}</h2><div class="gallery-grid" id="galleryGrid">${im.length===0?'<div style="grid-column:1/-1;text-align:center;color:var(--gray-400);padding:40px">Click + to add images</div>':''}${im.map((img,i)=>`<div class="gallery-item" style="border-style:solid"><img src="${img}"><button class="remove-img" data-index="${i}">✕</button></div>`).join('')}<div class="gallery-item" id="addGalleryBtn" style="cursor:pointer"><span>+</span></div></div><input type="file" accept="image/*" id="galleryImageInput" style="display:none" multiple></div>` },
+  gallerySection(d,a) { const im=d.images||[]; return `<div class="editable-section gallery-section ${a?'editing':''}" data-section="gallery"><div class="section-label">Gallery</div><h2 contenteditable="true" data-field="heading">${d.heading||'Gallery'}</h2><div class="gallery-grid" id="galleryGrid">${im.length===0?'<div style="grid-column:1/-1;text-align:center;color:var(--gray-400);padding:40px;border:2px dashed var(--gray-200);border-radius:8px">Click + to add images</div>':''}${im.map((img,i)=>`<div class="gallery-item" style="border-style:solid"><img src="${img}"><button class="remove-img" data-index="${i}">✕</button></div>`).join('')}<div class="gallery-item" id="addGalleryBtn" style="cursor:pointer;border:2px dashed var(--gray-300)"><span>+</span></div></div><input type="file" accept="image/*" id="galleryImageInput" style="display:none" multiple></div>` },
   contactSection(d,a) { return `<div class="editable-section contact-section ${a?'editing':''}" data-section="contact"><div class="section-label">Contact</div><h2 contenteditable="true" data-field="heading">${d.heading||'Contact'}</h2><div class="contact-form"><div class="input-group"><label>Name</label><input class="input" placeholder="Your Name" disabled style="opacity:.6"></div><div class="input-group"><label>Email</label><input class="input" placeholder="your@email.com" disabled style="opacity:.6"></div><div class="input-group"><label>Message</label><textarea class="input textarea" placeholder="Your message..." disabled style="opacity:.6"></textarea></div><button class="btn btn-primary" disabled style="opacity:.6">Send</button></div></div>` },
-
-  servicesSection(d,a) { const items=d.items||[]; return `<div class="editable-section services-section ${a?'editing':''}" data-section="services"><div class="section-label">Services</div><h2 contenteditable="true" data-field="heading">${d.heading||'Services'}</h2><div class="services-grid">${items.map((item,i)=>`<div class="service-card"><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc}</p></div>`).join('')}<div class="service-card add-card" data-add-item="services" style="cursor:pointer;border:2px dashed var(--gray-300)"><span>+</span></div></div></div>` },
-
-  testimonialsSection(d,a) { const items=d.items||[]; return `<div class="editable-section testimonials-section ${a?'editing':''}" data-section="testimonials"><div class="section-label">Testimonials</div><h2 contenteditable="true" data-field="heading">${d.heading||'Testimonials'}</h2><div class="testimonials-grid">${items.map((item,i)=>`<div class="testimonial-card"><p contenteditable="true" data-field="items.${i}.text">"${item.text}"</p><div class="testimonial-author"><strong contenteditable="true" data-field="items.${i}.name">${item.name}</strong><span contenteditable="true" data-field="items.${i}.role">${item.role||''}</span></div></div>`).join('')}<div class="testimonial-card add-card" data-add-item="testimonials" style="cursor:pointer;border:2px dashed var(--gray-300)"><span>+</span></div></div></div>` },
-
-  pricingSection(d,a) { const plans=d.plans||[]; return `<div class="editable-section pricing-section ${a?'editing':''}" data-section="pricing"><div class="section-label">Pricing</div><h2 contenteditable="true" data-field="heading">${d.heading||'Pricing'}</h2><div class="pricing-grid">${plans.map((p,i)=>`<div class="pricing-card"><h3 contenteditable="true" data-field="plans.${i}.name">${p.name}</h3><div class="price" contenteditable="true" data-field="plans.${i}.price">${p.price}</div><ul>${(p.features||[]).map((f,fi)=>`<li contenteditable="true" data-field="plans.${i}.features.${fi}">${f}</li>`).join('')}</ul></div>`).join('')}<div class="pricing-card add-card" data-add-item="pricing" style="cursor:pointer;border:2px dashed var(--gray-300)"><span>+</span></div></div></div>` },
-
-  faqSection(d,a) { const items=d.items||[]; return `<div class="editable-section faq-section ${a?'editing':''}" data-section="faq"><div class="section-label">FAQ</div><h2 contenteditable="true" data-field="heading">${d.heading||'FAQ'}</h2><div class="faq-list">${items.map((item,i)=>`<div class="faq-item"><h3 contenteditable="true" data-field="items.${i}.q">${item.q}</h3><p contenteditable="true" data-field="items.${i}.a">${item.a}</p></div>`).join('')}<div class="faq-item add-card" data-add-item="faq" style="cursor:pointer;border:2px dashed var(--gray-300);border-radius:8px"><span>+</span></div></div></div>` },
-
-  teamSection(d,a) { const items=d.items||[]; return `<div class="editable-section team-section ${a?'editing':''}" data-section="team"><div class="section-label">Team</div><h2 contenteditable="true" data-field="heading">${d.heading||'Our Team'}</h2><div class="team-grid">${items.map((item,i)=>`<div class="team-card"><div class="team-avatar">${item.name?item.name.charAt(0):''}</div><h3 contenteditable="true" data-field="items.${i}.name">${item.name}</h3><p contenteditable="true" data-field="items.${i}.role">${item.role||''}</p></div>`).join('')}<div class="team-card add-card" data-add-item="team" style="cursor:pointer;border:2px dashed var(--gray-300)"><span>+</span></div></div></div>` },
-
+  servicesSection(d,a) { const items=d.items||[]; return `<div class="editable-section services-section ${a?'editing':''}" data-section="services"><div class="section-label">Services</div><h2 contenteditable="true" data-field="heading">${d.heading||'Services'}</h2><div class="services-grid">${items.map((item,i)=>`<div class="service-card"><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc}</p></div>`).join('')}</div></div>` },
+  testimonialsSection(d,a) { const items=d.items||[]; return `<div class="editable-section testimonials-section ${a?'editing':''}" data-section="testimonials"><div class="section-label">Testimonials</div><h2 contenteditable="true" data-field="heading">${d.heading||'Testimonials'}</h2><div class="testimonials-grid">${items.map((item,i)=>`<div class="testimonial-card"><p contenteditable="true" data-field="items.${i}.text">"${item.text}"</p><div class="testimonial-author"><strong contenteditable="true" data-field="items.${i}.name">${item.name}</strong><span contenteditable="true" data-field="items.${i}.role">${item.role||''}</span></div></div>`).join('')}</div></div>` },
+  pricingSection(d,a) { const plans=d.plans||[]; return `<div class="editable-section pricing-section ${a?'editing':''}" data-section="pricing"><div class="section-label">Pricing</div><h2 contenteditable="true" data-field="heading">${d.heading||'Pricing'}</h2><div class="pricing-grid">${plans.map((p,i)=>`<div class="pricing-card"><h3 contenteditable="true" data-field="plans.${i}.name">${p.name}</h3><div class="price" contenteditable="true" data-field="plans.${i}.price">${p.price}</div><ul>${(p.features||[]).map((f,fi)=>`<li contenteditable="true" data-field="plans.${i}.features.${fi}">${f}</li>`).join('')}</ul></div>`).join('')}</div></div>` },
+  faqSection(d,a) { const items=d.items||[]; return `<div class="editable-section faq-section ${a?'editing':''}" data-section="faq"><div class="section-label">FAQ</div><h2 contenteditable="true" data-field="heading">${d.heading||'FAQ'}</h2><div class="faq-list">${items.map((item,i)=>`<div class="faq-item"><h3 contenteditable="true" data-field="items.${i}.q">${item.q}</h3><p contenteditable="true" data-field="items.${i}.a">${item.a}</p></div>`).join('')}</div></div>` },
+  teamSection(d,a) { const items=d.items||[]; return `<div class="editable-section team-section ${a?'editing':''}" data-section="team"><div class="section-label">Team</div><h2 contenteditable="true" data-field="heading">${d.heading||'Our Team'}</h2><div class="team-grid">${items.map((item,i)=>`<div class="team-card"><div class="team-avatar">${item.name?item.name.charAt(0):''}</div><h3 contenteditable="true" data-field="items.${i}.name">${item.name}</h3><p contenteditable="true" data-field="items.${i}.role">${item.role||''}</p></div>`).join('')}</div></div>` },
   footerSection(d,a) { return `<div class="editable-section footer-section ${a?'editing':''}" data-section="footer"><div class="section-label">Footer</div><div class="footer-content"><p contenteditable="true" data-field="copyright">${d.copyright||'© 2026 All rights reserved.'}</p><p contenteditable="true" data-field="text">${d.text||'Powered by Site Flow'}</p></div></div>` },
 
-  // ── Public page ──
   publicPage(page) {
     const t=page.theme||{color:'#6366f1',font:'Inter'}
     return `<div class="public-page" style="--p-color:${t.color};--p-font:${t.font};font-family:${t.font},sans-serif">
       <div class="public-nav"><span class="brand" style="color:${t.color}">${page.title}</span><span style="font-size:.75rem;color:var(--gray-400)">Powered by Site Flow</span></div>
       <div class="public-content">${page.sections.map(s=>{switch(s.type){case'hero':return T.pubHero(s.data,t);case'about':return T.pubAbout(s.data,t);case'gallery':return T.pubGallery(s.data,t);case'contact':return T.pubContact(s.data,t);case'services':return T.pubServices(s.data,t);case'testimonials':return T.pubTestimonials(s.data,t);case'pricing':return T.pubPricing(s.data,t);case'faq':return T.pubFaq(s.data,t);case'team':return T.pubTeam(s.data,t);case'footer':return T.pubFooter(s.data,t);default:return ''}}).join('')}</div>
-      <footer>&copy; ${new Date().getFullYear()} ${page.title}. All rights reserved.</footer>
     </div>`
   },
   pubHero(d,t) { return `<div class="editable-section hero-section" style="background:linear-gradient(135deg,${t.color}11,#fff)">${d.image?`<div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 20px ${t.color}33"><img src="${d.image}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<h1 style="color:${t.color}">${d.heading}</h1><p>${d.description}</p></div>` },
   pubAbout(d,t) { return `<div class="editable-section about-section"><h2 style="color:${t.color}">${d.heading}</h2><p>${d.content}</p></div>` },
   pubGallery(d,t) { const im=d.images||[]; return `<div class="editable-section gallery-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="gallery-grid">${im.length===0?'<p style="grid-column:1/-1;color:var(--gray-400)">No images</p>':''}${im.map(i=>`<div class="gallery-item" style="border-style:none"><img src="${i}"></div>`).join('')}</div></div>` },
   pubContact(d,t) { return `<div class="editable-section contact-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="contact-form" id="pubContactForm"><div class="input-group"><label>Name</label><input class="input" id="cfName" required></div><div class="input-group"><label>Email</label><input class="input" id="cfEmail" type="email" required></div><div class="input-group"><label>Message</label><textarea class="input textarea" id="cfMessage" required></textarea></div><button class="btn w-full" style="background:${t.color};color:#fff" id="cfSubmitBtn">Send</button><p id="cfMsg" style="font-size:.85rem;margin-top:8px;display:none"></p></div></div>` },
-
   pubServices(d,t) { const items=d.items||[]; return `<div class="editable-section services-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="services-grid">${items.map(item=>`<div class="service-card"><h3>${item.title}</h3><p>${item.desc}</p></div>`).join('')}</div></div>` },
-
   pubTestimonials(d,t) { const items=d.items||[]; return `<div class="editable-section testimonials-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="testimonials-grid">${items.map(item=>`<div class="testimonial-card"><p>"${item.text}"</p><div class="testimonial-author"><strong>${item.name}</strong><span>${item.role||''}</span></div></div>`).join('')}</div></div>` },
-
   pubPricing(d,t) { const plans=d.plans||[]; return `<div class="editable-section pricing-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="pricing-grid">${plans.map(p=>`<div class="pricing-card"><h3>${p.name}</h3><div class="price">${p.price}</div><ul>${(p.features||[]).map(f=>`<li>${f}</li>`).join('')}</ul><button class="btn" style="background:${t.color};color:#fff;width:100%;margin-top:16px">Choose Plan</button></div>`).join('')}</div></div>` },
-
   pubFaq(d,t) { const items=d.items||[]; return `<div class="editable-section faq-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="faq-list">${items.map(item=>`<div class="faq-item"><h3>${item.q}</h3><p>${item.a}</p></div>`).join('')}</div></div>` },
-
   pubTeam(d,t) { const items=d.items||[]; return `<div class="editable-section team-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="team-grid">${items.map(item=>`<div class="team-card"><div class="team-avatar">${item.name?item.name.charAt(0):''}</div><h3>${item.name}</h3><p>${item.role||''}</p></div>`).join('')}</div></div>` },
-
   pubFooter(d,t) { return `<div class="editable-section footer-section" style="background:#0f172a;color:#94a3b8"><div class="footer-content"><p>${d.copyright||'© 2026 All rights reserved.'}</p><p>${d.text||'Powered by Site Flow'}</p></div></div>` },
 
-  // ── Settings ──
   settings(user) { return `
 <div style="max-width:600px;margin:0 auto;padding:40px 24px">
   <h1 style="font-size:1.8rem;margin-bottom:24px">Settings</h1>
@@ -357,7 +331,6 @@ const T = {
   </div>
 </div>` },
 
-  // ── Billing ──
   billing(payments, plans, user) { return `
 <div style="max-width:800px;margin:0 auto;padding:40px 24px">
   <h1 style="font-size:1.8rem;margin-bottom:24px">Billing</h1>
@@ -373,12 +346,14 @@ const T = {
   </div>
 </div>` },
 
-  // ── Help Center ──
   help() { return `
 <div style="max-width:800px;margin:0 auto;padding:60px 24px">
-  <h1 style="font-size:2rem;margin-bottom:8px">Help Center</h1>
-  <p style="color:var(--gray-500);margin-bottom:40px">Everything you need to get started with Site Flow</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+  <div class="text-center mb-24">
+    <div style="font-size:3rem;margin-bottom:12px">❓</div>
+    <h1 style="font-size:2rem;margin-bottom:8px">Help Center</h1>
+    <p style="color:var(--gray-500)">Everything you need to get started with Site Flow</p>
+  </div>
+  <div style="display:grid;gap:12px">
     ${[
       {q:'How do I create a website?',a:'Click "New Site" from your dashboard, choose a template, then customize it with our drag-and-drop editor. When ready, click Publish.'},
       {q:'Can I use my own domain?',a:'Yes! Pro and Business plans support custom domains. Go to Settings in the editor and enter your domain name.'},
@@ -387,30 +362,42 @@ const T = {
       {q:'Can I use Google login?',a:'Yes! Click "Continue with Google" on the login page to sign in with your Google account.'},
       {q:'Is Arabic supported?',a:'Yes! Site Flow supports full Arabic interface and RTL layout. Change language in Settings.'},
       {q:'How do I add images?',a:'In the editor, click the image placeholder in Hero section or click + in Gallery to upload images from your device.'},
-      {q:'What templates are available?',a:'We offer 8 templates: Personal, Business, Restaurant, Gallery, Event, Form, Blog, and Blank Canvas.'}
+      {q:'What templates are available?',a:'We offer 8 templates: Personal, Business, Restaurant, Gallery, Event, Form, Blog, and Blank Canvas.'},
+      {q:'How does the editor work?',a:'Click any text to edit it directly. Drag sections to reorder. Use the sidebar to change theme colors, fonts, and SEO settings.'},
+      {q:'How do I publish my site?',a:'Click the Publish button in the top-right of the editor. Your site will be live at your-slug.siteflow.vexonet.online instantly.'}
     ].map(({q,a}) => `
-      <div class="card card-hover" style="padding:20px;cursor:pointer" onclick="this.querySelector('.answer').classList.toggle('hidden')">
-        <h3 style="font-size:.95rem;margin-bottom:6px;display:flex;align-items:center;gap:8px"><span style="color:var(--primary)">❓</span>${q}</h3>
-        <p class="answer hidden" style="font-size:.85rem;color:var(--gray-600);margin-top:8px">${a}</p>
+      <div class="card" style="padding:20px;cursor:pointer" onclick="this.querySelector('.answer').classList.toggle('hidden')">
+        <h3 style="font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:8px"><span style="color:var(--primary)">❓</span>${q}</h3>
+        <p class="answer hidden" style="font-size:.85rem;color:var(--gray-600);margin-top:12px;line-height:1.7">${a}</p>
       </div>
     `).join('')}
   </div>
-</div>` },
-
-  // ── About Us ──
-  about() { return `
-<div style="max-width:700px;margin:0 auto;padding:60px 24px;text-align:center">
-  <div style="font-size:4rem;margin-bottom:16px">🚀</div>
-  <h1 style="font-size:2.2rem;margin-bottom:16px">About Site Flow</h1>
-  <p style="color:var(--gray-600);font-size:1.1rem;line-height:1.8;margin-bottom:32px">Site Flow is a no-code website builder that empowers anyone to create professional websites without writing a single line of code. We believe that everyone deserves a beautiful online presence, regardless of technical skill.</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:40px">
-    <div class="card"><div style="font-size:2rem;color:var(--primary);margin-bottom:8px">🎯</div><h3>Our Mission</h3><p style="font-size:.88rem;color:var(--gray-500)">Make website creation accessible to everyone worldwide.</p></div>
-    <div class="card"><div style="font-size:2rem;color:var(--primary);margin-bottom:8px">👁️</div><h3>Our Vision</h3><p style="font-size:.88rem;color:var(--gray-500)">A world where anyone can build their digital presence.</p></div>
-    <div class="card"><div style="font-size:2rem;color:var(--primary);margin-bottom:8px">💪</div><h3>Our Values</h3><p style="font-size:.88rem;color:var(--gray-500)">Simplicity, accessibility, and professional quality.</p></div>
+  <div class="card text-center" style="margin-top:32px;padding:32px">
+    <h3 style="margin-bottom:8px">Still need help?</h3>
+    <p style="color:var(--gray-500);margin-bottom:16px">Contact our support team</p>
+    <a href="mailto:support@siteflow.vexonet.online" class="btn btn-primary">Email Support</a>
   </div>
 </div>` },
 
-  // ── Privacy Policy ──
+  about() { return `
+<div style="max-width:800px;margin:0 auto;padding:60px 24px">
+  <div class="text-center mb-24">
+    <div style="font-size:3rem;margin-bottom:12px">🚀</div>
+    <h1 style="font-size:2.2rem;margin-bottom:16px">About Site Flow</h1>
+    <p style="color:var(--gray-600);font-size:1.1rem;line-height:1.8;max-width:600px;margin:0 auto">Site Flow is a no-code website builder that empowers anyone to create professional websites without writing a single line of code.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:40px">
+    <div class="card" style="text-align:center;padding:32px"><div style="font-size:2.5rem;margin-bottom:12px">🎯</div><h3 style="margin-bottom:8px">Our Mission</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">Make website creation accessible to everyone worldwide.</p></div>
+    <div class="card" style="text-align:center;padding:32px"><div style="font-size:2.5rem;margin-bottom:12px">👁️</div><h3 style="margin-bottom:8px">Our Vision</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">A world where anyone can build their digital presence.</p></div>
+    <div class="card" style="text-align:center;padding:32px"><div style="font-size:2.5rem;margin-bottom:12px">💪</div><h3 style="margin-bottom:8px">Our Values</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">Simplicity, accessibility, and professional quality.</p></div>
+  </div>
+  <div class="card" style="margin-top:40px;padding:32px;text-align:center">
+    <h3 style="margin-bottom:8px">Ready to get started?</h3>
+    <p style="color:var(--gray-500);margin-bottom:16px">Join thousands of creators building their websites with Site Flow</p>
+    <a href="#/login" class="btn btn-primary btn-lg">Get Started Free</a>
+  </div>
+</div>` },
+
   privacy() { return `
 <div style="max-width:700px;margin:0 auto;padding:60px 24px">
   <h1 style="font-size:2rem;margin-bottom:24px">Privacy Policy</h1>
@@ -421,15 +408,14 @@ const T = {
     <h3 style="margin-bottom:8px;color:var(--gray-800)">2. How We Use Your Information</h3>
     <p class="mb-16">We use your information to provide and improve our services, communicate with you, and ensure platform security. We never sell your personal data.</p>
     <h3 style="margin-bottom:8px;color:var(--gray-800)">3. Data Storage</h3>
-    <p class="mb-16">Your data is stored securely on Supabase servers. We implement industry-standard security measures to protect your information.</p>
+    <p class="mb-16">Your data is stored securely on our servers. We implement industry-standard security measures to protect your information.</p>
     <h3 style="margin-bottom:8px;color:var(--gray-800)">4. Cookies</h3>
     <p class="mb-16">We use essential cookies for authentication and platform functionality. No tracking cookies are used.</p>
     <h3 style="margin-bottom:8px;color:var(--gray-800)">5. Contact</h3>
-    <p>For privacy concerns, contact us at <a href="mailto:privacy@siteflow.app" style="color:var(--primary)">privacy@siteflow.app</a></p>
+    <p>For privacy concerns, contact us at <a href="mailto:privacy@siteflow.vexonet.online" style="color:var(--primary)">privacy@siteflow.vexonet.online</a></p>
   </div>
 </div>` },
 
-  // ── Checkout / Payment ──
   checkout(plan) { return `
 <div style="max-width:500px;margin:60px auto;padding:40px;text-align:center">
   <div style="font-size:3rem;margin-bottom:16px">💳</div>

@@ -10,7 +10,6 @@ const Builder = {
     this.page.sections = this.undoStack.pop()
     if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
     this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll()
-    Toast.show('Undo','info')
   },
   _redo() {
     if (!this.redoStack.length) return
@@ -18,7 +17,6 @@ const Builder = {
     this.page.sections = this.redoStack.pop()
     if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
     this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll()
-    Toast.show('Redo','info')
   },
 
   async load(id) {
@@ -27,7 +25,7 @@ const Builder = {
     try {
       this.page = await API.getSite(id)
       if (!this.page) throw new Error('Site not found')
-      this.editingIdx = 0; this.mobileMode = false
+      this.editingIdx = 0; this.mobileMode = false; this.undoStack = []; this.redoStack = []
       this.render(); this.bindAll()
     } catch(e) { Toast.show(e.message,'error'); Router.navigate('dashboard') }
   },
@@ -94,6 +92,7 @@ const Builder = {
     document.addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey) && e.key==='z') { e.preventDefault(); if (e.shiftKey) this._redo(); else this._undo() } if ((e.ctrlKey||e.metaKey) && e.key==='y') { e.preventDefault(); this._redo() } })
     document.getElementById('previewBtn')?.addEventListener('click',()=>{this._saveNow();window.open('#/preview/'+this.page.id,'_blank')})
     document.getElementById('publishBtn')?.addEventListener('click',()=>this._publish())
+    document.getElementById('saveBtn')?.addEventListener('click',()=>{this._saveNow();Toast.show('Saved!','success')})
     document.getElementById('deviceToggle')?.addEventListener('click',e=>{
       const btn=e.target.closest('.device-btn'); if(!btn) return
       document.querySelectorAll('.device-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active')
@@ -155,13 +154,23 @@ const Builder = {
     document.querySelectorAll('[contenteditable]').forEach(el=>{
       el.addEventListener('blur',()=>{
         const s=this.page.sections[this.editingIdx]; if(!s) return
-        const f=el.dataset.field; if(f) s.data[f]=el.innerText; this._saveNow()
+        const f=el.dataset.field; if(!f) return
+        const parts=f.split('.')
+        if (parts.length===3) {
+          const [arr,idx,prop]=parts
+          if(s.data[arr]&&s.data[arr][parseInt(idx)]) s.data[arr][parseInt(idx)][prop]=el.innerText
+        } else if (parts.length===2) {
+          const [arr,idx]=parts
+          if(s.data[arr]) s.data[arr][parseInt(idx)]=el.innerText
+        } else {
+          s.data[f]=el.innerText
+        }
+        this._saveNow()
       })
       el.addEventListener('keydown',e=>{
-        if (e.key==='Enter'&&(el.dataset.field==='heading'||el.dataset.field==='content')){e.preventDefault();document.execCommand('insertLineBreak')}
+        if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.execCommand('insertLineBreak')}
       })
     })
-    // Hero image
     document.getElementById('heroImagePlaceholder')?.addEventListener('click',()=>document.getElementById('heroImageInput')?.click())
     document.getElementById('heroImageInput')?.addEventListener('change',e=>{
       const file=e.target.files[0]; if(!file) return
@@ -172,7 +181,6 @@ const Builder = {
     document.querySelector('[data-hero-remove]')?.addEventListener('click',()=>{
       const s=this.page.sections.find(x=>x.type==='hero'); if(s){s.data.image='';this._saveNow();this._renderCanvas();this.bindAll()}
     })
-    // Gallery
     document.getElementById('galleryGrid')?.addEventListener('click',e=>{
       if (e.target.closest('#addGalleryBtn')) document.getElementById('galleryImageInput')?.click()
       const rm=e.target.closest('.remove-img')
@@ -244,12 +252,25 @@ const Builder = {
 
   async createNew() {
     if(!Auth.requireAuth()) return
-    // Show template picker
     const existing = document.getElementById('templateModal')
-    if (existing) existing.remove()
+    if (existing) existing.closest('.modal-overlay')?.remove()
     const div = document.createElement('div'); div.id='templateModalWrap'
     div.innerHTML = T.templatePicker()
     document.body.appendChild(div)
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'))
+        btn.classList.add('active')
+        const filter = btn.dataset.filter
+        document.querySelectorAll('.template-card').forEach(card => {
+          card.style.display = (filter==='all' || card.dataset.category===filter) ? '' : 'none'
+        })
+      })
+    })
+
+    // Template selection
     document.querySelectorAll('.template-card').forEach(card => {
       card.addEventListener('click', async () => {
         const templateId = card.dataset.template
@@ -259,6 +280,11 @@ const Builder = {
           Toast.show('Site created!','success'); Router.navigate('builder/'+site.id)
         } catch(e) { Toast.show(e.message,'error') }
       })
+    })
+
+    // Close on overlay click
+    div.querySelector('.modal-overlay')?.addEventListener('click', e => {
+      if (e.target.classList.contains('modal-overlay')) div.remove()
     })
   },
 

@@ -30,6 +30,7 @@ const Router = {
     else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._checkoutRoute(pts[1]) }
     else if (r==='submissions'&&pts[1]) { if(!Auth.requireAuth())return; this._submissions(pts[1]) }
     else { this._render('landing') }
+    window.scrollTo(0, 0)
   },
 
   _render(page) {
@@ -46,18 +47,12 @@ const Router = {
   },
 
   async _public(slug) {
-    // Redirect to subdomain URL for published sites
     try {
       const s = await API.getPublicPage(slug)
       if (!s) throw new Error('404')
-      if (s.published) {
-        window.location.href = subdomainUrl(s.slug)
-        return
-      }
+      if (s.published) { window.location.href = subdomainUrl(s.slug); return }
       document.title = s.seo?.title||s.title
       document.getElementById('app').innerHTML = T.publicPage(s)
-      const m = document.querySelector('meta[name="description"]')
-      if (m) m.content = s.seo?.description||''
       this._bindPublicContactForm(s.slug)
     } catch(e) {
       document.getElementById('app').innerHTML = T.notFound('Not Published', 'This site has not been published yet.')
@@ -70,33 +65,28 @@ const Router = {
       const plans = await API.getPlans()
       if (!plans) throw new Error('No plans')
       app.innerHTML = T.plans(plans)
-      document.querySelectorAll('.plan-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (!Auth.requireAuth()) return
-          this._checkout(btn.dataset.plan, plans[btn.dataset.plan])
-        })
-      })
     } catch {
-      // Fallback: show hardcoded plans
       app.innerHTML = T.plans({free:{name:'Free',price:0,max_sites:1,custom_domain:false,analytics:false,premium_themes:false,priority_support:false},pro:{name:'Pro',price:9,max_sites:10,custom_domain:true,analytics:true,premium_themes:true,priority_support:false},business:{name:'Business',price:29,max_sites:-1,custom_domain:true,analytics:true,premium_themes:true,priority_support:true}})
-      document.querySelectorAll('.plan-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (!Auth.requireAuth()) return
-          const plans = {free:{name:'Free',price:0},pro:{name:'Pro',price:9},business:{name:'Business',price:29}}
-          this._checkout(btn.dataset.plan, plans[btn.dataset.plan])
-        })
-      })
     }
+    document.querySelectorAll('.plan-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!Auth.requireAuth()) return
+        this._checkout(btn.dataset.plan)
+      })
+    })
   },
 
-  async _checkout(planKey, plan) {
-    if (plan.price === 0) {
-      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show('Switched to Free plan!','success'); Router.navigate('dashboard') }
+  async _checkout(planKey) {
+    const plans = {free:{name:'Free',price:0},pro:{name:'Pro',price:9},business:{name:'Business',price:29}}
+    try { const p = await API.getPlans(); if(p) Object.assign(plans, p) } catch {}
+    const plan = plans[planKey]
+    if (!plan || plan.price === 0) {
+      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show('Plan updated!','success'); Router.navigate('dashboard') }
       catch(e) { Toast.show(e.message,'error') }
       return
     }
     document.getElementById('app').innerHTML = T.checkout(plan)
-    document.getElementById('confirmPaymentBtn').addEventListener('click', async () => {
+    document.getElementById('confirmPaymentBtn')?.addEventListener('click', async () => {
       try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show(`Upgraded to ${plan.name}!`,'success'); Router.navigate('dashboard') }
       catch(e) { Toast.show(e.message,'error') }
     })
@@ -152,22 +142,7 @@ const Router = {
   _about() { document.getElementById('app').innerHTML = T.about() },
   _privacy() { document.getElementById('app').innerHTML = T.privacy() },
 
-  async _checkoutRoute(planKey) {
-    const plans = {free:{name:'Free',price:0},pro:{name:'Pro',price:9},business:{name:'Business',price:29}}
-    try { const p = await API.getPlans(); Object.assign(plans, p) } catch {}
-    const plan = plans[planKey]
-    if (!plan) { Toast.show('Invalid plan','error'); Router.navigate('plans'); return }
-    if (plan.price === 0) {
-      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show('Switched to Free plan!','success'); Router.navigate('dashboard') }
-      catch(e) { Toast.show(e.message,'error') }
-      return
-    }
-    document.getElementById('app').innerHTML = T.checkout(plan)
-    document.getElementById('confirmPaymentBtn')?.addEventListener('click', async () => {
-      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show(`Upgraded to ${plan.name}!`,'success'); Router.navigate('dashboard') }
-      catch(e) { Toast.show(e.message,'error') }
-    })
-  },
+  async _checkoutRoute(planKey) { this._checkout(planKey) },
 
   _bindAuth() {
     const tabs = document.querySelectorAll('.auth-tab')
@@ -176,13 +151,43 @@ const Router = {
     tabs.forEach(t => t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');lf.classList.toggle('hidden',t.dataset.tab!=='login');sf.classList.toggle('hidden',t.dataset.tab!=='signup');if(err)err.style.display='none'}))
     lf?.addEventListener('submit', async e => {
       e.preventDefault()
+      const btn = lf.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Signing in...'
       try { await Auth.login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); Router.navigate('dashboard') }
       catch(e) { if(err){err.textContent=e.message;err.style.display='block'} }
+      finally { btn.disabled=false; btn.textContent='Sign In' }
     })
     sf?.addEventListener('submit', async e => {
       e.preventDefault()
+      const btn = sf.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Creating account...'
       try { await Auth.signup(document.getElementById('signupName').value, document.getElementById('signupEmail').value, document.getElementById('signupPassword').value); Router.navigate('dashboard') }
       catch(e) { if(err){err.textContent=e.message;err.style.display='block'} }
+      finally { btn.disabled=false; btn.textContent='Create Account' }
+    })
+  },
+
+  _bindPublicContactForm(slug) {
+    const btn = document.getElementById('cfSubmitBtn')
+    if (!btn) return
+    btn.addEventListener('click', async () => {
+      const name = document.getElementById('cfName')?.value?.trim()
+      const email = document.getElementById('cfEmail')?.value?.trim()
+      const message = document.getElementById('cfMessage')?.value?.trim()
+      const msgEl = document.getElementById('cfMsg')
+      if (!name || !email || !message) {
+        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#dc2626'; msgEl.textContent = 'Please fill all fields' }
+        return
+      }
+      btn.disabled = true; btn.textContent = 'Sending...'
+      const res = await API.submitForm(slug, name, email, message)
+      btn.disabled = false; btn.textContent = 'Send'
+      if (res.ok) {
+        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#059669'; msgEl.textContent = 'Message sent!' }
+        document.getElementById('cfName').value = ''
+        document.getElementById('cfEmail').value = ''
+        document.getElementById('cfMessage').value = ''
+      } else {
+        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#dc2626'; msgEl.textContent = 'Failed to send' }
+      }
     })
   }
 }
@@ -223,33 +228,6 @@ const Dash = {
       document.getElementById('createSiteBtn')?.addEventListener('click',()=>Builder.createNew())
       document.getElementById('upgradeBtn')?.addEventListener('click',()=>Router.navigate('plans'))
     } catch(e) { Toast.show(e.message,'error') }
-  },
-
-  _bindPublicContactForm(slug) {
-    const form = document.getElementById('pubContactForm')
-    if (!form) return
-    document.getElementById('cfSubmitBtn')?.addEventListener('click', async () => {
-      const name = document.getElementById('cfName')?.value?.trim()
-      const email = document.getElementById('cfEmail')?.value?.trim()
-      const message = document.getElementById('cfMessage')?.value?.trim()
-      const msgEl = document.getElementById('cfMsg')
-      if (!name || !email || !message) {
-        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#dc2626'; msgEl.textContent = 'Please fill all fields' }
-        return
-      }
-      const btn = document.getElementById('cfSubmitBtn')
-      btn.disabled = true; btn.textContent = 'Sending...'
-      const res = await API.submitForm(slug, name, email, message)
-      btn.disabled = false; btn.textContent = 'Send'
-      if (res.ok) {
-        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#059669'; msgEl.textContent = 'Message sent!' }
-        document.getElementById('cfName').value = ''
-        document.getElementById('cfEmail').value = ''
-        document.getElementById('cfMessage').value = ''
-      } else {
-        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#dc2626'; msgEl.textContent = 'Failed to send' }
-      }
-    })
   },
 
   async remove(id) {
