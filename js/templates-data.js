@@ -63,13 +63,14 @@ const TEMPLATE_DATA = (() => {
 
   function add(cat, sub, name, desc, sections) {
     const c = C[cat] || C.business;
+    const iconSvg = ICONS[c.icon] || ICONS.globe;
     templates.push({
       id: cat + '-' + sub,
       name: name,
       desc: desc,
-      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="${c.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-${c.icon}"/></svg>`,
+      icon: iconSvg,
       category: cat,
-      theme: { color: c.color, font: c.font },
+      theme: { color: c.color, font: c.font, icon: c.icon },
       sections: sections
     });
   }
