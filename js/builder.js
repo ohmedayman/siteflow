@@ -439,11 +439,10 @@ const Builder = {
     })
 
     document.getElementById('heroImagePlaceholder')?.addEventListener('click', () => document.getElementById('heroImageInput')?.click())
-    document.getElementById('heroImageInput')?.addEventListener('change', e => {
+    document.getElementById('heroImageInput')?.addEventListener('change', async e => {
       const file = e.target.files[0]; if (!file) return
-      const reader = new FileReader()
-      reader.onload = ev => { const s = this.page.sections[this.editingIdx]; if (s) { s.data.image = ev.target.result; this._saveNow(); this._render() } }
-      reader.readAsDataURL(file)
+      const url = await API.uploadImage(file)
+      const s = this.page.sections[this.editingIdx]; if (s) { s.data.image = url; this._saveNow(); this._render() }
     })
     document.querySelector('[data-hero-remove]')?.addEventListener('click', () => {
       const s = this.page.sections[this.editingIdx]; if (s) { s.data.image = ''; this._saveNow(); this._render() }
@@ -453,11 +452,25 @@ const Builder = {
       const rm = e.target.closest('.remove-img')
       if (rm && rm.dataset.index !== undefined) { const s = this.page.sections[this.editingIdx]; if (s) { s.data.images.splice(parseInt(rm.dataset.index), 1); this._saveNow(); this._render() } }
     })
-    document.getElementById('galleryImageInput')?.addEventListener('change', e => {
+    document.getElementById('galleryImageInput')?.addEventListener('change', async e => {
       const files = Array.from(e.target.files); if (!files.length) return
       const s = this.page.sections[this.editingIdx]; if (!s) return
       let loaded = 0
-      files.forEach(file => { const r = new FileReader(); r.onload = ev => { s.data.images.push(ev.target.result); loaded++; if (loaded === files.length) { this._saveNow(); this._render() } }; r.readAsDataURL(file) })
+      for (const file of files) {
+        const url = await API.uploadImage(file)
+        s.data.images.push(url); loaded++
+        if (loaded === files.length) { this._saveNow(); this._render() }
+      }
+    })
+    // Portfolio image upload
+    document.getElementById('portfolioImageInput')?.addEventListener('change', async e => {
+      const files = Array.from(e.target.files); if (!files.length) return
+      const s = this.page.sections[this.editingIdx]; if (!s) return
+      for (const file of files) {
+        const url = await API.uploadImage(file)
+        s.data.items.push({ title: 'New Item', desc: 'Description', image: url })
+      }
+      this._saveNow(); this._render()
     })
   },
 

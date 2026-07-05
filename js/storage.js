@@ -377,7 +377,6 @@ const API = {
     const mode = await this._init()
     if (mode !== 'flask') return
     const uid=(this.token||'').replace('local_','')
-    // Find all sites owned by this user in localStorage
     const locals = LocalDB.users.get().find(u => u.id === uid)
     if (!locals) return
     const pages = LocalDB.pages.get().filter(p => p.userId === uid)
@@ -386,11 +385,34 @@ const API = {
         const r = await this._fetch('/sites/import', {method:'POST', body:JSON.stringify(page)})
         if (r.ok) {
           const imported = await r.json()
-          // Update local copy with server ID
           Object.assign(page, imported)
           LocalDB.pages.save(LocalDB.pages.get().map(p => p.id === page.id ? page : p))
         }
       } catch {}
     }
+  },
+
+  // ── Cloudinary Upload ──
+  async uploadImage(file) {
+    const mode = await this._init()
+    // Try Flask backend with Cloudinary
+    if (mode === 'flask') {
+      const formData = new FormData()
+      formData.append('file', file)
+      try {
+        const r = await fetch(API_BASE + '/upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + this.token },
+          body: formData
+        })
+        if (r.ok) return (await r.json()).url
+      } catch {}
+    }
+    // Fallback: direct base64 (works offline)
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (ev) => resolve(ev.target.result)
+      reader.readAsDataURL(file)
+    })
   }
 }

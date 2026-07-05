@@ -6,11 +6,21 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 from models import db, User, Site, Section, SEO, Theme, Payment, PageView, FormSubmission
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app, supports_credentials=True)
 db.init_app(app)
+
+# Cloudinary config
+cloudinary.config(
+    cloud_name=Config.CLOUDINARY_CLOUD_NAME,
+    api_key=Config.CLOUDINARY_API_KEY,
+    api_secret=Config.CLOUDINARY_API_SECRET
+)
 
 # ─────────────── helpers ───────────────
 
@@ -215,6 +225,29 @@ def health():
     except:
         db_ok = False
     return jsonify({'ok': True, 'db': db_ok})
+
+@app.route('/api/upload', methods=['POST'])
+@login_required
+def upload_file(user):
+    """Upload an image to Cloudinary. Accepts file upload or base64 data."""
+    try:
+        file = request.files.get('file')
+        if file and file.filename:
+            result = cloudinary.uploader.upload(file, folder=f'siteflow/{user.id}', resource_type='image')
+        else:
+            data = request.get_json() or {}
+            b64 = data.get('base64', '')
+            if not b64:
+                return jsonify({'error': 'No file or base64 data provided'}), 400
+            result = cloudinary.uploader.upload(b64, folder=f'siteflow/{user.id}', resource_type='image')
+        return jsonify({
+            'url': result['secure_url'],
+            'public_id': result['public_id'],
+            'width': result.get('width'),
+            'height': result.get('height')
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/sites/import', methods=['POST'])
 @login_required

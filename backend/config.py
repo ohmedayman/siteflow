@@ -33,3 +33,9 @@ class Config:
     # Stripe (mock)
     STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', 'pk_test_mock')
     STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', 'sk_test_mock')
+
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', 'reqe54ky')
+    CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '433413431167268')
+    CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET', '_HKYCJFA0ICqgaFgu9v8JPEih94')
+    CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', 'cloudinary://433413431167268:_HKYCJFA0ICqgaFgu9v8JPEih94@reqe54ky')
