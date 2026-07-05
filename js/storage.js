@@ -3,7 +3,7 @@
  * Primary: Supabase | Fallback: LocalStorage
  */
 const API_BASE = '/api'
-const MAIN_DOMAIN = window.location.hostname
+const MAIN_DOMAIN = (typeof window.SF_MAIN_DOMAIN !== 'undefined' ? window.SF_MAIN_DOMAIN : window.location.hostname)
 function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${MAIN_DOMAIN}` }
 function getDaysLeft() { return 999 }
 function isExpired() { return false }

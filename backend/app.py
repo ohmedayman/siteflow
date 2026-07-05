@@ -482,8 +482,11 @@ def handle_subdomain():
 @app.after_request
 def add_cors(response):
     origin = request.headers.get('Origin', '')
+    allowed = Config.FRONTEND_DOMAINS + ['http://localhost:5000']
     if origin:
-        response.headers['Access-Control-Allow-Origin'] = origin
+        origin_host = origin.split('://')[-1].split(':')[0]
+        if any(origin_host == d or origin_host.endswith('.' + d) for d in allowed):
+            response.headers['Access-Control-Allow-Origin'] = origin
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
     return response

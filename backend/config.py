@@ -8,6 +8,7 @@ class Config:
     JWT_EXPIRY_HOURS = 24
     SITE_URL = os.environ.get('SITE_URL', 'https://siteflow.vexonet.online')
     MAIN_DOMAIN = os.environ.get('MAIN_DOMAIN', 'siteflow.vexonet.online')
+    FRONTEND_DOMAINS = ['siteflow.vexonet.online', 'siteflow.app', 'localhost']
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@siteflow.app')
 
     # Plans
