@@ -416,4 +416,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (app) app.innerHTML = T.loading()
   await Auth.init()
   Router.init()
+
+  // Entrance animations via Intersection Observer
+  const animateOnScroll = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible')
+        animateOnScroll.unobserve(entry.target)
+      }
+    })
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' })
+
+  function initAnimations() {
+    document.querySelectorAll('.lp-section, .lp-features-bento, .lp-logos-bar, .lp-hero, .lp-cta-section').forEach(el => animateOnScroll.observe(el))
+    // Stagger children
+    const staggerObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const children = entry.target.querySelectorAll('.lp-step, .lp-feature-card, .lp-pricing-card, .lp-testimonial-card')
+          children.forEach((child, i) => {
+            setTimeout(() => child.classList.add('visible'), i * 80)
+          })
+          staggerObserver.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.1 })
+    document.querySelectorAll('.lp-steps, .lp-features-grid, .lp-pricing-grid, .lp-testimonials-grid').forEach(el => staggerObserver.observe(el))
+  }
+
+  // Re-init animations after route changes
+  const origRender = Router._render.bind(Router)
+  Router._render = function(page) {
+    origRender(page)
+    setTimeout(initAnimations, 50)
+  }
+  // Also re-init after Dash.render
+  const origDashRender = Dash.render.bind(Dash)
+  Dash.render = async function() {
+    await origDashRender()
+    setTimeout(initAnimations, 50)
+  }
+
+  setTimeout(initAnimations, 100)
 })

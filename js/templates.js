@@ -12,19 +12,29 @@ const T = {
 
   landing() { return `
 <div class="lp-hero">
+  <div class="hero-shapes">
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+  </div>
   <div class="lp-badge">${ICONS.wrap(ICONS.sparkles,14)} New Feature</div>
   <h1 class="lp-title">Create Stunning Websites.<br>Zero Code.</h1>
   <p class="lp-subtitle">Build professional, responsive sites in minutes. Customize<br>with a drag & drop editor and publish instantly.</p>
-  <a href="#/login" class="btn btn-primary btn-lg lp-cta js-auth-guest">Get Started Free</a>
-  <a href="#/dashboard" class="btn btn-primary btn-lg lp-cta js-auth-user hidden">Go to Dashboard</a>
+  <div class="cta-buttons">
+    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">Get Started Free</a>
+    <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
+    <a href="#/plans" class="btn btn-outline btn-lg">View Pricing</a>
+  </div>
   <div class="lp-social-proof">
     <div class="lp-avatars">
       <div class="lp-avatar" style="background:#6366f1">A</div>
       <div class="lp-avatar" style="background:#ec4899">M</div>
       <div class="lp-avatar" style="background:#f97316">S</div>
       <div class="lp-avatar" style="background:#06b6d4">R</div>
+      <div class="lp-avatar" style="background:#8b5cf6">K</div>
     </div>
-    <span>Joined by <strong>10k+ creators</strong></span>
+    <span>Joined by <strong>10,000+ creators</strong> worldwide</span>
   </div>
 </div>
 
@@ -47,7 +57,7 @@ const T = {
       <div class="bento-img" style="background:linear-gradient(135deg,#1e293b,#334155);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
         <div style="color:#fff;text-align:center;padding:24px">
           <div style="margin-bottom:8px">${ICONS.wrap(ICONS.folder,40)}</div>
-          <div style="font-size:1rem;font-weight:700">8+ Templates</div>
+          <div style="font-size:1rem;font-weight:700">500+ Templates</div>
         </div>
       </div>
     </div>
@@ -262,23 +272,23 @@ const T = {
     <h2 class="lp-section-title">Frequently Asked Questions</h2>
     <p class="lp-section-desc">Everything you need to know about Site Flow.</p>
     <div class="lp-faq-list">
-      <div class="lp-faq-item">
+      <div class="lp-faq-item" onclick="this.classList.toggle('active')">
         <h3>Is Site Flow really free?</h3>
         <p>Yes! The free plan includes 1 website, a free subdomain, and access to basic templates. No credit card required.</p>
       </div>
-      <div class="lp-faq-item">
+      <div class="lp-faq-item" onclick="this.classList.toggle('active')">
         <h3>Can I use my own domain?</h3>
         <p>Absolutely. Pro and Business plans support custom domains. Just point your domain's CNAME record to our servers.</p>
       </div>
-      <div class="lp-faq-item">
+      <div class="lp-faq-item" onclick="this.classList.toggle('active')">
         <h3>Do I need coding skills?</h3>
         <p>Not at all. Site Flow is designed for everyone. Our visual editor lets you build sites by clicking and dragging.</p>
       </div>
-      <div class="lp-faq-item">
+      <div class="lp-faq-item" onclick="this.classList.toggle('active')">
         <h3>Can I sell products on my site?</h3>
         <p>Yes! Business plan users get e-commerce integration with Stripe for secure payment processing.</p>
       </div>
-      <div class="lp-faq-item">
+      <div class="lp-faq-item" onclick="this.classList.toggle('active')">
         <h3>What happens if I cancel?</h3>
         <p>Your site stays live on the free plan. You keep all your content and can upgrade anytime.</p>
       </div>
@@ -312,21 +322,21 @@ const T = {
         <h4>Product</h4>
         <a href="#/plans">Pricing</a>
         <a href="#/help">Help Center</a>
-        <a href="#/about">About</a>
-        <a href="#/login">Contact Us</a>
+        <a href="#/about">Features</a>
+        <a href="#/about">Templates</a>
       </div>
       <div class="lp-footer-col">
         <h4>Company</h4>
         <a href="#/about">About Us</a>
-        <a href="#/help">Press</a>
-        <a href="#/about">Resources</a>
+        <a href="#/about">Blog</a>
+        <a href="#/about">Careers</a>
       </div>
       <div class="lp-footer-col">
         <h4>Resources</h4>
-        <a href="#/help">About Us</a>
-        <a href="#/help">Press</a>
-        <a href="#/help">Resources</a>
-        <a href="#/help">Accessibility</a>
+        <a href="#/help">Documentation</a>
+        <a href="#/help">Changelog</a>
+        <a href="#/help">Status</a>
+        <a href="#/about">Community</a>
       </div>
       <div class="lp-footer-col">
         <h4>Legal</h4>
@@ -349,8 +359,23 @@ const T = {
 <div class="auth-page">
   <div class="auth-left">
     <div class="auth-left-content">
+      <div style="margin-bottom:32px;opacity:.8">${ICONS.wrap(ICONS.sparkles,48)}</div>
       <h1>Build Your<br>Dream Website</h1>
       <p>Join thousands of creators using Site Flow. Choose a template, customize, and publish in minutes.</p>
+      <div style="margin-top:40px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px;font-size:.95rem;opacity:.9">
+          <span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center">${ICONS.wrap(ICONS.check,14)}</span>
+          Drag & drop visual editor
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:.95rem;opacity:.9">
+          <span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center">${ICONS.wrap(ICONS.check,14)}</span>
+          500+ professional templates
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:.95rem;opacity:.9">
+          <span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center">${ICONS.wrap(ICONS.check,14)}</span>
+          Free subdomain included
+        </div>
+      </div>
     </div>
   </div>
   <div class="auth-right">
@@ -378,6 +403,10 @@ const T = {
         <div class="input-group"><label>Password</label><input type="password" class="input" id="signupPassword" placeholder="Create a password" required></div>
         <button type="submit" class="btn btn-primary btn-lg w-full">Create Account</button>
       </form>
+      <div class="auth-demo">
+        <strong>Demo Account</strong>
+        Email: demo@siteflow.app<br>Password: demo123
+      </div>
     </div>
   </div>
 </div>` },
