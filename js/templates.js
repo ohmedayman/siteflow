@@ -75,8 +75,7 @@ const T = {
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="logo" style="margin-bottom:12px;display:inline-flex">
-          <img src="assets/sitflow.svg" alt="Site Flow" width="28" height="28">
-          Site<span>Flow</span>
+          <img src="assets/sitflow.svg" alt="Site Flow" width="56" height="56">
         </div>
         <p style="color:var(--gray-400);font-size:.85rem;line-height:1.6">Build professional websites without code. Free to start, powerful when you grow.</p>
       </div>
