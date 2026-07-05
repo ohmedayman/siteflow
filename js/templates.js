@@ -481,6 +481,7 @@ const T = {
       <p>Here's what's happening with your websites</p>
     </div>
     <div class="header-actions">
+      ${Auth.isAdmin()?'<a href="#/admin" class="btn btn-ghost btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d">Admin</a>':''}
       <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">${ICONS.wrap(ICONS.trendingUp,14)} Upgrade</a>
       <button class="btn btn-primary btn-sm" id="createSiteBtn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
