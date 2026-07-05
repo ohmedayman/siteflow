@@ -5,15 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Site Flow - No-Code Website Builder</title>
 <meta name="description" content="Build stunning websites without code. Drag-and-drop builder, SEO optimized, responsive design.">
+<link rel="icon" type="image/svg+xml" href="assets/sitflow.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
   <header class="app-header">
     <div class="header-inner">
-      <a href="/" class="logo" onclick="Router.navigate('')">
+      <a href="#/" class="logo">
         <img src="assets/sitflow.svg" alt="Site Flow" width="28" height="28">
         Site<span>Flow</span>
       </a>
@@ -32,11 +34,12 @@
     </div>
   </header>
   <main class="app-main" id="app"></main>
-  <script src="js/presets.js?v=4"></script>
-  <script src="js/storage.js?v=4"></script>
-  <script src="js/auth.js?v=4"></script>
-  <script src="js/templates.js?v=4"></script>
-  <script src="js/builder.js?v=4"></script>
-  <script src="js/app.js?v=4"></script>
+  <script src="js/presets.js?v=5"></script>
+  <script src="js/supabase.js?v=5"></script>
+  <script src="js/storage.js?v=5"></script>
+  <script src="js/auth.js?v=5"></script>
+  <script src="js/templates.js?v=5"></script>
+  <script src="js/builder.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>
