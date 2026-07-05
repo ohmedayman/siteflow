@@ -3,7 +3,7 @@
  */
 const PRESETS = [
   {
-    id: 'personal', name: 'Personal Portfolio', icon: '👤', category: 'personal',
+    id: 'personal', name: 'Personal Portfolio', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>', category: 'personal',
     desc: 'Showcase your work, skills, and experience',
     sections: [
       { type: 'hero', data: { heading: 'John Doe', description: 'Creative Developer & Designer. I build digital experiences that matter.', image: '' } },
@@ -20,7 +20,7 @@ const PRESETS = [
     seo: { title: 'My Portfolio', description: 'Creative Developer & Designer portfolio' }
   },
   {
-    id: 'business', name: 'Business', icon: '🏢', category: 'business',
+    id: 'business', name: 'Business', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><line x1="8" y1="6" x2="10" y2="6"/><line x1="14" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/></svg>', category: 'business',
     desc: 'Professional company website with services',
     sections: [
       { type: 'hero', data: { heading: 'Welcome to Our Company', description: 'We provide innovative solutions for your business growth.', image: '' } },
@@ -37,7 +37,7 @@ const PRESETS = [
     seo: { title: 'Our Company', description: 'Leading business solutions provider' }
   },
   {
-    id: 'restaurant', name: 'Restaurant', icon: '🍽️', category: 'food',
+    id: 'restaurant', name: 'Restaurant', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>', category: 'food',
     desc: 'Restaurant menu and reservation site',
     sections: [
       { type: 'hero', data: { heading: 'Delicious Dining Experience', description: 'Fresh ingredients, authentic flavors, unforgettable moments.', image: '' } },
@@ -51,7 +51,7 @@ const PRESETS = [
     seo: { title: 'Our Restaurant', description: 'Best dining experience in town' }
   },
   {
-    id: 'gallery', name: 'Photo Gallery', icon: '📸', category: 'creative',
+    id: 'gallery', name: 'Photo Gallery', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>', category: 'creative',
     desc: 'Photography portfolio with image gallery',
     sections: [
       { type: 'hero', data: { heading: 'Photography Portfolio', description: 'Capturing moments that last forever.', image: '' } },
@@ -65,7 +65,7 @@ const PRESETS = [
     seo: { title: 'Photography Portfolio', description: 'Professional photography services' }
   },
   {
-    id: 'event', name: 'Event', icon: '🎉', category: 'personal',
+    id: 'event', name: 'Event', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>', category: 'personal',
     desc: 'Event or conference landing page',
     sections: [
       { type: 'hero', data: { heading: 'Annual Tech Conference 2026', description: 'Join 5000+ developers, designers, and tech enthusiasts.', image: '' } },
@@ -80,7 +80,7 @@ const PRESETS = [
     seo: { title: 'Tech Conference 2026', description: 'Annual tech conference for developers' }
   },
   {
-    id: 'form', name: 'Contact Form', icon: '📝', category: 'other',
+    id: 'form', name: 'Contact Form', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>', category: 'other',
     desc: 'Simple contact/lead capture page',
     sections: [
       { type: 'hero', data: { heading: 'Get In Touch', description: 'We\'d love to hear from you. Send us a message!', image: '' } },
@@ -92,7 +92,7 @@ const PRESETS = [
     seo: { title: 'Contact Us', description: 'Get in touch with our team' }
   },
   {
-    id: 'blog', name: 'Blog & News', icon: '✍️', category: 'personal',
+    id: 'blog', name: 'Blog & News', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M15.5 3.5 21 9l-9 9H3v-9Z"/></svg>', category: 'personal',
     desc: 'Personal blog or magazine layout',
     sections: [
       { type: 'hero', data: { heading: 'My Blog', description: 'Thoughts, stories, and ideas on technology and design.', image: '' } },
@@ -107,7 +107,7 @@ const PRESETS = [
     seo: { title: 'My Blog', description: 'Technology and design blog' }
   },
   {
-    id: 'store', name: 'Online Store', icon: '🛍️', category: 'business',
+    id: 'store', name: 'Online Store', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>', category: 'business',
     desc: 'E-commerce product showcase',
     sections: [
       { type: 'hero', data: { heading: 'Our Store', description: 'Discover amazing products at great prices.', image: '' } },
@@ -122,7 +122,7 @@ const PRESETS = [
     seo: { title: 'Our Store', description: 'Premium online store' }
   },
   {
-    id: 'blank', name: 'Blank Canvas', icon: '🎨', category: 'other',
+    id: 'blank', name: 'Blank Canvas', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>', category: 'other',
     desc: 'Start from scratch with basic sections',
     sections: [
       { type: 'hero', data: { heading: 'My Website', description: 'Welcome to my site. Start editing to make it yours.', image: '' } },

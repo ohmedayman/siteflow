@@ -4,9 +4,8 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "headers": {
-        "Access-Control-Allow-Origin": "*"
-      }
+      "dest": "/api-fallback.json",
+      "status": 503
     },
     {
       "src": "/(.*\\.(css|js|svg|png|jpg|jpeg|gif|ico|woff|woff2|ttf|eot))",

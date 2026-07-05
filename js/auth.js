@@ -7,11 +7,10 @@ const Auth = {
 
   async init() {
     this.lang = localStorage.getItem('sf_lang') || (navigator.language.startsWith('ar') ? 'ar' : 'en')
-    // Check URL for OAuth redirect
+    // Check URL for OAuth redirect (only if Supabase available)
     const hash = window.location.hash
     if (hash.includes('access_token') || hash.includes('type=signup') || hash.includes('type=recovery')) {
-      // Supabase OAuth redirect — let Supabase handle it, then redirect to dashboard
-      if (window.supabase) {
+      if (IS_LOCAL && window.supabase) {
         await SB.init()
         setTimeout(() => { window.location.hash = '#/dashboard'; window.location.reload() }, 1500)
       }

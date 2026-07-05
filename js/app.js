@@ -274,7 +274,7 @@ const Dash = {
       if (sites.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-icon">🌐</div>
+            <div class="empty-icon">${ICONS.wrap(ICONS.globe,48)}</div>
             <h2>No sites yet</h2>
             <p>Create your first website and publish it to the world.</p>
             <button class="btn btn-primary btn-lg" id="emptyCreateBtn">Create Your First Site</button>
@@ -318,7 +318,7 @@ const Dash = {
           return `<div class="site-card card card-hover" data-site-status="${p.published?'published':'draft'}">
             <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}88,${tc}44)">
               <span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span>
-              <span class="view-badge">👁 ${p.views||0}</span>
+              <span class="view-badge">${ICONS.wrap(ICONS.eye,14)} ${p.views||0}</span>
             </div>
             <div class="site-card-body">
               <h3>${p.title}</h3>
@@ -329,11 +329,11 @@ const Dash = {
               </div>
             </div>
             <div class="site-card-actions">
-              <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">✏️ Edit</a>
-              ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">🔗 View</a>`:''}
-              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm">💬</a>
-              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm">📊</a>
-              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626">🗑</button>
+              <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">${ICONS.wrap(ICONS.pencil,14)} Edit</a>
+              ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">${ICONS.wrap(ICONS.external,14)} View</a>`:''}
+              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm" title="Submissions">${ICONS.wrap(ICONS.message,16)}</a>
+              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm" title="Analytics">${ICONS.wrap(ICONS.chart,16)}</a>
+              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="Delete">${ICONS.wrap(ICONS.trash,16)}</button>
             </div>
           </div>`
         }).join('')}</div>`
@@ -363,6 +363,33 @@ const Dash = {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Detect subdomain — render public site directly
+  const host = window.location.hostname
+  const mainDomain = MAIN_DOMAIN
+  if (host !== mainDomain && host !== 'localhost' && host.endsWith('.' + mainDomain)) {
+    const slug = host.slice(0, -('.' + mainDomain).length)
+    if (slug && slug !== 'www') {
+      document.querySelector('.app-header')?.classList.add('hidden')
+      const app = document.getElementById('app')
+      if (app) app.innerHTML = T.loading()
+      try {
+        const site = await API.getPublicPage(slug)
+        if (site && site.published) {
+          document.title = site.seo?.title || site.title
+          app.innerHTML = T.publicPage(site)
+          Router._bindPublicContactForm(slug)
+          // Track view
+          try { await API._fetch('/p/' + slug + '/view', { method: 'POST', body: JSON.stringify({ ip: '', ua: navigator.userAgent }) }) } catch (e) {}
+          // Also increment local views
+          if (API.mode === 'local') LocalDB.incrementViews(slug)
+          return
+        }
+      } catch {}
+      app.innerHTML = T.notFound('Site Not Found', 'This site has not been published yet.')
+      return
+    }
+  }
+
   const app = document.getElementById('app')
   if (app) app.innerHTML = T.loading()
   await Auth.init()

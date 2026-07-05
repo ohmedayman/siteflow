@@ -1,0 +1,6 @@
+backend/
+node_modules/
+.git/
+*.md
+nginx-*.conf
+DNS_SETUP.md

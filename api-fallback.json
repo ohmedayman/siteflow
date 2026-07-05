@@ -1,0 +1,5 @@
+{
+  "error": "Backend not available",
+  "message": "The API server is not deployed. The app is running in offline mode with localStorage.",
+  "status": 503
+}

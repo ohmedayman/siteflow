@@ -51,7 +51,7 @@ const Builder = {
   _renderSections() {
     const list = document.getElementById('sectionList')
     if (!list) return
-    const icons = { hero: '🏠', about: '👤', gallery: '🖼️', contact: '📧', services: '💼', testimonials: '💬', pricing: '💰', faq: '❓', team: '👥', footer: '📋', cta: '🎯', features: '✨', stats: '📊', menu: '🍽️', location: '📍', hours: '🕐' }
+    const icons = { hero: ICONS.home, about: ICONS.user, gallery: ICONS.image, contact: ICONS.mail, services: ICONS.briefcase, testimonials: ICONS.message, pricing: ICONS.dollar, faq: ICONS.helpCircle, team: ICONS.users, footer: ICONS.file, cta: ICONS.target, features: ICONS.sparkles, stats: ICONS.chart, menu: ICONS.utensils, location: ICONS.mapPin, hours: ICONS.clock, blog: ICONS.pen, portfolio: ICONS.folder, counters: ICONS.chart, timeline: ICONS.calendar }
     const descs = { hero: 'Header & intro', about: 'About text', gallery: 'Image gallery', contact: 'Contact form', services: 'What you offer', testimonials: 'Client reviews', pricing: 'Price plans', faq: 'FAQ questions', team: 'Team members', footer: 'Page footer', cta: 'Call to action', features: 'Feature list', stats: 'Statistics', menu: 'Menu items', location: 'Map & address', hours: 'Business hours' }
 
     list.innerHTML = this.page.sections.map((s, i) => `
@@ -59,7 +59,7 @@ const Builder = {
         <div class="drag-handle" title="Drag to reorder">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="6" r="1"/><circle cx="16" cy="6" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/><circle cx="8" cy="18" r="1"/><circle cx="16" cy="18" r="1"/></svg>
         </div>
-        <div class="section-item-icon" style="background:${i === this.editingIdx ? 'var(--primary-light)' : 'var(--gray-100)'}">${icons[s.type] || '📄'}</div>
+        <div class="section-item-icon" style="background:${i === this.editingIdx ? 'var(--primary-light)' : 'var(--gray-100)'}">${icons[s.type] || ICONS.file}</div>
         <div class="section-item-info">
           <h4>${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</h4>
           <p>${descs[s.type] || 'Custom section'}</p>
@@ -306,25 +306,25 @@ const Builder = {
 
   _showAddSectionPanel() {
     const types = [
-      { type: 'hero', icon: '🏠', name: 'Hero', desc: 'Big header with image' },
-      { type: 'about', icon: '👤', name: 'About', desc: 'About text block' },
-      { type: 'services', icon: '💼', name: 'Services', desc: 'Service cards' },
-      { type: 'features', icon: '✨', name: 'Features', desc: 'Feature highlights' },
-      { type: 'pricing', icon: '💰', name: 'Pricing', desc: 'Price plans' },
-      { type: 'testimonials', icon: '💬', name: 'Testimonials', desc: 'Client reviews' },
-      { type: 'gallery', icon: '🖼️', name: 'Gallery', desc: 'Image grid' },
-      { type: 'faq', icon: '❓', name: 'FAQ', desc: 'Questions & answers' },
-      { type: 'team', icon: '👥', name: 'Team', desc: 'Team members' },
-      { type: 'blog', icon: '✍️', name: 'Blog', desc: 'Blog posts' },
-      { type: 'portfolio', icon: '📂', name: 'Portfolio', desc: 'Work showcase' },
-      { type: 'counters', icon: '📊', name: 'Counters', desc: 'Statistics numbers' },
-      { type: 'timeline', icon: '📅', name: 'Timeline', desc: 'History timeline' },
-      { type: 'menu', icon: '🍽️', name: 'Menu', desc: 'Restaurant menu' },
-      { type: 'location', icon: '📍', name: 'Location', desc: 'Map & address' },
-      { type: 'stats', icon: '📈', name: 'Stats', desc: 'Stat bars' },
-      { type: 'cta', icon: '🎯', name: 'Call to Action', desc: 'Action button section' },
-      { type: 'contact', icon: '📧', name: 'Contact', desc: 'Contact form' },
-      { type: 'footer', icon: '📋', name: 'Footer', desc: 'Page footer' },
+      { type: 'hero', icon: ICONS.home, name: 'Hero', desc: 'Big header with image' },
+      { type: 'about', icon: ICONS.user, name: 'About', desc: 'About text block' },
+      { type: 'services', icon: ICONS.briefcase, name: 'Services', desc: 'Service cards' },
+      { type: 'features', icon: ICONS.sparkles, name: 'Features', desc: 'Feature highlights' },
+      { type: 'pricing', icon: ICONS.dollar, name: 'Pricing', desc: 'Price plans' },
+      { type: 'testimonials', icon: ICONS.message, name: 'Testimonials', desc: 'Client reviews' },
+      { type: 'gallery', icon: ICONS.image, name: 'Gallery', desc: 'Image grid' },
+      { type: 'faq', icon: ICONS.helpCircle, name: 'FAQ', desc: 'Questions & answers' },
+      { type: 'team', icon: ICONS.users, name: 'Team', desc: 'Team members' },
+      { type: 'blog', icon: ICONS.pen, name: 'Blog', desc: 'Blog posts' },
+      { type: 'portfolio', icon: ICONS.folder, name: 'Portfolio', desc: 'Work showcase' },
+      { type: 'counters', icon: ICONS.chart, name: 'Counters', desc: 'Statistics numbers' },
+      { type: 'timeline', icon: ICONS.calendar, name: 'Timeline', desc: 'History timeline' },
+      { type: 'menu', icon: ICONS.utensils, name: 'Menu', desc: 'Restaurant menu' },
+      { type: 'location', icon: ICONS.mapPin, name: 'Location', desc: 'Map & address' },
+      { type: 'stats', icon: ICONS.chart, name: 'Stats', desc: 'Stat bars' },
+      { type: 'cta', icon: ICONS.target, name: 'Call to Action', desc: 'Action button section' },
+      { type: 'contact', icon: ICONS.mail, name: 'Contact', desc: 'Contact form' },
+      { type: 'footer', icon: ICONS.file, name: 'Footer', desc: 'Page footer' },
     ]
 
     const existing = document.getElementById('addSectionPanel')
@@ -547,9 +547,9 @@ const Builder = {
     div.innerHTML = T.templatePicker()
     document.body.appendChild(div)
 
-    document.querySelectorAll('.template-filter-btn').forEach(btn => {
+    document.querySelectorAll('#templateFilters .filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.template-filter-btn').forEach(b => b.classList.remove('active'))
+        document.querySelectorAll('#templateFilters .filter-btn').forEach(b => b.classList.remove('active'))
         btn.classList.add('active')
         const filter = btn.dataset.filter
         document.querySelectorAll('.template-card').forEach(card => {
@@ -562,7 +562,7 @@ const Builder = {
       card.addEventListener('click', async () => {
         try {
           div.remove()
-          const site = await API.createSite({ title: card.querySelector('h3')?.textContent || 'My New Site', template_type: card.dataset.template })
+          const site = await API.createSite({ title: card.querySelector('h4')?.textContent || 'My New Site', template_type: card.dataset.template })
           Toast.show('Site created!', 'success'); Router.navigate('builder/' + site.id)
         } catch (e) { Toast.show(e.message, 'error') }
       })

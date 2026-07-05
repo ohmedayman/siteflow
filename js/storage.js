@@ -2,8 +2,9 @@
  * Site Flow — Data Layer
  * Primary: Supabase | Fallback: LocalStorage
  */
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api'
-const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : ''
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE = IS_LOCAL ? 'http://localhost:5000/api' : '/api'
+const BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : ''
 const MAIN_DOMAIN = 'siteflow.vexonet.online'
 function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${MAIN_DOMAIN}` }
 function getDaysLeft() { return 999 }
@@ -64,6 +65,8 @@ if (LocalDB.users.get().length === 0) {
     {id:'admin1',name:'Admin',email:'admin@siteflow.app',password:'admin123',plan:'business',lang:'en',isAdmin:true}
   ])
   var _demo = LocalDB.addPage({...LocalDB.defaultPage('My Portfolio'), userId:'demo1', published:true, views:142, theme:{color:'#059669',font:'Inter'}, seo:{title:'Ahmed Hassan',description:'Portfolio'}})
+  // Ensure known slug for demo
+  var _pages = LocalDB.pages.get(); var _dp = _pages.find(p => p.id === _demo.id); if (_dp) { _dp.slug = 'demo'; LocalDB.pages.save(_pages) }
 }
 
 // ── API Client (mode: Flask Backend → Supabase → LocalStorage) ──
@@ -75,9 +78,11 @@ const API = {
   // Try backends in order: Flask → Supabase → LocalStorage
   async _init() {
     if (this.mode) return this.mode
+    // In production, skip backend attempts — use LocalStorage directly
+    if (!IS_LOCAL) { this.mode = 'local'; return 'local' }
     // Try Flask backend
     try {
-      const r = await fetch(API_BASE + '/health')
+      const r = await fetch(API_BASE + '/health', { signal: AbortSignal.timeout(2000) })
       if (r.ok) { this.mode = 'flask'; return 'flask' }
     } catch {}
     // Try Supabase
@@ -342,13 +347,27 @@ const API = {
 
   async getSubmissions(siteId) {
     try {
-      const r = await this._fetch(`/sites/${siteId}/submissions`)
-      if (r.ok) return await r.json()
+      if (!IS_LOCAL) {
+        const r = await this._fetch(`/sites/${siteId}/submissions`)
+        if (r.ok) return await r.json()
+      }
     } catch {}
-    return []
+    // LocalDB fallback
+    const page = LocalDB.getPage(siteId)
+    return (page && page.submissions) ? page.submissions.sort((a,b)=>b.id-a.id) : []
   },
 
   async markSubmissionRead(siteId, subId) {
+    if (IS_LOCAL) {
+      const pages = LocalDB.pages.get()
+      const page = pages.find(p => p.id === siteId)
+      if (page && page.submissions) {
+        const sub = page.submissions.find(s => s.id == subId)
+        if (sub) sub.read = true
+        LocalDB.pages.save(pages)
+      }
+      return {ok: true}
+    }
     try {
       const r = await this._fetch(`/sites/${siteId}/submissions/${subId}/read`, {method:'POST'})
       if (r.ok) return {ok: true}
@@ -357,6 +376,15 @@ const API = {
   },
 
   async deleteSubmission(siteId, subId) {
+    if (IS_LOCAL) {
+      const pages = LocalDB.pages.get()
+      const page = pages.find(p => p.id === siteId)
+      if (page && page.submissions) {
+        page.submissions = page.submissions.filter(s => s.id != subId)
+        LocalDB.pages.save(pages)
+      }
+      return {ok: true}
+    }
     try {
       const r = await this._fetch(`/sites/${siteId}/submissions/${subId}`, {method:'DELETE'})
       if (r.ok) return {ok: true}
@@ -365,6 +393,15 @@ const API = {
   },
 
   async getAnalytics(siteId) {
+    if (IS_LOCAL) {
+      const page = LocalDB.getPage(siteId)
+      return {
+        totalViews: page ? (page.views || 0) : 0,
+        viewsByDay: [],
+        uniqueIPs: 0,
+        submissionsCount: page && page.submissions ? page.submissions.length : 0
+      }
+    }
     try {
       const r = await this._fetch(`/sites/${siteId}/analytics`)
       if (r.ok) return await r.json()

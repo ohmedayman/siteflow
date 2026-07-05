@@ -8,6 +8,7 @@ img{max-width:100%;height:auto;display:block}
 
 /* ===== LAYOUT ===== */
 .app-header{background:rgba(255,255,255,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100}
+.app-header.hidden{display:none}
 .header-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-size:1.35rem;font-weight:800;color:var(--secondary);display:flex;align-items:center;gap:8px;transition:var(--transition)}
 .logo:hover{opacity:.8}
@@ -140,6 +141,7 @@ img{max-width:100%;height:auto;display:block}
 .section-item.drag-above{border-top:3px solid var(--primary)}
 .section-item.drag-below{border-bottom:3px solid var(--primary)}
 .section-item-icon{width:32px;height:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.section-item-icon svg,.asp-icon svg{width:18px;height:18px;color:var(--gray-600)}
 .section-item-info{flex:1;min-width:0}
 .section-item-info h4{font-size:.82rem;font-weight:600}
 .section-item-info p{font-size:.7rem;color:var(--gray-500)}
@@ -202,7 +204,7 @@ img{max-width:100%;height:auto;display:block}
 .asp-grid{flex:1;overflow-y:auto;padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
 .asp-card{padding:16px;border:2px solid var(--gray-200);border-radius:var(--radius);cursor:pointer;transition:var(--transition);text-align:center}
 .asp-card:hover{border-color:var(--primary);box-shadow:0 2px 12px rgba(99,102,241,.12);transform:translateY(-2px)}
-.asp-icon{font-size:1.8rem;display:block;margin-bottom:8px}
+.asp-icon{display:flex;align-items:center;justify-content:center;height:40px;margin-bottom:8px}
 .asp-card h4{font-size:.85rem;font-weight:600;margin-bottom:2px}
 .asp-card p{font-size:.72rem;color:var(--gray-500)}
 

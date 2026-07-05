@@ -1,48 +1,52 @@
-# DNS + Server Setup for Subdomain Hosting
+# DNS Setup for Subdomain Hosting (Vercel)
 
 لتفعيل `*.siteflow.vexonet.online` عشان كل موقع ياخد subdomain تلقائي:
 
-## 1. DNS (في لوحة تحكم Vexonet)
-
-أضف **CNAME record**:
+## 1. DNS Records (في لوحة تحكم domain)
 
 | Type  | Name  | Value                     |
 |-------|-------|---------------------------|
-| CNAME | `*`   | `siteflow.vexonet.online` |
+| CNAME | `*`   | `cname.vercel-dns.com`    |
+| CNAME | `@`   | `cname.vercel-dns.com`    |
 
-> لو مش متأكد ازاي تعمل كده، افتح تيكت في دعم Vexonet واطلب "Wildcard CNAME for *.siteflow.vexonet.online"
+لو `cname.vercel-dns.com` مش شغال مع مزوّد DNS بتاعك، جرب:
+| CNAME | `*`   | `siteflow-roan.vercel.app` |
+| CNAME | `@`   | `siteflow-roan.vercel.app` |
 
-## 2. SSL Certificate
+## 2. Vercel Dashboard
 
-تأكد إن SSL يغطي `*.siteflow.vexonet.online`. لو بتستخدم Cloudflare أو proxy تاني، شغّل "Full" SSL للـ wildcard.
+1. افتح مشروعك على [vercel.com](https://vercel.com)
+2. **Project Settings → Domains**
+3. ضيف `siteflow.vexonet.online` (لو مش مضاف)
+4. ضيف `*.siteflow.vexonet.online` — ده الـ wildcard اللي يخلّي كل subdomain يشتغل
 
-## 3. Nginx Config
+> خلي بالك: Vercel بيتعامل مع `*.siteflow.vexonet.online` كـ domain منفصل ويطلع SSL تلقائي ليه.
 
-الملف `nginx-siteflow.conf` موجود في المشروع — انسخه لمجلد `/etc/nginx/sites-available/` واعمل enable.
+## 3. SSL
 
-```bash
-sudo cp nginx-siteflow.conf /etc/nginx/sites-available/siteflow
-sudo ln -s /etc/nginx/sites-available/siteflow /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-```
+Vercel بيطلع SSL تلقائي لكل الـ domains — مش محتاج تعمل حاجة.
 
-## 4. تشغيل Flask
+## 4. اختبر
 
-```bash
-cd /var/www/siteflow/backend
-pip install -r requirements.txt
-python app.py
-```
+- روح لـ `https://demo.siteflow.vexonet.online`
+- لو ظهرت صفحة "My Portfolio" يبقى شغال ✅
+- لو ظهر 404، استنى شوية (DNS بياخد وقت لينتشر)
 
-أو استخدم `gunicorn` للإنتاج:
-```bash
-gunicorn -w 4 -b 127.0.0.1:5000 app:app
-```
+## ملاحظة مهمة
+
+الـ subdomain شغال **client-side** (في المتصفح):
+- الـ SPA بتكشف الـ hostname
+- بتجيب الـ site من localStorage
+- بتظهر الصفحة مباشرة
+- مش محتاج Flask عشان يشتغل
+
+لو عاوز deploy الـ Flask عشان API كامل، ده محتاج سيرڤر منفصل (Render / Railway / VPS)
 
 ## الخلاصة
 
 | النطاق | بيخدم إيه |
 |--------|-----------|
-| `siteflow.vexonet.online` | SPA الرئيسي (الموقع نفسه) |
-| `my-site.siteflow.vexonet.online` | موقع المستخدم (rendered من Flask) |
-| `siteflow.vexonet.online/api/*` | API الباك إند |
+| `siteflow.vexonet.online` | SPA الرئيسي (Dashboard, Builder, إلخ) |
+| `demo.siteflow.vexonet.online` | الموقع المنشور (public page) |
+| `*.siteflow.vexonet.online` | أي موقع تاني بتنشره |
+

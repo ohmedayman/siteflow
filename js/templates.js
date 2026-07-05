@@ -12,7 +12,7 @@ const T = {
 
   landing() { return `
 <div class="lp-hero">
-  <div class="lp-badge">✨ New Feature</div>
+  <div class="lp-badge">${ICONS.wrap(ICONS.sparkles,14)} New Feature</div>
   <h1 class="lp-title">Create Stunning Websites.<br>Zero Code.</h1>
   <p class="lp-subtitle">Build professional, responsive sites in minutes. Customize<br>with a drag & drop editor and publish instantly.</p>
   <a href="#/login" class="btn btn-primary btn-lg lp-cta js-auth-guest">Get Started Free</a>
@@ -33,7 +33,7 @@ const T = {
     <div class="bento-img-wrap">
       <div class="bento-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
         <div style="color:#fff;text-align:center;padding:32px">
-          <div style="font-size:3rem;margin-bottom:12px">🎨</div>
+          <div style="margin-bottom:12px">${ICONS.wrap(ICONS.sparkles,48)}</div>
           <div style="font-size:1.2rem;font-weight:700">Visual Editor</div>
           <div style="font-size:.85rem;opacity:.8;margin-top:4px">Drag & Drop</div>
         </div>
@@ -46,7 +46,7 @@ const T = {
     <div class="bento-img-wrap">
       <div class="bento-img" style="background:linear-gradient(135deg,#1e293b,#334155);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
         <div style="color:#fff;text-align:center;padding:24px">
-          <div style="font-size:2.5rem;margin-bottom:8px">📚</div>
+          <div style="margin-bottom:8px">${ICONS.wrap(ICONS.folder,40)}</div>
           <div style="font-size:1rem;font-weight:700">8+ Templates</div>
         </div>
       </div>
@@ -58,7 +58,7 @@ const T = {
     <div class="bento-img-wrap">
       <div class="bento-img" style="background:linear-gradient(135deg,#059669,#10b981);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
         <div style="color:#fff;text-align:center;padding:24px">
-          <div style="font-size:2.5rem;margin-bottom:8px">💳</div>
+          <div style="margin-bottom:8px">${ICONS.wrap(ICONS.dollar,40)}</div>
           <div style="font-size:1rem;font-weight:700">Payment Ready</div>
         </div>
       </div>
@@ -192,11 +192,11 @@ const T = {
 <div class="dashboard">
   <div class="dashboard-header">
     <div>
-      <h1 style="font-size:1.8rem;margin-bottom:4px">Welcome back, <span class="js-user-name"></span> 👋</h1>
+      <h1 style="font-size:1.8rem;margin-bottom:4px">Welcome back, <span class="js-user-name"></span> ${ICONS.wrap(ICONS.sparkles,24)}</h1>
       <p style="color:var(--gray-500)">Here's what's happening with your websites</p>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
-      <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">⚡ Upgrade</a>
+      <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">${ICONS.wrap(ICONS.trendingUp,14)} Upgrade</a>
       <button class="btn btn-primary" id="createSiteBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Site</button>
     </div>
   </div>
@@ -249,11 +249,11 @@ const T = {
         <h3 style="font-size:1.5rem;margin-bottom:4px">${p.name}</h3>
         <div style="font-size:2.5rem;font-weight:800;color:var(--primary);margin-bottom:20px">${p.price===0?'Free':'$'+p.price}<span style="font-size:1rem;color:var(--gray-500);font-weight:400">${p.price>0?'/mo':''}</span></div>
         <ul style="list-style:none;padding:0;margin-bottom:24px;display:flex;flex-direction:column;gap:10px">
-          <li>✅ ${p.max_sites===-1?'Unlimited sites':p.max_sites+' site'+(p.max_sites>1?'s':'')}</li>
-          <li>${p.custom_domain?'✅':'❌'} Custom domains</li>
-          <li>${p.analytics?'✅':'❌'} Analytics</li>
-          <li>${p.premium_themes?'✅':'❌'} Premium themes</li>
-          <li>${p.priority_support?'✅':'❌'} Priority support</li>
+          <li>${ICONS.wrap(ICONS.check,16)} ${p.max_sites===-1?'Unlimited sites':p.max_sites+' site'+(p.max_sites>1?'s':'')}</li>
+          <li>${p.custom_domain?ICONS.wrap(ICONS.check,16):ICONS.wrap(ICONS.x,16)} Custom domains</li>
+          <li>${p.analytics?ICONS.wrap(ICONS.check,16):ICONS.wrap(ICONS.x,16)} Analytics</li>
+          <li>${p.premium_themes?ICONS.wrap(ICONS.check,16):ICONS.wrap(ICONS.x,16)} Premium themes</li>
+          <li>${p.priority_support?ICONS.wrap(ICONS.check,16):ICONS.wrap(ICONS.x,16)} Priority support</li>
         </ul>
         <button class="btn w-full ${cur?'btn-secondary':'btn-primary'} plan-btn" data-plan="${k}">${cur?'Current Plan':p.price===0?'Get Started':'Subscribe'}</button>
       </div>`
@@ -408,17 +408,17 @@ const T = {
   footerSection(d,a) { return `<div class="editable-section footer-section ${a?'editing':''}" data-section="footer"><div class="section-label">Footer</div><div class="footer-content"><p contenteditable="true" data-field="copyright">${d.copyright||'© 2026 All rights reserved.'}</p><p contenteditable="true" data-field="text">${d.text||'Powered by Site Flow'}</p></div></div>` },
 
   blogSection(d,a) { const items=d.items||[]; return `<div class="editable-section blog-section ${a?'editing':''}" data-section="blog"><div class="section-label">Blog</div><h2 contenteditable="true" data-field="heading">${d.heading||'Blog'}</h2><div class="blog-grid">${items.map((item,i)=>`<div class="blog-card"><div class="blog-date">${item.date||''}</div><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.excerpt">${item.excerpt||''}</p></div>`).join('')}</div></div>` },
-  portfolioSection(d,a) { const items=d.items||[]; return `<div class="editable-section portfolio-section ${a?'editing':''}" data-section="portfolio"><div class="section-label">Portfolio</div><h2 contenteditable="true" data-field="heading">${d.heading||'Portfolio'}</h2><div class="portfolio-grid">${items.map((item,i)=>`<div class="portfolio-card"><div class="portfolio-img" style="background:var(--gray-100);height:160px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--gray-400)">${item.image?`<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`:'📁'}</div><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc||''}</p></div>`).join('')}${a?`<div class="portfolio-card add-card" id="addPortfolioBtn" style="cursor:pointer;border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;padding:40px;color:var(--gray-400)"><span>+ Add Item</span></div><input type="file" accept="image/*" id="portfolioImageInput" style="display:none" multiple>`:''}</div></div>` },
+  portfolioSection(d,a) { const items=d.items||[]; return `<div class="editable-section portfolio-section ${a?'editing':''}" data-section="portfolio"><div class="section-label">Portfolio</div><h2 contenteditable="true" data-field="heading">${d.heading||'Portfolio'}</h2><div class="portfolio-grid">${items.map((item,i)=>`<div class="portfolio-card"><div class="portfolio-img" style="background:var(--gray-100);height:160px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--gray-400)">${item.image?`<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`:ICONS.wrap(ICONS.folder,32)}</div><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc||''}</p></div>`).join('')}${a?`<div class="portfolio-card add-card" id="addPortfolioBtn" style="cursor:pointer;border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;padding:40px;color:var(--gray-400)"><span>+ Add Item</span></div><input type="file" accept="image/*" id="portfolioImageInput" style="display:none" multiple>`:''}</div></div>` },
   countersSection(d,a) { const items=d.items||[]; return `<div class="editable-section counters-section ${a?'editing':''}" data-section="counters"><div class="section-label">Counters</div><h2 contenteditable="true" data-field="heading">${d.heading||'Stats'}</h2><div class="counters-grid">${items.map((item,i)=>`<div class="counter-card"><div class="counter-number" contenteditable="true" data-field="items.${i}.number">${item.number}</div><div class="counter-label" contenteditable="true" data-field="items.${i}.label">${item.label}</div></div>`).join('')}</div></div>` },
   timelineSection(d,a) { const items=d.items||[]; return `<div class="editable-section timeline-section ${a?'editing':''}" data-section="timeline"><div class="section-label">Timeline</div><h2 contenteditable="true" data-field="heading">${d.heading||'Timeline'}</h2><div class="timeline">${items.map((item,i)=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-year" contenteditable="true" data-field="items.${i}.year">${item.year||''}</div><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc||''}</p></div></div>`).join('')}</div></div>` },
   menuSection(d,a) { const items=d.items||[]; const cats=[...new Set(items.map(i=>i.category||'Main'))]; return `<div class="editable-section menu-section ${a?'editing':''}" data-section="menu"><div class="section-label">Menu</div><h2 contenteditable="true" data-field="heading">${d.heading||'Menu'}</h2>${cats.map(cat=>`<div class="menu-category"><h3>${cat}</h3>${items.filter(i=>(i.category||'Main')===cat).map((item,i)=>{const gi=items.indexOf(item);return `<div class="menu-item"><div class="menu-item-info"><h4 contenteditable="true" data-field="items.${gi}.title">${item.title}</h4><p contenteditable="true" data-field="items.${gi}.desc">${item.desc||''}</p></div><span class="menu-price" contenteditable="true" data-field="items.${gi}.price">${item.price||''}</span></div>`}).join('')}</div>`).join('')}</div></div>` },
-  locationSection(d,a) { return `<div class="editable-section location-section ${a?'editing':''}" data-section="location"><div class="section-label">Location</div><h2 contenteditable="true" data-field="heading">${d.heading||'Location'}</h2><div class="location-info"><p><strong>📍 Address:</strong> <span contenteditable="true" data-field="address">${d.address||''}</span></p><p><strong>📞 Phone:</strong> <span contenteditable="true" data-field="phone">${d.phone||''}</span></p><p><strong>🕐 Hours:</strong> <span contenteditable="true" data-field="hours">${d.hours||''}</span></p></div><div class="location-map"><div style="background:var(--grey-100);padding:40px;text-align:center;border-radius:8px;color:var(--gray-500)">Map placeholder — connect Google Maps</div></div></div>` },
+  locationSection(d,a) { return `<div class="editable-section location-section ${a?'editing':''}" data-section="location"><div class="section-label">Location</div><h2 contenteditable="true" data-field="heading">${d.heading||'Location'}</h2><div class="location-info"><p>${ICONS.wrap(ICONS.mapPin,16)} <strong>Address:</strong> <span contenteditable="true" data-field="address">${d.address||''}</span></p><p>${ICONS.wrap(ICONS.phone,16)} <strong>Phone:</strong> <span contenteditable="true" data-field="phone">${d.phone||''}</span></p><p>${ICONS.wrap(ICONS.clock,16)} <strong>Hours:</strong> <span contenteditable="true" data-field="hours">${d.hours||''}</span></p></div><div class="location-map"><div style="background:var(--grey-100);padding:40px;text-align:center;border-radius:8px;color:var(--gray-500)">Map placeholder — connect Google Maps</div></div></div>` },
 
   publicPage(page) {
     const t=page.theme||{color:'#6366f1',font:'Inter'}
     return `<div class="public-page" style="--p-color:${t.color};--p-font:${t.font};font-family:${t.font},sans-serif">
       <div class="public-nav"><span class="brand" style="color:${t.color}">${page.title}</span><span style="font-size:.75rem;color:var(--gray-400)">Powered by Site Flow</span></div>
-      <div class="public-content">${page.sections.map(s=>{switch(s.type){case'hero':return T.pubHero(s.data,t);case'about':return T.pubAbout(s.data,t);case'gallery':return T.pubGallery(s.data,t);case'contact':return T.pubContact(s.data,t);case'services':return T.pubServices(s.data,t);case'testimonials':return T.pubTestimonials(s.data,t);case'pricing':return T.pubPricing(s.data,t);case'faq':return T.pubFaq(s.data,t);case'team':return T.pubTeam(s.data,t);case'footer':return T.pubFooter(s.data,t);case'blog':return T.pubBlog(s.data,t);case'portfolio':return T.pubPortfolio(s.data,t);case'counters':return T.pubCounters(s.data,t);case'timeline':return T.pubTimeline(s.data,t);case'menu':return T.pubMenu(s.data,t);case'location':return T.pubLocation(s.data,t);default:return ''}}).join('')}</div>
+      <div class="public-content">${page.sections.map(s=>{switch(s.type){case'hero':return T.pubHero(s.data,t);case'about':return T.pubAbout(s.data,t);case'gallery':return T.pubGallery(s.data,t);case'contact':return T.pubContact(s.data,t);case'services':return T.pubServices(s.data,t);case'testimonials':return T.pubTestimonials(s.data,t);case'pricing':return T.pubPricing(s.data,t);case'faq':return T.pubFaq(s.data,t);case'team':return T.pubTeam(s.data,t);case'footer':return T.pubFooter(s.data,t);case'blog':return T.pubBlog(s.data,t);case'portfolio':return T.pubPortfolio(s.data,t);case'counters':return T.pubCounters(s.data,t);case'timeline':return T.pubTimeline(s.data,t);case'menu':return T.pubMenu(s.data,t);case'location':return T.pubLocation(s.data,t);case'features':return T.pubFeatures(s.data,t);case'stats':return T.pubStats(s.data,t);case'cta':return T.pubCta(s.data,t);default:return ''}}).join('')}</div>
     </div>`
   },
   pubHero(d,t) { return `<div class="editable-section hero-section" style="background:linear-gradient(135deg,${t.color}11,#fff)">${d.image?`<div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 20px ${t.color}33"><img src="${d.image}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<h1 style="color:${t.color}">${d.heading}</h1><p>${d.description}</p></div>` },
@@ -433,11 +433,14 @@ const T = {
   pubFooter(d,t) { return `<div class="editable-section footer-section" style="background:#0f172a;color:#94a3b8"><div class="footer-content"><p>${d.copyright||'© 2026 All rights reserved.'}</p><p>${d.text||'Powered by Site Flow'}</p></div></div>` },
 
   pubBlog(d,t) { const items=d.items||[]; return `<div class="editable-section blog-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="blog-grid">${items.map(item=>`<div class="blog-card"><div class="blog-date">${item.date||''}</div><h3>${item.title}</h3><p>${item.excerpt||''}</p></div>`).join('')}</div></div>` },
-  pubPortfolio(d,t) { const items=d.items||[]; return `<div class="editable-section portfolio-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="portfolio-grid">${items.map(item=>`<div class="portfolio-card"><div class="portfolio-img" style="background:var(--gray-100);height:160px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--gray-400)">${item.image?`<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`:'📁'}</div><h3>${item.title}</h3><p>${item.desc||''}</p></div>`).join('')}</div></div>` },
+  pubPortfolio(d,t) { const items=d.items||[]; return `<div class="editable-section portfolio-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="portfolio-grid">${items.map(item=>`<div class="portfolio-card"><div class="portfolio-img" style="background:var(--gray-100);height:160px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--gray-400)">${item.image?`<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`:ICONS.wrap(ICONS.folder,40)}</div><h3>${item.title}</h3><p>${item.desc||''}</p></div>`).join('')}</div></div>` },
   pubCounters(d,t) { const items=d.items||[]; return `<div class="editable-section counters-section" style="background:${t.color}11"><h2 style="color:${t.color}">${d.heading}</h2><div class="counters-grid">${items.map(item=>`<div class="counter-card"><div class="counter-number" style="color:${t.color}">${item.number}</div><div class="counter-label">${item.label}</div></div>`).join('')}</div></div>` },
   pubTimeline(d,t) { const items=d.items||[]; return `<div class="editable-section timeline-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="timeline">${items.map(item=>`<div class="timeline-item"><div class="timeline-dot" style="background:${t.color}"></div><div class="timeline-content"><div class="timeline-year" style="color:${t.color}">${item.year||''}</div><h3>${item.title}</h3><p>${item.desc||''}</p></div></div>`).join('')}</div></div>` },
   pubMenu(d,t) { const items=d.items||[]; const cats=[...new Set(items.map(i=>i.category||'Main'))]; return `<div class="editable-section menu-section"><h2 style="color:${t.color}">${d.heading}</h2>${cats.map(cat=>`<div class="menu-category"><h3 style="color:${t.color}">${cat}</h3>${items.filter(i=>(i.category||'Main')===cat).map(item=>`<div class="menu-item"><div class="menu-item-info"><h4>${item.title}</h4><p>${item.desc||''}</p></div><span class="menu-price" style="color:${t.color}">${item.price||''}</span></div>`).join('')}</div>`).join('')}</div></div>` },
-  pubLocation(d,t) { return `<div class="editable-section location-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="location-info"><p><strong>📍 Address:</strong> ${d.address||''}</p><p><strong>📞 Phone:</strong> ${d.phone||''}</p><p><strong>🕐 Hours:</strong> ${d.hours||''}</p></div></div>` },
+  pubLocation(d,t) { return `<div class="editable-section location-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="location-info"><p>${ICONS.wrap(ICONS.mapPin,16)} Address: ${d.address||''}</p><p>${ICONS.wrap(ICONS.phone,16)} Phone: ${d.phone||''}</p><p>${ICONS.wrap(ICONS.clock,16)} Hours: ${d.hours||''}</p></div></div>` },
+  pubFeatures(d,t) { const items=d.items||[]; return `<div class="editable-section" style="padding:60px 40px"><h2 style="text-align:center;color:${t.color}">${d.heading||'Features'}</h2><div class="services-grid">${items.map(item=>`<div class="service-card"><h3>${item.title}</h3><p>${item.desc}</p></div>`).join('')}</div></div>` },
+  pubStats(d,t) { const items=d.items||[]; return `<div class="editable-section" style="padding:60px 40px;text-align:center;background:${t.color}11"><h2 style="color:${t.color}">${d.heading||'Statistics'}</h2><div class="counters-grid">${items.map(item=>`<div class="counter-card"><div class="counter-number" style="color:${t.color}">${item.number}</div><div class="counter-label">${item.label}</div></div>`).join('')}</div></div>` },
+  pubCta(d,t) { return `<div class="editable-section" style="text-align:center;padding:60px 40px;background:${t.color};color:#fff"><h2>${d.heading||'Call to Action'}</h2>${d.subheading?`<p style="opacity:.9;margin-top:8px">${d.subheading}</p>`:''}${d.buttonText?`<a href="${d.buttonUrl||'#'}" class="btn" style="background:#fff;color:${t.color};margin-top:16px">${d.buttonText}</a>`:''}</div></div>` },
 
   settings(user) { return `
 <div style="max-width:600px;margin:0 auto;padding:40px 24px">
@@ -468,7 +471,7 @@ const T = {
   help() { return `
 <div style="max-width:800px;margin:0 auto;padding:60px 24px">
   <div class="text-center mb-24">
-    <div style="font-size:3rem;margin-bottom:12px">❓</div>
+    <div style="margin-bottom:12px">${ICONS.wrap(ICONS.helpCircle,48)}</div>
     <h1 style="font-size:2rem;margin-bottom:8px">Help Center</h1>
     <p style="color:var(--gray-500)">Everything you need to get started with Site Flow</p>
   </div>
@@ -486,7 +489,7 @@ const T = {
       {q:'How do I publish my site?',a:'Click the Publish button in the top-right of the editor. Your site will be live at your-slug.siteflow.vexonet.online instantly.'}
     ].map(({q,a}) => `
       <div class="card" style="padding:20px;cursor:pointer" onclick="this.querySelector('.answer').classList.toggle('hidden')">
-        <h3 style="font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:8px"><span style="color:var(--primary)">❓</span>${q}</h3>
+        <h3 style="font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:8px"><span style="color:var(--primary)">${ICONS.wrap(ICONS.helpCircle,16)}</span>${q}</h3>
         <p class="answer hidden" style="font-size:.85rem;color:var(--gray-600);margin-top:12px;line-height:1.7">${a}</p>
       </div>
     `).join('')}
@@ -501,14 +504,14 @@ const T = {
   about() { return `
 <div style="max-width:800px;margin:0 auto;padding:60px 24px">
   <div class="text-center mb-24">
-    <div style="font-size:3rem;margin-bottom:12px">🚀</div>
+    <div style="margin-bottom:12px">${ICONS.wrap(ICONS.rocket,48)}</div>
     <h1 style="font-size:2.2rem;margin-bottom:16px">About Site Flow</h1>
     <p style="color:var(--gray-600);font-size:1.1rem;line-height:1.8;max-width:600px;margin:0 auto">Site Flow is a no-code website builder that empowers anyone to create professional websites without writing a single line of code.</p>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:40px">
-    <div class="card" style="text-align:center;padding:32px"><div style="font-size:2.5rem;margin-bottom:12px">🎯</div><h3 style="margin-bottom:8px">Our Mission</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">Make website creation accessible to everyone worldwide.</p></div>
-    <div class="card" style="text-align:center;padding:32px"><div style="font-size:2.5rem;margin-bottom:12px">👁️</div><h3 style="margin-bottom:8px">Our Vision</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">A world where anyone can build their digital presence.</p></div>
-    <div class="card" style="text-align:center;padding:32px"><div style="font-size:2.5rem;margin-bottom:12px">💪</div><h3 style="margin-bottom:8px">Our Values</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">Simplicity, accessibility, and professional quality.</p></div>
+    <div class="card" style="text-align:center;padding:32px">${ICONS.wrap(ICONS.target,40)}<h3 style="margin-bottom:8px;margin-top:12px">Our Mission</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">Make website creation accessible to everyone worldwide.</p></div>
+    <div class="card" style="text-align:center;padding:32px">${ICONS.wrap(ICONS.eye,40)}<h3 style="margin-bottom:8px;margin-top:12px">Our Vision</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">A world where anyone can build their digital presence.</p></div>
+    <div class="card" style="text-align:center;padding:32px">${ICONS.wrap(ICONS.sparkles,40)}<h3 style="margin-bottom:8px;margin-top:12px">Our Values</h3><p style="font-size:.88rem;color:var(--gray-500);line-height:1.6">Simplicity, accessibility, and professional quality.</p></div>
   </div>
   <div class="card" style="margin-top:40px;padding:32px;text-align:center">
     <h3 style="margin-bottom:8px">Ready to get started?</h3>
@@ -537,7 +540,7 @@ const T = {
 
   checkout(plan) { return `
 <div style="max-width:500px;margin:60px auto;padding:40px;text-align:center">
-  <div style="font-size:3rem;margin-bottom:16px">💳</div>
+  <div style="margin-bottom:16px">${ICONS.wrap(ICONS.dollar,48)}</div>
   <h2 style="margin-bottom:8px">${plan.name} Plan — $${plan.price}/mo</h2>
   <p style="color:var(--gray-500);margin-bottom:32px">Demo payment — click confirm to simulate.</p>
   <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:12px;padding:24px;margin-bottom:24px;text-align:left">
