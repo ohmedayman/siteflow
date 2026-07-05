@@ -11,92 +11,112 @@ const T = {
 </div>` },
 
   landing() { return `
-<div class="landing-hero">
-  <div class="badge">🚀 No-Code Website Builder</div>
-  <h1>Create Professional Websites<br>Without Writing Code</h1>
-  <p>Build stunning, SEO-optimized websites in minutes. Choose from professional templates, customize with drag & drop, and publish instantly.</p>
-  <div class="cta-buttons">
-    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">Get Started Free</a>
-    <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
-    <a href="#/plans" class="btn btn-outline btn-lg">See Plans</a>
-  </div>
-  <div class="trust-bar">
-    <span>✅ No coding required</span>
-    <span>🎨 8+ Templates</span>
-    <span>🔗 Custom domains</span>
-    <span>📱 Fully responsive</span>
-    <span>🌐 RTL support</span>
-  </div>
-</div>
-<div class="features-grid">
-  ${[
-    ['🎨','Visual Builder','Drag-and-drop with real-time inline editing. No coding required.'],
-    ['📚','8+ Templates','Choose from Portfolio, Business, Restaurant, Blog, Gallery, and more.'],
-    ['🔍','SEO Optimized','Custom titles, meta descriptions, clean HTML. Your sites rank higher.'],
-    ['📱','Responsive','Every site looks perfect on mobile, tablet, and desktop.'],
-    ['🔗','Custom Domains','Connect your own domain for a professional presence.'],
-    ['💰','Free to Start','Start free, upgrade as you grow. Pro $9/mo, Business $29/mo.'],
-    ['📊','Analytics','Track views and visitors for all your published sites.'],
-    ['🌐','Arabic Support','Full Arabic interface and RTL support for your audience.']
-  ].map(([i,t,d]) => `<div class="feature-card card card-hover"><div class="icon" style="background:var(--primary-light);color:var(--primary)">${i}</div><h3>${t}</h3><p>${d}</p></div>`).join('')}
-</div>
-<div class="landing-section">
-  <div class="landing-section-inner">
-    <h2>How It Works</h2>
-    <p style="color:var(--gray-500);margin-bottom:48px">Three simple steps to launch your website</p>
-    <div class="steps-grid">
-      <div class="step-card"><div class="step-num">1</div><h3>Choose Template</h3><p>Pick from 8+ professional templates designed for different industries.</p></div>
-      <div class="step-card"><div class="step-num">2</div><h3>Customize</h3><p>Edit content, change colors, add sections with our visual drag & drop editor.</p></div>
-      <div class="step-card"><div class="step-num">3</div><h3>Publish</h3><p>Click publish and your site is live instantly with a free subdomain.</p></div>
+<div class="lp-hero">
+  <div class="lp-badge">✨ New Feature</div>
+  <h1 class="lp-title">Create Stunning Websites.<br>Zero Code.</h1>
+  <p class="lp-subtitle">Build professional, responsive sites in minutes. Customize<br>with a drag & drop editor and publish instantly.</p>
+  <a href="#/login" class="btn btn-primary btn-lg lp-cta js-auth-guest">Get Started Free</a>
+  <a href="#/dashboard" class="btn btn-primary btn-lg lp-cta js-auth-user hidden">Go to Dashboard</a>
+  <div class="lp-social-proof">
+    <div class="lp-avatars">
+      <div class="lp-avatar" style="background:#6366f1">A</div>
+      <div class="lp-avatar" style="background:#ec4899">M</div>
+      <div class="lp-avatar" style="background:#f97316">S</div>
+      <div class="lp-avatar" style="background:#06b6d4">R</div>
     </div>
+    <span>Joined by <strong>10k+ creators</strong></span>
   </div>
 </div>
-<div class="landing-section" style="background:var(--gray-50)">
-  <div class="landing-section-inner">
-    <h2>What Our Users Say</h2>
-    <p style="color:var(--gray-500);margin-bottom:48px">Trusted by creators worldwide</p>
-    <div class="testimonials-grid">
-      <div class="testimonial-card"><p>"Site Flow made it so easy to build my portfolio. No coding needed!"</p><div class="testimonial-author"><strong>Sarah Ahmed</strong><span>Freelance Designer</span></div></div>
-      <div class="testimonial-card"><p>"I launched my restaurant website in 20 minutes. The templates are beautiful."</p><div class="testimonial-author"><strong>Mohammed Ali</strong><span>Restaurant Owner</span></div></div>
-      <div class="testimonial-card"><p>"The Arabic support is perfect. My clients love the RTL layout."</p><div class="testimonial-author"><strong>Fatima Hassan</strong><span>Business Consultant</span></div></div>
-    </div>
-  </div>
-</div>
-<div class="landing-section">
-  <div class="landing-section-inner text-center">
-    <h2>Ready to Build Your Website?</h2>
-    <p style="color:var(--gray-500);margin-bottom:32px;max-width:500px;margin-left:auto;margin-right:auto">Start for free today. No credit card required.</p>
-    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">Get Started Free</a>
-    <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
-  </div>
-</div>
-<footer class="landing-footer">
-  <div class="footer-inner">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="logo" style="margin-bottom:12px;display:inline-flex">
-          <img src="assets/sitflow.svg" alt="Site Flow" width="56" height="56">
+
+<div class="lp-features-bento">
+  <div class="bento-card bento-large">
+    <div class="bento-img-wrap">
+      <div class="bento-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
+        <div style="color:#fff;text-align:center;padding:32px">
+          <div style="font-size:3rem;margin-bottom:12px">🎨</div>
+          <div style="font-size:1.2rem;font-weight:700">Visual Editor</div>
+          <div style="font-size:.85rem;opacity:.8;margin-top:4px">Drag & Drop</div>
         </div>
-        <p style="color:var(--gray-400);font-size:.85rem;line-height:1.6">Build professional websites without code. Free to start, powerful when you grow.</p>
       </div>
-      <div class="footer-links">
+    </div>
+    <h3>Visual Drag & Drop Builder.</h3>
+    <p>Intuitive interface for complete control.</p>
+  </div>
+  <div class="bento-card bento-top-right">
+    <div class="bento-img-wrap">
+      <div class="bento-img" style="background:linear-gradient(135deg,#1e293b,#334155);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
+        <div style="color:#fff;text-align:center;padding:24px">
+          <div style="font-size:2.5rem;margin-bottom:8px">📚</div>
+          <div style="font-size:1rem;font-weight:700">8+ Templates</div>
+        </div>
+      </div>
+    </div>
+    <h3>Hundreds of Templates & Tools.</h3>
+    <p>From portfolios to online stores.</p>
+  </div>
+  <div class="bento-card bento-bottom-right">
+    <div class="bento-img-wrap">
+      <div class="bento-img" style="background:linear-gradient(135deg,#059669,#10b981);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
+        <div style="color:#fff;text-align:center;padding:24px">
+          <div style="font-size:2.5rem;margin-bottom:8px">💳</div>
+          <div style="font-size:1rem;font-weight:700">Payment Ready</div>
+        </div>
+      </div>
+    </div>
+    <h3>E-commerce Integration.</h3>
+    <p>From portfolios to online stores.</p>
+  </div>
+</div>
+
+<div class="lp-logos-bar">
+  <div class="lp-logos-track">
+    <span>Google</span><span>Amazon</span><span>Shopify</span><span>Stripe</span><span>WordPress</span>
+    <span>Google</span><span>Amazon</span><span>Shopify</span><span>Stripe</span><span>WordPress</span>
+  </div>
+</div>
+
+<footer class="lp-footer">
+  <div class="lp-footer-inner">
+    <div class="lp-footer-grid">
+      <div class="lp-footer-col">
+        <div class="lp-footer-brand">
+          <img src="assets/sitflow.svg" alt="Site Flow" width="32" height="32">
+          <strong>Site Flow</strong>
+        </div>
+        <p>Build professional websites without code.</p>
+      </div>
+      <div class="lp-footer-col">
         <h4>Product</h4>
         <a href="#/plans">Pricing</a>
         <a href="#/help">Help Center</a>
         <a href="#/about">About</a>
+        <a href="#/login">Contact Us</a>
       </div>
-      <div class="footer-links">
+      <div class="lp-footer-col">
+        <h4>Company</h4>
+        <a href="#/about">About Us</a>
+        <a href="#/help">Press</a>
+        <a href="#/about">Resources</a>
+      </div>
+      <div class="lp-footer-col">
+        <h4>Resources</h4>
+        <a href="#/help">About Us</a>
+        <a href="#/help">Press</a>
+        <a href="#/help">Resources</a>
+        <a href="#/help">Accessibility</a>
+      </div>
+      <div class="lp-footer-col">
         <h4>Legal</h4>
         <a href="#/privacy">Privacy Policy</a>
-        <a href="mailto:support@siteflow.vexonet.online">Contact</a>
+        <a href="#/privacy">Terms of Service</a>
       </div>
-      <div class="footer-links">
-        <h4>Connect</h4>
-        <a href="https://github.com/ohmedayman/siteflow" target="_blank">GitHub</a>
-        <a href="mailto:support@siteflow.vexonet.online">Email</a>
+      <div class="lp-footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:support@siteflow.vexonet.online">support@siteflow.vexonet.online</a>
+        <a href="#/help">Contact Us</a>
       </div>
     </div>
-    <div class="footer-bottom">
+    <div class="lp-footer-bottom">
       <p>&copy; ${new Date().getFullYear()} Site Flow. All rights reserved.</p>
     </div>
   </div>
