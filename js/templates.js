@@ -75,6 +75,229 @@ const T = {
   </div>
 </div>
 
+<section class="lp-section">
+  <div class="lp-section-inner">
+    <span class="lp-section-badge">How It Works</span>
+    <h2 class="lp-section-title">Three Steps to Your Website</h2>
+    <p class="lp-section-desc">No technical skills required. Just pick, customize, and go live.</p>
+    <div class="lp-steps">
+      <div class="lp-step">
+        <div class="lp-step-num">1</div>
+        <div class="lp-step-icon">${ICONS.wrap(ICONS.template,32)}</div>
+        <h3>Choose a Template</h3>
+        <p>Pick from professionally designed templates for any industry or purpose.</p>
+      </div>
+      <div class="lp-step">
+        <div class="lp-step-num">2</div>
+        <div class="lp-step-icon">${ICONS.wrap(ICONS.settings,32)}</div>
+        <h3>Customize Everything</h3>
+        <p>Edit text, colors, images, and layout with our visual drag & drop editor.</p>
+      </div>
+      <div class="lp-step">
+        <div class="lp-step-num">3</div>
+        <div class="lp-step-icon">${ICONS.wrap(ICONS.globe,32)}</div>
+        <h3>Publish & Share</h3>
+        <p>Go live instantly with a free subdomain or connect your custom domain.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section lp-section-alt">
+  <div class="lp-section-inner">
+    <span class="lp-section-badge">Features</span>
+    <h2 class="lp-section-title">Everything You Need</h2>
+    <p class="lp-section-desc">Powerful tools to build, manage, and grow your online presence.</p>
+    <div class="lp-features-grid">
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#e0e7ff;color:#6366f1">${ICONS.wrap(ICONS.edit,24)}</div>
+        <h3>Visual Editor</h3>
+        <p>Intuitive drag & drop interface. Edit content inline, rearrange sections, and see changes in real-time.</p>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#fce7f3;color:#ec4899">${ICONS.wrap(ICONS.smartphone,24)}</div>
+        <h3>Fully Responsive</h3>
+        <p>Every site looks perfect on mobile, tablet, and desktop. No extra work needed.</p>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#d1fae5;color:#059669">${ICONS.wrap(ICONS.globe,24)}</div>
+        <h3>Free Subdomain</h3>
+        <p>Get a free <strong>yourname.siteflow.vexonet.online</strong> domain instantly.</p>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#fef3c7;color:#d97706">${ICONS.wrap(ICONS.search,24)}</div>
+        <h3>SEO Optimized</h3>
+        <p>Built-in SEO tools. Meta tags, descriptions, and sitemap generated automatically.</p>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#ede9fe;color:#7c3aed">${ICONS.wrap(ICONS.form,24)}</div>
+        <h3>Contact Forms</h3>
+        <p>Built-in contact forms with spam protection. Collect leads and messages from visitors.</p>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#fee2e2;color:#dc2626">${ICONS.wrap(ICONS.image,24)}</div>
+        <h3>Image Upload</h3>
+        <p>Upload images directly to Cloudinary CDN. Fast loading, automatic optimization.</p>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#dbeafe;color:#2563eb">${ICONS.wrap(ICONS.barChart,24)}</div>
+        <h3>Analytics</h3>
+        <p>Track page views, visitor stats, and form submissions. Know your audience.</p>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#f3e8ff;color:#9333ea">${ICONS.wrap(ICONS.layout,24)}</div>
+        <h3>19 Section Types</h3>
+        <p>Hero, features, pricing, testimonials, gallery, menu, blog, and more.</p>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon" style="background:#e0f2fe;color:#0284c7">${ICONS.wrap(ICONS.dollar,24)}</div>
+        <h3>Payment Integration</h3>
+        <p>Accept payments with Stripe. Sell products, services, or subscriptions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section">
+  <div class="lp-section-inner">
+    <span class="lp-section-badge">Pricing</span>
+    <h2 class="lp-section-title">Simple, Transparent Pricing</h2>
+    <p class="lp-section-desc">Start for free. Upgrade when you need more power.</p>
+    <div class="lp-pricing-grid">
+      <div class="lp-pricing-card">
+        <h3>Free</h3>
+        <div class="lp-price">$0<span>/mo</span></div>
+        <p class="lp-pricing-desc">Perfect for getting started</p>
+        <ul>
+          <li>${ICONS.wrap(ICONS.check,16)} 1 website</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Free subdomain</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Basic templates</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Contact forms</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Mobile responsive</li>
+        </ul>
+        <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest">Get Started</a>
+        <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">Current Plan</a>
+      </div>
+      <div class="lp-pricing-card lp-pricing-popular">
+        <div class="lp-pricing-badge">Most Popular</div>
+        <h3>Pro</h3>
+        <div class="lp-price">$9<span>/mo</span></div>
+        <p class="lp-pricing-desc">For professionals & freelancers</p>
+        <ul>
+          <li>${ICONS.wrap(ICONS.check,16)} 5 websites</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Custom domain</li>
+          <li>${ICONS.wrap(ICONS.check,16)} All templates</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Priority support</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Remove branding</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Analytics</li>
+        </ul>
+        <a href="#/checkout?plan=pro" class="btn btn-primary btn-lg w-full js-auth-guest">Choose Pro</a>
+        <a href="#/dashboard" class="btn btn-primary btn-lg w-full js-auth-user hidden">Current Plan</a>
+      </div>
+      <div class="lp-pricing-card">
+        <h3>Business</h3>
+        <div class="lp-price">$29<span>/mo</span></div>
+        <p class="lp-pricing-desc">For teams & agencies</p>
+        <ul>
+          <li>${ICONS.wrap(ICONS.check,16)} Unlimited websites</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Multiple domains</li>
+          <li>${ICONS.wrap(ICONS.check,16)} E-commerce</li>
+          <li>${ICONS.wrap(ICONS.check,16)} API access</li>
+          <li>${ICONS.wrap(ICONS.check,16)} White label</li>
+          <li>${ICONS.wrap(ICONS.check,16)} Dedicated support</li>
+        </ul>
+        <a href="#/checkout?plan=business" class="btn btn-outline btn-lg w-full js-auth-guest">Choose Business</a>
+        <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">Current Plan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section lp-section-alt">
+  <div class="lp-section-inner">
+    <span class="lp-section-badge">Testimonials</span>
+    <h2 class="lp-section-title">Loved by Creators</h2>
+    <p class="lp-section-desc">See what our users are saying about Site Flow.</p>
+    <div class="lp-testimonials-grid">
+      <div class="lp-testimonial-card">
+        <div class="lp-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>"Built my portfolio site in 15 minutes. The templates are gorgeous and the editor is so easy to use."</p>
+        <div class="lp-testimonial-author">
+          <div class="lp-testimonial-avatar" style="background:#6366f1">S</div>
+          <div>
+            <strong>Sarah Chen</strong>
+            <span>Freelance Designer</span>
+          </div>
+        </div>
+      </div>
+      <div class="lp-testimonial-card">
+        <div class="lp-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>"We switched from WordPress to Site Flow. Our landing pages load 3x faster and look way better."</p>
+        <div class="lp-testimonial-author">
+          <div class="lp-testimonial-avatar" style="background:#ec4899">M</div>
+          <div>
+            <strong>Marcus Rodriguez</strong>
+            <span>Startup Founder</span>
+          </div>
+        </div>
+      </div>
+      <div class="lp-testimonial-card">
+        <div class="lp-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>"The free plan is more than enough for my small business. Got my site online in minutes with a free subdomain."</p>
+        <div class="lp-testimonial-author">
+          <div class="lp-testimonial-avatar" style="background:#059669">A</div>
+          <div>
+            <strong>Aisha Patel</strong>
+            <span>Local Business Owner</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section">
+  <div class="lp-section-inner">
+    <span class="lp-section-badge">FAQ</span>
+    <h2 class="lp-section-title">Frequently Asked Questions</h2>
+    <p class="lp-section-desc">Everything you need to know about Site Flow.</p>
+    <div class="lp-faq-list">
+      <div class="lp-faq-item">
+        <h3>Is Site Flow really free?</h3>
+        <p>Yes! The free plan includes 1 website, a free subdomain, and access to basic templates. No credit card required.</p>
+      </div>
+      <div class="lp-faq-item">
+        <h3>Can I use my own domain?</h3>
+        <p>Absolutely. Pro and Business plans support custom domains. Just point your domain's CNAME record to our servers.</p>
+      </div>
+      <div class="lp-faq-item">
+        <h3>Do I need coding skills?</h3>
+        <p>Not at all. Site Flow is designed for everyone. Our visual editor lets you build sites by clicking and dragging.</p>
+      </div>
+      <div class="lp-faq-item">
+        <h3>Can I sell products on my site?</h3>
+        <p>Yes! Business plan users get e-commerce integration with Stripe for secure payment processing.</p>
+      </div>
+      <div class="lp-faq-item">
+        <h3>What happens if I cancel?</h3>
+        <p>Your site stays live on the free plan. You keep all your content and can upgrade anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section lp-cta-section">
+  <div class="lp-section-inner">
+    <h2 class="lp-cta-title">Ready to Build Your Website?</h2>
+    <p class="lp-cta-desc">Join thousands of creators who already use Site Flow. Start building for free.</p>
+    <div class="cta-buttons">
+      <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">Get Started Free</a>
+      <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
+      <a href="#/plans" class="btn btn-outline btn-lg">View Pricing</a>
+    </div>
+  </div>
+</section>
+
 <footer class="lp-footer">
   <div class="lp-footer-inner">
     <div class="lp-footer-grid">

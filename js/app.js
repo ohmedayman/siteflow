@@ -276,8 +276,8 @@ const Dash = {
           <div class="empty-state">
             <div class="empty-icon">${ICONS.wrap(ICONS.globe,48)}</div>
             <h2>No sites yet</h2>
-            <p>Create your first website and publish it to the world.</p>
-            <button class="btn btn-primary btn-lg" id="emptyCreateBtn">Create Your First Site</button>
+            <p>Create your first website and publish it to the world.<br>It takes less than a minute.</p>
+            <button class="btn btn-primary btn-lg" id="emptyCreateBtn">${ICONS.wrap(ICONS.plus,18)} Create Your First Site</button>
           </div>
           <div class="quick-start">
             <h3>Quick Start Templates</h3>
