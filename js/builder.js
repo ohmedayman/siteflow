@@ -306,25 +306,25 @@ const Builder = {
 
   _showAddSectionPanel() {
     const types = [
-      { type: 'hero', icon: ICONS.home, name: 'Hero', desc: 'Big header with image' },
-      { type: 'about', icon: ICONS.user, name: 'About', desc: 'About text block' },
-      { type: 'services', icon: ICONS.briefcase, name: 'Services', desc: 'Service cards' },
-      { type: 'features', icon: ICONS.sparkles, name: 'Features', desc: 'Feature highlights' },
-      { type: 'pricing', icon: ICONS.dollar, name: 'Pricing', desc: 'Price plans' },
-      { type: 'testimonials', icon: ICONS.message, name: 'Testimonials', desc: 'Client reviews' },
-      { type: 'gallery', icon: ICONS.image, name: 'Gallery', desc: 'Image grid' },
-      { type: 'faq', icon: ICONS.helpCircle, name: 'FAQ', desc: 'Questions & answers' },
-      { type: 'team', icon: ICONS.users, name: 'Team', desc: 'Team members' },
-      { type: 'blog', icon: ICONS.pen, name: 'Blog', desc: 'Blog posts' },
-      { type: 'portfolio', icon: ICONS.folder, name: 'Portfolio', desc: 'Work showcase' },
-      { type: 'counters', icon: ICONS.chart, name: 'Counters', desc: 'Statistics numbers' },
-      { type: 'timeline', icon: ICONS.calendar, name: 'Timeline', desc: 'History timeline' },
-      { type: 'menu', icon: ICONS.utensils, name: 'Menu', desc: 'Restaurant menu' },
-      { type: 'location', icon: ICONS.mapPin, name: 'Location', desc: 'Map & address' },
-      { type: 'stats', icon: ICONS.chart, name: 'Stats', desc: 'Stat bars' },
-      { type: 'cta', icon: ICONS.target, name: 'Call to Action', desc: 'Action button section' },
-      { type: 'contact', icon: ICONS.mail, name: 'Contact', desc: 'Contact form' },
-      { type: 'footer', icon: ICONS.file, name: 'Footer', desc: 'Page footer' },
+      { type: 'hero', icon: ICONS.home, name: 'Hero', desc: 'Big header with image', cat: 'Content' },
+      { type: 'about', icon: ICONS.user, name: 'About', desc: 'About text block', cat: 'Content' },
+      { type: 'services', icon: ICONS.briefcase, name: 'Services', desc: 'Service cards', cat: 'Content' },
+      { type: 'features', icon: ICONS.sparkles, name: 'Features', desc: 'Feature highlights', cat: 'Content' },
+      { type: 'pricing', icon: ICONS.dollar, name: 'Pricing', desc: 'Price plans', cat: 'Content' },
+      { type: 'testimonials', icon: ICONS.message, name: 'Testimonials', desc: 'Client reviews', cat: 'Content' },
+      { type: 'gallery', icon: ICONS.image, name: 'Gallery', desc: 'Image grid', cat: 'Media' },
+      { type: 'faq', icon: ICONS.helpCircle, name: 'FAQ', desc: 'Questions & answers', cat: 'Content' },
+      { type: 'team', icon: ICONS.users, name: 'Team', desc: 'Team members', cat: 'Content' },
+      { type: 'blog', icon: ICONS.pen, name: 'Blog', desc: 'Blog posts', cat: 'Content' },
+      { type: 'portfolio', icon: ICONS.folder, name: 'Portfolio', desc: 'Work showcase', cat: 'Media' },
+      { type: 'counters', icon: ICONS.chart, name: 'Counters', desc: 'Statistics numbers', cat: 'Data' },
+      { type: 'stats', icon: ICONS.chart, name: 'Stats', desc: 'Stat bars', cat: 'Data' },
+      { type: 'timeline', icon: ICONS.calendar, name: 'Timeline', desc: 'History timeline', cat: 'Content' },
+      { type: 'menu', icon: ICONS.utensils, name: 'Menu', desc: 'Restaurant menu', cat: 'Content' },
+      { type: 'location', icon: ICONS.mapPin, name: 'Location', desc: 'Map & address', cat: 'Contact' },
+      { type: 'cta', icon: ICONS.target, name: 'Call to Action', desc: 'Action button section', cat: 'Conversion' },
+      { type: 'contact', icon: ICONS.mail, name: 'Contact', desc: 'Contact form', cat: 'Contact' },
+      { type: 'footer', icon: ICONS.file, name: 'Footer', desc: 'Page footer', cat: 'Layout' },
     ]
 
     const existing = document.getElementById('addSectionPanel')
@@ -333,21 +333,29 @@ const Builder = {
     const panel = document.createElement('div')
     panel.id = 'addSectionPanel'
     panel.className = 'add-section-panel'
+    const categories = [...new Set(types.map(t => t.cat))]
     panel.innerHTML = `
       <div class="asp-header">
         <h3>Add Section</h3>
-        <button class="asp-close" id="closeAddPanel">✕</button>
+        <button class="asp-close" id="closeAddPanel">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div class="asp-search">
         <input type="text" placeholder="Search sections..." id="sectionSearchInput" />
       </div>
       <div class="asp-grid" id="aspGrid">
-        ${types.map(t => `
-          <div class="asp-card" data-type="${t.type}">
-            <span class="asp-icon">${t.icon}</span>
-            <h4>${t.name}</h4>
-            <p>${t.desc}</p>
+        ${categories.map(cat => `
+          <div style="grid-column:1/-1;margin-top:8px">
+            <div style="font-size:.7rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;padding:0 4px;margin-bottom:6px">${cat}</div>
           </div>
+          ${types.filter(t => t.cat === cat).map(t => `
+            <div class="asp-card" data-type="${t.type}">
+              <span class="asp-icon">${t.icon}</span>
+              <h4>${t.name}</h4>
+              <p>${t.desc}</p>
+            </div>
+          `).join('')}
         `).join('')}
       </div>
     `
@@ -547,27 +555,92 @@ const Builder = {
     div.innerHTML = T.templatePicker()
     document.body.appendChild(div)
 
+    const allTemplates = typeof ALL_PRESETS !== 'undefined' ? ALL_PRESETS : PRESETS
+    const ITEMS_PER_PAGE = 24
+    let currentPage = 1
+    let currentFilter = 'all'
+    let searchQuery = ''
+
+    function getFiltered() {
+      return allTemplates.filter(t => {
+        const matchFilter = currentFilter === 'all' || t.category === currentFilter
+        const matchSearch = !searchQuery || t.name.toLowerCase().includes(searchQuery) || t.desc.toLowerCase().includes(searchQuery)
+        return matchFilter && matchSearch
+      })
+    }
+
+    function renderTemplates() {
+      const filtered = getFiltered()
+      const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
+      if (currentPage > totalPages) currentPage = 1
+      const start = (currentPage - 1) * ITEMS_PER_PAGE
+      const items = filtered.slice(start, start + ITEMS_PER_PAGE)
+
+      const countEl = document.getElementById('tplCount')
+      const gridEl = document.getElementById('templateGrid')
+      const pagEl = document.getElementById('tplPagination')
+
+      countEl.textContent = `${filtered.length} template${filtered.length !== 1 ? 's' : ''} found`
+
+      gridEl.innerHTML = items.map(t => {
+        const iconSvg = t.icon && t.icon.includes('<svg') ? t.icon : (ICONS[t.theme?.icon] || ICONS.globe)
+        const color = t.theme?.color || 'var(--primary)'
+        return `
+        <div class="card card-hover template-card" data-template="${t.id}" data-category="${t.category || 'other'}" style="padding:20px;cursor:pointer;text-align:center;transition:all .2s">
+          <div style="font-size:2rem;margin-bottom:10px;color:${color}">${ICONS.wrap(iconSvg, 32)}</div>
+          <h4 style="font-size:.88rem;margin-bottom:4px;font-weight:700">${t.name}</h4>
+          <p style="font-size:.75rem;color:var(--gray-500);line-height:1.4">${t.desc}</p>
+        </div>`
+      }).join('')
+
+      if (totalPages > 1) {
+        let pag = ''
+        if (currentPage > 1) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage - 1}">← Prev</button>`
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+            pag += `<button class="btn btn-sm tpl-page ${i === currentPage ? 'btn-primary' : 'btn-ghost'}" data-page="${i}">${i}</button>`
+          } else if (Math.abs(i - currentPage) === 3) {
+            pag += `<span style="color:var(--gray-400)">...</span>`
+          }
+        }
+        if (currentPage < totalPages) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage + 1}">Next →</button>`
+        pagEl.innerHTML = pag
+        pagEl.querySelectorAll('.tpl-page').forEach(b => b.addEventListener('click', () => { currentPage = parseInt(b.dataset.page); renderTemplates() }))
+      } else {
+        pagEl.innerHTML = ''
+      }
+
+      gridEl.querySelectorAll('.template-card').forEach(card => {
+        card.addEventListener('click', async () => {
+          try {
+            div.remove()
+            const site = await API.createSite({ title: card.querySelector('h4')?.textContent || 'My New Site', template_type: card.dataset.template })
+            Toast.show('Site created!', 'success'); Router.navigate('builder/' + site.id)
+          } catch (e) { Toast.show(e.message, 'error') }
+        })
+      })
+    }
+
     document.querySelectorAll('#templateFilters .filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('#templateFilters .filter-btn').forEach(b => b.classList.remove('active'))
         btn.classList.add('active')
-        const filter = btn.dataset.filter
-        document.querySelectorAll('.template-card').forEach(card => {
-          card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none'
-        })
+        currentFilter = btn.dataset.filter
+        currentPage = 1
+        renderTemplates()
       })
     })
 
-    document.querySelectorAll('.template-card').forEach(card => {
-      card.addEventListener('click', async () => {
-        try {
-          div.remove()
-          const site = await API.createSite({ title: card.querySelector('h4')?.textContent || 'My New Site', template_type: card.dataset.template })
-          Toast.show('Site created!', 'success'); Router.navigate('builder/' + site.id)
-        } catch (e) { Toast.show(e.message, 'error') }
+    const searchInput = document.getElementById('tplSearchInput')
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        searchQuery = searchInput.value.toLowerCase().trim()
+        currentPage = 1
+        renderTemplates()
       })
-    })
+    }
 
+    renderTemplates()
     div.querySelector('.modal-overlay')?.addEventListener('click', e => { if (e.target.classList.contains('modal-overlay')) div.remove() })
   },
 

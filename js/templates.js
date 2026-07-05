@@ -384,30 +384,47 @@ const T = {
 
   templatePicker() { return `
 <div class="modal-overlay open" id="templateModal">
-  <div class="modal" style="max-width:960px;padding:32px;max-height:85vh;overflow-y:auto">
+  <div class="modal" style="max-width:1000px;padding:32px;max-height:90vh;overflow-y:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <h2 style="font-size:1.5rem;font-weight:800">Choose a Template</h2>
       <button class="btn btn-ghost btn-sm" onclick="document.getElementById('templateModal').classList.remove('open')" style="font-size:1.2rem">✕</button>
     </div>
-    <p style="color:var(--gray-500);margin-bottom:24px">Start with a pre-built template or a blank canvas</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="templateFilters">
+    <p style="color:var(--gray-500);margin-bottom:20px">Start with a pre-built template or a blank canvas</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="templateFilters">
       <button class="btn btn-sm filter-btn active" data-filter="all">All</button>
       <button class="btn btn-sm filter-btn" data-filter="business">Business</button>
-      <button class="btn btn-sm filter-btn" data-filter="personal">Personal</button>
+      <button class="btn btn-sm filter-btn" data-filter="food">Food & Drink</button>
+      <button class="btn btn-sm filter-btn" data-filter="health">Health</button>
+      <button class="btn btn-sm filter-btn" data-filter="fitness">Fitness</button>
+      <button class="btn btn-sm filter-btn" data-filter="beauty">Beauty</button>
+      <button class="btn btn-sm filter-btn" data-filter="realestate">Real Estate</button>
+      <button class="btn btn-sm filter-btn" data-filter="tech">Technology</button>
+      <button class="btn btn-sm filter-btn" data-filter="education">Education</button>
+      <button class="btn btn-sm filter-btn" data-filter="travel">Travel</button>
       <button class="btn btn-sm filter-btn" data-filter="creative">Creative</button>
-      <button class="btn btn-sm filter-btn" data-filter="food">Food</button>
-      <button class="btn btn-sm filter-btn" data-filter="other">Other</button>
+      <button class="btn btn-sm filter-btn" data-filter="legal">Legal & Finance</button>
+      <button class="btn btn-sm filter-btn" data-filter="automotive">Automotive</button>
+      <button class="btn btn-sm filter-btn" data-filter="home">Home</button>
+      <button class="btn btn-sm filter-btn" data-filter="events">Events</button>
+      <button class="btn btn-sm filter-btn" data-filter="retail">Retail</button>
+      <button class="btn btn-sm filter-btn" data-filter="media">Media</button>
+      <button class="btn btn-sm filter-btn" data-filter="nonprofit">Nonprofit</button>
+      <button class="btn btn-sm filter-btn" data-filter="luxury">Luxury</button>
+      <button class="btn btn-sm filter-btn" data-filter="kids">Kids</button>
+      <button class="btn btn-sm filter-btn" data-filter="pet">Pet</button>
+      <button class="btn btn-sm filter-btn" data-filter="music">Music</button>
+      <button class="btn btn-sm filter-btn" data-filter="photography">Photo</button>
+      <button class="btn btn-sm filter-btn" data-filter="agriculture">Agriculture</button>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px" id="templateGrid">
-      ${PRESETS.map(t => `
-        <div class="card card-hover template-card" data-template="${t.id}" data-category="${t.category||'other'}" style="padding:24px;cursor:pointer;text-align:center;transition:all .2s;${t.id==='blank'?'border:2px dashed var(--gray-300)':''}">
-          <div style="font-size:2.5rem;margin-bottom:12px">${t.icon}</div>
-          <h4 style="font-size:1rem;margin-bottom:6px;font-weight:700">${t.name}</h4>
-          <p style="font-size:.8rem;color:var(--gray-500);line-height:1.5">${t.desc}</p>
-          <div style="margin-top:12px"><span style="background:var(--primary-light);color:var(--primary);padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:600">${(t.category||'other').charAt(0).toUpperCase()+(t.category||'other').slice(1)}</span></div>
-        </div>
-      `).join('')}
+    <div style="position:relative;margin-bottom:16px">
+      <input type="text" id="tplSearchInput" placeholder="Search templates..." style="width:100%;padding:10px 14px 10px 36px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.85rem;font-family:inherit;transition:var(--transition)">
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400)">${ICONS.wrap(ICONS.search,16)}</span>
     </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span id="tplCount" style="font-size:.82rem;color:var(--gray-500)"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px" id="templateGrid"></div>
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:20px" id="tplPagination"></div>
   </div>
 </div>` },
 
@@ -488,36 +505,39 @@ const T = {
     const t=page.theme||{color:'#6366f1',font:'Inter'}
     return `<div class="builder-toolbar">
       <div class="left">
-        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">
+        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')" title="Back to Dashboard" style="padding:6px 10px">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
-        <span class="truncate" style="font-weight:600;max-width:180px">${page.title}</span>
-        <span class="badge-status" style="font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600;${page.published?'background:#dcfce7;color:#16a34a':'background:#fef3c7;color:#d97706'}">${page.published?'Published':'Draft'}</span>
+        <span style="width:1px;height:24px;background:var(--gray-200);margin:0 4px"></span>
+        <span class="truncate" style="font-weight:700;font-size:.92rem;color:var(--gray-800);max-width:200px">${page.title}</span>
+        <span style="font-size:.7rem;padding:3px 10px;border-radius:20px;font-weight:600;${page.published?'background:#dcfce7;color:#16a34a':'background:#fef3c7;color:#d97706'};letter-spacing:.02em">${page.published?'Published':'Draft'}</span>
       </div>
       <div class="right">
-        <button class="btn btn-ghost btn-sm" id="undoBtn" title="Undo (Ctrl+Z)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        <button class="btn btn-ghost btn-sm" id="undoBtn" title="Undo (Ctrl+Z)" style="padding:6px 8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
         </button>
-        <button class="btn btn-ghost btn-sm" id="redoBtn" title="Redo (Ctrl+Y)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        <button class="btn btn-ghost btn-sm" id="redoBtn" title="Redo (Ctrl+Y)" style="padding:6px 8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
         </button>
+        <span style="width:1px;height:24px;background:var(--gray-200);margin:0 4px"></span>
         <div class="device-toggle" id="deviceToggle">
-          <button class="device-btn active" data-device="desktop" title="Desktop">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <button class="device-btn active" data-device="desktop" title="Desktop view">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           </button>
-          <button class="device-btn" data-device="mobile" title="Mobile">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <button class="device-btn" data-device="mobile" title="Mobile view">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
           </button>
         </div>
-        <button class="btn btn-outline btn-sm" id="previewBtn">
+        <span style="width:1px;height:24px;background:var(--gray-200);margin:0 4px"></span>
+        <button class="btn btn-ghost btn-sm" id="previewBtn" title="Preview in new tab">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           Preview
         </button>
-        <button class="btn btn-ghost btn-sm" id="saveBtn" style="color:var(--gray-600)">
+        <button class="btn btn-ghost btn-sm" id="saveBtn" title="Save (Ctrl+S)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Save
         </button>
-        <button class="btn btn-primary btn-sm" id="publishBtn">
+        <button class="btn btn-primary btn-sm" id="publishBtn" style="padding:8px 18px;font-weight:700">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
           ${page.published?'Update':'Publish'}
         </button>
@@ -527,29 +547,33 @@ const T = {
       <div class="builder-sidebar" id="builderSidebar">
         <div class="sidebar-tabs">
           <button class="sidebar-tab active" data-stab="sections">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             Sections
           </button>
           <button class="sidebar-tab" data-stab="theme">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
             Theme
           </button>
           <button class="sidebar-tab" data-stab="seo">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             SEO
           </button>
           <button class="sidebar-tab" data-stab="settings">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
             Settings
           </button>
         </div>
         <div class="sidebar-content" id="sidebarSections">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span style="font-size:.78rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em">Sections</span>
+            <span style="font-size:.72rem;color:var(--gray-400)">${this.page.sections.length} items</span>
+          </div>
           <div class="section-list" id="sectionList"></div>
-          <button class="btn btn-primary btn-sm w-full" id="addSectionBtn" style="margin-top:12px">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <button class="btn btn-primary btn-sm w-full" id="addSectionBtn" style="margin-top:14px;padding:10px;border-radius:10px;font-weight:700">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add Section
           </button>
-          <div class="sidebar-hint">Click to edit • Drag to reorder</div>
+          <div class="sidebar-hint">Click a section to edit • Drag to reorder</div>
         </div>
         <div class="sidebar-content hidden" id="sidebarTheme">
           <div class="theme-option">
