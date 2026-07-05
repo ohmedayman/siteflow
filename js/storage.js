@@ -313,7 +313,14 @@ const API = {
     return LocalDB.getPageBySlug(slug)
   },
 
-  async getPlans() { return {free:{name:'Free',price:0,max_sites:1,custom_domain:false,analytics:false,premium_themes:false,priority_support:false},pro:{name:'Pro',price:9,max_sites:10,custom_domain:true,analytics:true,premium_themes:true,priority_support:false},business:{name:'Business',price:29,max_sites:-1,custom_domain:true,analytics:true,premium_themes:true,priority_support:true}} },
+  async getPlans() {
+    return {
+      free: { name:'مجاني', name_en:'Free', price:0, yearly_price:0, currency:'EGP', max_sites:1, pages:2, custom_domain:false, analytics:false, premium_themes:false, priority_support:false, remove_branding:false, ecommerce:false, payment_gateway:false, whatsapp_support:false, features:['دومين فرعي','صفحتين','علامة Made with Site Flow','استضافة مجانية'] },
+      basic: { name:'أساسي', name_en:'Basic', price:129, yearly_price:999, currency:'EGP', max_sites:3, pages:10, custom_domain:true, analytics:true, premium_themes:false, priority_support:false, remove_branding:true, ecommerce:false, payment_gateway:false, whatsapp_support:false, features:['دومين خاص (.com)','10 صفحات','إزالة العلامة','SSL مجاني','تحليلات أساسية'] },
+      pro: { name:'احترافي', name_en:'Pro', price:299, yearly_price:2499, currency:'EGP', max_sites:-1, pages:-1, custom_domain:true, analytics:true, premium_themes:true, priority_support:true, remove_branding:true, ecommerce:true, payment_gateway:true, whatsapp_support:true, features:['صفحات غير محدودة','ربط فوري/إنستاباي/فودافون كاش','متجر بسيط (50 منتج)','دعم واتساب','بكسل فيسبوك/إنستجرام','جميع القوالب'] },
+      business: { name:'بيزنس', name_en:'Business', price:599, yearly_price:4999, currency:'EGP', max_sites:-1, pages:-1, custom_domain:true, analytics:true, premium_themes:true, priority_support:true, remove_branding:true, ecommerce:true, payment_gateway:true, whatsapp_support:true, features:['متجر كامل بدون حدود','تكامل شحن محلي','تقارير مبيعات','دعم مخصص','API доступ','White Label'] }
+    }
+  },
 
   async createPayment(planKey) {
     const mode = await this._init()
@@ -334,7 +341,7 @@ const API = {
     if (mode === 'supabase') { try { await SB.confirmPayment(id); return } catch {} }
     // local mode — upgrade user plan
     const uid=(this.token||'').replace('local_',''); const users=LocalDB.users.get(); const u=users.find(x=>x.id===uid)
-    if (u) { u.plan='pro'; LocalDB.users.save(users) }
+    if (u) { u.plan=id; LocalDB.users.save(users) }
     return {ok: true}
   },
 

@@ -11,22 +11,35 @@ class Config:
     FRONTEND_DOMAINS = ['siteflow.vexonet.online', 'siteflow.app', 'localhost']
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@siteflow.app')
 
-    # Plans
+    # Plans — Egyptian Market Pricing (EGP)
     PLANS = {
         'free': {
-            'name': 'Free', 'price': 0, 'currency': 'USD',
-            'max_sites': 1, 'custom_domain': False, 'analytics': False,
-            'premium_themes': False, 'priority_support': False
+            'name': 'مجاني', 'name_en': 'Free', 'price': 0, 'currency': 'EGP',
+            'max_sites': 1, 'pages': 2, 'custom_domain': False, 'analytics': False,
+            'premium_themes': False, 'priority_support': False, 'remove_branding': False,
+            'ecommerce': False, 'payment_gateway': False, 'whatsapp_support': False,
+            'features': ['دومين فرعي', 'صفحتين', 'علامة Made with Site Flow', 'استضافة مجانية']
+        },
+        'basic': {
+            'name': 'أساسي', 'name_en': 'Basic', 'price': 129, 'yearly_price': 999, 'currency': 'EGP',
+            'max_sites': 3, 'pages': 10, 'custom_domain': True, 'analytics': True,
+            'premium_themes': False, 'priority_support': False, 'remove_branding': True,
+            'ecommerce': False, 'payment_gateway': False, 'whatsapp_support': False,
+            'features': ['دومين خاص (.com)', '10 صفحات', 'إزالة العلامة', 'SSL مجاني', 'تحليلات أساسية']
         },
         'pro': {
-            'name': 'Pro', 'price': 9, 'currency': 'USD',
-            'max_sites': 10, 'custom_domain': True, 'analytics': True,
-            'premium_themes': True, 'priority_support': False
+            'name': 'احترافي', 'name_en': 'Pro', 'price': 299, 'yearly_price': 2499, 'currency': 'EGP',
+            'max_sites': -1, 'pages': -1, 'custom_domain': True, 'analytics': True,
+            'premium_themes': True, 'priority_support': True, 'remove_branding': True,
+            'ecommerce': True, 'payment_gateway': True, 'whatsapp_support': True,
+            'features': ['صفحات غير محدودة', 'ربط فوري/إنستاباي/فودافون كاش', 'متجر بسيط (50 منتج)', 'دعم واتساب', 'بكسل فيسبوك/إنستجرام', 'جميع القوالب']
         },
         'business': {
-            'name': 'Business', 'price': 29, 'currency': 'USD',
-            'max_sites': -1, 'custom_domain': True, 'analytics': True,
-            'premium_themes': True, 'priority_support': True
+            'name': 'بيزنس', 'name_en': 'Business', 'price': 599, 'yearly_price': 4999, 'currency': 'EGP',
+            'max_sites': -1, 'pages': -1, 'custom_domain': True, 'analytics': True,
+            'premium_themes': True, 'priority_support': True, 'remove_branding': True,
+            'ecommerce': True, 'payment_gateway': True, 'whatsapp_support': True,
+            'features': ['متجر كامل بدون حدود', 'تكامل شحن محلي', 'تقارير مبيعات', 'دعم مخصص', 'API доступ', ':white label']
         }
     }
 

@@ -83,7 +83,9 @@ const Auth = {
         billing:'Billing', plans:'Pricing', help:'Help Center', about:'About Us',
         privacy:'Privacy Policy', pricing:'Pricing', login:'Sign In', signup:'Create Account',
         google:'Continue with Google', choose_template:'Choose a Template',
-        start_blank:'Start Blank', templates:'Templates', editor:'Editor'
+        start_blank:'Start Blank', templates:'Templates', editor:'Editor',
+        free:'Free', basic:'Basic', pro:'Pro', business:'Business',
+        monthly:'/mo', yearly:'/year', subscribe:'Subscribe', current_plan:'Current Plan'
       },
       ar: {
         my_sites:'مواقعي', new_site:'موقع جديد', logout:'تسجيل الخروج', publish:'نشر',
@@ -94,7 +96,9 @@ const Auth = {
         billing:'الفواتير', plans:'الأسعار', help:'مركز المساعدة', about:'من نحن',
         privacy:'سياسة الخصوصية', pricing:'الأسعار', login:'تسجيل الدخول', signup:'إنشاء حساب',
         google:'متابعة بجوجل', choose_template:'اختر قالبًا', start_blank:'ابدأ من الصفر',
-        templates:'القوالب', editor:'المحرر'
+        templates:'القوالب', editor:'المحرر',
+        free:'مجاني', basic:'أساسي', pro:'احترافي', business:'بيزنس',
+        monthly:'/شهرياً', yearly:'/سنوياً', subscribe:'اشترك', current_plan:'الخطة الحالية'
       }
     }
     return (dict[this.lang]||dict.en)[key] || fallback || key

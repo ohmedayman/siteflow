@@ -67,7 +67,12 @@ const Router = {
       if (!plans) throw new Error('No plans')
       app.innerHTML = T.plans(plans)
     } catch {
-      app.innerHTML = T.plans({free:{name:'Free',price:0,max_sites:1,custom_domain:false,analytics:false,premium_themes:false,priority_support:false},pro:{name:'Pro',price:9,max_sites:10,custom_domain:true,analytics:true,premium_themes:true,priority_support:false},business:{name:'Business',price:29,max_sites:-1,custom_domain:true,analytics:true,premium_themes:true,priority_support:true}})
+      app.innerHTML = T.plans({
+        free:{name:'مجاني',name_en:'Free',price:0,currency:'EGP',features:['دومين فرعي','صفحتين','علامة Made with Site Flow']},
+        basic:{name:'أساسي',name_en:'Basic',price:129,yearly_price:999,currency:'EGP',features:['دومين خاص (.com)','10 صفحات','إزالة العلامة','SSL مجاني']},
+        pro:{name:'احترافي',name_en:'Pro',price:299,yearly_price:2499,currency:'EGP',features:['صفحات غير محدودة','ربط فوري/إنستاباي/فودافون كاش','متجر بسيط','دعم واتساب']},
+        business:{name:'بيزنس',name_en:'Business',price:599,yearly_price:4999,currency:'EGP',features:['متجر كامل','شحن محلي','تقارير مبيعات','دعم مخصص']}
+      })
     }
     document.querySelectorAll('.plan-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -78,17 +83,38 @@ const Router = {
   },
 
   async _checkout(planKey) {
-    const plans = {free:{name:'Free',price:0},pro:{name:'Pro',price:9},business:{name:'Business',price:29}}
-    try { const p = await API.getPlans(); if(p) Object.assign(plans, p) } catch {}
-    const plan = plans[planKey]
+    const allPlans = await API.getPlans()
+    const plan = allPlans[planKey]
     if (!plan || plan.price === 0) {
-      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show('Plan updated!','success'); Router.navigate('dashboard') }
+      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show('تم الترقية!','success'); Router.navigate('dashboard') }
       catch(e) { Toast.show(e.message,'error') }
       return
     }
-    document.getElementById('app').innerHTML = T.checkout(plan)
+    document.getElementById('app').innerHTML = `
+<div style="max-width:600px;margin:40px auto;padding:0 24px">
+  <div class="card" style="padding:40px;text-align:center">
+    <div style="margin-bottom:24px">
+      <div style="width:64px;height:64px;border-radius:16px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--primary)">${ICONS.wrap(ICONS.dollar,32)}</div>
+      <h2 style="font-size:1.5rem;margin-bottom:4px">اشتراك ${plan.name}</h2>
+      <p style="color:var(--gray-500)">خطة ${plan.name_en} — ${plan.currency === 'EGP' ? 'ج.م' : '$'}${plan.price}/شهرياً</p>
+    </div>
+    <div style="background:var(--gray-50);border-radius:12px;padding:20px;margin-bottom:24px;text-align:right">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--gray-500)">الخطة</span><strong>${plan.name}</strong></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--gray-500)">السعر</span><strong>${plan.currency === 'EGP' ? 'ج.م' : '$'}${plan.price}/شهر</strong></div>
+      ${plan.yearly_price ? `<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px dashed var(--gray-200)"><span style="color:var(--gray-500)">السعر السنوي</span><strong style="color:var(--primary)">${plan.currency === 'EGP' ? 'ج.م' : '$'}${plan.yearly_price}/سنة</strong></div>` : ''}
+    </div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;margin-bottom:24px;text-align:right">
+      <p style="font-size:.88rem;color:#166534;font-weight:600;margin-bottom:4px">طرق الدفع المتاحة:</p>
+      <p style="font-size:.82rem;color:#166534">فوري • إنستاباي • فودافون كاش • فيزا/ماستركارد</p>
+    </div>
+    <button id="confirmPaymentBtn" class="btn btn-primary btn-lg w-full" style="font-size:1.1rem;padding:16px">
+      ادفع ${plan.currency === 'EGP' ? 'ج.م' : '$'}${plan.price} الآن
+    </button>
+    <p style="font-size:.78rem;color:var(--gray-400);margin-top:12px">يمكنك الإلغاء في أي وقت</p>
+  </div>
+</div>`
     document.getElementById('confirmPaymentBtn')?.addEventListener('click', async () => {
-      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show(`Upgraded to ${plan.name}!`,'success'); Router.navigate('dashboard') }
+      try { await API.createPayment(planKey); await API.confirmPayment(planKey); Auth.user = await API.getMe(); Toast.show(`تم الترقية إلى ${plan.name}!`,'success'); Router.navigate('dashboard') }
       catch(e) { Toast.show(e.message,'error') }
     })
   },

@@ -171,53 +171,69 @@ const T = {
 <section class="lp-section">
   <div class="lp-section-inner">
     <span class="lp-section-badge">Pricing</span>
-    <h2 class="lp-section-title">Simple, Transparent Pricing</h2>
-    <p class="lp-section-desc">Start for free. Upgrade when you need more power.</p>
-    <div class="lp-pricing-grid">
+    <h2 class="lp-section-title">أسعار مناسبة للسوق المصري</h2>
+    <p class="lp-section-desc">ابدأ مجاناً وطَوِّر حسب احتياجك. بدون فيزا دولية — ادفع بالجنيه المصري.</p>
+    <div class="lp-pricing-grid" style="grid-template-columns:repeat(4,1fr)">
       <div class="lp-pricing-card">
-        <h3>Free</h3>
-        <div class="lp-price">$0<span>/mo</span></div>
-        <p class="lp-pricing-desc">Perfect for getting started</p>
+        <h3>مجاني</h3>
+        <div class="lp-price">ج.م 0<span>/شهرياً</span></div>
+        <p class="lp-pricing-desc">جرّب المنصة مجاناً</p>
         <ul>
-          <li>${ICONS.wrap(ICONS.check,16)} 1 website</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Free subdomain</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Basic templates</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Contact forms</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Mobile responsive</li>
+          <li>${ICONS.wrap(ICONS.check,16)} دومين فرعي</li>
+          <li>${ICONS.wrap(ICONS.check,16)} صفحتين</li>
+          <li>${ICONS.wrap(ICONS.check,16)} استضافة مجانية</li>
+          <li>${ICONS.wrap(ICONS.check,16)} SSL مجاني</li>
         </ul>
-        <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest">Get Started</a>
-        <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">Current Plan</a>
+        <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest">ابدأ مجاناً</a>
+        <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">الخطة الحالية</a>
+      </div>
+      <div class="lp-pricing-card">
+        <h3>أساسي</h3>
+        <div class="lp-price">ج.م 129<span>/شهرياً</span></div>
+        <p class="lp-pricing-desc">لصاحب محل أو فريلانسر</p>
+        <ul>
+          <li>${ICONS.wrap(ICONS.check,16)} دومين خاص (.com)</li>
+          <li>${ICONS.wrap(ICONS.check,16)} 10 صفحات</li>
+          <li>${ICONS.wrap(ICONS.check,16)} إزالة العلامة</li>
+          <li>${ICONS.wrap(ICONS.check,16)} SSL مجاني</li>
+          <li>${ICONS.wrap(ICONS.check,16)} تحليلات أساسية</li>
+        </ul>
+        <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:12px">أو 999 ج.م/سنوياً بخصم 35%</p>
+        <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest">اشترك الآن</a>
+        <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">الخطة الحالية</a>
       </div>
       <div class="lp-pricing-card lp-pricing-popular">
-        <div class="lp-pricing-badge">Most Popular</div>
-        <h3>Pro</h3>
-        <div class="lp-price">$9<span>/mo</span></div>
-        <p class="lp-pricing-desc">For professionals & freelancers</p>
+        <div class="lp-pricing-badge">الأكثر شعبية</div>
+        <h3>احترافي</h3>
+        <div class="lp-price">ج.م 299<span>/شهرياً</span></div>
+        <p class="lp-pricing-desc">للمحترفين والفرق</p>
         <ul>
-          <li>${ICONS.wrap(ICONS.check,16)} 5 websites</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Custom domain</li>
-          <li>${ICONS.wrap(ICONS.check,16)} All templates</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Priority support</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Remove branding</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Analytics</li>
+          <li>${ICONS.wrap(ICONS.check,16)} صفحات غير محدودة</li>
+          <li>${ICONS.wrap(ICONS.check,16)} ربط فوري / إنستاباي / فودافون كاش</li>
+          <li>${ICONS.wrap(ICONS.check,16)} متجر بسيط (50 منتج)</li>
+          <li>${ICONS.wrap(ICONS.check,16)} دعم واتساب</li>
+          <li>${ICONS.wrap(ICONS.check,16)} بكسل فيسبوك/إنستجرام</li>
+          <li>${ICONS.wrap(ICONS.check,16)} جميع القوالب</li>
         </ul>
-        <a href="#/checkout?plan=pro" class="btn btn-primary btn-lg w-full js-auth-guest">Choose Pro</a>
-        <a href="#/dashboard" class="btn btn-primary btn-lg w-full js-auth-user hidden">Current Plan</a>
+        <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:12px">أو 2,499 ج.م/سنوياً بخصم 30%</p>
+        <a href="#/login" class="btn btn-primary btn-lg w-full js-auth-guest">اشترك الآن</a>
+        <a href="#/dashboard" class="btn btn-primary btn-lg w-full js-auth-user hidden">الخطة الحالية</a>
       </div>
       <div class="lp-pricing-card">
-        <h3>Business</h3>
-        <div class="lp-price">$29<span>/mo</span></div>
-        <p class="lp-pricing-desc">For teams & agencies</p>
+        <h3>بيزنس</h3>
+        <div class="lp-price">ج.م 599<span>/شهرياً</span></div>
+        <p class="lp-pricing-desc">لمتاجر الكترونية كاملة</p>
         <ul>
-          <li>${ICONS.wrap(ICONS.check,16)} Unlimited websites</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Multiple domains</li>
-          <li>${ICONS.wrap(ICONS.check,16)} E-commerce</li>
-          <li>${ICONS.wrap(ICONS.check,16)} API access</li>
-          <li>${ICONS.wrap(ICONS.check,16)} White label</li>
-          <li>${ICONS.wrap(ICONS.check,16)} Dedicated support</li>
+          <li>${ICONS.wrap(ICONS.check,16)} متجر كامل بدون حدود</li>
+          <li>${ICONS.wrap(ICONS.check,16)} تكامل شحن محلي</li>
+          <li>${ICONS.wrap(ICONS.check,16)} تقارير مبيعات</li>
+          <li>${ICONS.wrap(ICONS.check,16)} دعم مخصص</li>
+          <li>${ICONS.wrap(ICONS.check,16)} API доступ</li>
+          <li>${ICONS.wrap(ICONS.check,16)} White Label</li>
         </ul>
-        <a href="#/checkout?plan=business" class="btn btn-outline btn-lg w-full js-auth-guest">Choose Business</a>
-        <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">Current Plan</a>
+        <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:12px">أو 4,999 ج.م/سنوياً بخصم 30%</p>
+        <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest">اشترك الآن</a>
+        <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">الخطة الحالية</a>
       </div>
     </div>
   </div>
@@ -298,12 +314,12 @@ const T = {
 
 <section class="lp-section lp-cta-section">
   <div class="lp-section-inner">
-    <h2 class="lp-cta-title">Ready to Build Your Website?</h2>
-    <p class="lp-cta-desc">Join thousands of creators who already use Site Flow. Start building for free.</p>
+    <h2 class="lp-cta-title">جاهز تبني موقعك؟</h2>
+    <p class="lp-cta-desc">انضم لآلاف المبدعين اللي بيستخدموا Site Flow. ابدأ مجاناً من غير فيزا دولية.</p>
     <div class="cta-buttons">
-      <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">Get Started Free</a>
-      <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
-      <a href="#/plans" class="btn btn-outline btn-lg">View Pricing</a>
+      <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">ابدأ مجاناً</a>
+      <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">روح للوحة التحكم</a>
+      <a href="#/plans" class="btn btn-outline btn-lg">شوف الأسعار</a>
     </div>
   </div>
 </section>
@@ -316,41 +332,40 @@ const T = {
           <img src="assets/sitflow.svg" alt="Site Flow" width="32" height="32">
           <strong>Site Flow</strong>
         </div>
-        <p>Build professional websites without code.</p>
+        <p>ابنِ مواقع احترافية بدون كود. منصة مصرية للسوق المصري.</p>
       </div>
       <div class="lp-footer-col">
-        <h4>Product</h4>
-        <a href="#/plans">Pricing</a>
-        <a href="#/help">Help Center</a>
-        <a href="#/about">Features</a>
-        <a href="#/about">Templates</a>
+        <h4>المنتج</h4>
+        <a href="#/plans">الأسعار</a>
+        <a href="#/about">المميزات</a>
+        <a href="#/about">القوالب</a>
+        <a href="#/help">مركز المساعدة</a>
       </div>
       <div class="lp-footer-col">
-        <h4>Company</h4>
-        <a href="#/about">About Us</a>
-        <a href="#/about">Blog</a>
-        <a href="#/about">Careers</a>
+        <h4>الشركة</h4>
+        <a href="#/about">من نحن</a>
+        <a href="#/about">المدونة</a>
+        <a href="#/about">الوظائف</a>
       </div>
       <div class="lp-footer-col">
-        <h4>Resources</h4>
-        <a href="#/help">Documentation</a>
-        <a href="#/help">Changelog</a>
-        <a href="#/help">Status</a>
-        <a href="#/about">Community</a>
+        <h4>الموارد</h4>
+        <a href="#/help">التوثيق</a>
+        <a href="#/help">سجل التغييرات</a>
+        <a href="#/help">المجتمع</a>
       </div>
       <div class="lp-footer-col">
-        <h4>Legal</h4>
-        <a href="#/privacy">Privacy Policy</a>
-        <a href="#/privacy">Terms of Service</a>
+        <h4>القانوني</h4>
+        <a href="#/privacy">سياسة الخصوصية</a>
+        <a href="#/privacy">شروط الخدمة</a>
       </div>
       <div class="lp-footer-col">
-        <h4>Contact</h4>
+        <h4>التواصل</h4>
         <a href="mailto:support@siteflow.vexonet.online">support@siteflow.vexonet.online</a>
-        <a href="#/help">Contact Us</a>
+        <a href="#/help">تواصل معنا</a>
       </div>
     </div>
     <div class="lp-footer-bottom">
-      <p>&copy; ${new Date().getFullYear()} Site Flow. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} Site Flow. جميع الحقوق محفوظة.</p>
     </div>
   </div>
 </footer>` },
@@ -507,27 +522,26 @@ const T = {
 </div>` },
 
   plans(plans) { return `
-<div style="max-width:1100px;margin:0 auto;padding:60px 24px">
+<div style="max-width:1200px;margin:0 auto;padding:60px 24px">
   <div class="text-center mb-24">
-    <h1 style="font-size:2.2rem;margin-bottom:8px">Simple, Transparent Pricing</h1>
-    <p style="color:var(--gray-500)">Start free, upgrade when you need more features</p>
+    <h1 style="font-size:2.2rem;margin-bottom:8px">أسعار مناسبة للسوق المصري</h1>
+    <p style="color:var(--gray-500)">ابدأ مجاناً وطَوِّر حسب احتياجك — ادفع بالجنيه المصري</p>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
     ${Object.entries(plans).map(([k,p])=>{
       const cur=Auth.user?.plan===k
-      return `<div class="card" style="padding:32px;position:relative;${cur?'border:2px solid var(--primary);box-shadow:var(--shadow-md)':''}${k==='pro'?'border:2px solid var(--primary);':''}">
-        ${cur?'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:4px 16px;border-radius:20px;font-size:.75rem;font-weight:700">CURRENT</div>':''}
-        ${k==='pro'&&!cur?'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:4px 16px;border-radius:20px;font-size:.75rem;font-weight:700">POPULAR</div>':''}
-        <h3 style="font-size:1.5rem;margin-bottom:4px">${p.name}</h3>
-        <div style="font-size:2.5rem;font-weight:800;color:var(--primary);margin-bottom:20px">${p.price===0?'Free':'$'+p.price}<span style="font-size:1rem;color:var(--gray-500);font-weight:400">${p.price>0?'/mo':''}</span></div>
-        <ul style="list-style:none;padding:0;margin-bottom:24px;display:flex;flex-direction:column;gap:10px">
-          <li>${ICONS.wrap(ICONS.check,16)} ${p.max_sites===-1?'Unlimited sites':p.max_sites+' site'+(p.max_sites>1?'s':'')}</li>
-          <li>${p.custom_domain?ICONS.wrap(ICONS.check,16):ICONS.wrap(ICONS.x,16)} Custom domains</li>
-          <li>${p.analytics?ICONS.wrap(ICONS.check,16):ICONS.wrap(ICONS.x,16)} Analytics</li>
-          <li>${p.premium_themes?ICONS.wrap(ICONS.check,16):ICONS.wrap(ICONS.x,16)} Premium themes</li>
-          <li>${p.priority_support?ICONS.wrap(ICONS.check,16):ICONS.wrap(ICONS.x,16)} Priority support</li>
+      const isPopular=k==='pro'
+      const priceStr=p.price===0?'مجاني':'ج.م '+p.price
+      return `<div class="card" style="padding:28px;position:relative;${cur?'border:2px solid var(--primary);box-shadow:var(--shadow-md)':''}${isPopular&&!cur?'border:2px solid var(--primary);':''}">
+        ${cur?'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:4px 16px;border-radius:20px;font-size:.72rem;font-weight:700">الخطة الحالية</div>':''}
+        ${isPopular&&!cur?'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:4px 16px;border-radius:20px;font-size:.72rem;font-weight:700">الأكثر شعبية</div>':''}
+        <h3 style="font-size:1.3rem;margin-bottom:4px">${p.name}</h3>
+        <div style="font-size:2.2rem;font-weight:800;color:var(--primary);margin-bottom:4px">${priceStr}<span style="font-size:.85rem;color:var(--gray-500);font-weight:400">${p.price>0?'/شهرياً':''}</span></div>
+        ${p.yearly_price?`<p style="font-size:.75rem;color:var(--gray-400);margin-bottom:16px">أو ج.م ${p.yearly_price.toLocaleString()}/سنوياً</p>`:'<div style="height:16px"></div>'}
+        <ul style="list-style:none;padding:0;margin-bottom:20px;display:flex;flex-direction:column;gap:8px">
+          ${(p.features||[]).map(f=>`<li style="display:flex;align-items:start;gap:8px;font-size:.85rem;color:var(--gray-600)">${ICONS.wrap(ICONS.check,14)} ${f}</li>`).join('')}
         </ul>
-        <button class="btn w-full ${cur?'btn-secondary':'btn-primary'} plan-btn" data-plan="${k}">${cur?'Current Plan':p.price===0?'Get Started':'Subscribe'}</button>
+        <button class="btn w-full ${cur?'btn-secondary':'btn-primary'} plan-btn" data-plan="${k}" style="font-size:.9rem;padding:12px">${cur?'الخطة الحالية':p.price===0?'ابدأ مجاناً':'اشترك الآن'}</button>
       </div>`
     }).join('')}
   </div>
@@ -734,16 +748,16 @@ const T = {
 
   billing(payments, plans, user) { return `
 <div style="max-width:800px;margin:0 auto;padding:40px 24px">
-  <h1 style="font-size:1.8rem;margin-bottom:24px">Billing</h1>
+  <h1 style="font-size:1.8rem;margin-bottom:24px">الفواتير</h1>
   <div class="card mb-24">
-    <h3 style="margin-bottom:8px">Current Plan: <span style="color:var(--primary)">${user?.plan||'Free'}</span></h3>
-    <p style="color:var(--gray-500);margin-bottom:16px">Manage your subscription and payment history.</p>
-    <a href="#/plans" class="btn btn-primary">Change Plan</a>
+    <h3 style="margin-bottom:8px">الخطة الحالية: <span style="color:var(--primary)">${plans[user?.plan]?.name||user?.plan||'مجاني'}</span></h3>
+    <p style="color:var(--gray-500);margin-bottom:16px">إدارة اشتراكك وسجل المدفوعات.</p>
+    <a href="#/plans" class="btn btn-primary">تغيير الخطة</a>
   </div>
   <div class="card">
-    <h3 style="margin-bottom:16px">Payment History</h3>
-    ${payments.length===0?'<p style="color:var(--gray-500)">No payments yet.</p>':
-    `<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid var(--gray-200)"><th style="text-align:left;padding:8px;font-size:.85rem">Date</th><th style="text-align:left;padding:8px;font-size:.85rem">Plan</th><th style="text-align:left;padding:8px;font-size:.85rem">Amount</th><th style="text-align:left;padding:8px;font-size:.85rem">Status</th></tr></thead><tbody>${payments.map(p=>`<tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:8px">${new Date(p.created_at||p.createdAt).toLocaleDateString()}</td><td style="padding:8px">${p.plan}</td><td style="padding:8px">$${p.amount}</td><td style="padding:8px"><span style="background:${p.status==='completed'?'#d1fae5;color:#065f46':'#fef3c7;color:#92400e'};padding:2px 10px;border-radius:12px;font-size:.78rem">${p.status||'completed'}</span></td></tr>`).join('')}</tbody></table>`}
+    <h3 style="margin-bottom:16px">سجل المدفوعات</h3>
+    ${payments.length===0?'<p style="color:var(--gray-500)">لا توجد مدفوعات بعد.</p>':
+    `<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid var(--gray-200)"><th style="text-align:right;padding:8px;font-size:.85rem">التاريخ</th><th style="text-align:right;padding:8px;font-size:.85rem">الخطة</th><th style="text-align:right;padding:8px;font-size:.85rem">المبلغ</th><th style="text-align:right;padding:8px;font-size:.85rem">الحالة</th></tr></thead><tbody>${payments.map(p=>`<tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:8px">${new Date(p.created_at||p.createdAt).toLocaleDateString('ar-EG')}</td><td style="padding:8px">${plans[p.plan]?.name||p.plan}</td><td style="padding:8px">ج.م ${p.amount}</td><td style="padding:8px"><span style="background:${p.status==='completed'?'#d1fae5;color:#065f46':'#fef3c7;color:#92400e'};padding:2px 10px;border-radius:12px;font-size:.78rem">${p.status==='completed'?'مكتمل':p.status||'مكتمل'}</span></td></tr>`).join('')}</tbody></table>`}
   </div>
 </div>` },
 
@@ -758,12 +772,12 @@ const T = {
     ${[
       {q:'How do I create a website?',a:'Click "New Site" from your dashboard, choose a template, then customize it with our drag-and-drop editor. When ready, click Publish.'},
       {q:'Can I use my own domain?',a:'Yes! Pro and Business plans support custom domains. Go to Settings in the editor and enter your domain name.'},
-      {q:'Is there a free plan?',a:'Yes! The Free plan includes 1 site with basic features. Upgrade to Pro ($9/mo) for 10 sites and custom domains.'},
+      {q:'Is there a free plan?',a:'Yes! The Free plan includes 1 site with basic features. Upgrade to Basic (129 EGP/mo) or Pro (299 EGP/mo) for more features and custom domains.'},
       {q:'How do I edit my site after publishing?',a:'Go to your dashboard, click Edit on your published site, make changes, and click Update to republish.'},
       {q:'Can I use Google login?',a:'Yes! Click "Continue with Google" on the login page to sign in with your Google account.'},
       {q:'Is Arabic supported?',a:'Yes! Site Flow supports full Arabic interface and RTL layout. Change language in Settings.'},
       {q:'How do I add images?',a:'In the editor, click the image placeholder in Hero section or click + in Gallery to upload images from your device.'},
-      {q:'What templates are available?',a:'We offer 8 templates: Personal, Business, Restaurant, Gallery, Event, Form, Blog, and Blank Canvas.'},
+      {q:'What templates are available?',a:'We offer 500+ templates across 25+ categories including business, food, health, fitness, beauty, real estate, tech, education, travel, and more.'},
       {q:'How does the editor work?',a:'Click any text to edit it directly. Drag sections to reorder. Use the sidebar to change theme colors, fonts, and SEO settings.'},
       {q:'How do I publish my site?',a:'Click the Publish button in the top-right of the editor. Your site will be live at your-slug.siteflow.vexonet.online instantly.'}
     ].map(({q,a}) => `
