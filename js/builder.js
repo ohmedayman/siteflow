@@ -128,9 +128,15 @@ const Builder = {
       case 'faq': return T.faqSection(s.data, i === this.editingIdx)
       case 'team': return T.teamSection(s.data, i === this.editingIdx)
       case 'footer': return T.footerSection(s.data, i === this.editingIdx)
-      case 'cta': return T.ctaSection ? T.ctaSection(s.data, i === this.editingIdx) : `<div class="editable-section" style="text-align:center;padding:60px 40px;background:var(--p-color,#6366f1);color:#fff"><h2>${s.data.heading || 'Call to Action'}</h2><p>${s.data.subheading || ''}</p></div>`
-      case 'features': return T.featuresSection ? T.featuresSection(s.data, i === this.editingIdx) : `<div class="editable-section" style="padding:60px 40px"><h2 style="text-align:center">${s.data.heading || 'Features'}</h2></div>`
-      case 'stats': return T.statsSection ? T.statsSection(s.data, i === this.editingIdx) : `<div class="editable-section" style="padding:60px 40px;text-align:center;background:#f8fafc"><h2>${s.data.heading || 'Statistics'}</h2></div>`
+      case 'blog': return T.blogSection(s.data, i === this.editingIdx)
+      case 'portfolio': return T.portfolioSection(s.data, i === this.editingIdx)
+      case 'counters': return T.countersSection(s.data, i === this.editingIdx)
+      case 'timeline': return T.timelineSection(s.data, i === this.editingIdx)
+      case 'menu': return T.menuSection(s.data, i === this.editingIdx)
+      case 'location': return T.locationSection(s.data, i === this.editingIdx)
+      case 'cta': return `<div class="editable-section" style="text-align:center;padding:60px 40px;background:var(--p-color,#6366f1);color:#fff"><h2>${s.data.heading || 'Call to Action'}</h2><p>${s.data.subheading || ''}</p></div>`
+      case 'features': return `<div class="editable-section" style="padding:60px 40px"><h2 style="text-align:center">${s.data.heading || 'Features'}</h2></div>`
+      case 'stats': return `<div class="editable-section" style="padding:60px 40px;text-align:center;background:#f8fafc"><h2>${s.data.heading || 'Statistics'}</h2></div>`
       default: return `<div class="editable-section" style="padding:40px;text-align:center;color:#999">Unknown section type: ${s.type}</div>`
     }
   },
@@ -309,7 +315,13 @@ const Builder = {
       { type: 'gallery', icon: '🖼️', name: 'Gallery', desc: 'Image grid' },
       { type: 'faq', icon: '❓', name: 'FAQ', desc: 'Questions & answers' },
       { type: 'team', icon: '👥', name: 'Team', desc: 'Team members' },
-      { type: 'stats', icon: '📊', name: 'Stats', desc: 'Statistics numbers' },
+      { type: 'blog', icon: '✍️', name: 'Blog', desc: 'Blog posts' },
+      { type: 'portfolio', icon: '📂', name: 'Portfolio', desc: 'Work showcase' },
+      { type: 'counters', icon: '📊', name: 'Counters', desc: 'Statistics numbers' },
+      { type: 'timeline', icon: '📅', name: 'Timeline', desc: 'History timeline' },
+      { type: 'menu', icon: '🍽️', name: 'Menu', desc: 'Restaurant menu' },
+      { type: 'location', icon: '📍', name: 'Location', desc: 'Map & address' },
+      { type: 'stats', icon: '📈', name: 'Stats', desc: 'Stat bars' },
       { type: 'cta', icon: '🎯', name: 'Call to Action', desc: 'Action button section' },
       { type: 'contact', icon: '📧', name: 'Contact', desc: 'Contact form' },
       { type: 'footer', icon: '📋', name: 'Footer', desc: 'Page footer' },
@@ -368,6 +380,12 @@ const Builder = {
           cta: { heading: 'Ready to Get Started?', subheading: 'Join thousands of satisfied customers today.', buttonText: 'Start Free Trial' },
           contact: { heading: 'Get In Touch', email: '', phone: '', address: '' },
           footer: { copyright: '© 2026 Your Company. All rights reserved.', text: 'Built with SiteFlow' },
+          blog: { heading: 'Latest Posts', items: [{ title: 'Post Title', excerpt: 'Post excerpt goes here...', date: 'Jan 2026' }, { title: 'Another Post', excerpt: 'Another exciting post...', date: 'Feb 2026' }] },
+          portfolio: { heading: 'Our Work', items: [{ title: 'Project One', desc: 'Description of project', image: '' }, { title: 'Project Two', desc: 'Description of project', image: '' }, { title: 'Project Three', desc: 'Description of project', image: '' }] },
+          counters: { heading: 'By the Numbers', items: [{ number: '100+', label: 'Clients' }, { number: '500+', label: 'Projects' }, { number: '50+', label: 'Team' }] },
+          timeline: { heading: 'Our Journey', items: [{ title: 'Founded', desc: 'Company started', year: '2024' }, { title: 'Milestone', desc: 'Key achievement', year: '2025' }, { title: 'Growth', desc: 'Expanded globally', year: '2026' }] },
+          menu: { heading: 'Our Menu', items: [{ title: 'Item Name', desc: 'Description', price: '$15', category: 'Main' }, { title: 'Another Item', desc: 'Description', price: '$12', category: 'Main' }] },
+          location: { heading: 'Find Us', address: '123 Main St, City', phone: '+1 555-0000', hours: 'Mon-Fri 9AM-5PM' },
         }
         this._pushUndo()
         this.page.sections.push({ type, data: defs[type] || {} })

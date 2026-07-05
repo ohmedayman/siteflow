@@ -29,6 +29,7 @@ const Router = {
     else if (r==='privacy') { this._privacy() }
     else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._checkoutRoute(pts[1]) }
     else if (r==='submissions'&&pts[1]) { if(!Auth.requireAuth())return; this._submissions(pts[1]) }
+    else if (r==='analytics'&&pts[1]) { if(!Auth.requireAuth())return; this._analytics(pts[1]) }
     else { this._render('landing') }
     window.scrollTo(0, 0)
   },
@@ -135,6 +136,64 @@ const Router = {
           this._submissions(siteId)
         })
       })
+    } catch(e) { Toast.show(e.message,'error'); this.navigate('dashboard') }
+  },
+
+  async _analytics(siteId) {
+    try {
+      const [site, analytics] = await Promise.all([API.getSite(siteId), API.getAnalytics(siteId)])
+      document.getElementById('app').innerHTML = `
+<div style="max-width:1000px;margin:0 auto;padding:40px 24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1 style="font-size:1.6rem">Analytics</h1>
+      <p style="color:var(--gray-500);font-size:.9rem">Stats for ${site.title}</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a href="#/builder/${siteId}" class="btn btn-outline btn-sm">Edit</a>
+      <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">← Back</button>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card card"><div class="num">${analytics.totalViews||0}</div><div class="label">Total Views</div></div>
+    <div class="stat-card card"><div class="num">${analytics.viewsLast30||0}</div><div class="label">Last 30 Days</div></div>
+    <div class="stat-card card"><div class="num">${analytics.uniqueIPs||0}</div><div class="label">Unique Visitors</div></div>
+    <div class="stat-card card"><div class="num">${analytics.submissionsCount||0}</div><div class="label">Submissions</div></div>
+  </div>
+  <div class="card" style="padding:24px;margin-bottom:20px">
+    <h3 style="margin-bottom:16px">Views (Last 30 Days)</h3>
+    <canvas id="viewsChart" height="250"></canvas>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="card" style="padding:24px">
+      <h3 style="margin-bottom:12px">Overview</h3>
+      <div style="display:grid;gap:12px">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--gray-500)">Total Views</span><strong>${analytics.totalViews||0}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--gray-500)">Unique Visitors</span><strong>${analytics.uniqueIPs||0}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--gray-500)">Submissions</span><strong>${analytics.submissionsCount||0}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--gray-500)">Unread</span><strong>${analytics.submissionsUnread||0}</strong></div>
+      </div>
+    </div>
+    <div class="card" style="padding:24px">
+      <h3 style="margin-bottom:12px">Quick Actions</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <a href="#/builder/${siteId}" class="btn btn-primary btn-sm w-full">Edit Site</a>
+        <a href="${subdomainUrl(site.slug)}" target="_blank" class="btn btn-outline btn-sm w-full">View Live</a>
+        <a href="#/submissions/${siteId}" class="btn btn-outline btn-sm w-full">View Messages</a>
+      </div>
+    </div>
+  </div>
+</div>`
+      const canvas = document.getElementById('viewsChart')
+      if (canvas && typeof Chart !== 'undefined') {
+        const viewsByDay = analytics.viewsByDay || []
+        new Chart(canvas, {
+          type: 'line', data: {
+            labels: viewsByDay.map(d => d.date?.slice(5) || ''),
+            datasets: [{ label: 'Views', data: viewsByDay.map(d => d.views || 0), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.1)', fill: true, tension: .4, pointRadius: 3 }]
+          }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        })
+      }
     } catch(e) { Toast.show(e.message,'error'); this.navigate('dashboard') }
   },
 
@@ -273,6 +332,7 @@ const Dash = {
               <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">✏️ Edit</a>
               ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">🔗 View</a>`:''}
               <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm">💬</a>
+              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm">📊</a>
               <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626">🗑</button>
             </div>
           </div>`
@@ -281,7 +341,6 @@ const Dash = {
       document.getElementById('createSiteBtn')?.addEventListener('click',()=>Builder.createNew())
       document.getElementById('upgradeBtn')?.addEventListener('click',()=>Router.navigate('plans'))
 
-      // Site filter
       document.querySelectorAll('[data-sfilter]').forEach(btn=>{
         btn.addEventListener('click',()=>{
           document.querySelectorAll('[data-sfilter]').forEach(b=>b.classList.remove('active'))
