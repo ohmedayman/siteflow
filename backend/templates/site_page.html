@@ -51,6 +51,36 @@ body{font-family:'{{ font }}',sans-serif;color:#0f172a;line-height:1.6;min-heigh
 .contact-form{display:flex;flex-direction:column;gap:14px}
 .contact-form .field{padding:12px 16px;border:2px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:.9rem;width:100%}
 .contact-form .btn{padding:14px 28px;border:none;border-radius:8px;font-weight:600;font-size:1rem;cursor:pointer;color:#fff;width:100%}
+.services-section,.testimonials-section,.pricing-section,.faq-section,.team-section{max-width:1000px;margin:0 auto;padding:60px 24px}
+.services-section h2,.testimonials-section h2,.pricing-section h2,.faq-section h2,.team-section h2{font-size:1.8rem;font-weight:700;margin-bottom:24px;text-align:center;color:var(--p-color,#6366f1)}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px}
+.service-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:32px 24px;text-align:center}
+.service-card h3{font-size:1.1rem;margin-bottom:8px;color:#1e293b}
+.service-card p{font-size:.9rem;color:#64748b;line-height:1.6}
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.testimonial-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:32px 24px}
+.testimonial-card p{font-size:1rem;color:#475569;line-height:1.7;font-style:italic;margin-bottom:16px}
+.testimonial-author{display:flex;flex-direction:column;gap:4px}
+.testimonial-author strong{color:#1e293b}
+.testimonial-author span{font-size:.85rem;color:#64748b}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px}
+.pricing-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:32px 24px;text-align:center}
+.pricing-card h3{font-size:1.2rem;margin-bottom:8px;color:#1e293b}
+.pricing-card .price{font-size:2rem;font-weight:800;color:var(--p-color,#6366f1);margin-bottom:16px}
+.pricing-card ul{list-style:none;padding:0;margin:0 0 16px}
+.pricing-card li{padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:.9rem;color:#475569}
+.faq-list{max-width:700px;margin:0 auto}
+.faq-item{border-bottom:1px solid #e2e8f0;padding:20px 0}
+.faq-item h3{font-size:1rem;color:#1e293b;margin-bottom:8px}
+.faq-item p{font-size:.9rem;color:#475569;line-height:1.6}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
+.team-card{text-align:center;padding:24px}
+.team-avatar{width:80px;height:80px;border-radius:50%;background:var(--p-color,#6366f1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;margin:0 auto 16px}
+.team-card h3{font-size:1rem;color:#1e293b;margin-bottom:4px}
+.team-card p{font-size:.85rem;color:#64748b}
+.footer-section{background:#0f172a;color:#94a3b8;padding:32px 24px;text-align:center}
+.footer-content{display:flex;flex-direction:column;gap:8px;align-items:center}
+.footer-content p{font-size:.85rem;margin:0}
 .site-footer{text-align:center;padding:32px 24px;color:#94a3b8;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:40px}
 </style>
 </head>
@@ -87,6 +117,55 @@ body{font-family:'{{ font }}',sans-serif;color:#0f172a;line-height:1.6;min-heigh
       <textarea class="field" style="min-height:100px;resize:vertical" placeholder="Your Message..." disabled></textarea>
       <button class="btn" style="background:{{ theme_color }}">Send</button>
     </div>
+  </div>
+  {% elif section.type == 'services' %}
+  <div class="services-section">
+    <h2>{{ section.data.heading }}</h2>
+    <div class="services-grid">
+    {% for item in section.data.items %}
+      <div class="service-card"><h3>{{ item.title }}</h3><p>{{ item.desc }}</p></div>
+    {% endfor %}
+    </div>
+  </div>
+  {% elif section.type == 'testimonials' %}
+  <div class="testimonials-section">
+    <h2>{{ section.data.heading }}</h2>
+    <div class="testimonials-grid">
+    {% for item in section.data.items %}
+      <div class="testimonial-card"><p>"{{ item.text }}"</p><div class="testimonial-author"><strong>{{ item.name }}</strong><span>{{ item.role }}</span></div></div>
+    {% endfor %}
+    </div>
+  </div>
+  {% elif section.type == 'pricing' %}
+  <div class="pricing-section">
+    <h2>{{ section.data.heading }}</h2>
+    <div class="pricing-grid">
+    {% for plan in section.data.plans %}
+      <div class="pricing-card"><h3>{{ plan.name }}</h3><div class="price">{{ plan.price }}</div><ul>{% for f in plan.features %}<li>{{ f }}</li>{% endfor %}</ul></div>
+    {% endfor %}
+    </div>
+  </div>
+  {% elif section.type == 'faq' %}
+  <div class="faq-section">
+    <h2>{{ section.data.heading }}</h2>
+    <div class="faq-list">
+    {% for item in section.data.items %}
+      <div class="faq-item"><h3>{{ item.q }}</h3><p>{{ item.a }}</p></div>
+    {% endfor %}
+    </div>
+  </div>
+  {% elif section.type == 'team' %}
+  <div class="team-section">
+    <h2>{{ section.data.heading }}</h2>
+    <div class="team-grid">
+    {% for item in section.data.items %}
+      <div class="team-card"><div class="team-avatar">{{ item.name[0] }}</div><h3>{{ item.name }}</h3><p>{{ item.role }}</p></div>
+    {% endfor %}
+    </div>
+  </div>
+  {% elif section.type == 'footer' %}
+  <div class="footer-section">
+    <div class="footer-content"><p>{{ section.data.copyright }}</p><p>{{ section.data.text }}</p></div>
   </div>
   {% endif %}
 {% endfor %}

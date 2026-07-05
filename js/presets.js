@@ -8,6 +8,8 @@ const PRESETS = [
     sections: [
       { type: 'hero', data: { heading: 'John Doe', description: 'Creative Developer & Designer. I build digital experiences that matter.', image: '' } },
       { type: 'about', data: { heading: 'About Me', content: 'I am a passionate creator with 5+ years of experience in web development and design. I love turning ideas into reality.' } },
+      { type: 'services', data: { heading: 'What I Do', items: [{title:'Web Development',desc:'Building modern, responsive websites with clean code.'},{title:'UI/UX Design',desc:'Creating beautiful, user-friendly interfaces.'},{title:'Mobile Apps',desc:'Cross-platform mobile applications.'}] } },
+      { type: 'testimonials', data: { heading: 'What People Say', items: [{name:'Ahmed',text:'Amazing work! Highly recommended.',role:'CEO, TechCorp'},{name:'Sara',text:'Professional and delivered on time.',role:'Marketing Director'}] } },
       { type: 'gallery', data: { heading: 'My Work', images: [] } },
       { type: 'contact', data: { heading: 'Get In Touch', email: 'hello@example.com', phone: '', address: '' } }
     ],
@@ -20,7 +22,10 @@ const PRESETS = [
     sections: [
       { type: 'hero', data: { heading: 'Your Company', description: 'We deliver exceptional solutions for modern businesses. Innovation meets excellence.', image: '' } },
       { type: 'about', data: { heading: 'About Us', content: 'We are a team of dedicated professionals committed to delivering the best results for our clients.' } },
-      { type: 'gallery', data: { heading: 'Our Work', images: [] } },
+      { type: 'services', data: { heading: 'Our Services', items: [{title:'Consulting',desc:'Strategic business consulting for growth.'},{title:'Development',desc:'Custom software development solutions.'},{title:'Marketing',desc:'Digital marketing and brand strategy.'}] } },
+      { type: 'pricing', data: { heading: 'Our Plans', plans: [{name:'Basic',price:'$29',features:['1 User','10 Projects','Email Support']},{name:'Pro',price:'$79',features:['5 Users','50 Projects','Priority Support','Analytics']},{name:'Enterprise',price:'$199',features:['Unlimited Users','Unlimited Projects','24/7 Support','Custom Integrations']}] } },
+      { type: 'testimonials', data: { heading: 'Client Reviews', items: [{name:'Omar',text:'Best service we have ever used!',role:'CTO, StartupX'},{name:'Nour',text:'Transformed our business completely.',role:'Founder, GrowCo'}] } },
+      { type: 'faq', data: { heading: 'FAQ', items: [{q:'How do I get started?',a:'Simply sign up and choose a plan that suits your needs.'},{q:'Do you offer refunds?',a:'Yes, we offer a 30-day money-back guarantee.'},{q:'Can I change my plan later?',a:'Yes, you can upgrade or downgrade at any time.'}] } },
       { type: 'contact', data: { heading: 'Contact Us', email: 'info@company.com', phone: '+1 234 567 890', address: '123 Business St, City' } }
     ],
     theme: { color: '#059669', font: 'Inter' },
@@ -91,6 +96,8 @@ const PRESETS = [
     sections: [
       { type: 'hero', data: { heading: 'My Website', description: 'Welcome to my site. Start editing to make it yours.', image: '' } },
       { type: 'about', data: { heading: 'About', content: 'Edit this section to tell your story.' } },
+      { type: 'services', data: { heading: 'Our Services', items: [{title:'Service 1',desc:'Description of service 1'},{title:'Service 2',desc:'Description of service 2'},{title:'Service 3',desc:'Description of service 3'}] } },
+      { type: 'testimonials', data: { heading: 'Testimonials', items: [{name:'Client Name',text:'Great service!',role:'CEO, Company'}] } },
       { type: 'contact', data: { heading: 'Contact', email: '', phone: '', address: '' } }
     ],
     theme: { color: '#6366f1', font: 'Inter' },

@@ -40,12 +40,13 @@ const Builder = {
   _renderSections() {
     const list = document.getElementById('sectionList')
     if (!list) return
-    const icons = { hero:'🏠', about:'👤', gallery:'🖼️', contact:'📧' }
+    const icons = { hero:'🏠', about:'👤', gallery:'🖼️', contact:'📧', services:'💼', testimonials:'💬', pricing:'💰', faq:'❓', team:'👥', footer:'📋' }
+    const descs = { hero:'Header & intro',about:'About text',gallery:'Image gallery',contact:'Contact form',services:'What you offer',testimonials:'Client reviews',pricing:'Price plans',faq:'FAQ questions',team:'Team members',footer:'Page footer' }
     list.innerHTML = this.page.sections.map((s,i) =>
       `<div class="section-item ${i===this.editingIdx?'active':''}" data-index="${i}" draggable="true">
         <span class="drag-handle">⠿</span>
         <div class="section-item-icon" style="background:${i===this.editingIdx?'var(--primary-light)':'var(--gray-100)'}">${icons[s.type]||'📄'}</div>
-        <div class="section-item-info"><h4>${s.type.charAt(0).toUpperCase()+s.type.slice(1)}</h4><p>${({hero:'Header & intro',about:'About text',gallery:'Image gallery',contact:'Contact form'})[s.type]||''}</p></div>
+        <div class="section-item-info"><h4>${s.type.charAt(0).toUpperCase()+s.type.slice(1)}</h4><p>${descs[s.type]||''}</p></div>
         <button class="dup-section" data-dup="${i}" title="Duplicate">⧉</button>
         <button class="del-section" data-del="${i}" title="Delete">✕</button>
       </div>`).join('')
@@ -62,6 +63,12 @@ const Builder = {
         case 'about': return T.aboutSection(s.data, i===this.editingIdx)
         case 'gallery': return T.gallerySection(s.data, i===this.editingIdx)
         case 'contact': return T.contactSection(s.data, i===this.editingIdx)
+        case 'services': return T.servicesSection(s.data, i===this.editingIdx)
+        case 'testimonials': return T.testimonialsSection(s.data, i===this.editingIdx)
+        case 'pricing': return T.pricingSection(s.data, i===this.editingIdx)
+        case 'faq': return T.faqSection(s.data, i===this.editingIdx)
+        case 'team': return T.teamSection(s.data, i===this.editingIdx)
+        case 'footer': return T.footerSection(s.data, i===this.editingIdx)
         default: return ''
       }
     }).join('') + '</div>'
@@ -256,9 +263,9 @@ const Builder = {
   },
 
   _addSection() {
-    const types=['hero','about','gallery','contact']
+    const types=['hero','about','services','testimonials','pricing','gallery','faq','team','contact','footer']
     const next=types[(types.indexOf(this.page.sections[this.editingIdx]?.type)+1)%types.length]
-    const defs={hero:{heading:'New Section',description:'Add your content here...',image:''},about:{heading:'About',content:'Write about yourself...'},gallery:{heading:'Gallery',images:[]},contact:{heading:'Contact',email:'',phone:'',address:''}}
+    const defs={hero:{heading:'New Section',description:'Add your content here...',image:''},about:{heading:'About',content:'Write about yourself...'},services:{heading:'Our Services',items:[{title:'Service 1',desc:'Description'},{title:'Service 2',desc:'Description'}]},testimonials:{heading:'Testimonials',items:[{name:'Client',text:'Great work!',role:'CEO'}]},pricing:{heading:'Pricing',plans:[{name:'Basic',price:'$9/mo',features:['Feature 1','Feature 2']}]},gallery:{heading:'Gallery',images:[]},faq:{heading:'FAQ',items:[{q:'Question here?',a:'Answer here'}]},team:{heading:'Our Team',items:[{name:'Team Member',role:'Role'}]},contact:{heading:'Contact',email:'',phone:'',address:''},footer:{copyright:'© 2026 All rights reserved.',text:'Powered by Site Flow'}}
     this._pushUndo(); this.page.sections.push({type:next,data:defs[next]}); this.editingIdx=this.page.sections.length-1
     this._saveNow(); this._renderSections(); this._renderCanvas(); this.bindAll()
   },
