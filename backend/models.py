@@ -127,3 +127,21 @@ class PageView(db.Model):
     ip = db.Column(db.String(45))
     user_agent = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class FormSubmission(db.Model):
+    __tablename__ = 'form_submissions'
+    id = db.Column(db.Integer, primary_key=True)
+    site_id = db.Column(db.Integer, db.ForeignKey('sites.id'), nullable=False)
+    name = db.Column(db.String(100), default='')
+    email = db.Column(db.String(120), default='')
+    message = db.Column(db.Text, default='')
+    read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    def to_dict(self):
+        return {
+            'id': self.id, 'site_id': self.site_id, 'name': self.name,
+            'email': self.email, 'message': self.message, 'read': self.read,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }

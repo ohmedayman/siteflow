@@ -28,6 +28,7 @@ const Router = {
     else if (r==='about') { this._about() }
     else if (r==='privacy') { this._privacy() }
     else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._checkoutRoute(pts[1]) }
+    else if (r==='submissions'&&pts[1]) { if(!Auth.requireAuth())return; this._submissions(pts[1]) }
     else { this._render('landing') }
   },
 
@@ -57,6 +58,7 @@ const Router = {
       document.getElementById('app').innerHTML = T.publicPage(s)
       const m = document.querySelector('meta[name="description"]')
       if (m) m.content = s.seo?.description||''
+      this._bindPublicContactForm(s.slug)
     } catch(e) {
       document.getElementById('app').innerHTML = T.notFound('Not Published', 'This site has not been published yet.')
     }
@@ -126,6 +128,26 @@ const Router = {
     })
   },
 
+  async _submissions(siteId) {
+    try {
+      const [site, subs] = await Promise.all([API.getSite(siteId), API.getSubmissions(siteId)])
+      document.getElementById('app').innerHTML = T.submissions(site, subs||[])
+      document.querySelectorAll('[data-read]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          await API.markSubmissionRead(siteId, btn.dataset.read)
+          this._submissions(siteId)
+        })
+      })
+      document.querySelectorAll('[data-del-sub]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Delete this submission?')) return
+          await API.deleteSubmission(siteId, btn.dataset.delSub)
+          this._submissions(siteId)
+        })
+      })
+    } catch(e) { Toast.show(e.message,'error'); this.navigate('dashboard') }
+  },
+
   _help() { document.getElementById('app').innerHTML = T.help() },
   _about() { document.getElementById('app').innerHTML = T.about() },
   _privacy() { document.getElementById('app').innerHTML = T.privacy() },
@@ -193,6 +215,7 @@ const Dash = {
           <div class="site-card-actions">
             <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">Edit</a>
             ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">View</a>`:''}
+            <a href="#/submissions/${p.id}" class="btn btn-outline btn-sm">Messages</a>
             <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')">Delete</button>
           </div>
         </div>`
@@ -200,6 +223,33 @@ const Dash = {
       document.getElementById('createSiteBtn')?.addEventListener('click',()=>Builder.createNew())
       document.getElementById('upgradeBtn')?.addEventListener('click',()=>Router.navigate('plans'))
     } catch(e) { Toast.show(e.message,'error') }
+  },
+
+  _bindPublicContactForm(slug) {
+    const form = document.getElementById('pubContactForm')
+    if (!form) return
+    document.getElementById('cfSubmitBtn')?.addEventListener('click', async () => {
+      const name = document.getElementById('cfName')?.value?.trim()
+      const email = document.getElementById('cfEmail')?.value?.trim()
+      const message = document.getElementById('cfMessage')?.value?.trim()
+      const msgEl = document.getElementById('cfMsg')
+      if (!name || !email || !message) {
+        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#dc2626'; msgEl.textContent = 'Please fill all fields' }
+        return
+      }
+      const btn = document.getElementById('cfSubmitBtn')
+      btn.disabled = true; btn.textContent = 'Sending...'
+      const res = await API.submitForm(slug, name, email, message)
+      btn.disabled = false; btn.textContent = 'Send'
+      if (res.ok) {
+        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#059669'; msgEl.textContent = 'Message sent!' }
+        document.getElementById('cfName').value = ''
+        document.getElementById('cfEmail').value = ''
+        document.getElementById('cfMessage').value = ''
+      } else {
+        if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#dc2626'; msgEl.textContent = 'Failed to send' }
+      }
+    })
   },
 
   async remove(id) {

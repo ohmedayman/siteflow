@@ -117,6 +117,36 @@ const T = {
   <div id="sitesContainer"></div>
 </div>` },
 
+  submissions(site, subs) { return `
+<div style="max-width:800px;margin:0 auto;padding:40px 24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+    <div>
+      <h1 style="font-size:1.6rem">Form Submissions</h1>
+      <p style="color:var(--gray-500);font-size:.9rem">Messages from ${site.title}</p>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
+  </div>
+  ${subs.length===0?'<div class="card" style="text-align:center;padding:60px 24px"><p style="color:var(--gray-500);font-size:1rem">No submissions yet.</p><p style="color:var(--gray-400);font-size:.85rem;margin-top:8px">When visitors submit your contact form, messages will appear here.</p></div>':
+  `<div style="display:flex;flex-direction:column;gap:12px">${subs.map(s=>`
+    <div class="card" style="padding:20px;${!s.read?'border-left:3px solid var(--primary)':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="flex:1">
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px">
+            <strong style="color:var(--gray-800)">${s.name}</strong>
+            <span style="color:var(--gray-400);font-size:.8rem">${s.email}</span>
+            ${!s.read?'<span style="background:var(--primary);color:#fff;font-size:.7rem;padding:2px 8px;border-radius:10px">New</span>':''}
+          </div>
+          <p style="color:var(--gray-600);font-size:.95rem;line-height:1.6">${s.message}</p>
+          <p style="color:var(--gray-400);font-size:.78rem;margin-top:8px">${new Date(s.created_at).toLocaleString()}</p>
+        </div>
+        <div style="display:flex;gap:4px">
+          ${!s.read?`<button class="btn btn-ghost btn-sm" data-read="${s.id}" title="Mark read">✓</button>`:''}
+          <button class="btn btn-ghost btn-sm" data-del-sub="${s.id}" title="Delete" style="color:#dc2626">✕</button>
+        </div>
+      </div>
+    </div>`).join('')}</div>`}
+</div>` },
+
   // ── Plans / Pricing ──
   plans(plans) { return `
 <div style="max-width:1100px;margin:0 auto;padding:60px 24px">
@@ -230,7 +260,7 @@ const T = {
   pubHero(d,t) { return `<div class="editable-section hero-section" style="background:linear-gradient(135deg,${t.color}11,#fff)">${d.image?`<div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 20px ${t.color}33"><img src="${d.image}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<h1 style="color:${t.color}">${d.heading}</h1><p>${d.description}</p></div>` },
   pubAbout(d,t) { return `<div class="editable-section about-section"><h2 style="color:${t.color}">${d.heading}</h2><p>${d.content}</p></div>` },
   pubGallery(d,t) { const im=d.images||[]; return `<div class="editable-section gallery-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="gallery-grid">${im.length===0?'<p style="grid-column:1/-1;color:var(--gray-400)">No images</p>':''}${im.map(i=>`<div class="gallery-item" style="border-style:none"><img src="${i}"></div>`).join('')}</div></div>` },
-  pubContact(d,t) { return `<div class="editable-section contact-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="contact-form"><div class="input-group"><label>Name</label><input class="input"></div><div class="input-group"><label>Email</label><input class="input" type="email"></div><div class="input-group"><label>Message</label><textarea class="input textarea"></textarea></div><button class="btn w-full" style="background:${t.color};color:#fff">Send</button></div></div>` },
+  pubContact(d,t) { return `<div class="editable-section contact-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="contact-form" id="pubContactForm"><div class="input-group"><label>Name</label><input class="input" id="cfName" required></div><div class="input-group"><label>Email</label><input class="input" id="cfEmail" type="email" required></div><div class="input-group"><label>Message</label><textarea class="input textarea" id="cfMessage" required></textarea></div><button class="btn w-full" style="background:${t.color};color:#fff" id="cfSubmitBtn">Send</button><p id="cfMsg" style="font-size:.85rem;margin-top:8px;display:none"></p></div></div>` },
 
   pubServices(d,t) { const items=d.items||[]; return `<div class="editable-section services-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="services-grid">${items.map(item=>`<div class="service-card"><h3>${item.title}</h3><p>${item.desc}</p></div>`).join('')}</div></div>` },
 

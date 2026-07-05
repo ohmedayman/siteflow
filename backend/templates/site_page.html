@@ -111,11 +111,12 @@ body{font-family:'{{ font }}',sans-serif;color:#0f172a;line-height:1.6;min-heigh
   {% elif section.type == 'contact' %}
   <div class="contact-section">
     <h2>{{ section.data.heading }}</h2>
-    <div class="contact-form">
-      <input class="field" placeholder="Your Name" disabled>
-      <input class="field" type="email" placeholder="Your Email" disabled>
-      <textarea class="field" style="min-height:100px;resize:vertical" placeholder="Your Message..." disabled></textarea>
-      <button class="btn" style="background:{{ theme_color }}">Send</button>
+    <div class="contact-form" id="pubContactForm">
+      <input class="field" id="cfName" placeholder="Your Name">
+      <input class="field" id="cfEmail" type="email" placeholder="Your Email">
+      <textarea class="field" id="cfMessage" style="min-height:100px;resize:vertical" placeholder="Your Message..."></textarea>
+      <button class="btn" id="cfSubmitBtn" style="background:{{ theme_color }}">Send</button>
+      <p id="cfMsg" style="font-size:.85rem;margin-top:8px;display:none"></p>
     </div>
   </div>
   {% elif section.type == 'services' %}
@@ -171,7 +172,20 @@ body{font-family:'{{ font }}',sans-serif;color:#0f172a;line-height:1.6;min-heigh
 {% endfor %}
 </div>
 <footer class="site-footer">&copy; {{ year }} {{ title }}. All rights reserved.</footer>
-<script>fetch('{{ main_url }}/api/p/{{ slug }}/view',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ip:'',ua:navigator.userAgent})})</script>
+<script>
+fetch('{{ main_url }}/api/p/{{ slug }}/view',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ip:'',ua:navigator.userAgent})})
+var cf=document.getElementById('pubContactForm');
+if(cf){document.getElementById('cfSubmitBtn').addEventListener('click',function(){
+  var n=document.getElementById('cfName').value.trim(),e=document.getElementById('cfEmail').value.trim(),m=document.getElementById('cfMessage').value.trim(),msg=document.getElementById('cfMsg');
+  if(!n||!e||!m){msg.style.display='block';msg.style.color='#dc2626';msg.textContent='Please fill all fields';return}
+  var btn=document.getElementById('cfSubmitBtn');btn.disabled=true;btn.textContent='Sending...';
+  fetch('{{ main_url }}/api/p/{{ slug }}/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:e,message:m})}).then(function(r){return r.json()}).then(function(d){
+    btn.disabled=false;btn.textContent='Send';
+    if(d.ok){msg.style.display='block';msg.style.color='#059669';msg.textContent='Message sent!';document.getElementById('cfName').value='';document.getElementById('cfEmail').value='';document.getElementById('cfMessage').value=''}
+    else{msg.style.display='block';msg.style.color='#dc2626';msg.textContent='Failed to send'}
+  }).catch(function(){btn.disabled=false;btn.textContent='Send';msg.style.display='block';msg.style.color='#dc2626';msg.textContent='Network error'})
+})}
+</script>
 {% endif %}
 </body>
 </html>

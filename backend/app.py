@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, s
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
-from models import db, User, Site, Section, SEO, Theme, Payment, PageView
+from models import db, User, Site, Section, SEO, Theme, Payment, PageView, FormSubmission
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -283,6 +283,80 @@ def track_view(slug):
     db.session.commit()
     return jsonify({'ok': True})
 
+@app.route('/api/p/<slug>/submit', methods=['POST'])
+def submit_form(slug):
+    site = Site.query.filter_by(slug=slug, published=True).first()
+    if not site: return jsonify({'error': 'Not found'}), 404
+    data = request.get_json() or {}
+    fs = FormSubmission(
+        site_id=site.id,
+        name=data.get('name', ''),
+        email=data.get('email', ''),
+        message=data.get('message', '')
+    )
+    db.session.add(fs)
+    db.session.commit()
+    return jsonify({'ok': True})
+
+@app.route('/api/sites/<int:site_id>/submissions', methods=['GET'])
+@login_required
+def get_submissions(user, site_id):
+    site = Site.query.filter_by(id=site_id, user_id=user.id).first()
+    if not site: return jsonify({'error': 'Not found'}), 404
+    subs = FormSubmission.query.filter_by(site_id=site_id).order_by(FormSubmission.created_at.desc()).all()
+    return jsonify([s.to_dict() for s in subs])
+
+@app.route('/api/sites/<int:site_id>/submissions/<int:sub_id>/read', methods=['POST'])
+@login_required
+def mark_read(user, site_id, sub_id):
+    site = Site.query.filter_by(id=site_id, user_id=user.id).first()
+    if not site: return jsonify({'error': 'Not found'}), 404
+    sub = FormSubmission.query.filter_by(id=sub_id, site_id=site_id).first()
+    if not sub: return jsonify({'error': 'Not found'}), 404
+    sub.read = True
+    db.session.commit()
+    return jsonify({'ok': True})
+
+@app.route('/api/sites/<int:site_id>/submissions/<int:sub_id>', methods=['DELETE'])
+@login_required
+def delete_submission(user, site_id, sub_id):
+    site = Site.query.filter_by(id=site_id, user_id=user.id).first()
+    if not site: return jsonify({'error': 'Not found'}), 404
+    sub = FormSubmission.query.filter_by(id=sub_id, site_id=site_id).first()
+    if not sub: return jsonify({'error': 'Not found'}), 404
+    db.session.delete(sub)
+    db.session.commit()
+    return jsonify({'ok': True})
+
+@app.route('/api/sites/<int:site_id>/analytics', methods=['GET'])
+@login_required
+def get_analytics(user, site_id):
+    site = Site.query.filter_by(id=site_id, user_id=user.id).first()
+    if not site: return jsonify({'error': 'Not found'}), 404
+    from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    thirty_days_ago = now - timedelta(days=30)
+    total_views = PageView.query.filter_by(site_id=site_id).count()
+    views_last_30 = PageView.query.filter(PageView.site_id==site_id, PageView.created_at>=thirty_days_ago).count()
+    unique_ips = db.session.query(PageView.ip).filter(PageView.site_id==site_id, PageView.ip!='').distinct().count()
+    submissions_count = FormSubmission.query.filter_by(site_id=site_id).count()
+    submissions_unread = FormSubmission.query.filter_by(site_id=site_id, read=False).count()
+    views_by_day = []
+    for i in range(30):
+        day = now - timedelta(days=29-i)
+        day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day_start + timedelta(days=1)
+        count = PageView.query.filter(PageView.site_id==site_id, PageView.created_at>=day_start, PageView.created_at<day_end).count()
+        views_by_day.append({'date': day_start.strftime('%Y-%m-%d'), 'views': count})
+    return jsonify({
+        'totalViews': total_views,
+        'viewsLast30': views_last_30,
+        'uniqueIPs': unique_ips,
+        'submissionsCount': submissions_count,
+        'submissionsUnread': submissions_unread,
+        'viewsByDay': views_by_day
+    })
+
 # ─────────────── Payments / Plans API ───────────────
 
 @app.route('/api/plans', methods=['GET'])
@@ -494,8 +568,38 @@ def add_cors(response):
 # ─────────────── Serve SPA for main domain ───────────────
 
 import os as _os, mimetypes
+from xml.etree.ElementTree import Element, SubElement, tostring
 
 _BASE = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+
+@app.route('/sitemap.xml')
+def sitemap():
+    sites = Site.query.filter_by(published=True).all()
+    root = Element('urlset')
+    root.set('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
+    url_el = SubElement(root, 'url')
+    SubElement(url_el, 'loc').text = Config.SITE_URL
+    SubElement(url_el, 'changefreq').text = 'daily'
+    SubElement(url_el, 'priority').text = '1.0'
+    for site in sites:
+        url_el = SubElement(root, 'url')
+        SubElement(url_el, 'loc').text = f"https://{site.slug}.{Config.MAIN_DOMAIN}"
+        SubElement(url_el, 'lastmod').text = site.updated_at.strftime('%Y-%m-%d') if site.updated_at else ''
+        SubElement(url_el, 'changefreq').text = 'weekly'
+        SubElement(url_el, 'priority').text = '0.8'
+    resp = make_response(tostring(root, encoding='unicode'))
+    resp.content_type = 'application/xml'
+    return resp
+
+@app.route('/robots.txt')
+def robots():
+    txt = f"""User-agent: *
+Allow: /
+Sitemap: {Config.SITE_URL}/sitemap.xml
+"""
+    resp = make_response(txt)
+    resp.content_type = 'text/plain'
+    return resp
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

@@ -290,6 +290,54 @@ const API = {
     return []
   },
 
+  async submitForm(slug, name, email, message) {
+    try {
+      const r = await this._fetch(`/p/${slug}/submit`, {method:'POST', body:JSON.stringify({name, email, message})})
+      if (r.ok) return {ok: true}
+    } catch {}
+    const pages = LocalDB.pages.get()
+    const page = pages.find(p => p.slug === slug)
+    if (page) {
+      if (!page.submissions) page.submissions = []
+      page.submissions.push({id: Date.now(), name, email, message, read: false, created_at: new Date().toISOString()})
+      LocalDB.pages.save(pages)
+      return {ok: true}
+    }
+    return {ok: false}
+  },
+
+  async getSubmissions(siteId) {
+    try {
+      const r = await this._fetch(`/sites/${siteId}/submissions`)
+      if (r.ok) return await r.json()
+    } catch {}
+    return []
+  },
+
+  async markSubmissionRead(siteId, subId) {
+    try {
+      const r = await this._fetch(`/sites/${siteId}/submissions/${subId}/read`, {method:'POST'})
+      if (r.ok) return {ok: true}
+    } catch {}
+    return {ok: true}
+  },
+
+  async deleteSubmission(siteId, subId) {
+    try {
+      const r = await this._fetch(`/sites/${siteId}/submissions/${subId}`, {method:'DELETE'})
+      if (r.ok) return {ok: true}
+    } catch {}
+    return {ok: true}
+  },
+
+  async getAnalytics(siteId) {
+    try {
+      const r = await this._fetch(`/sites/${siteId}/analytics`)
+      if (r.ok) return await r.json()
+    } catch {}
+    return {totalViews: 0, viewsByDay: [], uniqueIPs: 0}
+  },
+
   // ── Sync local sites to Flask backend ──
   async syncToBackend() {
     const mode = await this._init()
