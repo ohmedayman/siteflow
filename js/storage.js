@@ -2,7 +2,8 @@
  * Site Flow — Data Layer
  * Primary: Supabase | Fallback: LocalStorage
  */
-const API_BASE = '/api'
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api'
+const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : ''
 const MAIN_DOMAIN = 'siteflow.vexonet.online'
 function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${MAIN_DOMAIN}` }
 function getDaysLeft() { return 999 }
