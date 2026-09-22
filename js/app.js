@@ -462,10 +462,13 @@ const Dash = {
         <div class="sites-grid">${sites.map(p=>{
           const tc = p.theme?.color || '#6366f1'
           const siteUrl = subdomainUrl(p.slug)
+          const daysLeft = getDaysLeft(p, Auth.user?.plan || 'free')
+          const expired = isExpired(p, Auth.user?.plan || 'free')
           return `<div class="site-card card" data-site-status="${p.published?'published':'draft'}">
             <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}cc,${tc}66)">
               <span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span>
               <span class="view-badge">${ICONS.wrap(ICONS.eye,13)} ${p.views||0}</span>
+              ${(Auth.user?.plan||'free')==='free'?`<span class="view-badge" style="${expired?'background:#dc2626;color:#fff':'background:#f59e0b;color:#fff'};right:auto;left:12px">${expired?'منتهي ⏳':`متبقي ${daysLeft} يوم`}</span>`:''}
             </div>
             <div class="site-card-body">
               <h3>${p.title}</h3>

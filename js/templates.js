@@ -710,10 +710,39 @@ const T = {
   locationSection(d,a) { return `<div class="editable-section location-section ${a?'editing':''}" data-section="location"><div class="section-label">Location</div><h2 contenteditable="true" data-field="heading">${d.heading||'Location'}</h2><div class="location-info"><p>${ICONS.wrap(ICONS.mapPin,16)} <strong>Address:</strong> <span contenteditable="true" data-field="address">${d.address||''}</span></p><p>${ICONS.wrap(ICONS.phone,16)} <strong>Phone:</strong> <span contenteditable="true" data-field="phone">${d.phone||''}</span></p><p>${ICONS.wrap(ICONS.clock,16)} <strong>Hours:</strong> <span contenteditable="true" data-field="hours">${d.hours||''}</span></p></div><div class="location-map"><div style="background:var(--grey-100);padding:40px;text-align:center;border-radius:8px;color:var(--gray-500)">Map placeholder — connect Google Maps</div></div></div>` },
 
   publicPage(page) {
-    const t=page.theme||{color:'#6366f1',font:'Inter'}
-    return `<div class="public-page" style="--p-color:${t.color};--p-font:${t.font};font-family:${t.font},sans-serif">
-      <div class="public-nav"><span class="brand" style="color:${t.color}">${page.title}</span><span style="font-size:.75rem;color:var(--gray-400)">Powered by Site Flow</span></div>
-      <div class="public-content">${page.sections.map(s=>{switch(s.type){case'hero':return T.pubHero(s.data,t);case'about':return T.pubAbout(s.data,t);case'gallery':return T.pubGallery(s.data,t);case'contact':return T.pubContact(s.data,t);case'services':return T.pubServices(s.data,t);case'testimonials':return T.pubTestimonials(s.data,t);case'pricing':return T.pubPricing(s.data,t);case'faq':return T.pubFaq(s.data,t);case'team':return T.pubTeam(s.data,t);case'footer':return T.pubFooter(s.data,t);case'blog':return T.pubBlog(s.data,t);case'portfolio':return T.pubPortfolio(s.data,t);case'counters':return T.pubCounters(s.data,t);case'timeline':return T.pubTimeline(s.data,t);case'menu':return T.pubMenu(s.data,t);case'location':return T.pubLocation(s.data,t);case'features':return T.pubFeatures(s.data,t);case'stats':return T.pubStats(s.data,t);case'cta':return T.pubCta(s.data,t);default:return ''}}).join('')}</div>
+    const userPlan = page.userPlan || Auth.user?.plan || 'free'
+    if (isExpired(page, userPlan)) {
+      return `
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:#f8fafc;font-family:'Cairo','Tajawal',sans-serif" dir="rtl">
+        <div style="max-width:540px;background:#fff;border-radius:24px;padding:48px 36px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.08);border:1px solid #e2e8f0">
+          <div style="width:72px;height:72px;background:#fee2e2;color:#dc2626;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem">⏳</div>
+          <h1 style="font-size:1.6rem;font-weight:800;color:#0f172a;margin-bottom:12px">انتهت الفترة التجريبية المجانية (14 يوماً)</h1>
+          <p style="color:#64748b;line-height:1.7;margin-bottom:28px">انتهت مهلة الـ 14 يوماً للموقع <strong>${page.title}</strong>. لتشغيل الموقع وإعادة تفعيل الدومين الفرعي فوراً، يرجى ترقية الاشتراك.</p>
+          <a href="#/plans" class="btn btn-primary btn-lg" style="width:100%;border-radius:12px;font-weight:700">ترقية الاشتراك الآن وإعادة التفعيل</a>
+        </div>
+      </div>`
+    }
+
+    const t = page.theme || { color: '#6366f1', font: 'Cairo' }
+    const siteUrl = subdomainUrl(page.slug || 'site')
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": page.seo?.title || page.title,
+      "url": siteUrl,
+      "description": page.seo?.description || page.title,
+      "inLanguage": "ar",
+      "publisher": {
+        "@type": "Organization",
+        "name": "SiteFlow Platform",
+        "url": "https://siteflow.vexonet.online"
+      }
+    }
+
+    return `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    <div class="public-page" style="--p-color:${t.color};--p-font:${t.font};font-family:${t.font},sans-serif">
+      <div class="public-nav"><span class="brand" style="color:${t.color}">${page.title}</span><span style="font-size:.75rem;color:var(--gray-400)">مطور بواسطة SiteFlow</span></div>
+      <div class="public-content">${page.sections.map(s => { switch(s.type){ case'hero':return T.pubHero(s.data,t); case'about':return T.pubAbout(s.data,t); case'gallery':return T.pubGallery(s.data,t); case'contact':return T.pubContact(s.data,t); case'services':return T.pubServices(s.data,t); case'testimonials':return T.pubTestimonials(s.data,t); case'pricing':return T.pubPricing(s.data,t); case'faq':return T.pubFaq(s.data,t); case'team':return T.pubTeam(s.data,t); case'footer':return T.pubFooter(s.data,t); case'blog':return T.pubBlog(s.data,t); case'portfolio':return T.pubPortfolio(s.data,t); case'counters':return T.pubCounters(s.data,t); case'timeline':return T.pubTimeline(s.data,t); case'menu':return T.pubMenu(s.data,t); case'location':return T.pubLocation(s.data,t); case'features':return T.pubFeatures(s.data,t); case'stats':return T.pubStats(s.data,t); case'cta':return T.pubCta(s.data,t); default:return ''} }).join('')}</div>
     </div>`
   },
   pubHero(d,t) { return `<div class="editable-section hero-section" style="background:linear-gradient(135deg,${t.color}11,#fff)">${d.image?`<div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 20px ${t.color}33"><img src="${d.image}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<h1 style="color:${t.color}">${d.heading}</h1><p>${d.description}</p></div>` },

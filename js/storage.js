@@ -6,10 +6,22 @@ const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hos
 const API_BASE = IS_LOCAL ? 'http://localhost:5000/api' : '/api'
 const PROD_API = 'https://siteflow-api.onrender.com/api'
 const BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://siteflow-api.onrender.com'
-const MAIN_DOMAIN = 'siteflow.vexonet.online'
 function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${MAIN_DOMAIN}` }
-function getDaysLeft() { return 999 }
-function isExpired() { return false }
+function getDaysLeft(item, plan = 'free') {
+  if (plan && plan !== 'free') return 999;
+  const createdStr = item?.createdAt || item?.created_at;
+  if (!createdStr) return 14;
+  const created = new Date(createdStr);
+  const now = new Date();
+  const diffMs = now - created;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  return Math.max(0, 14 - diffDays);
+}
+
+function isExpired(item, plan = 'free') {
+  if (plan && plan !== 'free') return false;
+  return getDaysLeft(item, plan) <= 0;
+}
 
 // ── LocalStorage DB ──
 const LocalDB = {
