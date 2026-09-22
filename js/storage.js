@@ -7,7 +7,15 @@ var IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostn
 var API_BASE = IS_LOCAL ? 'http://localhost:5000/api' : '/api';
 var PROD_API = 'https://siteflow-api.onrender.com/api';
 var BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://siteflow-api.onrender.com';
-function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${window.MAIN_DOMAIN || 'siteflow.vexonet.online'}`; }
+function subdomainUrl(slug) {
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.hostname.endsWith('siteflow.vexonet.online')) {
+    return `${window.location.origin}/#/p/${slug}`;
+  }
+  return `${window.location.origin}/#/p/${slug}`;
+}
+function subdomainHostUrl(slug) {
+  return `${window.location.protocol}//${slug}.${window.MAIN_DOMAIN || 'siteflow.vexonet.online'}`;
+}
 function getDaysLeft(item, plan = 'free') {
   if (plan && plan !== 'free') return 999;
   const createdStr = item?.createdAt || item?.created_at;
@@ -66,9 +74,10 @@ const LocalDB = {
   },
 
   deletePage(id) { this.pages.save(this.pages.get().filter(p => p.id !== id)) },
+  getPage(id) { return this.pages.get().find(p => p.id === id) || null },
   getPageBySlug(slug) {
     const s = (slug || '').toLowerCase();
-    return this.pages.get().find(p => (p.slug?.toLowerCase() === s || p.customDomain?.toLowerCase() === s || p.custom_domain?.toLowerCase() === s) && p.published) || null
+    return this.pages.get().find(p => (p.slug?.toLowerCase() === s || p.customDomain?.toLowerCase() === s || p.custom_domain?.toLowerCase() === s)) || null
   },
   getUserPages(uid) { return this.pages.get().filter(p => p.userId === uid) },
   duplicatePage(id) { const o=this.getPage(id); if(!o)return null; const c=this.clone(o); c.id=''; c.title=o.title+' (Copy)'; c.published=false; c.views=0; return this.addPage(c) },
