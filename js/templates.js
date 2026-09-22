@@ -18,13 +18,13 @@ const T = {
     <div class="hero-shape"></div>
     <div class="hero-shape"></div>
   </div>
-  <div class="lp-badge">${ICONS.wrap(ICONS.sparkles,14)} المنصة العربية الأولى لبناء المواقع</div>
-  <h1 class="lp-title">ابنِ موقعك الإلكتروني الاحترافي<br>بدون كتابة كود برمجي واحد</h1>
-  <p class="lp-subtitle">صمم موقعك أو متجرك في دقائق معدودة مع محرر السحب والإفلات والتصميم العصري،<br>وانشره فوراً بدومين فرعي مجاني أو دومين خاص بك.</p>
+  <div class="lp-badge">${ICONS.wrap(ICONS.sparkles,14)} المنصة العربية الأولى لبناء المواقع والـ E-Commerce</div>
+  <h1 class="lp-title">ابنِ موقعك الإلكتروني <span class="gradient-text">الاحترافي 4K</span><br>بدون كتابة كود برمجي واحد</h1>
+  <p class="lp-subtitle">صمم موقعك أو متجرك في دقائق معدودة مع أسرع محرر مرئي سحب وإفلات،<br>وانشره فوراً بدومين فرعي مجاني أو دومين خاص بك مع تسريع محركات البحث Google.</p>
   <div class="cta-buttons">
-    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">ابدأ مجاناً الآن</a>
+    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest" style="padding:16px 32px;font-size:1.1rem;border-radius:14px;box-shadow:0 8px 25px rgba(99,102,241,0.35)">ابدأ مجاناً الآن 🚀</a>
     <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">الانتقال للوحة التحكم</a>
-    <a href="#/plans" class="btn btn-outline btn-lg">استعرض الباقات والأسعار</a>
+    <a href="#/plans" class="btn btn-outline btn-lg" style="padding:16px 28px;font-size:1.05rem;border-radius:14px">استعرض الأسعار والباقات</a>
   </div>
   <div class="lp-social-proof">
     <div class="lp-avatars">
@@ -34,7 +34,83 @@ const T = {
       <div class="lp-avatar" style="background:#06b6d4">ر</div>
       <div class="lp-avatar" style="background:#8b5cf6">ك</div>
     </div>
-    <span>انضم إلى أكثر من <strong>10,000+ منشئ وصانع محتوى</strong> عربي</span>
+    <span>انضم إلى أكثر من <strong>10,000+ متجر ومبدع</strong> في الشرق الأوسط</span>
+  </div>
+
+  <!-- Interactive Hero Builder Mockup Frame -->
+  <div class="hero-mockup-wrap">
+    <div class="hero-mockup">
+      <div class="mockup-bar">
+        <div class="mockup-dots">
+          <span class="mockup-dot red"></span>
+          <span class="mockup-dot yellow"></span>
+          <span class="mockup-dot green"></span>
+        </div>
+        <div class="mockup-url-bar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          mysite.siteflow.vexonet.online
+        </div>
+        <div style="font-size:.72rem;font-weight:700;color:var(--primary);background:var(--primary-light);padding:4px 10px;border-radius:12px">⚡ محرر حي مباشر</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div style="font-size:.75rem;font-weight:700;color:#94a3b8;margin-bottom:4px">أقسام الموقع (19 قسم)</div>
+          <div class="mockup-side-item active">
+            ${ICONS.wrap(ICONS.home,14)}
+            <span>الواجهة (Hero)</span>
+          </div>
+          <div class="mockup-side-item">
+            ${ICONS.wrap(ICONS.briefcase,14)}
+            <span>الخدمات والمنتجات</span>
+          </div>
+          <div class="mockup-side-item">
+            ${ICONS.wrap(ICONS.image,14)}
+            <span>معرض الصور</span>
+          </div>
+          <div class="mockup-side-item">
+            ${ICONS.wrap(ICONS.message,14)}
+            <span>آراء العملاء</span>
+          </div>
+          <div class="mockup-side-item">
+            ${ICONS.wrap(ICONS.mail,14)}
+            <span>نموذج التواصل</span>
+          </div>
+        </div>
+        <div class="mockup-canvas">
+          <div class="mockup-hero-box">
+            <h2>مرحباً بك في متجرنا العصري</h2>
+            <p>أفضل المنتجات عالية الجودة مع شحن سريع وتصفح فائق السرعة</p>
+            <button class="btn btn-primary btn-sm" style="margin:0 auto">تسوق الآن</button>
+          </div>
+          <div class="mockup-grid-box">
+            <div class="mockup-card-item"><div></div><strong style="font-size:.78rem">شحن سريع</strong></div>
+            <div class="mockup-card-item"><div></div><strong style="font-size:.78rem">جودة مضمونة</strong></div>
+            <div class="mockup-card-item"><div></div><strong style="font-size:.78rem">دفع عند الاستلام</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lp-stats-row">
+  <div class="lp-stats-grid">
+    <div>
+      <div class="lp-stat-number">+10,000</div>
+      <div class="lp-stat-desc">موقع ومواضيع منشورة</div>
+    </div>
+    <div>
+      <div class="lp-stat-number">&lt; 0.4s</div>
+      <div class="lp-stat-desc">سرعة استجابة واستضافة فائقة</div>
+    </div>
+    <div>
+      <div class="lp-stat-number">100%</div>
+      <div class="lp-stat-desc">تجاوب تام مع أجهزة المحمول</div>
+    </div>
+    <div>
+      <div class="lp-stat-number">99.9%</div>
+      <div class="lp-stat-desc">نسبة تشغيل وأمان عالية</div>
+    </div>
   </div>
 </div>
 
@@ -438,15 +514,15 @@ const T = {
 <div class="dashboard">
   <div class="dashboard-header">
     <div>
-      <h1>Welcome back, <span class="js-user-name"></span> ${ICONS.wrap(ICONS.sparkles,22)}</h1>
-      <p>Here's what's happening with your websites</p>
+      <h1>أهلاً بك، <span class="js-user-name"></span> ${ICONS.wrap(ICONS.sparkles,22)}</h1>
+      <p>إليك ملخص وإحصائيات مواقعك الإلكترونية</p>
     </div>
     <div class="header-actions">
-      ${Auth.isAdmin()?'<a href="#/admin" class="btn btn-ghost btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d">Admin</a>':''}
-      <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">${ICONS.wrap(ICONS.trendingUp,14)} Upgrade</a>
+      ${Auth.isAdmin()?'<a href="#/admin" class="btn btn-ghost btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d">لوحة المشرف</a>':''}
+      <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">${ICONS.wrap(ICONS.trendingUp,14)} ترقية الخطة</a>
       <button class="btn btn-primary btn-sm" id="createSiteBtn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Site
+        إنشاء موقع جديد
       </button>
     </div>
   </div>

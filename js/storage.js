@@ -2,11 +2,12 @@
  * Site Flow — Data Layer
  * Primary: Supabase | Fallback: LocalStorage
  */
-const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-const API_BASE = IS_LOCAL ? 'http://localhost:5000/api' : '/api'
-const PROD_API = 'https://siteflow-api.onrender.com/api'
-const BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://siteflow-api.onrender.com'
-function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${MAIN_DOMAIN}` }
+var MAIN_DOMAIN = window.MAIN_DOMAIN = 'siteflow.vexonet.online';
+var IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+var API_BASE = IS_LOCAL ? 'http://localhost:5000/api' : '/api';
+var PROD_API = 'https://siteflow-api.onrender.com/api';
+var BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://siteflow-api.onrender.com';
+function subdomainUrl(slug) { return `${window.location.protocol}//${slug}.${window.MAIN_DOMAIN || 'siteflow.vexonet.online'}`; }
 function getDaysLeft(item, plan = 'free') {
   if (plan && plan !== 'free') return 999;
   const createdStr = item?.createdAt || item?.created_at;
