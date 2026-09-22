@@ -18,23 +18,23 @@ const T = {
     <div class="hero-shape"></div>
     <div class="hero-shape"></div>
   </div>
-  <div class="lp-badge">${ICONS.wrap(ICONS.sparkles,14)} New Feature</div>
-  <h1 class="lp-title">Create Stunning Websites.<br>Zero Code.</h1>
-  <p class="lp-subtitle">Build professional, responsive sites in minutes. Customize<br>with a drag & drop editor and publish instantly.</p>
+  <div class="lp-badge">${ICONS.wrap(ICONS.sparkles,14)} المنصة العربية الأولى لبناء المواقع</div>
+  <h1 class="lp-title">ابنِ موقعك الإلكتروني الاحترافي<br>بدون كتابة كود برمجي واحد</h1>
+  <p class="lp-subtitle">صمم موقعك أو متجرك في دقائق معدودة مع محرر السحب والإفلات والتصميم العصري،<br>وانشره فوراً بدومين فرعي مجاني أو دومين خاص بك.</p>
   <div class="cta-buttons">
-    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">Get Started Free</a>
-    <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">Go to Dashboard</a>
-    <a href="#/plans" class="btn btn-outline btn-lg">View Pricing</a>
+    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">ابدأ مجاناً الآن</a>
+    <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">الانتقال للوحة التحكم</a>
+    <a href="#/plans" class="btn btn-outline btn-lg">استعرض الباقات والأسعار</a>
   </div>
   <div class="lp-social-proof">
     <div class="lp-avatars">
-      <div class="lp-avatar" style="background:#6366f1">A</div>
-      <div class="lp-avatar" style="background:#ec4899">M</div>
-      <div class="lp-avatar" style="background:#f97316">S</div>
-      <div class="lp-avatar" style="background:#06b6d4">R</div>
-      <div class="lp-avatar" style="background:#8b5cf6">K</div>
+      <div class="lp-avatar" style="background:#6366f1">أ</div>
+      <div class="lp-avatar" style="background:#ec4899">م</div>
+      <div class="lp-avatar" style="background:#f97316">س</div>
+      <div class="lp-avatar" style="background:#06b6d4">ر</div>
+      <div class="lp-avatar" style="background:#8b5cf6">ك</div>
     </div>
-    <span>Joined by <strong>10,000+ creators</strong> worldwide</span>
+    <span>انضم إلى أكثر من <strong>10,000+ منشئ وصانع محتوى</strong> عربي</span>
   </div>
 </div>
 
@@ -44,70 +44,70 @@ const T = {
       <div class="bento-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
         <div style="color:#fff;text-align:center;padding:32px">
           <div style="margin-bottom:12px">${ICONS.wrap(ICONS.sparkles,48)}</div>
-          <div style="font-size:1.2rem;font-weight:700">Visual Editor</div>
-          <div style="font-size:.85rem;opacity:.8;margin-top:4px">Drag & Drop</div>
+          <div style="font-size:1.4rem;font-weight:800">محرر مرئي ذكي</div>
+          <div style="font-size:.9rem;opacity:.9;margin-top:4px">سحب وإفلات وتعديل مباشر</div>
         </div>
       </div>
     </div>
-    <h3>Visual Drag & Drop Builder.</h3>
-    <p>Intuitive interface for complete control.</p>
+    <h3>محرر بصري فائق السرعة</h3>
+    <p>واجهة سهلة ومرنة تمنحك تحكماً كاملاً بكل عنصر ومحتوى داخل موقعك.</p>
   </div>
   <div class="bento-card bento-top-right">
     <div class="bento-img-wrap">
       <div class="bento-img" style="background:linear-gradient(135deg,#1e293b,#334155);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
         <div style="color:#fff;text-align:center;padding:24px">
           <div style="margin-bottom:8px">${ICONS.wrap(ICONS.folder,40)}</div>
-          <div style="font-size:1rem;font-weight:700">500+ Templates</div>
+          <div style="font-size:1.1rem;font-weight:700">قوالب جاهزة بالعربية</div>
         </div>
       </div>
     </div>
-    <h3>Hundreds of Templates & Tools.</h3>
-    <p>From portfolios to online stores.</p>
+    <h3>قوالب متكاملة لكل الأنشطة</h3>
+    <p>من المعارض الشخصية إلى المتاجر والمطاعم والشركات.</p>
   </div>
   <div class="bento-card bento-bottom-right">
     <div class="bento-img-wrap">
       <div class="bento-img" style="background:linear-gradient(135deg,#059669,#10b981);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
         <div style="color:#fff;text-align:center;padding:24px">
           <div style="margin-bottom:8px">${ICONS.wrap(ICONS.dollar,40)}</div>
-          <div style="font-size:1rem;font-weight:700">Payment Ready</div>
+          <div style="font-size:1.1rem;font-weight:700">دعم محلي وسريع</div>
         </div>
       </div>
     </div>
-    <h3>E-commerce Integration.</h3>
-    <p>From portfolios to online stores.</p>
+    <h3>جاهز لاستقبال الطلبات والدفع</h3>
+    <p>دفع ميسر عبر إنستاباي، فودافون كاش، وفوري.</p>
   </div>
 </div>
 
 <div class="lp-logos-bar">
   <div class="lp-logos-track">
-    <span>Google</span><span>Amazon</span><span>Shopify</span><span>Stripe</span><span>WordPress</span>
-    <span>Google</span><span>Amazon</span><span>Shopify</span><span>Stripe</span><span>WordPress</span>
+    <span>فودافون كاش</span><span>إنستاباي</span><span>فوري</span><span>Google Search</span><span>Shopify</span>
+    <span>فودافون كاش</span><span>إنستاباي</span><span>فوري</span><span>Google Search</span><span>Shopify</span>
   </div>
 </div>
 
 <section class="lp-section">
   <div class="lp-section-inner">
-    <span class="lp-section-badge">How It Works</span>
-    <h2 class="lp-section-title">Three Steps to Your Website</h2>
-    <p class="lp-section-desc">No technical skills required. Just pick, customize, and go live.</p>
+    <span class="lp-section-badge">كيف تعمل المنصة؟</span>
+    <h2 class="lp-section-title">3 خطوات بسيطة لإطلاق موقعك</h2>
+    <p class="lp-section-desc">لا تحتاج لأي خبرة سابقة في البرمجة. اختر، عدّل، وانشر في دقائق.</p>
     <div class="lp-steps">
       <div class="lp-step">
         <div class="lp-step-num">1</div>
         <div class="lp-step-icon">${ICONS.wrap(ICONS.template,32)}</div>
-        <h3>Choose a Template</h3>
-        <p>Pick from professionally designed templates for any industry or purpose.</p>
+        <h3>اختر القالب المناسب</h3>
+        <p>انتقِ من بين عشرات التصاميم الجاهزة والمصممة خصيصاً لمجال عملك.</p>
       </div>
       <div class="lp-step">
         <div class="lp-step-num">2</div>
         <div class="lp-step-icon">${ICONS.wrap(ICONS.settings,32)}</div>
-        <h3>Customize Everything</h3>
-        <p>Edit text, colors, images, and layout with our visual drag & drop editor.</p>
+        <h3>عدّل التفاصيل بسهولة</h3>
+        <p>غير النصوص، الصور، الألوان والهيكل بنقرة زر عبر المحرر السلس.</p>
       </div>
       <div class="lp-step">
         <div class="lp-step-num">3</div>
         <div class="lp-step-icon">${ICONS.wrap(ICONS.globe,32)}</div>
-        <h3>Publish & Share</h3>
-        <p>Go live instantly with a free subdomain or connect your custom domain.</p>
+        <h3>انشر موقعك للعالم</h3>
+        <p>احصل على دومين فرعي مجاني أو اربط دومينك الخاص وانشر موقعك فوراً.</p>
       </div>
     </div>
   </div>
@@ -115,54 +115,39 @@ const T = {
 
 <section class="lp-section lp-section-alt">
   <div class="lp-section-inner">
-    <span class="lp-section-badge">Features</span>
-    <h2 class="lp-section-title">Everything You Need</h2>
-    <p class="lp-section-desc">Powerful tools to build, manage, and grow your online presence.</p>
+    <span class="lp-section-badge">مميزات المنصة</span>
+    <h2 class="lp-section-title">كل ما تحتاجه للنجاح الرقمي</h2>
+    <p class="lp-section-desc">أدوات متطورة وشاملة لبناء وتنمية تواجدك على شبكة الإنترنت.</p>
     <div class="lp-features-grid">
       <div class="lp-feature-card">
         <div class="lp-feature-icon" style="background:#e0e7ff;color:#6366f1">${ICONS.wrap(ICONS.edit,24)}</div>
-        <h3>Visual Editor</h3>
-        <p>Intuitive drag & drop interface. Edit content inline, rearrange sections, and see changes in real-time.</p>
+        <h3>محرر بصري حي</h3>
+        <p>تعديل مباشر للنصوص والألوان والأقسام مع إمكانية التراجع والتكرار دون عناء.</p>
       </div>
       <div class="lp-feature-card">
         <div class="lp-feature-icon" style="background:#fce7f3;color:#ec4899">${ICONS.wrap(ICONS.smartphone,24)}</div>
-        <h3>Fully Responsive</h3>
-        <p>Every site looks perfect on mobile, tablet, and desktop. No extra work needed.</p>
+        <h3>متوافق 100% مع الجوال</h3>
+        <p>تظهر موقعك بشكل ممتاز وجذاب على أجهزة المحمول والتابلت والشاشات الكبيرة.</p>
       </div>
       <div class="lp-feature-card">
         <div class="lp-feature-icon" style="background:#d1fae5;color:#059669">${ICONS.wrap(ICONS.globe,24)}</div>
-        <h3>Free Subdomain</h3>
-        <p>Get a free <strong>yourname.siteflow.vexonet.online</strong> domain instantly.</p>
+        <h3>دومين فرعي مجاني</h3>
+        <p>احصل على رابط خاص بموقعك <strong>yourname.siteflow.vexonet.online</strong> فوراً.</p>
       </div>
       <div class="lp-feature-card">
         <div class="lp-feature-icon" style="background:#fef3c7;color:#d97706">${ICONS.wrap(ICONS.search,24)}</div>
-        <h3>SEO Optimized</h3>
-        <p>Built-in SEO tools. Meta tags, descriptions, and sitemap generated automatically.</p>
+        <h3>متوافق مع محركات البحث SEO</h3>
+        <p>تجهيز أوتوماتيكي لوسوم الميتا وSchema.org لتسريع ظهورك في نتائج Google.</p>
       </div>
       <div class="lp-feature-card">
         <div class="lp-feature-icon" style="background:#ede9fe;color:#7c3aed">${ICONS.wrap(ICONS.form,24)}</div>
-        <h3>Contact Forms</h3>
-        <p>Built-in contact forms with spam protection. Collect leads and messages from visitors.</p>
+        <h3>نماذج التواصل والاستفسارات</h3>
+        <p>استقبل رسائل عملائك واستفساراتهم مباشرة عبر لوحة التحكم بنقرة واحدة.</p>
       </div>
       <div class="lp-feature-card">
         <div class="lp-feature-icon" style="background:#fee2e2;color:#dc2626">${ICONS.wrap(ICONS.image,24)}</div>
-        <h3>Image Upload</h3>
-        <p>Upload images directly to Cloudinary CDN. Fast loading, automatic optimization.</p>
-      </div>
-      <div class="lp-feature-card">
-        <div class="lp-feature-icon" style="background:#dbeafe;color:#2563eb">${ICONS.wrap(ICONS.barChart,24)}</div>
-        <h3>Analytics</h3>
-        <p>Track page views, visitor stats, and form submissions. Know your audience.</p>
-      </div>
-      <div class="lp-feature-card">
-        <div class="lp-feature-icon" style="background:#f3e8ff;color:#9333ea">${ICONS.wrap(ICONS.layout,24)}</div>
-        <h3>19 Section Types</h3>
-        <p>Hero, features, pricing, testimonials, gallery, menu, blog, and more.</p>
-      </div>
-      <div class="lp-feature-card">
-        <div class="lp-feature-icon" style="background:#e0f2fe;color:#0284c7">${ICONS.wrap(ICONS.dollar,24)}</div>
-        <h3>Payment Integration</h3>
-        <p>Accept payments with Stripe. Sell products, services, or subscriptions.</p>
+        <h3>رفع صور سريع وخفيف</h3>
+        <p>معالجة واستضافة الصور بسرعة عالية لضمان سرعة تحميل الموقع.</p>
       </div>
     </div>
   </div>
@@ -170,68 +155,48 @@ const T = {
 
 <section class="lp-section">
   <div class="lp-section-inner">
-    <span class="lp-section-badge">Pricing</span>
-    <h2 class="lp-section-title">أسعار مناسبة للسوق المصري</h2>
-    <p class="lp-section-desc">ابدأ مجاناً وطَوِّر حسب احتياجك. بدون فيزا دولية — ادفع بالجنيه المصري.</p>
-    <div class="lp-pricing-grid" style="grid-template-columns:repeat(4,1fr)">
+    <span class="lp-section-badge">باقات الأسعار</span>
+    <h2 class="lp-section-title">خطط تناسب جميع الاحتياجات</h2>
+    <p class="lp-section-desc">ابدأ بالباقة المجانية التجريبية أو اختر الباقة المناسبة لتنمية عملك.</p>
+    <div class="lp-pricing-grid">
       <div class="lp-pricing-card">
-        <h3>مجاني</h3>
-        <div class="lp-price">ج.م 0<span>/شهرياً</span></div>
-        <p class="lp-pricing-desc">جرّب المنصة مجاناً</p>
+        <h3>مجاني (14 يوم)</h3>
+        <div class="lp-price">ج.م 0<span>/لمدة 14 يوماً</span></div>
+        <p class="lp-pricing-desc">لتجربة المنصة وإنشاء موقعك الأول</p>
         <ul>
-          <li>${ICONS.wrap(ICONS.check,16)} دومين فرعي</li>
-          <li>${ICONS.wrap(ICONS.check,16)} صفحتين</li>
-          <li>${ICONS.wrap(ICONS.check,16)} استضافة مجانية</li>
-          <li>${ICONS.wrap(ICONS.check,16)} SSL مجاني</li>
+          <li>${ICONS.wrap(ICONS.check,16)} دومين فرعي مجاني</li>
+          <li>${ICONS.wrap(ICONS.check,16)} موقع إلكتروني واحد</li>
+          <li>${ICONS.wrap(ICONS.check,16)} تجربة كاملة لمدة 14 يوماً</li>
+          <li>${ICONS.wrap(ICONS.check,16)} محرر سحب وإفلات</li>
         </ul>
         <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest">ابدأ مجاناً</a>
-        <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">الخطة الحالية</a>
-      </div>
-      <div class="lp-pricing-card">
-        <h3>أساسي</h3>
-        <div class="lp-price">ج.م 129<span>/شهرياً</span></div>
-        <p class="lp-pricing-desc">لصاحب محل أو فريلانسر</p>
-        <ul>
-          <li>${ICONS.wrap(ICONS.check,16)} دومين خاص (.com)</li>
-          <li>${ICONS.wrap(ICONS.check,16)} 10 صفحات</li>
-          <li>${ICONS.wrap(ICONS.check,16)} إزالة العلامة</li>
-          <li>${ICONS.wrap(ICONS.check,16)} SSL مجاني</li>
-          <li>${ICONS.wrap(ICONS.check,16)} تحليلات أساسية</li>
-        </ul>
-        <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:12px">أو 999 ج.م/سنوياً بخصم 35%</p>
-        <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest">اشترك الآن</a>
         <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">الخطة الحالية</a>
       </div>
       <div class="lp-pricing-card lp-pricing-popular">
         <div class="lp-pricing-badge">الأكثر شعبية</div>
         <h3>احترافي</h3>
         <div class="lp-price">ج.م 299<span>/شهرياً</span></div>
-        <p class="lp-pricing-desc">للمحترفين والفرق</p>
+        <p class="lp-pricing-desc">لأصحاب الأعمال والشركات الناشئة</p>
         <ul>
-          <li>${ICONS.wrap(ICONS.check,16)} صفحات غير محدودة</li>
-          <li>${ICONS.wrap(ICONS.check,16)} ربط فوري / إنستاباي / فودافون كاش</li>
-          <li>${ICONS.wrap(ICONS.check,16)} متجر بسيط (50 منتج)</li>
-          <li>${ICONS.wrap(ICONS.check,16)} دعم واتساب</li>
-          <li>${ICONS.wrap(ICONS.check,16)} بكسل فيسبوك/إنستجرام</li>
-          <li>${ICONS.wrap(ICONS.check,16)} جميع القوالب</li>
+          <li>${ICONS.wrap(ICONS.check,16)} صفحات ومواقع غير محدودة</li>
+          <li>${ICONS.wrap(ICONS.check,16)} ربط دومين خاص (.com)</li>
+          <li>${ICONS.wrap(ICONS.check,16)} استقبال طلبات المتاجر والدفع</li>
+          <li>${ICONS.wrap(ICONS.check,16)} دعم وتفعيل فوري على واتساب</li>
+          <li>${ICONS.wrap(ICONS.check,16)} جميع القوالب العربية والإنجليزية</li>
         </ul>
-        <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:12px">أو 2,499 ج.م/سنوياً بخصم 30%</p>
         <a href="#/login" class="btn btn-primary btn-lg w-full js-auth-guest">اشترك الآن</a>
         <a href="#/dashboard" class="btn btn-primary btn-lg w-full js-auth-user hidden">الخطة الحالية</a>
       </div>
       <div class="lp-pricing-card">
         <h3>بيزنس</h3>
         <div class="lp-price">ج.م 599<span>/شهرياً</span></div>
-        <p class="lp-pricing-desc">لمتاجر الكترونية كاملة</p>
+        <p class="lp-pricing-desc">للمتاجر والمؤسسات الكبيرة</p>
         <ul>
-          <li>${ICONS.wrap(ICONS.check,16)} متجر كامل بدون حدود</li>
-          <li>${ICONS.wrap(ICONS.check,16)} تكامل شحن محلي</li>
-          <li>${ICONS.wrap(ICONS.check,16)} تقارير مبيعات</li>
-          <li>${ICONS.wrap(ICONS.check,16)} دعم مخصص</li>
-          <li>${ICONS.wrap(ICONS.check,16)} API доступ</li>
-          <li>${ICONS.wrap(ICONS.check,16)} White Label</li>
+          <li>${ICONS.wrap(ICONS.check,16)} متجر إلكتروني كامل ومتقدم</li>
+          <li>${ICONS.wrap(ICONS.check,16)} تقارير مبيعات وتحليلات زوار</li>
+          <li>${ICONS.wrap(ICONS.check,16)} دعم فني مخصص أول بأول</li>
+          <li>${ICONS.wrap(ICONS.check,16)} بدون أي علامات تجارية</li>
         </ul>
-        <p style="font-size:.78rem;color:var(--gray-400);margin-bottom:12px">أو 4,999 ج.م/سنوياً بخصم 30%</p>
         <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest">اشترك الآن</a>
         <a href="#/dashboard" class="btn btn-outline btn-lg w-full js-auth-user hidden">الخطة الحالية</a>
       </div>
@@ -241,40 +206,40 @@ const T = {
 
 <section class="lp-section lp-section-alt">
   <div class="lp-section-inner">
-    <span class="lp-section-badge">Testimonials</span>
-    <h2 class="lp-section-title">Loved by Creators</h2>
-    <p class="lp-section-desc">See what our users are saying about Site Flow.</p>
+    <span class="lp-section-badge">آراء العملاء</span>
+    <h2 class="lp-section-title">يثق بنا آلاف المبدعين والتجار</h2>
+    <p class="lp-section-desc">شاهد تجارب من استخدموا منصة Siteflow لتطوير أعمالهم.</p>
     <div class="lp-testimonials-grid">
       <div class="lp-testimonial-card">
         <div class="lp-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p>"Built my portfolio site in 15 minutes. The templates are gorgeous and the editor is so easy to use."</p>
+        <p>"أنشأت موقع معرض أعمالي في أقل من 20 دقيقة. القوالب جودتها ممتازة والمحرر سهل جداً."</p>
         <div class="lp-testimonial-author">
-          <div class="lp-testimonial-avatar" style="background:#6366f1">S</div>
+          <div class="lp-testimonial-avatar" style="background:#6366f1">س</div>
           <div>
-            <strong>Sarah Chen</strong>
-            <span>Freelance Designer</span>
+            <strong>سارة فهمي</strong>
+            <span>مصممة جرافيك مستقلة</span>
           </div>
         </div>
       </div>
       <div class="lp-testimonial-card">
         <div class="lp-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p>"We switched from WordPress to Site Flow. Our landing pages load 3x faster and look way better."</p>
+        <p>"انتقلنا من وردبريس إلى Siteflow. سرعة تحميل صفحاتنا تضاعفت والتصميم أصبح أكثر احترافية."</p>
         <div class="lp-testimonial-author">
-          <div class="lp-testimonial-avatar" style="background:#ec4899">M</div>
+          <div class="lp-testimonial-avatar" style="background:#ec4899">م</div>
           <div>
-            <strong>Marcus Rodriguez</strong>
-            <span>Startup Founder</span>
+            <strong>محمود القاضي</strong>
+            <span>مؤسس شركة ناشئة</span>
           </div>
         </div>
       </div>
       <div class="lp-testimonial-card">
         <div class="lp-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p>"The free plan is more than enough for my small business. Got my site online in minutes with a free subdomain."</p>
+        <p>"الدعم باللغة العربية وسهولة تفعيل طرق الدفع المحلية ساعدتني في زيادة مبيعات متجري."</p>
         <div class="lp-testimonial-author">
-          <div class="lp-testimonial-avatar" style="background:#059669">A</div>
+          <div class="lp-testimonial-avatar" style="background:#059669">أ</div>
           <div>
-            <strong>Aisha Patel</strong>
-            <span>Local Business Owner</span>
+            <strong>أحمد السيد</strong>
+            <span>صاحب متجر ملابس</span>
           </div>
         </div>
       </div>
@@ -284,29 +249,25 @@ const T = {
 
 <section class="lp-section">
   <div class="lp-section-inner">
-    <span class="lp-section-badge">FAQ</span>
-    <h2 class="lp-section-title">Frequently Asked Questions</h2>
-    <p class="lp-section-desc">Everything you need to know about Site Flow.</p>
+    <span class="lp-section-badge">الأسئلة الشائعة</span>
+    <h2 class="lp-section-title">إجابات على أسئلتك</h2>
+    <p class="lp-section-desc">كل ما تود معرفته عن خدمات وتفاصيل Siteflow.</p>
     <div class="lp-faq-list">
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>Is Site Flow really free?</h3>
-        <p>Yes! The free plan includes 1 website, a free subdomain, and access to basic templates. No credit card required.</p>
+        <h3>هل تجربة المنصة مجانية حقاً؟</h3>
+        <p>نعم! يمكنك البدء مجاناً وتجربة كافة الميزات وتصميم موقعك ونشره فوراً بدومين فرعي مجاني لمدة 14 يوماً.</p>
       </div>
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>Can I use my own domain?</h3>
-        <p>Absolutely. Pro and Business plans support custom domains. Just point your domain's CNAME record to our servers.</p>
+        <h3>هل يمكنني استخدام دومين خاص بي (.com)؟</h3>
+        <p>بالتأكيد. تدعم خططنا المدفوعة ربط أي دومين خاص تملكه بسلاسة كاملة.</p>
       </div>
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>Do I need coding skills?</h3>
-        <p>Not at all. Site Flow is designed for everyone. Our visual editor lets you build sites by clicking and dragging.</p>
+        <h3>هل أحتاج لمعرفة سابقة بالبرمجة؟</h3>
+        <p>لا إطلاقاً. تم تصميم المنصة لتوفر تجربة سحب وإفلات بسيطة ومناسبة للجميع.</p>
       </div>
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>Can I sell products on my site?</h3>
-        <p>Yes! Business plan users get e-commerce integration with Stripe for secure payment processing.</p>
-      </div>
-      <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>What happens if I cancel?</h3>
-        <p>Your site stays live on the free plan. You keep all your content and can upgrade anytime.</p>
+        <h3>ما هي طرق الدفع المتاحة للاشتراك؟</h3>
+        <p>نوفر طرق دفع محلي ميسرة تشمل إنستاباي، فودافون كاش، وفوري، بالإضافة إلى بطاقات الفيزا والماستركارد.</p>
       </div>
     </div>
   </div>
@@ -314,12 +275,12 @@ const T = {
 
 <section class="lp-section lp-cta-section">
   <div class="lp-section-inner">
-    <h2 class="lp-cta-title">جاهز تبني موقعك؟</h2>
-    <p class="lp-cta-desc">انضم لآلاف المبدعين اللي بيستخدموا Site Flow. ابدأ مجاناً من غير فيزا دولية.</p>
+    <h2 class="lp-cta-title">جاهز لبناء موقعك الإلكتروني؟</h2>
+    <p class="lp-cta-desc">انضم إلى آلاف المستخدمين الذين يثقون بـ Siteflow. ابدأ مجاناً الآن بدون بطاقة إلكترونية.</p>
     <div class="cta-buttons">
-      <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">ابدأ مجاناً</a>
-      <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">روح للوحة التحكم</a>
-      <a href="#/plans" class="btn btn-outline btn-lg">شوف الأسعار</a>
+      <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">ابدأ مجاناً الآن</a>
+      <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">لوحة التحكم</a>
+      <a href="#/plans" class="btn btn-outline btn-lg">أسعار الباقات</a>
     </div>
   </div>
 </section>
@@ -332,7 +293,7 @@ const T = {
           <img src="assets/sitflow.svg" alt="Site Flow" width="32" height="32">
           <strong>Site Flow</strong>
         </div>
-        <p>ابنِ مواقع احترافية بدون كود. منصة مصرية للسوق المصري.</p>
+        <p>المنصة العربية الأولى لبناء المواقع الإلكترونية والمتاجر بدون كود.</p>
       </div>
       <div class="lp-footer-col">
         <h4>المنتج</h4>

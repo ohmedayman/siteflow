@@ -652,9 +652,9 @@ img{max-width:100%;height:auto;display:block}
 @keyframes shapeFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-15px) rotate(5deg)}}
 
 /* — Entrance Animations — */
-.lp-section,.lp-features-bento,.lp-logos-bar,.lp-hero,.lp-cta-section{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.lp-section,.lp-features-bento,.lp-logos-bar,.lp-hero,.lp-cta-section{opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s ease}
 .lp-section.visible,.lp-features-bento.visible,.lp-logos-bar.visible,.lp-hero.visible,.lp-cta-section.visible{opacity:1;transform:translateY(0)}
-.lp-step,.lp-feature-card,.lp-pricing-card,.lp-testimonial-card{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
+.lp-step,.lp-feature-card,.lp-pricing-card,.lp-testimonial-card{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease}
 .lp-step.visible,.lp-feature-card.visible,.lp-pricing-card.visible,.lp-testimonial-card.visible{opacity:1;transform:translateY(0)}
 
 /* — FAQ Accordion — */
