@@ -1,137 +1,62 @@
 /**
- * Site Flow — Templates & Presets for site creation wizard
+ * Site Flow — Templates & Presets for site creation wizard (Arabic & English)
  */
 const PRESETS = [
   {
-    id: 'personal', name: 'Personal Portfolio', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>', category: 'personal',
-    desc: 'Showcase your work, skills, and experience',
+    id: 'arabic_store', name: 'متجر إلكتروني حديث', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>', category: 'business',
+    desc: 'موقع متجر متكامل لعرض المنتجات واستقبال الطلبات فوراً',
     sections: [
-      { type: 'hero', data: { heading: 'John Doe', description: 'Creative Developer & Designer. I build digital experiences that matter.', image: '' } },
-      { type: 'about', data: { heading: 'About Me', content: 'I am a passionate creator with 5+ years of experience in web development and design. I love turning ideas into reality.' } },
-      { type: 'services', data: { heading: 'My Services', items: [{title:'Web Development',desc:'Custom websites built with modern technologies'},{title:'UI/Design',desc:'Beautiful, intuitive interfaces that users love'},{title:'Mobile Apps',desc:'Native and cross-platform mobile applications'}] } },
-      { type: 'portfolio', data: { heading: 'My Work', items: [{title:'Project One',desc:'A full-stack web app built with React',image:''},{title:'Project Two',desc:'Mobile app design for a startup',image:''},{title:'Project Three',desc:'E-commerce platform with payments',image:''}] } },
-      { type: 'testimonials', data: { heading: 'What Clients Say', items: [{name:'Sarah Johnson',text:'Amazing work! Delivered on time and exceeded expectations.',role:'CEO, TechCorp'},{name:'Mike Chen',text:'Professional and creative. Highly recommended!',role:'Founder, StartupX'}] } },
-      { type: 'blog', data: { heading: 'Latest Posts', items: [{title:'Getting Started with React',excerpt:'Learn the basics of React in 10 minutes.',date:'Jan 15, 2026'},{title:'CSS Grid vs Flexbox',excerpt:'When to use each layout method.',date:'Feb 2, 2026'}] } },
-      { type: 'counters', data: { heading: 'By the Numbers', items: [{number:'50+',label:'Projects'},{number:'30+',label:'Clients'},{number:'5+',label:'Years'},{number:'99%',label:'Satisfaction'}] } },
-      { type: 'contact', data: { heading: 'Get In Touch', email: '', phone: '', address: '' } },
-      { type: 'footer', data: { copyright: '© 2026 John Doe. All rights reserved.', text: 'Built with Site Flow' } }
+      { type: 'hero', data: { heading: 'أحدث التشكيلات العصرية بين يديك', description: 'تسوق أفضل المنتجات عالية الجودة مع شحن سريع لجميع المحافظات والدفع عند الاستلام.', image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80', buttonText: 'تسوق الآن', buttonUrl: '#menu' } },
+      { type: 'features', data: { heading: 'لماذا تشتري من متجرنا؟', items: [{title:'شحن سريع ومضمون',desc:'توصيل خلال 24-48 ساعة لكل المدن'},{title:'دفع عند الاستلام',desc:'ادفع بعد معاينة واستلام طلبك بنفسك'},{title:'ضمان الاستبدال',desc:'إرجاع واستبدال مجاني خلال 14 يوماً'}] } },
+      { type: 'menu', data: { heading: 'أبرز المنتجات الأكثر مبيعاً', items: [{title:'ساعة ذكية مقاومة للماء',desc:'شاشة AMOLED مع تتبع النبض والأنشطة',price:'899 ج.م',category:'إلكترونيات'},{title:'سماعات لاسلكية عازلة للصوت',desc:'بطارية تدوم 30 ساعة صوت نقي جدًا',price:'650 ج.م',category:'إلكترونيات'},{title:'حقيبة ظهر فاخرة للمحمول',desc:'خامة عالية الجودة مقاومة للماء',price:'450 ج.م',category:'إكسسوارات'},{title:'نظارة شمسية كلاسيكية',desc:'حماية 100% من الأشعة فوق البنفسجية',price:'320 ج.م',category:'إكسسوارات'}] } },
+      { type: 'testimonials', data: { heading: 'ماذا يقول عملاؤنا؟', items: [{name:'محمد العبدالله',text:'سرعة في التوصيل والجودة ممتازة جداً مثل الصور تماماً.',role:'عميل موثق'},{name:'سارة سعيد',text:'خدمة عملاء راقية واستبدال سريع، تجربة شراء رائعة!',role:'عميل موثق'}] } },
+      { type: 'contact', data: { heading: 'طلب خاص أو استفسار؟', email: 'sales@mystore.com', phone: '+20 100 123 4567', address: 'القاهرة، مصر' } },
+      { type: 'footer', data: { copyright: '© 2026 جميع الحقوق محفوظة لمتجرنا.', text: 'صنع بحب عبر SiteFlow' } }
     ],
-    theme: { color: '#6366f1', font: 'Inter' },
-    seo: { title: 'My Portfolio', description: 'Creative Developer & Designer portfolio' }
+    theme: { color: '#6366f1', font: 'Cairo' },
+    seo: { title: 'متجرنا الإلكتروني | أفضل المنتجات العصرية', description: 'متجر إلكتروني شامل يوفر أحدث المنتجات وشحن سريع لجميع المدن.' }
   },
   {
-    id: 'business', name: 'Business', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><line x1="8" y1="6" x2="10" y2="6"/><line x1="14" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/></svg>', category: 'business',
-    desc: 'Professional company website with services',
+    id: 'arabic_company', name: 'شركة أو مؤسسة تجارية', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><line x1="8" y1="6" x2="10" y2="6"/><line x1="14" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/></svg>', category: 'business',
+    desc: 'موقع تعريفي احترافي للشركات واستعراض الخدمات والمشروعات',
     sections: [
-      { type: 'hero', data: { heading: 'Welcome to Our Company', description: 'We provide innovative solutions for your business growth.', image: '' } },
-      { type: 'about', data: { heading: 'About Us', content: 'We are a leading company in our industry with over 10 years of experience. Our team of experts is dedicated to delivering exceptional results.' } },
-      { type: 'services', data: { heading: 'Our Services', items: [{title:'Consulting',desc:'Expert advice to grow your business'},{title:'Development',desc:'Custom software solutions tailored to your needs'},{title:'Marketing',desc:'Digital marketing strategies that deliver results'},{title:'Support',desc:'24/7 support to keep your business running'}] } },
-      { type: 'counters', data: { heading: 'Our Impact', items: [{number:'500+',label:'Clients'},{number:'1000+',label:'Projects'},{number:'50+',label:'Team'},{number:'10+',label:'Years'}] } },
-      { type: 'testimonials', data: { heading: 'Client Testimonials', items: [{name:'Ahmed Hassan',text:'Their team transformed our business. Revenue increased 200%.',role:'CEO, MegaCorp'},{name:'Lisa Wang',text:'Best investment we ever made. Professional and reliable.',role:'Director, GlobalTech'}] } },
-      { type: 'team', data: { heading: 'Our Team', items: [{name:'John Smith',role:'CEO & Founder'},{name:'Sarah Brown',role:'CTO'},{name:'Mike Davis',role:'Head of Design'}] } },
-      { type: 'timeline', data: { heading: 'Our Journey', items: [{title:'Founded',desc:'Company was established',year:'2016'},{title:'First Office',desc:'Opened HQ in NYC',year:'2018'},{title:'1000 Clients',desc:'Reached milestone',year:'2020'},{title:'Global Expansion',desc:'Offices in 5 countries',year:'2024'}] } },
-      { type: 'contact', data: { heading: 'Contact Us', email: '', phone: '', address: '' } },
-      { type: 'footer', data: { copyright: '© 2026 Our Company. All rights reserved.', text: 'Built with Site Flow' } }
+      { type: 'hero', data: { heading: 'نبتكر الحلول الرقمية لتنمية أعمالك', description: 'نساعد الشركات والمؤسسات على التحول الرقمي وزيادة الأرباح باحترافية عالية.', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80', buttonText: 'تواصل معنا الآن', buttonUrl: '#contact' } },
+      { type: 'about', data: { heading: 'من نحن', content: 'نحن شركة رائدة في تقديم الاستشارات والحلول البرمجية منذ أكثر من 8 سنوات. نبتكر استراتيجيات حديثة تساعد المؤسسات على تحقيق النمو المستدام.' } },
+      { type: 'services', data: { heading: 'خدماتنا المتميزة', items: [{title:'تطوير البرمجيات',desc:'تطبيقات ومواقع مخصصة تناسب احتياج عملك'},{title:'التسويق الرقمي',desc:'حمّلات إعلانية موجهة تحقق أعلى عائد استثمار'},{title:'الاستشارات الإدارية',desc:'تحسين كفاءة العمليات وهيكلة المؤسسات'}] } },
+      { type: 'counters', data: { heading: 'إنجازاتنا بالأرقام', items: [{number:'+350',label:'مشروع مكتمل'},{number:'+120',label:'عميل سعيد'},{number:'+10',label:'سنوات خبرة'},{number:'99%',label:'نسبة الرضا'}] } },
+      { type: 'testimonials', data: { heading: 'آراء شركاء النجاح', items: [{name:'م. خالد المنصور',text:'تعامل راقٍ ونتائج ملموسة أثرت بشكل مباشر في أرباح شركتنا.',role:'الرئيس التنفيذي، شركة أفق'},{name:'د. رانيا فهمي',text:'فريق احترافي يلتزم بالمواعيد ويقدم حلول مبتكرة فعلاً.',role:'مديرة التسويق، جروب نكسست'}] } },
+      { type: 'contact', data: { heading: 'احجز جلسة استشارية مجانية', email: 'info@company.com', phone: '+20 102 987 6543', address: 'الرياض / القاهرة' } },
+      { type: 'footer', data: { copyright: '© 2026 جميع الحقوق محفوظة.', text: 'تم التطوير بواسطة SiteFlow' } }
     ],
-    theme: { color: '#1e40af', font: 'Inter' },
-    seo: { title: 'Our Company', description: 'Leading business solutions provider' }
+    theme: { color: '#059669', font: 'Tajawal' },
+    seo: { title: 'شركة الحلول الرقمية | نمو وتطوير الأعمال', description: 'نقدم استشارات وتطوير برمجيات وتسويق رقمي للشركات.' }
   },
   {
-    id: 'restaurant', name: 'Restaurant', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>', category: 'food',
-    desc: 'Restaurant menu and reservation site',
+    id: 'arabic_portfolio', name: 'معرض أعمال شخصي (Portfolio)', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>', category: 'personal',
+    desc: 'صفحة شخصية لاستعراض المهارات والسيرة الذاتية والأعمال',
     sections: [
-      { type: 'hero', data: { heading: 'Delicious Dining Experience', description: 'Fresh ingredients, authentic flavors, unforgettable moments.', image: '' } },
-      { type: 'about', data: { heading: 'Our Story', content: 'Founded in 2020, we bring authentic flavors from around the world to your table. Every dish is crafted with love and the finest ingredients.' } },
-      { type: 'menu', data: { heading: 'Our Menu', items: [{title:'Bruschetta',desc:'Toasted bread with tomatoes',price:'$12',category:'Appetizers'},{title:'Caesar Salad',desc:'Fresh romaine with parmesan',price:'$14',category:'Appetizers'},{title:'Grilled Salmon',desc:'Atlantic salmon with herbs',price:'$28',category:'Main Course'},{title:'Ribeye Steak',desc:'12oz prime cut',price:'$36',category:'Main Course'},{title:'Tiramisu',desc:'Classic Italian dessert',price:'$10',category:'Desserts'}] } },
-      { type: 'testimonials', data: { heading: 'Happy Customers', items: [{name:'Emily Rose',text:'Best restaurant in town! The food is absolutely amazing.',role:'Food Blogger'},{name:'James Wilson',text:'Great atmosphere and even better food. A must-visit!',role:'Local Guide'}] } },
-      { type: 'location', data: { heading: 'Find Us', address: '123 Main Street, New York, NY 10001', phone: '+1 (555) 123-4567', hours: 'Mon-Sun: 11AM - 10PM' } },
-      { type: 'contact', data: { heading: 'Make a Reservation', email: '', phone: '', address: '' } }
+      { type: 'hero', data: { heading: 'أهلاً بك، أنا أحمد أيمن', description: 'مصمم ومطور تطبيقات ومواقع جافاسكربت وUI/UX. أصمم تجارب مستخدم مميزة وتفاعلية.', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80', buttonText: 'شاهد أعمالي', buttonUrl: '#portfolio' } },
+      { type: 'about', data: { heading: 'نبذة عني', content: 'مطور واجهات ومصمم تجربة مستخدم بخبرة تتجاوز 5 سنوات في بناء المنصات والتطبيقات الحديثة. شغوف بالتفاصيل والتصاميم الراقية.' } },
+      { type: 'services', data: { heading: 'ماذا أقدم؟', items: [{title:'تصميم مواقع وتطبيقات',desc:'تصاميم واجهة مستخدم ناعمة وسريعة التجاوب'},{title:'برمجة Frontend',desc:'كود نظيف باستخدام React و Vue و Vanilla JS'},{title:'تحسين أداء المواقع',desc:'تسريع التحميل وصديق لمحركات البحث SEO'}] } },
+      { type: 'portfolio', data: { heading: 'معرض الأعمال السابقة', items: [{title:'منصة متجر إلكتروني',desc:'تصميم وتطوير موقع متكامل',image:''},{title:'تطبيق حجز عيادات',desc:'واجهة مستخدم عصرية وسلسة',image:''},{title:'موقع شركة مقاولات',desc:'تصميم هادئ وجذاب مع لوحة تحكم',image:''}] } },
+      { type: 'contact', data: { heading: 'تواصل معي للعمل معاً', email: 'ahmed@domain.com', phone: '+20 111 222 3333', address: 'مصر' } },
+      { type: 'footer', data: { copyright: '© 2026 أحمد أيمن.', text: 'مدعوم بواسطة SiteFlow' } }
     ],
-    theme: { color: '#dc2626', font: 'Georgia' },
-    seo: { title: 'Our Restaurant', description: 'Best dining experience in town' }
+    theme: { color: '#8b5cf6', font: 'Cairo' },
+    seo: { title: 'أحمد أيمن | مصمم ومطور مواقع', description: 'معرض الأعمال الشخصية والسيرة الذاتية للمطور أحمد أيمن.' }
   },
   {
-    id: 'gallery', name: 'Photo Gallery', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>', category: 'creative',
-    desc: 'Photography portfolio with image gallery',
+    id: 'arabic_restaurant', name: 'مطعم أو كافيه (Menu & Delivery)', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>', category: 'food',
+    desc: 'منيو إلكتروني جذاب للمأكولات وحجز الطاولات',
     sections: [
-      { type: 'hero', data: { heading: 'Photography Portfolio', description: 'Capturing moments that last forever.', image: '' } },
-      { type: 'about', data: { heading: 'About', content: 'Professional photographer with a passion for capturing life\'s beautiful moments. Specializing in portraits, weddings, and landscapes.' } },
-      { type: 'gallery', data: { heading: 'My Work', images: [] } },
-      { type: 'portfolio', data: { heading: 'Featured Projects', items: [{title:'Wedding Photography',desc:'Captured 50+ weddings',image:''},{title:'Portrait Sessions',desc:'Professional headshots',image:''}] } },
-      { type: 'testimonials', data: { heading: 'Reviews', items: [{name:'Anna Smith',text:'Absolutely stunning photos! She captured our wedding perfectly.',role:'Bride'},{name:'Tom Brown',text:'Professional and creative. Love every shot!',role:'Model'}] } },
-      { type: 'contact', data: { heading: 'Book a Session', email: '', phone: '', address: '' } }
+      { type: 'hero', data: { heading: 'طعم أصيل وتجربة لا تُنسى', description: 'أشهى المأكولات المشوية والأطباق الغربية بإعداد أمهر الطهاة ومكونات طازجة يومياً.', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80', buttonText: 'استعرض المنيو', buttonUrl: '#menu' } },
+      { type: 'about', data: { heading: 'قصتنا', content: 'بدأنا عام 2018 بتقديم وصفات عائلية مميزة. نضمن لك جودة عالية في كل طبق وتجربة طعام دافئة وممتعة.' } },
+      { type: 'menu', data: { heading: 'منيو الطعام والمشروبات', items: [{title:'ستيك ريب آي مشوي',desc:'قطعة لحم بقر طازجة مع صوص المشروم',price:'380 ج.م',category:'الأطباق الرئيسية'},{title:'برجر دبل تشيز مكسيكي',desc:'لحم بلدي مع جبنة شيدر وصوص حار',price:'180 ج.م',category:'الأطباق الرئيسية'},{title:'سلطة سيزر بالدجاج',desc:'خس طازج، جبن بارميزان وقطع دجاج',price:'110 ج.م',category:'المقبلات'},{title:'مولتن كيك مع أيس كريم',desc:'شوكولاتة سائلة مع فانيليا طازجة',price:'95 ج.م',category:'الحلويات'}] } },
+      { type: 'location', data: { heading: 'زورونا في موقعنا', address: 'شارع التحرير، الدقي، الجيزة', phone: '+20 123 456 7890', hours: 'يومياً من 12 ظهراً حتى 12 منتصف الليل' } },
+      { type: 'contact', data: { heading: 'حجز طاولة أو توصيل طلبات', email: 'orders@restaurant.com', phone: '+20 123 456 7890', address: 'الجيزة' } },
+      { type: 'footer', data: { copyright: '© 2026 جميع الحقوق محفوظة للمطعم.', text: 'SiteFlow' } }
     ],
-    theme: { color: '#0891b2', font: 'Inter' },
-    seo: { title: 'Photography Portfolio', description: 'Professional photography services' }
-  },
-  {
-    id: 'event', name: 'Event', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>', category: 'personal',
-    desc: 'Event or conference landing page',
-    sections: [
-      { type: 'hero', data: { heading: 'Annual Tech Conference 2026', description: 'Join 5000+ developers, designers, and tech enthusiasts.', image: '' } },
-      { type: 'about', data: { heading: 'About the Event', content: 'The biggest tech conference of the year. 3 days of workshops, talks, and networking with industry leaders.' } },
-      { type: 'timeline', data: { heading: 'Schedule', items: [{title:'Registration',desc:'Check-in and welcome kit',year:'9:00 AM'},{title:'Keynote',desc:'Main stage opening talk',year:'10:00 AM'},{title:'Workshops',desc:'Breakout sessions',year:'11:30 AM'},{title:'Networking Lunch',desc:'Connect with attendees',year:'1:00 PM'},{title:'Panel Discussion',desc:'Industry experts Q&A',year:'3:00 PM'},{title:'Closing',desc:'Awards & networking',year:'5:00 PM'}] } },
-      { type: 'counters', data: { heading: 'Event Stats', items: [{number:'5000+',label:'Attendees'},{number:'50+',label:'Speakers'},{number:'30+',label:'Workshops'},{number:'20+',label:'Sponsors'}] } },
-      { type: 'services', data: { heading: 'What to Expect', items: [{title:'Workshops',desc:'Hands-on sessions with expert instructors'},{title:'Talks',desc:'Inspiring keynotes from industry leaders'},{title:'Networking',desc:'Connect with 5000+ professionals'},{title:'After Party',desc:'Celebrate with live music and drinks'}] } },
-      { type: 'pricing', data: { heading: 'Tickets', plans: [{name:'Early Bird',price:'$99',features:['All Sessions','Lunch Included','Goodie Bag']},{name:'VIP',price:'$299',features:['All Sessions','Backstage Access','Dinner','Meet & Greet']}] } },
-      { type: 'contact', data: { heading: 'Questions?', email: '', phone: '', address: '' } }
-    ],
-    theme: { color: '#7c3aed', font: 'Inter' },
-    seo: { title: 'Tech Conference 2026', description: 'Annual tech conference for developers' }
-  },
-  {
-    id: 'form', name: 'Contact Form', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>', category: 'other',
-    desc: 'Simple contact/lead capture page',
-    sections: [
-      { type: 'hero', data: { heading: 'Get In Touch', description: 'We\'d love to hear from you. Send us a message!', image: '' } },
-      { type: 'services', data: { heading: 'How We Help', items: [{title:'Fast Response',desc:'We respond within 24 hours'},{title:'Free Consultation',desc:'Get a free consultation for your project'},{title:'Custom Solutions',desc:'Tailored solutions for your needs'}] } },
-      { type: 'faq', data: { heading: 'FAQ', items: [{q:'How fast do you respond?',a:'We typically respond within 24 hours on business days.'},{q:'Is the consultation free?',a:'Yes! Your first consultation is completely free.'},{q:'What areas do you serve?',a:'We serve clients worldwide remotely.'}] } },
-      { type: 'contact', data: { heading: 'Send Us a Message', email: '', phone: '', address: '' } }
-    ],
-    theme: { color: '#059669', font: 'Inter' },
-    seo: { title: 'Contact Us', description: 'Get in touch with our team' }
-  },
-  {
-    id: 'blog', name: 'Blog & News', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M15.5 3.5 21 9l-9 9H3v-9Z"/></svg>', category: 'personal',
-    desc: 'Personal blog or magazine layout',
-    sections: [
-      { type: 'hero', data: { heading: 'My Blog', description: 'Thoughts, stories, and ideas on technology and design.', image: '' } },
-      { type: 'about', data: { heading: 'About the Author', content: 'Writer, developer, and lifelong learner. I share my thoughts on technology, design, and life.' } },
-      { type: 'blog', data: { heading: 'Recent Articles', items: [{title:'Building Modern Web Apps',excerpt:'A guide to modern web development tools and practices in 2026.',date:'Mar 10, 2026'},{title:'UX Design Principles',excerpt:'Essential UX principles every designer should know.',date:'Feb 28, 2026'},{title:'The Future of AI',excerpt:'How artificial intelligence is shaping the tech industry.',date:'Feb 15, 2026'},{title:'CSS Tips & Tricks',excerpt:'Advanced CSS techniques for better layouts.',date:'Jan 30, 2026'}] } },
-      { type: 'services', data: { heading: 'Topics', items: [{title:'Technology',desc:'Latest trends and tutorials in tech'},{title:'Design',desc:'UI/UX tips and design inspiration'},{title:'Business',desc:'Startup advice and business growth'}] } },
-      { type: 'testimonials', data: { heading: 'Reader Reviews', items: [{name:'David Lee',text:'Incredible blog! Always find useful content here.',role:'Subscriber'},{name:'Maria Garcia',text:'Clear, concise, and very informative. Keep it up!',role:'Developer'}] } },
-      { type: 'contact', data: { heading: 'Subscribe', email: '', phone: '', address: '' } },
-      { type: 'footer', data: { copyright: '© 2026 My Blog. All rights reserved.', text: 'Powered by Site Flow' } }
-    ],
-    theme: { color: '#ea580c', font: 'Georgia' },
-    seo: { title: 'My Blog', description: 'Technology and design blog' }
-  },
-  {
-    id: 'store', name: 'Online Store', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>', category: 'business',
-    desc: 'E-commerce product showcase',
-    sections: [
-      { type: 'hero', data: { heading: 'Our Store', description: 'Discover amazing products at great prices.', image: '' } },
-      { type: 'services', data: { heading: 'Why Shop With Us', items: [{title:'Free Shipping',desc:'On orders over $50'},{title:'Easy Returns',desc:'30-day return policy'},{title:'24/7 Support',desc:'Always here to help'},{title:'Secure Checkout',desc:'SSL encrypted payments'}] } },
-      { type: 'portfolio', data: { heading: 'Featured Products', items: [{title:'Product One',desc:'Premium quality item',image:''},{title:'Product Two',desc:'Best-selling product',image:''},{title:'Product Three',desc:'New arrival',image:''}] } },
-      { type: 'pricing', data: { heading: 'Best Sellers', plans: [{name:'Basic Pack',price:'$29',features:['1 Product','Basic Support','30-day Guarantee']},{name:'Premium Pack',price:'$79',features:['3 Products','Priority Support','Free Shipping','Bonus Gift']}] } },
-      { type: 'testimonials', data: { heading: 'Customer Reviews', items: [{name:'Sarah K.',text:'Amazing quality! Fast shipping too!',role:'Verified Buyer'},{name:'James R.',text:'My go-to store for everything.',role:'VIP Customer'}] } },
-      { type: 'faq', data: { heading: 'FAQ', items: [{q:'How long does shipping take?',a:'3-5 business days domestically.'},{q:'What is your return policy?',a:'30-day no-questions-asked returns.'}] } },
-      { type: 'contact', data: { heading: 'Contact Us', email: '', phone: '', address: '' } }
-    ],
-    theme: { color: '#e11d48', font: 'Inter' },
-    seo: { title: 'Our Store', description: 'Premium online store' }
-  },
-  {
-    id: 'blank', name: 'Blank Canvas', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>', category: 'other',
-    desc: 'Start from scratch with basic sections',
-    sections: [
-      { type: 'hero', data: { heading: 'My Website', description: 'Welcome to my site. Start editing to make it yours.', image: '' } },
-      { type: 'about', data: { heading: 'About', content: 'Edit this section to tell your story.' } },
-      { type: 'services', data: { heading: 'Our Services', items: [{title:'Service 1',desc:'Description of service 1'},{title:'Service 2',desc:'Description of service 2'},{title:'Service 3',desc:'Description of service 3'}] } },
-      { type: 'testimonials', data: { heading: 'Testimonials', items: [{name:'Client Name',text:'Great service!',role:'CEO, Company'}] } },
-      { type: 'contact', data: { heading: 'Contact', email: '', phone: '', address: '' } }
-    ],
-    theme: { color: '#6366f1', font: 'Inter' },
-    seo: { title: 'My Site', description: '' }
+    theme: { color: '#dc2626', font: 'Cairo' },
+    seo: { title: 'مطعم المذاق الشهي | أفضل الوجبات والمنيو', description: 'منيو طعام طازج ولذيذ مع خدمة التوصيل وحجز الطاولات.' }
   }
-]
+];

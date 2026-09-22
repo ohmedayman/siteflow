@@ -52,29 +52,30 @@ const Builder = {
     const list = document.getElementById('sectionList')
     if (!list) return
     const icons = { hero: ICONS.home, about: ICONS.user, gallery: ICONS.image, contact: ICONS.mail, services: ICONS.briefcase, testimonials: ICONS.message, pricing: ICONS.dollar, faq: ICONS.helpCircle, team: ICONS.users, footer: ICONS.file, cta: ICONS.target, features: ICONS.sparkles, stats: ICONS.chart, menu: ICONS.utensils, location: ICONS.mapPin, hours: ICONS.clock, blog: ICONS.pen, portfolio: ICONS.folder, counters: ICONS.chart, timeline: ICONS.calendar }
-    const descs = { hero: 'Header & intro', about: 'About text', gallery: 'Image gallery', contact: 'Contact form', services: 'What you offer', testimonials: 'Client reviews', pricing: 'Price plans', faq: 'FAQ questions', team: 'Team members', footer: 'Page footer', cta: 'Call to action', features: 'Feature list', stats: 'Statistics', menu: 'Menu items', location: 'Map & address', hours: 'Business hours' }
+    const names = { hero: 'الواجهة الرئيسية (Hero)', about: 'من نحن (About)', gallery: 'معرض الصور', contact: 'تواصل معنا', services: 'الخدمات والمنتجات', testimonials: 'آراء العملاء', pricing: 'خطط الأسعار', faq: 'الأسئلة الشائعة', team: 'فريق العمل', footer: 'التذييل (Footer)', cta: 'دعوة لاتخاذ إجراء (CTA)', features: 'المميزات الرئيسية', stats: 'الإحصائيات بالأرقام', menu: 'قائمة الطعام / المنتجات', location: 'الموقع والخريطة', hours: 'ساعات العمل', blog: 'المقالات والأخبار', portfolio: 'معرض الأعمال', counters: 'عدادات الأرقام', timeline: 'مسيرة الشركة' }
+    const descs = { hero: 'العنوان الرئيسي والصورة والزر التفاعلي', about: 'نبذة عن شركتك ورسالتكم', gallery: 'شبكة صور عالية الجودة', contact: 'نموذج اتصل بنا ومعلومات التواصل', services: 'عروض خدماتك بطريقة جذابة', testimonials: 'تقييمات وآراء مشجعيك', pricing: 'باقات وأسعار اشتراكاتك', faq: 'إجابات على أسئلة العملاء', team: 'أعضاء ومؤسسي المشروع', footer: 'حقوق النشر والروابط السريعة', cta: 'زر قوي لزيادة التحويلات', features: 'أبرز نقاط قوة منتجك', stats: 'أرقام وإنجازات موثقة', menu: 'عرض الأطباق والأسعار', location: 'موقعك التجاري وهاتفك', hours: 'مواعيد الاستقبال والدوام' }
 
     list.innerHTML = this.page.sections.map((s, i) => `
       <div class="section-item ${i === this.editingIdx ? 'active' : ''}" data-index="${i}" draggable="true" data-type="${s.type}">
-        <div class="drag-handle" title="Drag to reorder">
+        <div class="drag-handle" title="اسحب لإعادة الترتيب">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="8" cy="6" r="1"/><circle cx="16" cy="6" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/><circle cx="8" cy="18" r="1"/><circle cx="16" cy="18" r="1"/></svg>
         </div>
         <div class="section-item-icon" style="background:${i === this.editingIdx ? 'var(--primary-light)' : 'var(--gray-100)'}">${icons[s.type] || ICONS.file}</div>
         <div class="section-item-info">
-          <h4>${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</h4>
-          <p>${descs[s.type] || 'Custom section'}</p>
+          <h4>${names[s.type] || s.type}</h4>
+          <p>${descs[s.type] || 'قسم مخصص'}</p>
         </div>
         <div class="section-item-actions">
-          <button class="move-up-btn" data-up="${i}" title="Move up" ${i === 0 ? 'disabled' : ''}>
+          <button class="move-up-btn" data-up="${i}" title="تحريك لأعلى" ${i === 0 ? 'disabled' : ''}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
           </button>
-          <button class="move-down-btn" data-down="${i}" title="Move down" ${i === this.page.sections.length - 1 ? 'disabled' : ''}>
+          <button class="move-down-btn" data-down="${i}" title="تحريك لأسفل" ${i === this.page.sections.length - 1 ? 'disabled' : ''}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="dup-section" data-dup="${i}" title="Duplicate section">
+          <button class="dup-section" data-dup="${i}" title="مضاعفة القسم">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           </button>
-          <button class="del-section" data-del="${i}" title="Delete section">
+          <button class="del-section" data-del="${i}" title="حذف القسم">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
           </button>
         </div>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Site Flow - No-Code Website Builder</title>
-<meta name="description" content="Build stunning websites without code. Drag-and-drop builder, SEO optimized, responsive design.">
+<title>Site Flow — صانع المواقع الاحترافي بدون كود</title>
+<meta name="description" content="ابنِ مواقع إلكترونية سريعة وجذابة بدون كتابة كود. منصة صانع المواقع العربي الأول بميزات سحب وإفلات وتحسين محركات البحث.">
 <link rel="icon" type="image/svg+xml" href="assets/sitflow.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=19">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
@@ -17,32 +17,33 @@
   <header class="app-header">
     <div class="header-inner">
       <a href="#/" class="logo">
-        <img src="assets/sitflow.svg" alt="Site Flow" width="56" height="56">
+        <img src="assets/sitflow.svg" alt="Site Flow" width="48" height="48">
+        <span>SiteFlow</span>
       </a>
       <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="document.querySelector('.nav-links').classList.toggle('open')">
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links">
-        <a href="#/plans" class="nav-link">Pricing</a>
-        <a href="#/about" class="nav-link">Features</a>
-        <a href="#/help" class="nav-link">Showcase</a>
-        <a href="#/help" class="nav-link">Contact</a>
-        <a href="#/login" class="btn btn-primary btn-sm js-auth-guest">Sign Up</a>
-        <a href="#/dashboard" class="btn btn-primary btn-sm js-auth-user hidden">Dashboard</a>
-        <button class="btn btn-ghost btn-sm js-auth-user hidden" onclick="Auth.logout()">Logout</button>
+        <a href="#/plans" class="nav-link">باقات الأسعار</a>
+        <a href="#/about" class="nav-link">المميزات</a>
+        <a href="#/help" class="nav-link">معرض المواقع</a>
+        <a href="#/help" class="nav-link">المساعدة والدعم</a>
+        <a href="#/login" class="btn btn-primary btn-sm js-auth-guest">تسجيل الدخول / حساب جديد</a>
+        <a href="#/dashboard" class="btn btn-primary btn-sm js-auth-user hidden">لوحة التحكم</a>
+        <button class="btn btn-ghost btn-sm js-auth-user hidden" onclick="Auth.logout()">تسجيل الخروج</button>
       </nav>
     </div>
   </header>
   <main class="app-main" id="app"></main>
-  <script src="js/icons.js?v=19"></script>
-  <script src="js/presets.js?v=19"></script>
-  <script src="js/templates-data.js?v=19"></script>
-  <script src="js/supabase.js?v=19"></script>
-  <script src="js/storage.js?v=19"></script>
-  <script src="js/auth.js?v=19"></script>
-  <script src="js/templates.js?v=19"></script>
-  <script src="js/builder.js?v=19"></script>
-  <script src="js/app.js?v=19"></script>
+  <script src="js/icons.js?v=20"></script>
+  <script src="js/presets.js?v=20"></script>
+  <script src="js/templates-data.js?v=20"></script>
+  <script src="js/supabase.js?v=20"></script>
+  <script src="js/storage.js?v=20"></script>
+  <script src="js/auth.js?v=20"></script>
+  <script src="js/templates.js?v=20"></script>
+  <script src="js/builder.js?v=20"></script>
+  <script src="js/app.js?v=20"></script>
   <script>
     window.onerror = function(msg, src, line, col, err) {
       if (typeof IS_LOCAL !== 'undefined' && !IS_LOCAL) {
