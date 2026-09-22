@@ -135,10 +135,10 @@ const Builder = {
       case 'timeline': return T.timelineSection(s.data, i === this.editingIdx)
       case 'menu': return T.menuSection(s.data, i === this.editingIdx)
       case 'location': return T.locationSection(s.data, i === this.editingIdx)
-      case 'cta': return `<div class="editable-section" style="text-align:center;padding:60px 40px;background:var(--p-color,#6366f1);color:#fff"><h2>${s.data.heading || 'Call to Action'}</h2><p>${s.data.subheading || ''}</p></div>`
-      case 'features': return `<div class="editable-section" style="padding:60px 40px"><h2 style="text-align:center">${s.data.heading || 'Features'}</h2></div>`
-      case 'stats': return `<div class="editable-section" style="padding:60px 40px;text-align:center;background:#f8fafc"><h2>${s.data.heading || 'Statistics'}</h2></div>`
-      default: return `<div class="editable-section" style="padding:40px;text-align:center;color:#999">Unknown section type: ${s.type}</div>`
+      case 'cta': return T.ctaSection(s.data, i === this.editingIdx)
+      case 'features': return T.featuresSection(s.data, i === this.editingIdx)
+      case 'stats': return T.statsSection(s.data, i === this.editingIdx)
+      default: return `<div class="editable-section" style="padding:40px;text-align:center;color:#999">Section: ${s.type}</div>`
     }
   },
 
