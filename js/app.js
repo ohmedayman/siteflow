@@ -513,37 +513,38 @@ const Dash = {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Detect subdomain — render public site directly
-  const host = window.location.hostname
-  const mainDomain = MAIN_DOMAIN
-  const isSubdomain = (host !== mainDomain && host !== 'localhost' && host !== '127.0.0.1' && host.endsWith('.' + mainDomain)) ||
-                      (host !== mainDomain && host.endsWith('.vercel.app') && host.split('.').length > 2 && !host.startsWith('www'))
-  if (isSubdomain) {
-    const slug = host.endsWith('.' + mainDomain)
-      ? host.slice(0, -('.' + mainDomain).length)
-      : host.split('.')[0]
-    if (slug && slug !== 'www') {
-      document.querySelector('.app-header')?.classList.add('hidden')
-      const app = document.getElementById('app')
-      if (app) app.innerHTML = T.loading()
-      try {
-        const site = await API.getPublicPage(slug)
-        if (site && site.published) {
-          document.title = site.seo?.title || site.title
-          app.innerHTML = T.publicPage(site)
-          Router._bindPublicContactForm(slug)
-          // Track view
-          if (API.mode !== 'local') {
-            try { await API._fetch('/p/' + slug + '/view', { method: 'POST', body: JSON.stringify({ ip: '', ua: navigator.userAgent }) }) } catch (e) {}
-          }
-          // Also increment local views
-          LocalDB.incrementViews(slug)
-          return
+  // Detect subdomain — render public site directly ONLY for explicit subdomains
+  const host = window.location.hostname.toLowerCase()
+  let isSubdomain = false
+  let targetSlug = ''
+
+  if (host.endsWith('.siteflow.vexonet.online') && host !== 'siteflow.vexonet.online') {
+    isSubdomain = true
+    targetSlug = host.replace('.siteflow.vexonet.online', '').split('.').pop()
+  } else if (host.endsWith('.siteflow.app') && host !== 'siteflow.app') {
+    isSubdomain = true
+    targetSlug = host.replace('.siteflow.app', '').split('.').pop()
+  }
+
+  if (isSubdomain && targetSlug && targetSlug !== 'www' && targetSlug !== 'api') {
+    document.querySelector('.app-header')?.classList.add('hidden')
+    const app = document.getElementById('app')
+    if (app) app.innerHTML = T.loading()
+    try {
+      const site = await API.getPublicPage(targetSlug)
+      if (site && site.published) {
+        document.title = site.seo?.title || site.title
+        app.innerHTML = T.publicPage(site)
+        Router._bindPublicContactForm(targetSlug)
+        if (API.mode !== 'local') {
+          try { await API._fetch('/p/' + targetSlug + '/view', { method: 'POST', body: JSON.stringify({ ip: '', ua: navigator.userAgent }) }) } catch (e) {}
         }
-      } catch {}
-      app.innerHTML = T.notFound('Site Not Found', 'This site has not been published yet.')
-      return
-    }
+        LocalDB.incrementViews(targetSlug)
+        return
+      }
+    } catch {}
+    if (app) app.innerHTML = T.notFound('الموقع غير منشور بعد', 'تأكد من كتابة رابط الموقع الصحيح أو نشر الموقع من لوحة التحكم.')
+    return
   }
 
   const app = document.getElementById('app')

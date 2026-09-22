@@ -65,8 +65,10 @@ const LocalDB = {
   },
 
   deletePage(id) { this.pages.save(this.pages.get().filter(p => p.id !== id)) },
-  getPage(id) { return this.pages.get().find(p => p.id === id) || null },
-  getPageBySlug(slug) { return this.pages.get().find(p => p.slug === slug && p.published) || null },
+  getPageBySlug(slug) {
+    const s = (slug || '').toLowerCase();
+    return this.pages.get().find(p => (p.slug?.toLowerCase() === s || p.customDomain?.toLowerCase() === s || p.custom_domain?.toLowerCase() === s) && p.published) || null
+  },
   getUserPages(uid) { return this.pages.get().filter(p => p.userId === uid) },
   duplicatePage(id) { const o=this.getPage(id); if(!o)return null; const c=this.clone(o); c.id=''; c.title=o.title+' (Copy)'; c.published=false; c.views=0; return this.addPage(c) },
   incrementViews(slug) { const pages=this.pages.get(); const p=pages.find(x=>x.slug===slug); if(p){p.views=(p.views||0)+1;this.pages.save(pages)} }
