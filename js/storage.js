@@ -95,189 +95,147 @@ if (LocalDB.users.get().length === 0) {
   var _pages = LocalDB.pages.get(); var _dp = _pages.find(p => p.id === _demo.id); if (_dp) { _dp.slug = 'demo'; LocalDB.pages.save(_pages) }
 }
 
-// ── API Client (mode: Flask Backend → Supabase → LocalStorage) ──
+// ── API Client (mode: Vercel Serverless API → LocalStorage) ──
 const API = {
   token: localStorage.getItem('sf_token') || '',
-  mode: null, // null | 'flask' | 'supabase' | 'local'
+  mode: null, // null | 'api' | 'flask' | 'supabase' | 'local'
   _saveToken(t) { this.token=t||''; if(t) localStorage.setItem('sf_token',t); else localStorage.removeItem('sf_token') },
 
-  // Try backends in order: Flask → Supabase → LocalStorage
+  // Try backends in order: Vercel Serverless /api → LocalStorage
   async _init() {
     if (this.mode) return this.mode
-    // Try Flask backend (production: use Render API; local: localhost:5000)
+    // 1. Try local/production relative /api/health
     try {
-      const r = await fetch(PROD_API + '/health', { signal: AbortSignal.timeout(3000) })
-      if (r.ok) { this.mode = 'flask'; return 'flask' }
+      const r = await fetch('/api/health', { signal: AbortSignal.timeout(2000) })
+      if (r.ok) { this.mode = 'api'; return 'api' }
     } catch {}
-    // Try local Flask
-    if (IS_LOCAL) {
-      try {
-        const r = await fetch(API_BASE + '/health', { signal: AbortSignal.timeout(2000) })
-        if (r.ok) { this.mode = 'flask'; return 'flask' }
-      } catch {}
-      // Try Supabase
-      try {
-        await SB.init()
-        if (SB.isReady()) { this.mode = 'supabase'; return 'supabase' }
-      } catch {}
-    }
+
+    // 2. Try Supabase if configured
+    try {
+      await SB.init()
+      if (SB.isReady()) { this.mode = 'supabase'; return 'supabase' }
+    } catch {}
+
     this.mode = 'local'; return 'local'
   },
 
   async _fetch(path, opts={}) {
-    if (this.mode === 'local') return { ok: false, status: 404, json: async () => ({}) }
     const headers = {'Content-Type': 'application/json'}
     if (this.token) headers['Authorization'] = 'Bearer ' + this.token
-    const baseUrl = IS_LOCAL ? API_BASE : PROD_API
     try {
-      const r = await fetch(baseUrl + path, {...opts, headers})
-      if (r.status === 401) { this._saveToken(null); this.mode = null }
+      const r = await fetch('/api' + path, {...opts, headers})
+      if (r.status === 401) { this._saveToken(null); }
       return r
     } catch {
-      return { ok: false, status: 503, json: async () => ({}) }
+      return { ok: false, status: 503, json: async () => ({ error: 'Service Unavailable' }) }
     }
   },
 
-  // ── Auth (Supabase first, then Flask, then localStorage) ──
+  // ── Auth ──
   async login(email, password) {
     const mode = await this._init()
-    // Supabase auth (only if Supabase is the detected mode)
-    if (mode === 'supabase') {
-      try {
-        await SB.init()
-        if (SB.isReady()) {
-          const d = await SB.signIn(email, password)
-          this._saveToken(d.session.access_token)
-          this.mode = 'supabase'
-          return {user:{id:d.user.id,name:d.user.email,email:d.user.email,plan:'free',lang:'en',isAdmin:false}}
-        }
-      } catch(e) {}
-    }
-    // Flask fallback
-    if (mode === 'flask') {
-      const r = await this._fetch('/auth/login', {method:'POST', body:JSON.stringify({email,password})})
-      if (r.ok) { const d = await r.json(); this._saveToken(d.token); return {user: d.user} }
+    if (mode === 'api' || mode === 'flask') {
+      const r = await this._fetch('/auth/login', {method:'POST', body:JSON.stringify({email, password})})
+      if (r.ok) {
+        const d = await r.json()
+        this._saveToken(d.token)
+        return { user: d.user }
+      } else {
+        const err = await r.json().catch(() => ({}))
+        throw new Error(err.error || 'البريد الإلكتروني أو كلمة المرور غير صحيحة')
+      }
     }
     // localStorage fallback
-    const users=LocalDB.users.get(); const u=users.find(x=>x.email===email&&x.password===password)
-    if (!u) throw new Error('Invalid email or password')
-    this._saveToken('local_'+u.id); this.mode = 'local'
-    return {user:{id:u.id,name:u.name,email:u.email,plan:u.plan,lang:u.lang,isAdmin:u.isAdmin||false}}
+    const users = LocalDB.users.get()
+    const u = users.find(x => x.email.toLowerCase() === email.toLowerCase() && (x.password === password || x.password_hash === password))
+    if (!u) throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة')
+    this._saveToken('local_' + u.id)
+    return { user: { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang, isAdmin: u.isAdmin || false } }
   },
 
   async signup(name, email, password) {
     const mode = await this._init()
-    // Supabase signup (only if Supabase is the detected mode)
-    if (mode === 'supabase') {
-      try {
-        await SB.init()
-        if (SB.isReady()) {
-          const d = await SB.signUp(email, password)
-          this.mode = 'supabase'
-          if (d.session?.access_token) this._saveToken(d.session.access_token)
-          return {user:{id:d.user.id,name,email,plan:'free',lang:'en',isAdmin:false}}
-        }
-      } catch(e) { if (e.message.includes('already')) throw new Error('Email already registered') }
-    }
-    // Flask fallback
-    if (mode === 'flask') {
-      const r = await this._fetch('/auth/signup', {method:'POST', body:JSON.stringify({name,email,password})})
-      if (r.ok) { const d = await r.json(); this._saveToken(d.token); return {user: d.user} }
-      if (r.status === 409) throw new Error('Email already registered')
+    if (mode === 'api' || mode === 'flask') {
+      const r = await this._fetch('/auth/signup', {method:'POST', body:JSON.stringify({name, email, password})})
+      if (r.ok) {
+        const d = await r.json()
+        this._saveToken(d.token)
+        return { user: d.user }
+      } else {
+        const err = await r.json().catch(() => ({}))
+        throw new Error(err.error || 'فشل إنشاء الحساب')
+      }
     }
     // localStorage fallback
-    const users=LocalDB.users.get()
-    if (users.find(x=>x.email===email)) throw new Error('Email already registered')
-    const u={id:LocalDB.genId(),name,email,password,plan:'free',lang:'en',isAdmin:false}
-    LocalDB.users.save([...users,u]); this._saveToken('local_'+u.id); this.mode = 'local'
-    return {user:{id:u.id,name:u.name,email:u.email,plan:'free',lang:'en',isAdmin:false}}
+    const users = LocalDB.users.get()
+    if (users.find(x => x.email.toLowerCase() === email.toLowerCase())) {
+      throw new Error('هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول.')
+    }
+    const u = { id: LocalDB.genId(), name, email, password, plan: 'free', lang: 'ar', isAdmin: false }
+    LocalDB.users.save([...users, u])
+    this._saveToken('local_' + u.id)
+    return { user: { id: u.id, name: u.name, email: u.email, plan: 'free', lang: 'ar', isAdmin: false } }
   },
 
   async googleLogin() {
-    const mode = await this._init()
-    if (mode === 'supabase') {
-      try {
-        await SB.init()
-        if (SB.isReady()) {
-          await SB.signInWithGoogle()
-          return true
-        }
-      } catch {}
-    }
-    return this.login('demo@siteflow.app', 'demo123')
+    Toast.show('يرجى التسجيل المباشر بالبريد الإلكتروني وكلمة المرور لتأمين حسابك', 'info')
   },
 
   async getMe() {
     const mode = await this._init()
-    // If local mode, skip network calls entirely
-    if (mode === 'local') {
-      const uid=(this.token||'').replace('local_','')
-      const u=LocalDB.users.get().find(x=>x.id===uid)
-      if (!u) throw new Error('Not logged in')
-      return {id:u.id,name:u.name,email:u.email,plan:u.plan,lang:u.lang,isAdmin:u.isAdmin||false}
-    }
-    // Supabase session first
-    try {
-      await SB.init()
-      if (SB.isReady()) {
-        const s = SB.getSession()
-        if (s?.data?.session) {
-          const uid = s.data.session.user.id
-          this.mode = 'supabase'
-          return {id:uid,name:s.data.session.user.email,email:s.data.session.user.email,plan:'free',lang:'en',isAdmin:false}
-        }
-      }
-    } catch {}
-    // Flask fallback
-    if (mode === 'flask') {
+    if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/auth/me')
-      if (r.ok) return (await r.json())
+      if (r.ok) return await r.json()
     }
-    // localStorage fallback
-    const uid=(this.token||'').replace('local_','')
-    const u=LocalDB.users.get().find(x=>x.id===uid)
+    const uid = (this.token || '').replace('local_', '')
+    const u = LocalDB.users.get().find(x => x.id === uid)
     if (!u) throw new Error('Not logged in')
-    return {id:u.id,name:u.name,email:u.email,plan:u.plan,lang:u.lang,isAdmin:u.isAdmin||false}
+    return { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang, isAdmin: u.isAdmin || false }
   },
 
   logout() {
-    this._saveToken(null); this.mode = null
+    this._saveToken(null)
+    this.mode = null
     if (SB.isReady()) SB.signOut()
   },
 
   async updateProfile(data) {
     const mode = await this._init()
-    if (mode === 'flask') {
+    if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/auth/update', {method:'PUT', body:JSON.stringify(data)})
-      if (r.ok) return (await r.json())
+      if (r.ok) return await r.json()
     }
-    if (mode === 'supabase') { return {name:data.name,email:'',plan:'free',lang:data.lang||'en'} }
-    const uid=(this.token||'').replace('local_',''); const users=LocalDB.users.get(); const u=users.find(x=>x.id===uid)
+    const uid = (this.token || '').replace('local_', '')
+    const users = LocalDB.users.get()
+    const u = users.find(x => x.id === uid)
     if (!u) throw new Error('Not found')
-    if(data.name)u.name=data.name; if(data.password)u.password=data.password; u.lang=data.lang||u.lang
-    LocalDB.users.save(users); return {id:u.id,name:u.name,email:u.email,plan:u.plan,lang:u.lang}
+    if (data.name) u.name = data.name
+    if (data.password) u.password = data.password
+    u.lang = data.lang || u.lang
+    LocalDB.users.save(users)
+    return { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang }
   },
 
   // ── Sites ──
   async getSites() {
     const mode = await this._init()
-    if (mode === 'flask') {
+    if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/sites')
-      if (r.ok) return (await r.json())
+      if (r.ok) {
+        const sites = await r.json()
+        if (Array.isArray(sites)) return sites
+      }
     }
-    if (mode === 'supabase') {
-      try { const uid=SB.getSession()?.data?.session?.user?.id; if(uid) return await SB.getSites(uid) } catch {}
-    }
-    const uid=(this.token||'').replace('local_',''); return LocalDB.getUserPages(uid)
+    const uid = (this.token || '').replace('local_', '')
+    return LocalDB.getUserPages(uid)
   },
 
   async getSite(id) {
     const mode = await this._init()
-    if (mode === 'flask') {
-      const r = await this._fetch('/sites/'+id)
-      if (r.ok) return (await r.json())
+    if (mode === 'api' || mode === 'flask') {
+      const r = await this._fetch('/sites/' + id)
+      if (r.ok) return await r.json()
     }
-    if (mode === 'supabase') { try { const s=await SB.getSite(id); if(s) return s } catch {} }
     return LocalDB.getPage(id)
   },
 
@@ -286,14 +244,25 @@ const API = {
     const allPresets = typeof ALL_PRESETS !== 'undefined' ? ALL_PRESETS : PRESETS
     const template = allPresets.find(p => p.id === templateId) || PRESETS[0]
     const mode = await this._init()
-    if (mode === 'flask') {
-      const r = await this._fetch('/sites', {method:'POST', body:JSON.stringify({title: data.title, slug: data.slug, template_type: templateId})})
-      if (r.ok) return (await r.json())
+    if (mode === 'api' || mode === 'flask') {
+      const r = await this._fetch('/sites', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: data.title || template.name,
+          slug: data.slug,
+          template_type: templateId,
+          theme: template.theme || { color: '#6366f1', font: 'Cairo' },
+          seo: template.seo || { title: data.title || template.name, description: '' },
+          sections: template.sections || []
+        })
+      })
+      if (r.ok) {
+        const s = await r.json()
+        LocalDB.addPage(s)
+        return s
+      }
     }
-    if (mode === 'supabase') {
-      try { const uid=SB.getSession()?.data?.session?.user?.id; if(uid) return await SB.createSite({...data, user_id: uid, sections: template.sections, title: data.title || template.name}) } catch {}
-    }
-    const uid=(this.token||'').replace('local_','')
+    const uid = (this.token || '').replace('local_', '')
     const pageData = LocalDB.defaultPage(data.title || template.name, template)
     pageData.userId = uid
     return LocalDB.addPage(pageData)
@@ -301,43 +270,51 @@ const API = {
 
   async updateSite(id, data) {
     const mode = await this._init()
-    if (mode === 'flask') {
-      const r = await this._fetch('/sites/'+id, {method:'PUT', body:JSON.stringify(data)})
-      if (r.ok) return (await r.json())
-      // If 404, site exists locally but not in backend — import it
-      if (r.status === 404) {
-        const local = LocalDB.getPage ? LocalDB.getPage(id) : null
-        if (local) {
-          const importR = await this._fetch('/sites/import', {method:'POST', body:JSON.stringify({...local, ...data})})
-          if (importR.ok) return (await importR.json())
-        }
+    if (mode === 'api' || mode === 'flask') {
+      const r = await this._fetch('/sites/' + id, {method:'PUT', body:JSON.stringify(data)})
+      if (r.ok) {
+        const s = await r.json()
+        LocalDB.updatePage(id, data)
+        return s
       }
     }
-    if (mode === 'supabase') { try { return await SB.updateSite(id, data) } catch {} }
     return LocalDB.updatePage(id, data)
   },
 
   async deleteSite(id) {
     const mode = await this._init()
-    if (mode === 'flask') { await this._fetch('/sites/'+id, {method:'DELETE'}); return }
-    if (mode === 'supabase') { try { await SB.deleteSite(id); return } catch {} }
+    if (mode === 'api' || mode === 'flask') {
+      await this._fetch('/sites/' + id, {method:'DELETE'})
+    }
     LocalDB.deletePage(id)
   },
 
   async publishSite(id) {
     const mode = await this._init()
-    if (mode === 'flask') {
-      const r = await this._fetch('/sites/'+id+'/publish', {method:'POST'})
-      if (r.ok) return (await r.json())
+    if (mode === 'api' || mode === 'flask') {
+      const r = await this._fetch('/sites/' + id + '/publish', {method:'POST'})
+      if (r.ok) {
+        const s = await r.json()
+        LocalDB.updatePage(id, {published:true})
+        return s
+      }
     }
-    if (mode === 'supabase') { try { return await SB.publishSite(id) } catch {} }
     return LocalDB.updatePage(id, {published:true})
   },
 
   async getPublicPage(slug) {
     const mode = await this._init()
-    if (mode === 'flask') {
-      const r = await this._fetch('/p/'+slug)
+    if (mode === 'api' || mode === 'flask') {
+      try {
+        const r = await this._fetch('/p/' + encodeURIComponent(slug))
+        if (r.ok) return await r.json()
+      } catch {}
+    }
+    if (mode === 'supabase') {
+      try { const s = await SB.getPublicPage(slug); if (s) return s } catch {}
+    }
+    return LocalDB.getPageBySlug(slug)
+  },
       if (r.ok) return (await r.json())
     }
     if (mode === 'supabase') { try { const s=await SB.getPublicPage(slug); if(s) return s } catch {} }

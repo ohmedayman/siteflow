@@ -59,15 +59,21 @@ const Auth = {
   },
 
   logout() {
-    API.logout(); this.user = null; this._ui(); Router.navigate('')
+    API.logout(); this.user = null; this._ui();
+    Toast.show('تم تسجيل الخروج بنجاح', 'info');
+    Router.navigate('');
   },
 
   isLoggedIn() { return !!this.user },
   isAdmin() { return this.user?.isAdmin || false },
 
   requireAuth() {
-    if (!this.isLoggedIn()) { Router.navigate('login'); return false }
-    return true
+    if (!this.isLoggedIn()) {
+      Toast.show('يرجى تسجيل الدخول أو إنشاء حساب للوصول إلى لوحة التحكم', 'info');
+      Router.navigate('login');
+      return false;
+    }
+    return true;
   },
 
   setLang(code) { this.lang = code; localStorage.setItem('sf_lang', code) },

@@ -336,22 +336,69 @@ const Router = {
 
   _bindAuth() {
     const tabs = document.querySelectorAll('.auth-tab')
-    const lf=document.getElementById('loginForm'), sf=document.getElementById('signupForm'), err=document.getElementById('authError')
-    document.getElementById('googleBtn')?.addEventListener('click', () => Auth.googleLogin())
-    tabs.forEach(t => t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');lf.classList.toggle('hidden',t.dataset.tab!=='login');sf.classList.toggle('hidden',t.dataset.tab!=='signup');if(err)err.style.display='none'}))
+    const lf = document.getElementById('loginForm'), sf = document.getElementById('signupForm'), err = document.getElementById('authError')
+    
+    tabs.forEach(t => t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'))
+      t.classList.add('active')
+      lf.classList.toggle('hidden', t.dataset.tab !== 'login')
+      sf.classList.toggle('hidden', t.dataset.tab !== 'signup')
+      if (err) err.style.display = 'none'
+    }))
+
     lf?.addEventListener('submit', async e => {
       e.preventDefault()
-      const btn = lf.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Signing in...'
-      try { await Auth.login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); Router.navigate('dashboard') }
-      catch(e) { if(err){err.textContent=e.message;err.style.display='block'} }
-      finally { btn.disabled=false; btn.textContent='Sign In' }
+      const btn = lf.querySelector('button[type="submit"]')
+      const email = document.getElementById('loginEmail').value.trim()
+      const password = document.getElementById('loginPassword').value
+      btn.disabled = true; btn.textContent = 'جاري تسجيل الدخول...'
+      if (err) err.style.display = 'none'
+
+      try {
+        await Auth.login(email, password)
+        Toast.show('مرحباً بك! تم تسجيل الدخول بنجاح 🚀', 'success')
+        Router.navigate('dashboard')
+      } catch (e) {
+        if (err) {
+          err.textContent = e.message || 'فشل تسجيل الدخول. تأكد من صحة البريد وكلمة المرور.'
+          err.style.display = 'block'
+        }
+      } finally {
+        btn.disabled = false; btn.textContent = 'تسجيل الدخول'
+      }
     })
+
     sf?.addEventListener('submit', async e => {
       e.preventDefault()
-      const btn = sf.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Creating account...'
-      try { await Auth.signup(document.getElementById('signupName').value, document.getElementById('signupEmail').value, document.getElementById('signupPassword').value); Router.navigate('dashboard') }
-      catch(e) { if(err){err.textContent=e.message;err.style.display='block'} }
-      finally { btn.disabled=false; btn.textContent='Create Account' }
+      const btn = sf.querySelector('button[type="submit"]')
+      const name = document.getElementById('signupName').value.trim()
+      const email = document.getElementById('signupEmail').value.trim()
+      const password = document.getElementById('signupPassword').value
+      const passwordConfirm = document.getElementById('signupPasswordConfirm')?.value
+
+      if (passwordConfirm && password !== passwordConfirm) {
+        if (err) {
+          err.textContent = 'كلمات المرور غير متطابقة! يرجى إعادة كتابتها بدقة.'
+          err.style.display = 'block'
+        }
+        return
+      }
+
+      btn.disabled = true; btn.textContent = 'جاري إنشاء الحساب...'
+      if (err) err.style.display = 'none'
+
+      try {
+        await Auth.signup(name, email, password)
+        Toast.show('تم إنشاء حسابك بنجاح! مرحباً بك في SiteFlow 🎉', 'success')
+        Router.navigate('dashboard')
+      } catch (e) {
+        if (err) {
+          err.textContent = e.message || 'فشل إنشاء الحساب. قد يكون البريد مسجلاً بالفعل.'
+          err.style.display = 'block'
+        }
+      } finally {
+        btn.disabled = false; btn.textContent = 'إنشاء الحساب الآن'
+      }
     })
   },
 
@@ -399,22 +446,22 @@ const Dash = {
           <div class="stat-card">
             <div class="stat-icon">${ICONS.wrap(ICONS.globe,22)}</div>
             <div class="num">${sites.length}</div>
-            <div class="label">Total Sites</div>
+            <div class="label">إجمالي المواقع</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">${ICONS.wrap(ICONS.published,22)}</div>
             <div class="num">${published}</div>
-            <div class="label">Published</div>
+            <div class="label">المواقع المنشورة</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">${ICONS.wrap(ICONS.eye,22)}</div>
             <div class="num">${totalViews}</div>
-            <div class="label">Total Views</div>
+            <div class="label">إجمالي الزيارات</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">${ICONS.wrap(ICONS.pencil,22)}</div>
             <div class="num">${drafts}</div>
-            <div class="label">Drafts</div>
+            <div class="label">المسودات</div>
           </div>
         </div>`
 
@@ -422,18 +469,18 @@ const Dash = {
         container.innerHTML = `
           <div class="empty-state">
             <div class="empty-icon">${ICONS.wrap(ICONS.globe,48)}</div>
-            <h2>No sites yet</h2>
-            <p>Create your first website and publish it to the world.<br>It takes less than a minute.</p>
-            <button class="btn btn-primary btn-lg" id="emptyCreateBtn">${ICONS.wrap(ICONS.plus,18)} Create Your First Site</button>
+            <h2>لا توجد لديك مواقع بعد</h2>
+            <p>أنشئ موقعك الإلكتروني الأول وشاركه مع العالم في دقائق معدودة.<br>اختر قالباً جاهزاً أو ابدأ من الصفر.</p>
+            <button class="btn btn-primary btn-lg" id="emptyCreateBtn" style="font-weight:700">${ICONS.wrap(ICONS.plus,18)} إنشاء موقعك الأول الآن</button>
           </div>
           <div class="quick-start">
-            <h3>Quick Start Templates</h3>
+            <h3>قوالب جاهزة للبدء السريع</h3>
             <div class="quick-templates">
               ${PRESETS.filter(t=>t.id!=='blank').slice(0,4).map(t=>`
                 <div class="quick-template-card" data-quick-template="${t.id}">
                   <div class="qt-icon">${t.icon}</div>
                   <div class="qt-info"><h4>${t.name}</h4><p>${t.desc}</p></div>
-                  <span class="qt-arrow">→</span>
+                  <span class="qt-arrow">←</span>
                 </div>
               `).join('')}
             </div>
@@ -443,7 +490,7 @@ const Dash = {
           card.addEventListener('click',async()=>{
             try{
               const site = await API.createSite({title:card.querySelector('h4').textContent, template_type:card.dataset.quickTemplate})
-              Toast.show('Site created!','success'); Router.navigate('builder/'+site.id)
+              Toast.show('تم إنشاء الموقع بنجاح! جاري فتح المحرر...','success'); Router.navigate('builder/'+site.id)
             }catch(e){Toast.show(e.message,'error')}
           })
         })
@@ -452,11 +499,11 @@ const Dash = {
 
       container.innerHTML = `
         <div class="sites-header">
-          <h2>Your Sites</h2>
+          <h2>مواقعي الإلكترونية</h2>
           <div class="sites-filter">
-            <button class="filter-btn active" data-sfilter="all">All (${sites.length})</button>
-            <button class="filter-btn" data-sfilter="published">Published (${published})</button>
-            <button class="filter-btn" data-sfilter="draft">Drafts (${drafts})</button>
+            <button class="filter-btn active" data-sfilter="all">الكل (${sites.length})</button>
+            <button class="filter-btn" data-sfilter="published">المنشورة (${published})</button>
+            <button class="filter-btn" data-sfilter="draft">المسودات (${drafts})</button>
           </div>
         </div>
         <div class="sites-grid">${sites.map(p=>{

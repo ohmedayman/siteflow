@@ -4,8 +4,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api-fallback.json",
-      "status": 503
+      "dest": "/api/index.js"
     },
     {
       "src": "/(.*\\.(css|js|svg|png|jpg|jpeg|gif|ico|woff|woff2|ttf|eot))",
