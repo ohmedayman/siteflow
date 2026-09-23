@@ -665,6 +665,10 @@ const T = {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
             Settings
           </button>
+          <button class="sidebar-tab" data-stab="ai" style="color:var(--primary);font-weight:700">
+            <span style="font-size:1rem;margin-left:2px">🤖</span>
+            SiteFlow AI
+          </button>
         </div>
         <div class="sidebar-content" id="sidebarSections">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -723,9 +727,14 @@ const T = {
             <input class="input" id="pageTitleInput" value="${page.title}">
           </div>
           <div class="settings-group">
-            <label>Slug</label>
-            <input class="input" id="pageSlugInput" value="${page.slug||''}">
-            <div class="hint">URL: <span id="slugPreview" style="color:var(--primary)">${page.slug||'my-site'}.${MAIN_DOMAIN}</span></div>
+            <label>رابط الدومين الفرعي (Subdomain)</label>
+            <div style="display:flex;align-items:center;direction:ltr;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:0 8px">
+              <span style="color:var(--gray-400);font-size:.85rem;user-select:none">https://</span>
+              <input class="input" id="pageSlugInput" value="${page.slug||''}" style="border:none;background:transparent;padding:8px 4px;font-weight:600;color:var(--primary)" placeholder="my-brand">
+              <span style="color:var(--gray-500);font-size:.85rem;user-select:none">.${MAIN_DOMAIN}</span>
+            </div>
+            <div id="slugWarning" style="color:#dc2626;font-size:0.8rem;margin-top:4px;display:none;font-weight:600"></div>
+            <div class="hint" style="margin-top:6px">الرابط المباشر: <a id="slugPreview" href="${subdomainUrl(page.slug||'site')}" target="_blank" style="color:var(--primary);direction:ltr;display:inline-block">${page.slug||'my-site'}.${MAIN_DOMAIN}</a> 🔒 SSL مفعل</div>
           </div>
           <div class="settings-group">
             <label>Custom Domain</label>
@@ -737,6 +746,30 @@ const T = {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
               Delete This Site
             </button>
+          </div>
+        </div>
+        <div class="sidebar-content hidden" id="sidebarAi">
+          <div style="background:linear-gradient(135deg,#eef2ff,#faf5ff);border:1px solid #c7d2fe;padding:14px;border-radius:12px;margin-bottom:14px">
+            <div style="font-weight:800;color:var(--primary);margin-bottom:4px;display:flex;align-items:center;gap:6px">
+              <span>✨</span>
+              <span>SiteFlow AI — المساعد الذكي</span>
+            </div>
+            <p style="font-size:.78rem;color:var(--gray-600);line-height:1.5;margin:0">صف نشاطك التجاري أو فكرتك وسيقوم الذكاء الاصطناعي ببناء الهيكل والمحتوى واقتراح الألوان فوراً.</p>
+          </div>
+          <div class="settings-group">
+            <label style="font-weight:700">وصف النشاط أو فكرة الموقع</label>
+            <textarea class="input textarea" id="aiPromptInput" rows="3" placeholder="مثال: عيادة أسنان في القاهرة، متجر أزياء وإكسسوارات، مطعم برجر..."></textarea>
+          </div>
+          <button class="btn btn-primary w-full" id="aiGenerateBtn" style="font-weight:700;padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#8b5cf6)">
+            <span>🚀</span>
+            توليد الموقع الذكي بالكامل
+          </button>
+          <div id="aiResultArea" style="margin-top:14px;display:none;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px">
+            <div style="font-size:.82rem;font-weight:700;color:var(--gray-800);margin-bottom:8px" id="aiResultSummary"></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="btn btn-success btn-sm w-full" id="aiApplyAllBtn">تطبيق التصميم والأقسام فوراً</button>
+              <button class="btn btn-outline btn-sm w-full" id="aiApplyThemeBtn">تطبيق الألوان والخطوط فقط</button>
+            </div>
           </div>
         </div>
       </div>

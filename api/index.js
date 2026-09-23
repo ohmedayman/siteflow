@@ -94,6 +94,48 @@ function genId(prefix = 'sf') {
   return `${prefix}_${Date.now().toString(36)}_${crypto.randomBytes(4).toString('hex')}`;
 }
 
+// ── URL & Subdomain Security ──
+const RESERVED_SLUGS = new Set([
+  'admin', 'administrator', 'root', 'super', 'superuser',
+  'api', 'rest', 'graphql', 'webhook', 'webhooks',
+  'www', 'app', 'dashboard', 'panel', 'cpanel', 'whm',
+  'login', 'logout', 'signin', 'signout', 'signup', 'register', 'auth', 'oauth',
+  'mail', 'email', 'smtp', 'pop', 'imap', 'webmail', 'mx',
+  'ssl', 'cert', 'tls', 'autoconfig', 'autodiscover',
+  'support', 'help', 'status', 'billing', 'pay', 'checkout', 'cart',
+  'test', 'demo', 'staging', 'dev', 'development', 'preview',
+  'static', 'assets', 'cdn', 'media', 'files', 'upload', 'uploads',
+  'ns1', 'ns2', 'dns', 'ftp', 'ssh', 'git', 'svn',
+  'siteflow', 'vexonet', 'builder', 'editor', 'pages', 'settings',
+  'null', 'undefined', 'true', 'false', 'constructor', 'prototype', '__proto__'
+]);
+
+function sanitizeSlug(slug) {
+  if (!slug || typeof slug !== 'string') return '';
+  return slug
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 32);
+}
+
+function isReservedSlug(slug) {
+  if (!slug) return false;
+  return RESERVED_SLUGS.has(slug.toLowerCase().trim());
+}
+
+function isValidSlug(slug) {
+  if (!slug || typeof slug !== 'string') return false;
+  const s = slug.toLowerCase().trim();
+  if (s.length < 2 || s.length > 32) return false;
+  if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(s)) return false;
+  if (s.includes('--')) return false;
+  if (isReservedSlug(s)) return false;
+  return true;
+}
+
 // ── Read JSON body from incoming request ──
 async function parseBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -136,6 +178,9 @@ module.exports = async function handler(req, res) {
   if (!path.startsWith('/')) path = '/' + path;
 
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
   try {
     // ── Health ──
@@ -240,10 +285,26 @@ module.exports = async function handler(req, res) {
       if (req.method === 'POST') {
         const body = await parseBody(req);
         const title = (body.title || 'موقعي الجديد').trim();
-        const baseSlug = (body.slug || title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'site';
-        let slug = baseSlug;
-        while (DB.sites.find(s => s.slug === slug)) {
-          slug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
+        let slug;
+
+        if (body.slug) {
+          const reqSlug = sanitizeSlug(body.slug);
+          if (!isValidSlug(reqSlug)) {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ error: 'اسم الرابط غير متاح أو محجوز للنظام. يرجى اختيار اسم مكون من 2-32 حرفاً أو رقماً إنجليزياً (مثال: my-store).' }));
+          }
+          if (DB.sites.some(s => s.slug === reqSlug)) {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ error: 'هذا الرابط مستخدم بالفعل، يرجى اختيار رابط آخر.' }));
+          }
+          slug = reqSlug;
+        } else {
+          let baseSlug = sanitizeSlug(title) || 'site';
+          if (isReservedSlug(baseSlug) || baseSlug.length < 2) baseSlug = 'site';
+          slug = baseSlug;
+          while (DB.sites.find(s => s.slug === slug)) {
+            slug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
+          }
         }
 
         const newSite = {
@@ -295,9 +356,25 @@ module.exports = async function handler(req, res) {
 
       if (req.method === 'PUT') {
         const body = await parseBody(req);
+        let updatedSlug = DB.sites[siteIdx].slug;
+        if (body.slug && body.slug !== DB.sites[siteIdx].slug) {
+          const reqSlug = sanitizeSlug(body.slug);
+          if (!isValidSlug(reqSlug)) {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ error: 'اسم الرابط غير متاح أو محجوز للنظام. يجب أن يتكون من 2 إلى 32 حرفاً أو رقماً إنجليزياً.' }));
+          }
+          const duplicate = DB.sites.find(s => s.id !== siteId && s.slug === reqSlug);
+          if (duplicate) {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({ error: 'هذا الرابط مستخدم بالفعل من قبل موقع آخر.' }));
+          }
+          updatedSlug = reqSlug;
+        }
+
         DB.sites[siteIdx] = {
           ...DB.sites[siteIdx],
           ...body,
+          slug: updatedSlug,
           updatedAt: new Date().toISOString()
         };
         res.statusCode = 200;
@@ -334,8 +411,9 @@ module.exports = async function handler(req, res) {
     // ── Public Site Fetch (/p/:slug) ──
     const publicMatch = path.match(/^\/p\/([^\/]+)$/);
     if (publicMatch && req.method === 'GET') {
-      const slug = decodeURIComponent(publicMatch[1]).toLowerCase();
-      const site = DB.sites.find(s => (s.slug.toLowerCase() === slug || s.customDomain?.toLowerCase() === slug));
+      const rawSlug = decodeURIComponent(publicMatch[1]).toLowerCase();
+      const slug = sanitizeSlug(rawSlug);
+      const site = DB.sites.find(s => (s.slug.toLowerCase() === slug || (s.customDomain && s.customDomain.toLowerCase() === rawSlug)));
       if (!site || !site.published) {
         res.statusCode = 404;
         return res.end(JSON.stringify({ error: 'Site not found or not published' }));

@@ -562,18 +562,25 @@ const Dash = {
 document.addEventListener('DOMContentLoaded', async () => {
   // Detect subdomain — render public site directly ONLY for explicit subdomains
   const host = window.location.hostname.toLowerCase()
+  const mainDomain = (window.MAIN_DOMAIN || 'siteflow.vexonet.online').toLowerCase()
   let isSubdomain = false
   let targetSlug = ''
 
-  if (host.endsWith('.siteflow.vexonet.online') && host !== 'siteflow.vexonet.online') {
+  if (host !== mainDomain && host.endsWith('.' + mainDomain)) {
     isSubdomain = true
-    targetSlug = host.replace('.siteflow.vexonet.online', '').split('.').pop()
-  } else if (host.endsWith('.siteflow.app') && host !== 'siteflow.app') {
+    targetSlug = sanitizeSlug(host.slice(0, -(mainDomain.length + 1)).replace(/^www\./, ''))
+  } else if (host !== 'siteflow.app' && host.endsWith('.siteflow.app')) {
     isSubdomain = true
-    targetSlug = host.replace('.siteflow.app', '').split('.').pop()
+    targetSlug = sanitizeSlug(host.slice(0, -('.siteflow.app'.length)).replace(/^www\./, ''))
   }
 
-  if (isSubdomain && targetSlug && targetSlug !== 'www' && targetSlug !== 'api') {
+  if (isSubdomain && targetSlug) {
+    if (isReservedSlug(targetSlug)) {
+      // Reserved subdomain — redirect to main platform domain
+      window.location.href = `https://${mainDomain}/`
+      return
+    }
+
     document.querySelector('.app-header')?.classList.add('hidden')
     const app = document.getElementById('app')
     if (app) app.innerHTML = T.loading()

@@ -229,6 +229,7 @@ const Builder = {
     this._bindTheme()
     this._bindSeo()
     this._bindSettings()
+    this._bindAi()
   },
 
   _bindToolbar() {
@@ -511,11 +512,69 @@ const Builder = {
   _bindSettings() {
     document.getElementById('pageTitleInput')?.addEventListener('input', e => { this.page.title = e.target.value; this._saveLater(); const tb = document.querySelector('.builder-toolbar .truncate'); if (tb) tb.textContent = e.target.value })
     document.getElementById('pageSlugInput')?.addEventListener('input', e => {
-      this.page.slug = e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase(); const p = document.getElementById('slugPreview')
-      if (p) p.textContent = this.page.slug + '.' + MAIN_DOMAIN; this._saveLater()
+      const clean = sanitizeSlug(e.target.value)
+      const p = document.getElementById('slugPreview')
+      const warn = document.getElementById('slugWarning')
+
+      if (isReservedSlug(clean)) {
+        if (warn) { warn.textContent = '⚠️ هذا الاسم محجوز للنظام ولا يمكن استخدامه'; warn.style.display = 'block' }
+      } else if (clean.length > 0 && !isValidSlug(clean)) {
+        if (warn) { warn.textContent = '⚠️ اسم الرابط يجب ألا يبدأ أو ينتهي بشرطة وبدون علامات خاصة'; warn.style.display = 'block' }
+      } else {
+        if (warn) warn.style.display = 'none'
+        this.page.slug = clean
+        this._saveLater()
+      }
+      if (p) p.textContent = (clean || 'my-site') + '.' + (window.MAIN_DOMAIN || 'siteflow.vexonet.online')
     })
     document.getElementById('customDomainInput')?.addEventListener('input', e => { this.page.customDomain = e.target.value; this._saveLater() })
     document.getElementById('deleteSiteBtn')?.addEventListener('click', () => this._deleteSite())
+  },
+
+  _bindAi() {
+    let generatedData = null
+    document.getElementById('aiGenerateBtn')?.addEventListener('click', () => {
+      const prompt = document.getElementById('aiPromptInput')?.value.trim()
+      if (!prompt) { Toast.show('يرجى كتابة وصف لنشاطك التجاري أو فكرة الموقع أولاً', 'error'); return }
+
+      const btn = document.getElementById('aiGenerateBtn')
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ جاري التحليل والتصميم الذكي...' }
+
+      setTimeout(() => {
+        generatedData = typeof SiteFlowAI !== 'undefined' ? SiteFlowAI.generateSite(prompt) : null
+        if (btn) { btn.disabled = false; btn.innerHTML = '<span>🚀</span> توليد الموقع الذكي بالكامل' }
+        if (!generatedData) return
+
+        const resArea = document.getElementById('aiResultArea')
+        const summary = document.getElementById('aiResultSummary')
+        if (resArea && summary) {
+          summary.innerHTML = `تم ابتكار: <strong>${generatedData.title}</strong> (${generatedData.industry}) بـ ${generatedData.sections.length} أقسام متكاملة ومحتوى كامل!`
+          resArea.style.display = 'block'
+        }
+        Toast.show('تم التوليد بنجاح! يمكنك تطبيق التصميم فوراً على موقعك.', 'success')
+      }, 600)
+    })
+
+    document.getElementById('aiApplyAllBtn')?.addEventListener('click', () => {
+      if (!generatedData) return
+      this._pushUndo()
+      this.page.title = generatedData.title
+      this.page.theme = generatedData.theme
+      this.page.seo = generatedData.seo
+      this.page.sections = generatedData.sections
+      this._saveNow()
+      this._render()
+      Toast.show('تم تطبيق موقع SiteFlow الذكي بنجاح! 🎉', 'success')
+    })
+
+    document.getElementById('aiApplyThemeBtn')?.addEventListener('click', () => {
+      if (!generatedData) return
+      this._pushUndo()
+      this.page.theme = generatedData.theme
+      this._saveNow()
+      this._render()
+      Toast.show('تم تطبيق ألوان وخطوط القطاع بنجاح!', 'success')
+    })
   },
 
   _updateSeoPreview() {
@@ -539,10 +598,15 @@ const Builder = {
   },
 
   async _publish() {
+    if (!isValidSlug(this.page.slug) || isReservedSlug(this.page.slug)) {
+      Toast.show('اسم الرابط غير متاح أو محجوز للنظام. يرجى تعديله في إعدادات الموقع قبل النشر.', 'error')
+      return
+    }
     try {
       await this._saveNow()
       this.page = await API.publishSite(this.page.id)
-      Toast.show('Published! Visit ' + subdomainUrl(this.page.slug), 'success')
+      const liveUrl = subdomainUrl(this.page.slug)
+      Toast.show(`تم نشر موقعك بنجاح! 🚀 رابط الموقع: <a href="${liveUrl}" target="_blank" style="color:#fff;text-decoration:underline;font-weight:700">${liveUrl}</a>`, 'success')
       const b = document.querySelector('.badge-status'); if (b) { b.textContent = 'Published'; b.style.background = '#d1fae5'; b.style.color = '#065f46' }
       const btn = document.getElementById('publishBtn'); if (btn) btn.textContent = 'Update'
     } catch (e) { Toast.show(e.message, 'error') }

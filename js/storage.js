@@ -7,14 +7,59 @@ var IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostn
 var API_BASE = IS_LOCAL ? 'http://localhost:5000/api' : '/api';
 var PROD_API = 'https://siteflow-api.onrender.com/api';
 var BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://siteflow-api.onrender.com';
-function subdomainUrl(slug) {
-  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !window.location.hostname.endsWith('siteflow.vexonet.online')) {
-    return `${window.location.origin}/#/p/${slug}`;
-  }
-  return `${window.location.origin}/#/p/${slug}`;
+var RESERVED_SLUGS = new Set([
+  'admin', 'administrator', 'root', 'super', 'superuser',
+  'api', 'rest', 'graphql', 'webhook', 'webhooks',
+  'www', 'app', 'dashboard', 'panel', 'cpanel', 'whm',
+  'login', 'logout', 'signin', 'signout', 'signup', 'register', 'auth', 'oauth',
+  'mail', 'email', 'smtp', 'pop', 'imap', 'webmail', 'mx',
+  'ssl', 'cert', 'tls', 'autoconfig', 'autodiscover',
+  'support', 'help', 'status', 'billing', 'pay', 'checkout', 'cart',
+  'test', 'demo', 'staging', 'dev', 'development', 'preview',
+  'static', 'assets', 'cdn', 'media', 'files', 'upload', 'uploads',
+  'ns1', 'ns2', 'dns', 'ftp', 'ssh', 'git', 'svn',
+  'siteflow', 'vexonet', 'builder', 'editor', 'pages', 'settings',
+  'null', 'undefined', 'true', 'false', 'constructor', 'prototype', '__proto__'
+]);
+
+function sanitizeSlug(slug) {
+  if (!slug || typeof slug !== 'string') return '';
+  return slug
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 32);
 }
+
+function isReservedSlug(slug) {
+  if (!slug) return false;
+  return RESERVED_SLUGS.has(slug.toLowerCase().trim());
+}
+
+function isValidSlug(slug) {
+  if (!slug || typeof slug !== 'string') return false;
+  const s = slug.toLowerCase().trim();
+  if (s.length < 2 || s.length > 32) return false;
+  if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(s)) return false;
+  if (s.includes('--')) return false;
+  if (isReservedSlug(s)) return false;
+  return true;
+}
+
+function subdomainUrl(slug) {
+  if (!slug) return '';
+  const clean = sanitizeSlug(slug);
+  return `https://${clean}.${window.MAIN_DOMAIN || 'siteflow.vexonet.online'}`;
+}
+
 function subdomainHostUrl(slug) {
-  return `${window.location.protocol}//${slug}.${window.MAIN_DOMAIN || 'siteflow.vexonet.online'}`;
+  return subdomainUrl(slug);
+}
+
+function internalPreviewUrl(slug) {
+  return `${window.location.origin}/#/p/${sanitizeSlug(slug)}`;
 }
 function getDaysLeft(item, plan = 'free') {
   if (plan && plan !== 'free') return 999;
