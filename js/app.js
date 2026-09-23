@@ -57,6 +57,7 @@ const Router = {
       document.title = s.seo?.title||s.title
       document.getElementById('app').innerHTML = T.publicPage(s)
       this._bindPublicContactForm(s.slug)
+      this._bindPublicAiChat(s)
     } catch(e) {
       document.getElementById('app').innerHTML = T.notFound('Not Published', 'This site has not been published yet.')
     }
@@ -426,6 +427,60 @@ const Router = {
         if (msgEl) { msgEl.style.display = 'block'; msgEl.style.color = '#dc2626'; msgEl.textContent = 'Failed to send' }
       }
     })
+  },
+
+  _bindPublicAiChat(site) {
+    const toggleBtn = document.getElementById('sfAiChatToggle')
+    const closeBtn = document.getElementById('sfAiChatClose')
+    const box = document.getElementById('sfAiChatBox')
+    const sendBtn = document.getElementById('sfAiChatSend')
+    const input = document.getElementById('sfAiChatInput')
+    const messages = document.getElementById('sfAiChatMessages')
+
+    if (!toggleBtn || !box) return
+
+    toggleBtn.addEventListener('click', () => {
+      const isVisible = box.style.display === 'flex'
+      box.style.display = isVisible ? 'none' : 'flex'
+      if (!isVisible && input) setTimeout(() => input.focus(), 100)
+    })
+
+    closeBtn?.addEventListener('click', () => {
+      box.style.display = 'none'
+    })
+
+    const doSend = () => {
+      const q = input?.value?.trim()
+      if (!q || !messages) return
+
+      const userBubble = document.createElement('div')
+      userBubble.style.cssText = 'background:var(--p-color, #6366f1);color:#fff;border-radius:12px 12px 0 12px;padding:10px 14px;max-width:85%;align-self:flex-end;word-break:break-word;'
+      userBubble.textContent = q
+      messages.appendChild(userBubble)
+      input.value = ''
+      messages.scrollTop = messages.scrollHeight
+
+      const typing = document.createElement('div')
+      typing.style.cssText = 'background:#fff;border:1px solid #e2e8f0;border-radius:12px 12px 12px 0;padding:8px 12px;max-width:85%;align-self:flex-start;color:var(--gray-500);font-size:.78rem;'
+      typing.textContent = 'جاري التفكير...'
+      messages.appendChild(typing)
+      messages.scrollTop = messages.scrollHeight
+
+      setTimeout(() => {
+        typing.remove()
+        const botReply = typeof SiteFlowAI !== 'undefined' ? SiteFlowAI.generateChatbotResponse(site, q) : 'شكراً لتواصلك معنا!'
+        const botBubble = document.createElement('div')
+        botBubble.style.cssText = 'background:#fff;border:1px solid #e2e8f0;border-radius:12px 12px 12px 0;padding:10px 14px;max-width:85%;align-self:flex-start;white-space:pre-line;line-height:1.5;'
+        botBubble.textContent = botReply
+        messages.appendChild(botBubble)
+        messages.scrollTop = messages.scrollHeight
+      }, 500)
+    }
+
+    sendBtn?.addEventListener('click', doSend)
+    input?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); doSend() }
+    })
   }
 }
 
@@ -590,6 +645,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.title = site.seo?.title || site.title
         app.innerHTML = T.publicPage(site)
         Router._bindPublicContactForm(targetSlug)
+        Router._bindPublicAiChat(site)
         if (API.mode !== 'local') {
           try { await API._fetch('/p/' + targetSlug + '/view', { method: 'POST', body: JSON.stringify({ ip: '', ua: navigator.userAgent }) }) } catch (e) {}
         }

@@ -636,6 +636,10 @@ const T = {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           Preview
         </button>
+        <button class="btn btn-ghost btn-sm" id="exportBtn" title="تصدير كود HTML كامل للموقع">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          تصدير HTML
+        </button>
         <button class="btn btn-ghost btn-sm" id="saveBtn" title="Save (Ctrl+S)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Save
@@ -707,17 +711,24 @@ const T = {
           </div>
         </div>
         <div class="sidebar-content hidden" id="sidebarSeo">
+          <div style="background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border:1px solid #a7f3d0;padding:12px;border-radius:10px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-weight:700;font-size:.85rem;color:#065f46">🎯 فحص صحة الـ SEO</div>
+              <div style="font-size:.75rem;color:#047857" id="seoScoreLabel">جاهز للفحص والتسريع</div>
+            </div>
+            <button class="btn btn-sm" id="aiOptimizeSeoBtn" style="background:#059669;color:#fff;font-weight:700;border-radius:8px">✨ تحسين تلقائي بالـ AI</button>
+          </div>
           <div class="seo-field">
-            <label>SEO Title</label>
-            <input class="input" id="seoTitle" value="${page.seo?.title||''}" maxlength="60" placeholder="Page title for search engines">
-            <div class="seo-preview">
+            <label>عنوان محركات البحث (SEO Title - 55-60 حرف)</label>
+            <input class="input" id="seoTitle" value="${page.seo?.title||''}" maxlength="70" placeholder="عنوان جذاب لمحركات البحث Google">
+            <div class="seo-preview" style="margin-top:8px">
               <div class="url">${page.slug||'my-site'}.${MAIN_DOMAIN}</div>
               <div class="title" id="seoTitlePreview">${page.seo?.title||page.title||'My Site'}</div>
             </div>
           </div>
           <div class="seo-field">
-            <label>Meta Description</label>
-            <textarea class="input textarea" id="seoDesc" maxlength="160" placeholder="Brief description for search results">${page.seo?.description||''}</textarea>
+            <label>الوصف التعريفي (Meta Description - 150-160 حرف)</label>
+            <textarea class="input textarea" id="seoDesc" maxlength="170" placeholder="وصف تسويقي يلخص نشاطك ويحفز الزوار على النقر">${page.seo?.description||''}</textarea>
             <div class="seo-counter" id="seoDescCounter">${(page.seo?.description||'').length} / 160</div>
           </div>
         </div>
@@ -834,6 +845,35 @@ const T = {
     <div class="public-page" style="--p-color:${t.color};--p-font:${t.font};font-family:${t.font},sans-serif">
       <div class="public-nav"><span class="brand" style="color:${t.color}">${page.title}</span><span style="font-size:.75rem;color:var(--gray-400)">مطور بواسطة SiteFlow</span></div>
       <div class="public-content">${page.sections.map(s => { switch(s.type){ case'hero':return T.pubHero(s.data,t); case'about':return T.pubAbout(s.data,t); case'gallery':return T.pubGallery(s.data,t); case'contact':return T.pubContact(s.data,t); case'services':return T.pubServices(s.data,t); case'testimonials':return T.pubTestimonials(s.data,t); case'pricing':return T.pubPricing(s.data,t); case'faq':return T.pubFaq(s.data,t); case'team':return T.pubTeam(s.data,t); case'footer':return T.pubFooter(s.data,t); case'blog':return T.pubBlog(s.data,t); case'portfolio':return T.pubPortfolio(s.data,t); case'counters':return T.pubCounters(s.data,t); case'timeline':return T.pubTimeline(s.data,t); case'menu':return T.pubMenu(s.data,t); case'location':return T.pubLocation(s.data,t); case'features':return T.pubFeatures(s.data,t); case'stats':return T.pubStats(s.data,t); case'cta':return T.pubCta(s.data,t); default:return ''} }).join('')}</div>
+      
+      <!-- Floating AI Chatbot Widget for Visitors -->
+      <div id="sfAiChatWidget" style="position:fixed;bottom:24px;left:24px;z-index:9999;font-family:inherit" dir="rtl">
+        <button id="sfAiChatToggle" style="background:${t.color};color:#fff;border:none;border-radius:50px;padding:12px 20px;font-weight:700;box-shadow:0 8px 25px rgba(0,0,0,0.18);cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.9rem">
+          <span>🤖</span>
+          <span>مساعد ${page.title} الذكي</span>
+        </button>
+        <div id="sfAiChatBox" style="display:none;position:absolute;bottom:60px;left:0;width:340px;height:450px;background:#fff;border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,0.18);border:1px solid #e2e8f0;flex-direction:column;overflow:hidden">
+          <div style="background:${t.color};color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:1.2rem">🤖</span>
+              <div>
+                <div style="font-weight:700;font-size:.9rem">${page.title}</div>
+                <div style="font-size:.72rem;opacity:.9">مساعد ذكي مباشر للرد على الاستفسارات</div>
+              </div>
+            </div>
+            <button id="sfAiChatClose" style="background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer">✕</button>
+          </div>
+          <div id="sfAiChatMessages" style="flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;font-size:.85rem;background:#f8fafc">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px 12px 12px 0;padding:10px 14px;max-width:85%;align-self:flex-start">
+              مرحباً بك في <strong>${page.title}</strong>! كيف يمكنني مساعدتك اليوم؟ يمكنك سؤالي عن الأسعار، الخدمات، أو كيفية التواصل. 😊
+            </div>
+          </div>
+          <div style="padding:10px 14px;border-top:1px solid #e2e8f0;display:flex;gap:8px;background:#fff">
+            <input type="text" id="sfAiChatInput" placeholder="اكتب سؤالك هنا..." style="flex:1;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:.85rem;outline:none">
+            <button id="sfAiChatSend" style="background:${t.color};color:#fff;border:none;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer">إرسال</button>
+          </div>
+        </div>
+      </div>
     </div>`
   },
   pubHero(d,t) { return `<div class="editable-section hero-section" style="background:linear-gradient(135deg,${t.color}11,#fff)">${d.image?`<div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 20px ${t.color}33"><img src="${d.image}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<h1 style="color:${t.color}">${d.heading}</h1><p>${d.description}</p></div>` },
@@ -851,7 +891,7 @@ const T = {
   pubPortfolio(d,t) { const items=d.items||[]; return `<div class="editable-section portfolio-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="portfolio-grid">${items.map(item=>`<div class="portfolio-card"><div class="portfolio-img" style="background:var(--gray-100);height:160px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--gray-400)">${item.image?`<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`:ICONS.wrap(ICONS.folder,40)}</div><h3>${item.title}</h3><p>${item.desc||''}</p></div>`).join('')}</div></div>` },
   pubCounters(d,t) { const items=d.items||[]; return `<div class="editable-section counters-section" style="background:${t.color}11"><h2 style="color:${t.color}">${d.heading}</h2><div class="counters-grid">${items.map(item=>`<div class="counter-card"><div class="counter-number" style="color:${t.color}">${item.number}</div><div class="counter-label">${item.label}</div></div>`).join('')}</div></div>` },
   pubTimeline(d,t) { const items=d.items||[]; return `<div class="editable-section timeline-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="timeline">${items.map(item=>`<div class="timeline-item"><div class="timeline-dot" style="background:${t.color}"></div><div class="timeline-content"><div class="timeline-year" style="color:${t.color}">${item.year||''}</div><h3>${item.title}</h3><p>${item.desc||''}</p></div></div>`).join('')}</div></div>` },
-  pubMenu(d,t) { const items=d.items||[]; const cats=[...new Set(items.map(i=>i.category||'Main'))]; return `<div class="editable-section menu-section"><h2 style="color:${t.color}">${d.heading}</h2>${cats.map(cat=>`<div class="menu-category"><h3 style="color:${t.color}">${cat}</h3>${items.filter(i=>(i.category||'Main')===cat).map(item=>`<div class="menu-item"><div class="menu-item-info"><h4>${item.title}</h4><p>${item.desc||''}</p></div><span class="menu-price" style="color:${t.color}">${item.price||''}</span></div>`).join('')}</div>`).join('')}</div></div>` },
+  pubMenu(d,t) { const items=d.items||[]; const cats=[...new Set(items.map(i=>i.category||'Main'))]; return `<div class="editable-section menu-section"><h2 style="color:${t.color}">${d.heading}</h2>${cats.map(cat=>`<div class="menu-category"><h3 style="color:${t.color}">${cat}</h3>${items.filter(i=>(i.category||'Main')===cat).map(item=>`<div class="menu-item"><div class="menu-item-info"><h4>${item.title}</h4><p>${item.desc||''}</p></div><div style="display:flex;align-items:center;gap:12px"><span class="menu-price" style="color:${t.color};font-weight:700">${item.price||''}</span><a href="https://wa.me/?text=${encodeURIComponent('مرحباً، أود طلب: ' + item.title + (item.price ? ' بسعر ' + item.price : ''))}" target="_blank" class="btn btn-sm" style="background:#25d366;color:#fff;border-radius:8px;padding:6px 12px;font-size:.78rem;font-weight:700;display:inline-flex;align-items:center;gap:4px">طلب عبر واتساب 💬</a></div></div>`).join('')}</div>`).join('')}</div></div>` },
   pubLocation(d,t) { return `<div class="editable-section location-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="location-info"><p>${ICONS.wrap(ICONS.mapPin,16)} Address: ${d.address||''}</p><p>${ICONS.wrap(ICONS.phone,16)} Phone: ${d.phone||''}</p><p>${ICONS.wrap(ICONS.clock,16)} Hours: ${d.hours||''}</p></div></div>` },
   pubFeatures(d,t) { const items=d.items||[]; return `<div class="editable-section" style="padding:60px 40px"><h2 style="text-align:center;color:${t.color}">${d.heading||'Features'}</h2><div class="services-grid">${items.map(item=>`<div class="service-card"><h3>${item.title}</h3><p>${item.desc}</p></div>`).join('')}</div></div>` },
   pubStats(d,t) { const items=d.items||[]; return `<div class="editable-section" style="padding:60px 40px;text-align:center;background:${t.color}11"><h2 style="color:${t.color}">${d.heading||'Statistics'}</h2><div class="counters-grid">${items.map(item=>`<div class="counter-card"><div class="counter-number" style="color:${t.color}">${item.number}</div><div class="counter-label">${item.label}</div></div>`).join('')}</div></div>` },

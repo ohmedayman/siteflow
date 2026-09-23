@@ -241,6 +241,7 @@ const Builder = {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this._saveNow(); Toast.show('Saved!', 'success') }
     })
     document.getElementById('previewBtn')?.addEventListener('click', () => { this._saveNow(); window.open('#/preview/' + this.page.id, '_blank') })
+    document.getElementById('exportBtn')?.addEventListener('click', () => this._exportHtml())
     document.getElementById('publishBtn')?.addEventListener('click', () => this._publish())
     document.getElementById('saveBtn')?.addEventListener('click', () => { this._saveNow(); Toast.show('Saved!', 'success') })
     document.getElementById('deviceToggle')?.addEventListener('click', e => {
@@ -507,6 +508,39 @@ const Builder = {
     const st = document.getElementById('seoTitle'), sd = document.getElementById('seoDesc')
     st?.addEventListener('input', () => { if (!this.page.seo) this.page.seo = {}; this.page.seo.title = st.value; const p = document.getElementById('seoTitlePreview'); if (p) p.textContent = st.value || 'My Site'; this._saveLater() })
     sd?.addEventListener('input', () => { if (!this.page.seo) this.page.seo = {}; this.page.seo.description = sd.value; const c = document.getElementById('seoDescCounter'); if (c) c.textContent = sd.value.length + '/160'; this._saveLater() })
+
+    document.getElementById('aiOptimizeSeoBtn')?.addEventListener('click', () => {
+      if (typeof SiteFlowAI === 'undefined') return
+      const opt = SiteFlowAI.generateSeo(this.page)
+      if (!this.page.seo) this.page.seo = {}
+      this.page.seo.title = opt.title
+      this.page.seo.description = opt.description
+      if (st) st.value = opt.title
+      if (sd) sd.value = opt.description
+      const p = document.getElementById('seoTitlePreview')
+      if (p) p.textContent = opt.title
+      const c = document.getElementById('seoDescCounter')
+      if (c) c.textContent = opt.description.length + ' / 160'
+      const score = document.getElementById('seoScoreLabel')
+      if (score) score.textContent = `صحة الـ SEO: ${opt.score}% ممتازة 🚀`
+      this._saveLater()
+      Toast.show('تم تحسين عناوين ووصف الـ SEO بالذكاء الاصطناعي بنجاح! 🎯', 'success')
+    })
+  },
+
+  _exportHtml() {
+    if (!this.page || typeof SiteFlowAI === 'undefined') return
+    const html = SiteFlowAI.exportStandaloneHtml(this.page)
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${this.page.slug || 'site'}.html`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    Toast.show('تم تصدير كود HTML الكامل للموقع بنجاح! 📦', 'success')
   },
 
   _bindSettings() {

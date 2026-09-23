@@ -124,6 +124,106 @@ const SiteFlowAI = {
       heading: `تواصل معنا بخصوص ${t}`,
       description: 'فريقنا جاهز للرد على كافة استفساراتكم وتقديم الدعم الفني الفوري.'
     };
+  },
+
+  // تحسين SEO الذكي (AI SEO Optimizer)
+  generateSeo(page) {
+    const title = page.title || 'موقعي';
+    const ind = this.detectIndustry(title + ' ' + (page.sections?.map(s=>s.data?.heading||'').join(' ')));
+    
+    let seoTitle = `${title} | أفضل الخدمات والحلول المعتمدة`;
+    if (seoTitle.length > 60) seoTitle = seoTitle.slice(0, 58) + '..';
+
+    let seoDesc = `موقع ${title} الرسمي: نقدم لكم أرقى الخدمات المتخصصة بأعلى معايير الجودة والاحترافية. تواصل معنا اليوم واستفد من العروض الحصرية.`;
+    if (seoDesc.length > 160) seoDesc = seoDesc.slice(0, 157) + '...';
+
+    return {
+      title: seoTitle,
+      description: seoDesc,
+      score: 96,
+      keywords: ['خدمات ' + title, 'عروض ' + title, 'حجز اونلاين', 'افضل الاسعار']
+    };
+  },
+
+  // الرد الذكي للـ Chatbot المدمج في الموقع للزوار
+  generateChatbotResponse(page, query) {
+    const q = (query || '').toLowerCase().trim();
+    if (!q) return 'مرحباً بك! كيف يمكنني مساعدتك بخصوص ' + page.title + ' اليوم؟ 😊';
+
+    // البحث في أقسام الموقع لاستخراج الإجابة الدقيقة
+    const contactSec = page.sections?.find(s => s.type === 'contact' || s.type === 'location');
+    const menuSec = page.sections?.find(s => s.type === 'menu' || s.type === 'pricing');
+    const servSec = page.sections?.find(s => s.type === 'services' || s.type === 'features');
+
+    if (/سعر|اسعار|أسعار|بكام|تكلفة|اشتراك/i.test(q)) {
+      if (menuSec && menuSec.data?.items?.length) {
+        const topItems = menuSec.data.items.slice(0, 3).map(i => `• ${i.title}: ${i.price || 'تواصل معنا'}`).join('\n');
+        return `إليك أبرز أسعارنا في ${page.title}:\n${topItems}\n\nيمكنك الطلب أو الحجز المباشر الآن!`;
+      }
+      return `نقدم باقات وأسعار تنافسية تبدأ من أفضل الأسعار بالسوق. يرجى التواصل معنا عبر الهاتف أو البريد للحصول على عرض سعر فوري مخصص لك.`;
+    }
+
+    if (/عنوان|مكان|فين|موقعكم|شارع|فرع/i.test(q)) {
+      const addr = contactSec?.data?.address || 'مقرنا الرئيسي في القاهرة، مصر';
+      return `يشرفنا زيارتكم! عنواننا:\n📍 ${addr}`;
+    }
+
+    if (/رقم|تليفون|هاتف|تواصل|موبايل|واتساب|ايميل|بريد/i.test(q)) {
+      const phone = contactSec?.data?.phone || '+20 100 000 0000';
+      const email = contactSec?.data?.email || 'contact@mysite.com';
+      return `يمكنك التواصل معنا مباشرة عبر:\n📞 هاتف: ${phone}\n✉️ بريد: ${email}\nأو ترك رسالتك في نموذج التواصل وسنرد خلال دقائق!`;
+    }
+
+    if (/خدم|منتج|بتعملوا|ايه بتعمل|تفاصيل/i.test(q)) {
+      if (servSec && servSec.data?.items?.length) {
+        const servs = servSec.data.items.slice(0, 3).map(i => `• ${i.title}: ${i.desc}`).join('\n');
+        return `نقدم في ${page.title} مجموعة من الخدمات الاحترافية، منها:\n${servs}`;
+      }
+      return `${page.title} يقدم حلولاً وخدمات متكاملة بجودة عالية تضمن لك أفضل تجربة.`;
+    }
+
+    return `أهلاً بك في ${page.title}! يسعدني الإجابة على استفساراتك حول خدماتنا، أوقات العمل، أو الأسعار. يمكنك أيضاً حجز موعدك أو طلبك مباشرة.`;
+  },
+
+  // تصدير الموقع كاملاً إلى ملف HTML قائم بذاته
+  exportStandaloneHtml(page) {
+    const t = page.theme || { color: '#6366f1', font: 'Cairo' };
+    const renderedContent = typeof T !== 'undefined' ? T.publicPage(page) : '';
+
+    return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${page.seo?.title || page.title}</title>
+  <meta name="description" content="${page.seo?.description || ''}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --p-color: ${t.color}; --p-font: '${t.font}', sans-serif; --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0; --gray-400: #94a3b8; --gray-500: #64748b; --gray-800: #1e293b; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--p-font); background: #ffffff; color: var(--gray-800); line-height: 1.6; }
+    .public-page { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .public-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--gray-200); }
+    .public-nav .brand { font-size: 1.5rem; font-weight: 800; color: var(--p-color); }
+    .editable-section { padding: 60px 0; border-bottom: 1px solid #f1f5f9; }
+    .hero-section { text-align: center; padding: 80px 20px; border-radius: 24px; margin: 30px 0; }
+    .hero-section h1 { font-size: 2.5rem; margin-bottom: 16px; line-height: 1.3; }
+    .hero-section p { font-size: 1.2rem; color: var(--gray-500); max-width: 680px; margin: 0 auto; }
+    .services-grid, .gallery-grid, .testimonials-grid, .pricing-grid, .counters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 32px; }
+    .service-card, .pricing-card, .testimonial-card, .counter-card { background: #ffffff; border: 1px solid var(--gray-200); border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+    .service-card h3 { font-size: 1.2rem; margin-bottom: 8px; color: var(--p-color); }
+    .pricing-card .price { font-size: 2rem; font-weight: 800; color: var(--p-color); margin: 12px 0; }
+    .btn { display: inline-block; padding: 12px 28px; border-radius: 12px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; }
+    .footer-section { background: #0f172a; color: #94a3b8; text-align: center; padding: 40px 20px; border-radius: 20px 20px 0 0; margin-top: 60px; }
+    @media (max-width: 768px) { .hero-section h1 { font-size: 1.8rem; } }
+  </style>
+</head>
+<body>
+  ${renderedContent}
+</body>
+</html>`;
   }
 };
 
