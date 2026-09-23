@@ -315,11 +315,6 @@ const API = {
     }
     return LocalDB.getPageBySlug(slug)
   },
-      if (r.ok) return (await r.json())
-    }
-    if (mode === 'supabase') { try { const s=await SB.getPublicPage(slug); if(s) return s } catch {} }
-    return LocalDB.getPageBySlug(slug)
-  },
 
   async getPlans() {
     const mode = await this._init()
