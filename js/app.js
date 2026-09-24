@@ -718,8 +718,22 @@ const Router = {
           return
         }
         if (err) {
-          err.textContent = e.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'
+          const msg = e.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'
+          const isCredErr = e.code === 'INVALID_CREDENTIALS' || msg.includes('غير صحيحة')
+          err.innerHTML = `
+            <div style="line-height:1.5">${msg}</div>
+            ${isCredErr ? `
+              <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+                <button type="button" class="btn btn-sm" style="font-size:0.8rem;padding:4px 10px;background:#fff;border:1px solid #f87171;color:#b91c1c;border-radius:6px;cursor:pointer" id="btnGoOtp">
+                  🔑 إدخال رمز تفعيل OTP
+                </button>
+              </div>
+            ` : ''}
+          `
           err.style.display = 'block'
+          document.getElementById('btnGoOtp')?.addEventListener('click', () => {
+            showOtp(email)
+          })
         }
       } finally {
         btn.disabled = false; btn.textContent = 'تسجيل الدخول'
@@ -736,7 +750,7 @@ const Router = {
 
       if (passwordConfirm && password !== passwordConfirm) {
         if (err) {
-          err.textContent = 'كلمات المرور غير متطابقة! يرجى إعادة كتابتها بدقة.'
+          err.innerHTML = 'كلمات المرور غير متطابقة! يرجى إعادة كتابتها بدقة.'
           err.style.display = 'block'
         }
         return
@@ -756,7 +770,51 @@ const Router = {
         Router.navigate('dashboard')
       } catch (e) {
         if (err) {
-          err.textContent = e.message || 'فشل إنشاء الحساب. قد يكون البريد مسجلاً بالفعل.'
+          const rawMsg = e.message || ''
+          const isRateLimit = e.code === 'RATE_LIMIT_EXCEEDED' || rawMsg.toLowerCase().includes('rate limit') || rawMsg.includes('استهلاك الحد')
+          const isEmailExists = e.code === 'EMAIL_EXISTS' || rawMsg.toLowerCase().includes('already') || rawMsg.includes('مسجل بالفعل')
+          
+          if (isRateLimit) {
+            err.innerHTML = `
+              <div style="text-align:right;line-height:1.5">
+                <div style="font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px">
+                  <span>⚠️</span> تم استهلاك الحد المجاني لإرسال الإيميلات في Supabase
+                </div>
+                <div style="font-size:0.83rem;margin-bottom:8px;color:#991b1b">
+                  المشروع المجاني في Supabase يحدد 3-4 إيميلات فقط في الساعة لتجنب السبام.
+                </div>
+                <div style="background:#fff;padding:8px 12px;border-radius:8px;border:1px solid #fecaca;font-size:0.82rem;color:#1e293b;margin-bottom:8px;line-height:1.6">
+                  <strong>💡 الحل الفوري (دون انتظار الساعة):</strong><br>
+                  من لوحة Supabase > <code>Authentication</code> > <code>Providers</code> > <code>Email</code>:<br>
+                  قم بإلغاء تفعيل <strong>Confirm email</strong> وحفظ التغييرات.
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button type="button" class="btn btn-sm" id="btnGoOtpFromRate" style="font-size:0.8rem;padding:4px 10px;background:#fff;border:1px solid #cbd5e1;color:#0f172a;border-radius:6px;cursor:pointer">
+                    🔑 معي رمز OTP لتفعيل حسابي
+                  </button>
+                </div>
+              </div>
+            `
+            document.getElementById('btnGoOtpFromRate')?.addEventListener('click', () => {
+              showOtp(email)
+            })
+          } else if (isEmailExists) {
+            err.innerHTML = `
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+                <span>هذا البريد مسجل بالفعل في النظام.</span>
+                <button type="button" class="btn btn-sm" id="btnSwitchToLogin" style="font-size:0.8rem;padding:4px 10px;background:#fff;border:1px solid #f87171;color:#b91c1c;border-radius:6px;cursor:pointer">
+                  تسجيل الدخول الآن ←
+                </button>
+              </div>
+            `
+            document.getElementById('btnSwitchToLogin')?.addEventListener('click', () => {
+              document.querySelector('.auth-tab[data-tab="login"]')?.click()
+              const le = document.getElementById('loginEmail')
+              if (le) le.value = email
+            })
+          } else {
+            err.innerHTML = e.message || 'فشل إنشاء الحساب. يرجى المحاولة لاحقاً.'
+          }
           err.style.display = 'block'
         }
       } finally {
@@ -848,6 +906,7 @@ const Router = {
 
 const Dash = {
   async render() {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const app = document.getElementById('app')
     app.innerHTML = T.dashboard()
     try {
@@ -859,45 +918,58 @@ const Dash = {
       const drafts = sites.filter(s=>!s.published).length
 
       statsEl.innerHTML = `
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-icon">${ICONS.wrap(ICONS.globe,22)}</div>
-            <div class="num">${sites.length}</div>
-            <div class="label">إجمالي المواقع</div>
+        <div class="stats-row-clean">
+          <div class="stat-card-clean">
+            <div class="stat-clean-header">
+              <span class="stat-clean-label">${isAr ? 'إجمالي المواقع' : 'Total Sites'}</span>
+              <div class="stat-clean-icon" style="background:#e0e7ff;color:#4f46e5">${ICONS.wrap(ICONS.globe,18)}</div>
+            </div>
+            <div class="stat-clean-num">${sites.length}</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon">${ICONS.wrap(ICONS.published,22)}</div>
-            <div class="num">${published}</div>
-            <div class="label">المواقع المنشورة</div>
+          <div class="stat-card-clean">
+            <div class="stat-clean-header">
+              <span class="stat-clean-label">${isAr ? 'المواقع المنشورة' : 'Published Sites'}</span>
+              <div class="stat-clean-icon" style="background:#dcfce7;color:#16a34a">${ICONS.wrap(ICONS.published,18)}</div>
+            </div>
+            <div class="stat-clean-num">${published}</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon">${ICONS.wrap(ICONS.eye,22)}</div>
-            <div class="num">${totalViews}</div>
-            <div class="label">إجمالي الزيارات</div>
+          <div class="stat-card-clean">
+            <div class="stat-clean-header">
+              <span class="stat-clean-label">${isAr ? 'إجمالي الزيارات' : 'Total Views'}</span>
+              <div class="stat-clean-icon" style="background:#fef3c7;color:#d97706">${ICONS.wrap(ICONS.eye,18)}</div>
+            </div>
+            <div class="stat-clean-num">${totalViews}</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon">${ICONS.wrap(ICONS.pencil,22)}</div>
-            <div class="num">${drafts}</div>
-            <div class="label">المسودات</div>
+          <div class="stat-card-clean">
+            <div class="stat-clean-header">
+              <span class="stat-clean-label">${isAr ? 'المسودات' : 'Drafts'}</span>
+              <div class="stat-clean-icon" style="background:#f1f5f9;color:#64748b">${ICONS.wrap(ICONS.pencil,18)}</div>
+            </div>
+            <div class="stat-clean-num">${drafts}</div>
           </div>
         </div>`
 
       if (sites.length === 0) {
         container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">${ICONS.wrap(ICONS.globe,48)}</div>
-            <h2>لا توجد لديك مواقع بعد</h2>
-            <p>أنشئ موقعك الإلكتروني الأول وشاركه مع العالم في دقائق معدودة.<br>اختر قالباً جاهزاً أو ابدأ من الصفر.</p>
-            <button class="btn btn-primary btn-lg" id="emptyCreateBtn" style="font-weight:700">${ICONS.wrap(ICONS.plus,18)} إنشاء موقعك الأول الآن</button>
+          <div class="empty-state-clean">
+            <div class="empty-icon-clean">${ICONS.wrap(ICONS.globe,36)}</div>
+            <h2>${isAr ? 'لا توجد لديك مواقع بعد' : 'No Websites Yet'}</h2>
+            <p>${isAr ? 'أنشئ موقعك الإلكتروني الأول وشاركه مع العالم في دقائق معدودة.<br>اختر قالباً جاهزاً أو ابدأ من الصفر.' : 'Create your first website and publish it to the world in minutes.<br>Pick a template or start from scratch.'}</p>
+            <button class="btn btn-primary btn-lg" id="emptyCreateBtn" style="font-weight:700;border-radius:12px">
+              ${ICONS.wrap(ICONS.plus,18)} <span>${isAr ? 'إنشاء موقعك الأول الآن' : 'Create Your First Site'}</span>
+            </button>
           </div>
-          <div class="quick-start">
-            <h3>قوالب جاهزة للبدء السريع</h3>
-            <div class="quick-templates">
+          <div class="quick-start-clean">
+            <h3>${isAr ? 'قوالب مقترحة للبدء السريع' : 'Recommended Quick-Start Templates'}</h3>
+            <div class="quick-templates-grid">
               ${PRESETS.filter(t=>t.id!=='blank').slice(0,4).map(t=>`
-                <div class="quick-template-card" data-quick-template="${t.id}">
-                  <div class="qt-icon">${t.icon}</div>
-                  <div class="qt-info"><h4>${t.name}</h4><p>${t.desc}</p></div>
-                  <span class="qt-arrow">←</span>
+                <div class="quick-template-card-clean" data-quick-template="${t.id}">
+                  <div class="qt-icon-clean">${t.icon}</div>
+                  <div class="qt-info-clean">
+                    <h4>${t.name}</h4>
+                    <p>${t.desc}</p>
+                  </div>
+                  <span class="qt-arrow-clean">${isAr ? '←' : '→'}</span>
                 </div>
               `).join('')}
             </div>
@@ -907,7 +979,7 @@ const Dash = {
           card.addEventListener('click',async()=>{
             try{
               const site = await API.createSite({title:card.querySelector('h4').textContent, template_type:card.dataset.quickTemplate})
-              Toast.show('تم إنشاء الموقع بنجاح! جاري فتح المحرر...','success'); Router.navigate('builder/'+site.id)
+              Toast.show(isAr ? 'تم إنشاء الموقع بنجاح! جاري فتح المحرر...' : 'Site created successfully! Opening editor...','success'); Router.navigate('builder/'+site.id)
             }catch(e){Toast.show(e.message,'error')}
           })
         })
@@ -915,12 +987,12 @@ const Dash = {
       }
 
       container.innerHTML = `
-        <div class="sites-header">
-          <h2>مواقعي الإلكترونية</h2>
-          <div class="sites-filter">
-            <button class="filter-btn active" data-sfilter="all">الكل (${sites.length})</button>
-            <button class="filter-btn" data-sfilter="published">المنشورة (${published})</button>
-            <button class="filter-btn" data-sfilter="draft">المسودات (${drafts})</button>
+        <div class="sites-header-clean">
+          <h2>${isAr ? 'مواقعي الإلكترونية' : 'My Websites'}</h2>
+          <div class="sites-filter-clean">
+            <button class="filter-btn active" data-sfilter="all">${isAr ? 'الكل' : 'All'} (${sites.length})</button>
+            <button class="filter-btn" data-sfilter="published">${isAr ? 'المنشورة' : 'Published'} (${published})</button>
+            <button class="filter-btn" data-sfilter="draft">${isAr ? 'المسودات' : 'Drafts'} (${drafts})</button>
           </div>
         </div>
         <div class="sites-grid">${sites.map(p=>{
@@ -938,16 +1010,16 @@ const Dash = {
               <h3>${p.title}</h3>
               <span class="site-url">${siteUrl}</span>
               <div class="site-meta">
-                <span class="status-badge ${p.published?'status-published':'status-draft'}">${p.published?'Published':'Draft'}</span>
+                <span class="status-badge ${p.published?'status-published':'status-draft'}">${p.published?(isAr?'منشور':'Published'):(isAr?'مسودة':'Draft')}</span>
                 <span style="font-size:.78rem;color:var(--gray-400)">${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString()}</span>
               </div>
             </div>
             <div class="site-card-actions">
-              <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">${ICONS.wrap(ICONS.pencil,14)} Edit</a>
-              ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">${ICONS.wrap(ICONS.external,14)} View</a>`:''}
-              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm" title="Submissions">${ICONS.wrap(ICONS.message,15)}</a>
-              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm" title="Analytics">${ICONS.wrap(ICONS.chart,15)}</a>
-              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="Delete">${ICONS.wrap(ICONS.trash,15)}</button>
+              <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">${ICONS.wrap(ICONS.pencil,14)} ${isAr ? 'تعديل' : 'Edit'}</a>
+              ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">${ICONS.wrap(ICONS.external,14)} ${isAr ? 'معاينة' : 'View'}</a>`:''}
+              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm" title="${isAr ? 'الرسائل' : 'Submissions'}">${ICONS.wrap(ICONS.message,15)}</a>
+              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm" title="${isAr ? 'الإحصائيات' : 'Analytics'}">${ICONS.wrap(ICONS.chart,15)}</a>
+              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="${isAr ? 'حذف' : 'Delete'}">${ICONS.wrap(ICONS.trash,15)}</button>
             </div>
           </div>`
         }).join('')}</div>`

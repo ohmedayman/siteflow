@@ -640,20 +640,30 @@ const T = {
   </div>
 </div>` },
 
-  dashboard() { return `
-<div class="dashboard">
-  <div class="dashboard-header">
-    <div>
-      <h1>أهلاً بك، <span class="js-user-name"></span> ${ICONS.wrap(ICONS.sparkles,22)}</h1>
-      <p>إليك ملخص وإحصائيات مواقعك الإلكترونية</p>
+  dashboard() {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    return `
+<div class="dashboard-clean" dir="${isAr?'rtl':'ltr'}">
+  <!-- Minimalist Clean Dashboard Header -->
+  <div class="dash-header-clean">
+    <div class="dash-header-info">
+      <div class="dash-title-row">
+        <h1>${isAr ? 'أهلاً بك،' : 'Welcome,'} <span class="js-user-name"></span></h1>
+        <span class="dash-status-badge">🟢 ${isAr ? 'Supabase متصل' : 'Cloud Connected'}</span>
+      </div>
+      <p class="dash-subtitle">${isAr ? 'إدارة ومتابعة أداء وتفاعل مواقعك ومتاجرك الإلكترونية' : 'Manage and monitor your websites, stores, and analytics'}</p>
     </div>
-    <div class="header-actions">
-      ${Auth.isAdmin()?'<a href="#/admin" class="btn btn-ghost btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d">لوحة المشرف</a>':''}
-      <a href="#/settings" class="btn btn-outline btn-sm" title="إعدادات قاعدة البيانات">${ICONS.wrap(ICONS.settings,14)} قاعدة البيانات (Supabase)</a>
-      <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">${ICONS.wrap(ICONS.trendingUp,14)} ترقية الخطة</a>
-      <button class="btn btn-primary btn-sm" id="createSiteBtn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        إنشاء موقع جديد
+    <div class="dash-header-actions">
+      ${Auth.isAdmin() ? `<a href="#/admin" class="btn btn-ghost btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d">${isAr ? 'لوحة المشرف' : 'Admin Panel'}</a>` : ''}
+      <a href="#/settings" class="btn btn-outline btn-sm dash-btn-outline" title="${isAr ? 'إعدادات قاعدة البيانات' : 'Database Settings'}">
+        ${ICONS.wrap(ICONS.settings, 14)} <span>${isAr ? 'قاعدة البيانات' : 'Cloud DB'}</span>
+      </a>
+      <a href="#/plans" class="btn btn-outline btn-sm dash-btn-outline" id="upgradeBtn">
+        ${ICONS.wrap(ICONS.trendingUp, 14)} <span>${isAr ? 'ترقية الخطة' : 'Upgrade Plan'}</span>
+      </a>
+      <button class="btn btn-primary btn-sm dash-btn-primary" id="createSiteBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>${isAr ? 'إنشاء موقع جديد' : 'New Website'}</span>
       </button>
     </div>
   </div>

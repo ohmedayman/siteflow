@@ -58,29 +58,13 @@ create index if not exists idx_sites_slug on public.sites(slug);
 create index if not exists idx_sites_user_id on public.sites(user_id);
 create index if not exists idx_sites_published on public.sites(published);
 
--- Enable RLS on Sites
-alter table public.sites enable row level security;
+-- 3. Sites Table (Main website records)
+-- Disable RLS on sites so API can freely manage user and published websites
+alter table public.sites disable row level security;
 
--- Policies for Sites
-drop policy if exists "Allow public read published sites" on public.sites;
-create policy "Allow public read published sites" on public.sites
-  for select using (published = true);
-
-drop policy if exists "Allow select own sites or guest" on public.sites;
-create policy "Allow select own sites or guest" on public.sites
-  for select using (auth.uid()::text = user_id or user_id = 'usr_guest' or user_id like 'usr_%');
-
-drop policy if exists "Allow insert own sites or guest" on public.sites;
-create policy "Allow insert own sites or guest" on public.sites
-  for insert with check (true);
-
-drop policy if exists "Allow update own sites or guest" on public.sites;
-create policy "Allow update own sites or guest" on public.sites
-  for update using (true);
-
-drop policy if exists "Allow delete own sites or guest" on public.sites;
-create policy "Allow delete own sites or guest" on public.sites
-  for delete using (true);
+-- Or if RLS is enabled by default in Supabase:
+drop policy if exists "Allow all on sites" on public.sites;
+create policy "Allow all on sites" on public.sites for all using (true) with check (true);
 
 -- 4. Sections Table (Normalized alternative fallback)
 create table if not exists public.sections (

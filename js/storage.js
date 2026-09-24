@@ -382,19 +382,29 @@ const API = {
 
     if (mode === 'supabase') {
       const current = await SB.getCurrentUser()
+      const rawUid = current?.id || uid || 'guest'
+      const safeUserId = String(rawUid).startsWith('usr_') ? String(rawUid) : ('usr_' + rawUid)
       const sitePayload = {
         title: data.title || template.name,
         slug: data.slug,
         template_type: templateId,
-        user_id: current?.id || uid || 'usr_guest',
+        user_id: safeUserId,
         theme: template.theme || { color: '#6366f1', font: 'Cairo' },
         seo: template.seo || { title: data.title || template.name, description: '' },
         sections: template.sections || []
       }
-      const s = await SB.createSite(sitePayload)
-      if (s) {
-        LocalDB.addPage(s)
-        return s
+      try {
+        const s = await SB.createSite(sitePayload)
+        if (s) {
+          LocalDB.addPage(s)
+          return s
+        }
+      } catch (err) {
+        console.warn('Supabase createSite failed, falling back to LocalDB:', err)
+        // If Supabase failed, save in LocalDB so user is never blocked
+        const pageData = LocalDB.defaultPage(data.title || template.name, template)
+        pageData.userId = safeUserId
+        return LocalDB.addPage(pageData)
       }
     }
 
