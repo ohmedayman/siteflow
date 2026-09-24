@@ -1136,3 +1136,108 @@ img{max-width:100%;height:auto;display:block}
   .lp-footer-top{grid-template-columns:1fr}
 }
 
+/* ============================================================
+   🌟 HIGH-END PAYMENT GATEWAY MODAL (Dark Sleek Theme)
+   ============================================================ */
+.sf-pay-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(7,11,20,0.85);backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.sf-pay-card{background:#0e1726;border:1px solid #1e293b;border-radius:24px;width:100%;max-width:480px;box-shadow:0 25px 60px rgba(0,0,0,0.6);color:#f8fafc;padding:28px 24px;position:relative;animation:sfModalIn .25s ease-out;direction:rtl;font-family:'Cairo','Tajawal',sans-serif}
+@keyframes sfModalIn{from{opacity:0;transform:scale(0.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.sf-pay-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid #1e293b;padding-bottom:14px}
+.sf-pay-title{font-size:1.4rem;font-weight:900;color:#ffffff;display:flex;align-items:center;gap:10px}
+.sf-pay-close-btn{background:none;border:none;color:#94a3b8;font-size:1.4rem;cursor:pointer;line-height:1;padding:6px;border-radius:10px;transition:all .15s}
+.sf-pay-close-btn:hover{color:#fff;background:#1e293b}
+
+.sf-pay-sub{font-size:.82rem;color:#94a3b8;margin-bottom:18px;line-height:1.5}
+
+/* Payment Method Tabs */
+.sf-pay-tabs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.sf-pay-tab{background:#111c2e;border:1px solid #1e293b;border-radius:16px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .2s;user-select:none}
+.sf-pay-tab:hover{border-color:#334155;background:#15233a}
+.sf-pay-tab.active{border:2px solid #06b6d4;background:#0c2338;box-shadow:0 0 20px rgba(6,182,212,0.18)}
+.sf-pay-tab-info{display:flex;flex-direction:column;gap:2px}
+.sf-pay-tab-name{font-size:.88rem;font-weight:800;color:#f8fafc}
+.sf-pay-tab.active .sf-pay-tab-name{color:#22d3ee}
+.sf-pay-tab-num{font-size:.74rem;color:#94a3b8;direction:ltr;text-align:right}
+.sf-pay-tab-logo{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden;flex-shrink:0}
+
+/* Radio Indicator */
+.sf-pay-radio{width:18px;height:18px;border-radius:50%;border:2px solid #475569;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sf-pay-tab.active .sf-pay-radio{border-color:#06b6d4}
+.sf-pay-tab.active .sf-pay-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:#06b6d4}
+
+/* Number Display & Copy Box */
+.sf-pay-method-banner{background:#111c2e;border:1px solid #1e293b;border-radius:20px;padding:24px 20px;margin-bottom:20px;text-align:center}
+.sf-pay-banner-title{font-size:1.15rem;font-weight:900;color:#fff;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.sf-pay-banner-sub{font-size:.8rem;color:#94a3b8;margin-bottom:16px}
+.sf-pay-number-pill{background:#09101c;border:1px solid #1e293b;border-radius:14px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;max-width:340px;margin:0 auto 16px;direction:ltr}
+.sf-pay-number-text{font-size:1.3rem;font-weight:900;color:#f8fafc;letter-spacing:1px}
+.sf-pay-copy-btn{background:#1e293b;border:1px solid #334155;color:#22d3ee;border-radius:8px;padding:6px 12px;font-size:.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.sf-pay-copy-btn:hover{background:#334155;color:#fff}
+.sf-pay-amount-label{font-size:.82rem;color:#94a3b8;margin-bottom:4px}
+.sf-pay-amount-val{font-size:2rem;font-weight:900;color:#06b6d4;margin-bottom:4px;direction:ltr}
+
+/* Instructions Box */
+.sf-pay-instructions{background:#09101c;border:1px solid #1e293b;border-radius:14px;padding:16px;text-align:right;margin-bottom:22px}
+.sf-pay-instructions h6{font-size:.85rem;font-weight:800;color:#f8fafc;margin-bottom:8px}
+.sf-pay-instructions ol{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.sf-pay-instructions li{font-size:.78rem;color:#cbd5e1;line-height:1.55}
+
+/* Big Green Action Button */
+.sf-pay-btn-green{width:100%;background:#10b981;color:#fff;border:none;border-radius:14px;padding:16px;font-size:1.1rem;font-weight:900;cursor:pointer;box-shadow:0 8px 25px rgba(16,185,129,0.3);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.sf-pay-btn-green:hover{background:#059669;transform:translateY(-1px);box-shadow:0 12px 30px rgba(16,185,129,0.4)}
+
+/* Step 2 Inputs */
+.sf-pay-input-group{margin-bottom:16px;text-align:right}
+.sf-pay-input-group label{display:block;font-size:.84rem;font-weight:700;color:#cbd5e1;margin-bottom:6px}
+.sf-pay-input{width:100%;background:#09101c;border:1px solid #1e293b;border-radius:12px;padding:12px 14px;color:#f8fafc;font-size:.9rem;outline:none;transition:border-color .15s}
+.sf-pay-input:focus{border-color:#06b6d4}
+
+/* Screenshot Upload Dropzone */
+.sf-pay-dropzone{border:2px dashed #334155;border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;background:#09101c;transition:all .2s;margin-bottom:18px}
+.sf-pay-dropzone:hover{border-color:#06b6d4;background:#0c1729}
+.sf-pay-dropzone-icon{font-size:2rem;margin-bottom:6px;display:block}
+.sf-pay-dropzone-text{font-size:.82rem;color:#94a3b8}
+.sf-pay-preview-img{max-width:100%;max-height:160px;border-radius:10px;margin-top:10px;object-fit:contain;border:1px solid #334155}
+
+/* ============================================================
+   👑 ADMIN CONTROL PANEL STYLES
+   ============================================================ */
+.sf-admin-page{max-width:1200px;margin:0 auto;padding:40px 24px 80px;font-family:'Cairo','Tajawal',sans-serif;direction:rtl}
+.sf-admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.sf-admin-title-box h1{font-size:1.8rem;font-weight:900;color:#0f172a;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+.sf-admin-title-box p{color:#64748b;font-size:.9rem;margin:0}
+
+/* Admin Metrics Grid */
+.sf-admin-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:32px}
+.sf-admin-stat-card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:22px;display:flex;align-items:center;gap:16px;box-shadow:0 4px 15px rgba(0,0,0,0.03)}
+.sf-admin-stat-icon{width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.sf-admin-stat-val{font-size:1.7rem;font-weight:900;color:#0f172a;line-height:1.1}
+.sf-admin-stat-lbl{font-size:.82rem;font-weight:600;color:#64748b;margin-top:4px}
+
+/* Admin Tabs */
+.sf-admin-tabs{display:flex;gap:10px;border-bottom:2px solid #e2e8f0;margin-bottom:24px;overflow-x:auto;padding-bottom:2px}
+.sf-admin-tab-btn{background:none;border:none;padding:12px 18px;font-size:.92rem;font-weight:700;color:#64748b;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
+.sf-admin-tab-btn:hover{color:#0f172a}
+.sf-admin-tab-btn.active{color:#4f46e5;border-bottom-color:#4f46e5}
+
+/* Admin Tables */
+.sf-admin-table-card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.03);overflow-x:auto}
+.sf-admin-table{width:100%;border-collapse:collapse;text-align:right}
+.sf-admin-table th{padding:12px 14px;font-size:.82rem;font-weight:800;color:#475569;background:#f8fafc;border-bottom:1px solid #e2e8f0;text-transform:uppercase}
+.sf-admin-table td{padding:14px;font-size:.88rem;color:#334155;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+.sf-admin-table tr:hover td{background:#fafafa}
+
+/* Status Badges */
+.sf-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.76rem;font-weight:800;letter-spacing:.02em}
+.sf-badge-pending{background:#fef3c7;color:#b45309;border:1px solid #fde68a}
+.sf-badge-completed{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
+.sf-badge-rejected{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+
+/* Lightbox Receipt Modal */
+.sf-lightbox{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px}
+.sf-lightbox-content{max-width:90%;max-height:90%;position:relative;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 25px 50px rgba(0,0,0,0.5)}
+.sf-lightbox-img{max-width:100%;max-height:80vh;display:block}
+.sf-lightbox-close{position:absolute;top:12px;right:12px;background:#000;color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center}
+
+

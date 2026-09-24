@@ -2166,5 +2166,482 @@ const T = {
     <button class="btn btn-outline" onclick="Router.navigate('plans')">Cancel</button>
     <button class="btn btn-primary btn-lg" id="confirmPaymentBtn">Pay $${plan.price} — Upgrade Now</button>
   </div>
-</div>` }
+</div>` },
+
+  paymentModal(planKey, plan = {}, numbers = { vodafone: '01028707543', instapay: '01028707543' }) {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    const planName = plan.name || (planKey === 'pro' ? 'احترافي' : planKey === 'business' ? 'بيزنس' : 'أساسي')
+    const price = plan.price || (planKey === 'pro' ? 299 : planKey === 'business' ? 599 : 129)
+    const vodafoneNum = numbers.vodafone || '01028707543'
+    const instapayNum = numbers.instapay || '01028707543'
+
+    return `
+<div class="sf-pay-modal-overlay" id="sfPayModalOverlay">
+  <div class="sf-pay-card" id="sfPayCard">
+    <!-- Header -->
+    <div class="sf-pay-header">
+      <div class="sf-pay-title">
+        <span style="font-size:1.3rem">🔒</span>
+        <span>${isAr ? 'اختر وسيلة الدفع' : 'Choose Payment Method'}</span>
+      </div>
+      <button class="sf-pay-close-btn" id="sfPayCloseBtn" title="${isAr ? 'إغلاق' : 'Close'}">✕</button>
+    </div>
+    <div class="sf-pay-sub">
+      ${isAr ? 'جميع المعاملات مشفرة وآمنة بنسبة 100% عبر بوابات الدفع الرسمية' : 'All transactions are 100% encrypted and secured.'}
+    </div>
+
+    <!-- Step 1: Select Method & Transfer Instructions -->
+    <div id="sfPayStep1">
+      <!-- Method Tabs -->
+      <div class="sf-pay-tabs">
+        <!-- Vodafone Cash Tab -->
+        <div class="sf-pay-tab active" data-pay-method="vodafone" id="sfPayTabVodafone">
+          <div class="sf-pay-radio"></div>
+          <div class="sf-pay-tab-info">
+            <span class="sf-pay-tab-name">${isAr ? 'فودافون كاش' : 'Vodafone Cash'}</span>
+            <span class="sf-pay-tab-num">${vodafoneNum}</span>
+          </div>
+          <div class="sf-pay-tab-logo" style="background:#e60000;color:#fff;font-weight:900;font-size:1rem" title="Vodafone Cash">
+            VF
+          </div>
+        </div>
+
+        <!-- InstaPay Tab -->
+        <div class="sf-pay-tab" data-pay-method="instapay" id="sfPayTabInstapay">
+          <div class="sf-pay-radio"></div>
+          <div class="sf-pay-tab-info">
+            <span class="sf-pay-tab-name">${isAr ? 'انستاباي' : 'InstaPay'}</span>
+            <span class="sf-pay-tab-num">${instapayNum}</span>
+          </div>
+          <div class="sf-pay-tab-logo" style="background:#702b84;color:#fff;font-weight:900;font-size:1rem" title="InstaPay">
+            IP
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Method Banner -->
+      <div class="sf-pay-method-banner">
+        <div class="sf-pay-banner-title">
+          <span id="sfPayMethodBannerIcon">📱</span>
+          <span id="sfPayMethodBannerTitle">${isAr ? 'فودافون كاش' : 'Vodafone Cash'}</span>
+        </div>
+        <div class="sf-pay-banner-sub">
+          ${isAr ? 'حول المبلغ المطلوب إلى الرقم التالي عبر محفظتك الإلكترونية' : 'Transfer the required amount to the following number'}
+        </div>
+
+        <!-- Number Pill & Copy -->
+        <div class="sf-pay-number-pill">
+          <button class="sf-pay-copy-btn" id="sfPayCopyBtn" data-num="${vodafoneNum}" type="button">
+            <span>📋</span> <span id="sfPayCopyText">${isAr ? 'نسخ' : 'Copy'}</span>
+          </button>
+          <span class="sf-pay-number-text" id="sfPayDisplayNum">${vodafoneNum}</span>
+        </div>
+
+        <!-- Amount to pay -->
+        <div class="sf-pay-amount-label">${isAr ? 'المبلغ المطلوب تحويله لتفعيل باقة' : 'Amount to transfer for'} (${planName})</div>
+        <div class="sf-pay-amount-val">${price} <span style="font-size:1.1rem;color:#94a3b8">${isAr ? 'ج.م' : 'EGP'}</span></div>
+      </div>
+
+      <!-- Instructions Box -->
+      <div class="sf-pay-instructions">
+        <h6>💡 ${isAr ? 'خطوات التحويل والتفعيل السريع:' : 'Quick Transfer Instructions:'}</h6>
+        <ol>
+          <li>1. ${isAr ? 'افتح تطبيق المحفظة (أو اطلب كود *9*7# لفودافون كاش أو تطبيق إنستاباي).' : 'Open your wallet app or dial the transfer code.'}</li>
+          <li>2. ${isAr ? 'اختر "تحويل أموال" وأدخل الرقم أعلاه: ' : 'Select transfer and enter number: '}<strong id="sfPayInstructNum" style="color:#22d3ee">${vodafoneNum}</strong></li>
+          <li>3. ${isAr ? 'حول المبلغ المحدد تماماً: ' : 'Transfer the exact amount: '}<strong style="color:#10b981">${price} ${isAr ? 'ج.م' : 'EGP'}</strong> ${isAr ? 'واحفظ لقطة شاشة (سكرين شوت) لإشعار التحويل.' : 'and take a screenshot of receipt.'}</li>
+          <li>4. ${isAr ? 'اضغط على الزر الأخضر أدناه لتأكيد الإرسال وإرفاق الإشعار للتفعيل الفوري.' : 'Click the green button below to attach your receipt for instant activation.'}</li>
+        </ol>
+      </div>
+
+      <!-- Big Green CTA Button -->
+      <button class="sf-pay-btn-green" id="sfPayNextBtn" type="button">
+        <span>لقد دفعت بالفعل ✅</span>
+      </button>
+    </div>
+
+    <!-- Step 2: Confirm & Attach Receipt -->
+    <div id="sfPayStep2" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h4 style="margin:0;font-size:1.1rem;color:#f8fafc;font-weight:800">
+          ${isAr ? 'تأكيد إرسال التحويل' : 'Confirm Transfer & Receipt'}
+        </h4>
+        <button id="sfPayBackBtn" type="button" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:.85rem;display:flex;align-items:center;gap:4px">
+          ${isAr ? '← رجوع' : '← Back'}
+        </button>
+      </div>
+      <div style="background:#111c2e;border:1px solid #1e293b;border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:.82rem;color:#cbd5e1;display:flex;justify-content:space-between">
+        <span>${isAr ? 'الخطة المختارة:' : 'Plan:'} <strong style="color:#22d3ee">${planName}</strong></span>
+        <span>${isAr ? 'المبلغ:' : 'Amount:'} <strong style="color:#10b981">${price} ${isAr ? 'ج.م' : 'EGP'}</strong></span>
+      </div>
+
+      <form id="sfPayConfirmForm">
+        <!-- Sender Phone -->
+        <div class="sf-pay-input-group">
+          <label>${isAr ? 'رقم الهاتف الذي قمت بالتحويل منه *' : 'Sender Phone Number *'}</label>
+          <input type="tel" id="sfPaySenderPhone" class="sf-pay-input" placeholder="010xxxxxxxx" required dir="ltr" style="text-align:right">
+        </div>
+
+        <!-- Ref / Transaction Code (Optional) -->
+        <div class="sf-pay-input-group">
+          <label>${isAr ? 'رقم العملية المرجعي / كود التحويل (اختياري)' : 'Reference / Transaction Code (Optional)'}</label>
+          <input type="text" id="sfPayRefCode" class="sf-pay-input" placeholder="${isAr ? 'رقم المعاملة من رسالة التأكيد' : 'e.g. 123456789'}" dir="ltr">
+        </div>
+
+        <!-- Receipt Screenshot Upload -->
+        <div class="sf-pay-input-group">
+          <label>${isAr ? 'صورة إشعار التحويل (سكرين شوت) *' : 'Screenshot Receipt *'}</label>
+          <input type="file" id="sfPayReceiptFile" accept="image/*" style="display:none">
+          <div class="sf-pay-dropzone" id="sfPayDropzone">
+            <span class="sf-pay-dropzone-icon">📸</span>
+            <div class="sf-pay-dropzone-text" id="sfPayDropzoneText">
+              <strong>${isAr ? 'اضغط هنا لرفع صورة الإشعار' : 'Click to upload receipt screenshot'}</strong>
+              <div style="font-size:.74rem;color:#64748b;margin-top:4px">${isAr ? 'أو اسحب الصورة وأفلتها هنا (PNG, JPG)' : 'or drag and drop here (PNG, JPG)'}</div>
+            </div>
+            <img id="sfPayReceiptPreview" class="sf-pay-preview-img" style="display:none" alt="Receipt Preview">
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="sf-pay-btn-green" id="sfPaySubmitBtn">
+          <span>${isAr ? 'إرسال للمراجعة والتفعيل 🚀' : 'Submit for Instant Activation 🚀'}</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Step 3: Success Screen -->
+    <div id="sfPayStep3" style="display:none;text-align:center;padding:20px 8px">
+      <div style="width:72px;height:72px;border-radius:50%;background:#065f46;color:#34d399;font-size:2.4rem;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;border:3px solid #10b981">
+        ✓
+      </div>
+      <h3 style="font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:8px">
+        ${isAr ? 'تم استلام طلب التحويل بنجاح! 🎉' : 'Transfer Received Successfully! 🎉'}
+      </h3>
+      <p style="font-size:.88rem;color:#cbd5e1;line-height:1.6;margin-bottom:24px">
+        ${isAr ? 'تم إرسال إشعار التحويل إلى الإدارة لمراجعته. سيتم تفعيل باقتك (' + planName + ') وإطلاق كامل المزايا خلال دقائق معدودة.' : 'Your transfer receipt has been sent for verification. Your plan will be activated within minutes.'}
+      </p>
+      <div style="background:#111c2e;border:1px solid #1e293b;border-radius:14px;padding:16px;text-align:right;margin-bottom:24px;font-size:.82rem;color:#94a3b8">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span>${isAr ? 'الخطة:' : 'Plan:'}</span>
+          <strong style="color:#fff">${planName}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span>${isAr ? 'المبلغ:' : 'Amount:'}</span>
+          <strong style="color:#10b981">${price} ${isAr ? 'ج.م' : 'EGP'}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span>${isAr ? 'الحالة الحالية:' : 'Status:'}</span>
+          <span class="sf-badge sf-badge-pending">⏳ ${isAr ? 'بانتظار موافقة الإدارة' : 'Pending Approval'}</span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg w-full" id="sfPayFinishBtn" type="button" style="border-radius:14px;padding:14px;font-weight:800">
+        ${isAr ? 'الذهاب إلى لوحة التحكم 🚀' : 'Go to Dashboard 🚀'}
+      </button>
+    </div>
+  </div>
+</div>`
+  },
+
+  adminDashboard({ payments = [], users = [], sites = [], settings = { vodafone: '01028707543', instapay: '01028707543' }, activeTab = 'payments' }) {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    const pendingCount = payments.filter(p => p.status === 'pending').length
+    const approvedRevenue = payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
+    const publishedSites = sites.filter(s => s.published).length
+
+    return `
+<div class="sf-admin-page" dir="${isAr ? 'rtl' : 'ltr'}">
+  <!-- Header -->
+  <div class="sf-admin-header">
+    <div class="sf-admin-title-box">
+      <h1><span>لوحة التحكم الإدارية الشاملة 👑</span></h1>
+      <p>مراجعة وتفعيل اشتراكات فودافون كاش وانستاباي، وإدارة مستخدمي ومواقع منصة SiteFlow</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn btn-outline btn-sm" id="adminRefreshBtn" style="border-radius:10px">
+        <span>🔄</span> <span>تحديث البيانات</span>
+      </button>
+      <a href="#/dashboard" class="btn btn-ghost btn-sm" style="border-radius:10px">
+        العودة للوحة العادية
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Metrics Grid -->
+  <div class="sf-admin-stats-grid">
+    <!-- Revenue -->
+    <div class="sf-admin-stat-card">
+      <div class="sf-admin-stat-icon" style="background:#ecfdf5;color:#059669">💰</div>
+      <div>
+        <div class="sf-admin-stat-val">${approvedRevenue.toLocaleString()} <span style="font-size:1rem;color:#64748b">ج.م</span></div>
+        <div class="sf-admin-stat-lbl">إجمالي الإيرادات المعتمدة</div>
+      </div>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="sf-admin-stat-card" style="${pendingCount > 0 ? 'border-color:#f59e0b;background:#fffbeb' : ''}">
+      <div class="sf-admin-stat-icon" style="background:#fef3c7;color:#d97706">⏳</div>
+      <div>
+        <div class="sf-admin-stat-val" style="${pendingCount > 0 ? 'color:#b45309' : ''}">${pendingCount}</div>
+        <div class="sf-admin-stat-lbl">طلبات بانتظار الموافقة والتفعيل</div>
+      </div>
+    </div>
+
+    <!-- Total Users -->
+    <div class="sf-admin-stat-card">
+      <div class="sf-admin-stat-icon" style="background:#e0e7ff;color:#4f46e5">👥</div>
+      <div>
+        <div class="sf-admin-stat-val">${users.length}</div>
+        <div class="sf-admin-stat-lbl">إجمالي المستخدمين المسجلين</div>
+      </div>
+    </div>
+
+    <!-- Published Sites -->
+    <div class="sf-admin-stat-card">
+      <div class="sf-admin-stat-icon" style="background:#f0fdf4;color:#16a34a">🌐</div>
+      <div>
+        <div class="sf-admin-stat-val">${publishedSites} <span style="font-size:1rem;color:#64748b">/ ${sites.length}</span></div>
+        <div class="sf-admin-stat-lbl">المواقع المنشورة عالمياً</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="sf-admin-tabs">
+    <button class="sf-admin-tab-btn ${activeTab==='payments'?'active':''}" data-admin-tab="payments">
+      <span>💳 طلبات التحويل والاشتراكات</span>
+      ${pendingCount > 0 ? `<span style="background:#dc2626;color:#fff;font-size:.72rem;padding:2px 8px;border-radius:12px;font-weight:900">${pendingCount} جديد</span>` : ''}
+    </button>
+    <button class="sf-admin-tab-btn ${activeTab==='users'?'active':''}" data-admin-tab="users">
+      <span>👥 المستخدمين والخطط</span>
+      <span style="background:#f1f5f9;color:#475569;font-size:.72rem;padding:2px 8px;border-radius:12px">${users.length}</span>
+    </button>
+    <button class="sf-admin-tab-btn ${activeTab==='sites'?'active':''}" data-admin-tab="sites">
+      <span>🌐 مواقع المنصة</span>
+      <span style="background:#f1f5f9;color:#475569;font-size:.72rem;padding:2px 8px;border-radius:12px">${sites.length}</span>
+    </button>
+    <button class="sf-admin-tab-btn ${activeTab==='settings'?'active':''}" data-admin-tab="settings">
+      <span>⚙️ أرقام الدفع والتحويل</span>
+    </button>
+  </div>
+
+  <!-- TAB 1: PAYMENTS -->
+  <div id="adminTabContent_payments" class="sf-admin-tab-pane" style="${activeTab==='payments'?'':'display:none'}">
+    <div class="sf-admin-table-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <h3 style="font-size:1.2rem;font-weight:800;margin:0">سجل طلبات الدفع والتحويل</h3>
+        <span style="font-size:.84rem;color:#64748b">إجمالي الطلبات: ${payments.length}</span>
+      </div>
+
+      ${payments.length === 0 ? `
+        <div style="padding:60px 20px;text-align:center;color:#64748b">
+          <div style="font-size:3rem;margin-bottom:12px">📭</div>
+          <h4 style="font-size:1.1rem;font-weight:700;margin-bottom:6px">لا توجد طلبات دفع حتى الآن</h4>
+          <p style="font-size:.85rem;margin:0">عندما يختار أي عميل خطة ويحول عبر فودافون كاش أو انستاباي، ستظهر بياناته وصورة الإشعار هنا فوراً للموافقة.</p>
+        </div>
+      ` : `
+        <table class="sf-admin-table">
+          <thead>
+            <tr>
+              <th>التاريخ</th>
+              <th>العميل</th>
+              <th>الخطة والمبلغ</th>
+              <th>وسيلة التحويل</th>
+              <th>بيانات المحول</th>
+              <th>إشعار التحويل</th>
+              <th>الحالة</th>
+              <th>الإجراء الإداري</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${payments.map(p => {
+              const dt = new Date(p.created_at || p.createdAt || Date.now()).toLocaleDateString('ar-EG', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
+              const planNames = { free:'مجاني', basic:'أساسي', pro:'احترافي 🔥', business:'بيزنس 🚀' }
+              const methodLabel = p.method === 'instapay' ? 'انستاباي IP' : 'فودافون كاش VF'
+              const methodColor = p.method === 'instapay' ? '#702b84' : '#e60000'
+
+              return `
+              <tr>
+                <td style="font-size:.8rem;color:#64748b;white-space:nowrap">${dt}</td>
+                <td>
+                  <strong style="display:block;color:#0f172a">${p.user_name || p.userName || 'عميل'}</strong>
+                  <span style="font-size:.78rem;color:#64748b">${p.user_email || p.userEmail || p.userId || '—'}</span>
+                </td>
+                <td>
+                  <span style="font-weight:800;color:#4f46e5">${planNames[p.plan] || p.plan}</span>
+                  <div style="font-weight:900;font-size:1.05rem;color:#0f172a">${p.amount} ج.م</div>
+                </td>
+                <td>
+                  <span style="display:inline-block;padding:3px 10px;border-radius:8px;font-size:.78rem;font-weight:800;background:${methodColor}15;color:${methodColor};border:1px solid ${methodColor}40">
+                    ${methodLabel}
+                  </span>
+                </td>
+                <td>
+                  <div style="font-weight:700;direction:ltr;text-align:right">${p.sender_phone || p.senderPhone || '—'}</div>
+                  ${p.ref_code ? `<span style="font-size:.75rem;color:#64748b">كود: ${p.ref_code}</span>` : ''}
+                </td>
+                <td>
+                  ${p.receipt_url ? `
+                    <button class="btn btn-outline btn-sm js-view-receipt-btn" data-receipt="${encodeURIComponent(p.receipt_url)}" style="border-radius:8px;font-size:.78rem;padding:4px 10px;display:flex;align-items:center;gap:4px">
+                      <span>🖼️</span> <span>عرض الإشعار</span>
+                    </button>
+                  ` : '<span style="color:#94a3b8;font-size:.8rem">بدون صورة</span>'}
+                </td>
+                <td>
+                  <span class="sf-badge sf-badge-${p.status || 'pending'}">
+                    ${p.status === 'completed' ? '✅ مكتمل ومفعل' : p.status === 'rejected' ? '❌ مرفوض' : '⏳ بانتظار المراجعة'}
+                  </span>
+                </td>
+                <td>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    ${p.status !== 'completed' ? `
+                      <button class="btn btn-primary btn-sm js-admin-approve-btn" data-payment-id="${p.id}" style="background:#10b981;border-color:#10b981;border-radius:8px;font-weight:700;font-size:.78rem;padding:6px 12px">
+                        ✅ موافقة وتفعيل
+                      </button>
+                    ` : '<span style="color:#059669;font-weight:700;font-size:.82rem">تم التفعيل ✨</span>'}
+                    ${p.status === 'pending' ? `
+                      <button class="btn btn-outline btn-sm js-admin-reject-btn" data-payment-id="${p.id}" style="border-color:#fca5a5;color:#dc2626;border-radius:8px;font-size:.78rem;padding:6px 10px">
+                        رفض
+                      </button>
+                    ` : ''}
+                  </div>
+                </td>
+              </tr>`
+            }).join('')}
+          </tbody>
+        </table>
+      `}
+    </div>
+  </div>
+
+  <!-- TAB 2: USERS -->
+  <div id="adminTabContent_users" class="sf-admin-tab-pane" style="${activeTab==='users'?'':'display:none'}">
+    <div class="sf-admin-table-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px">
+        <h3 style="font-size:1.2rem;font-weight:800;margin:0">إدارة المستخدمين والخطط</h3>
+        <input type="text" id="adminUserSearchInput" placeholder="بحث بالاسم أو البريد الإلكتروني..." style="padding:8px 14px;border:1px solid #cbd5e1;border-radius:10px;font-size:.85rem;min-width:260px">
+      </div>
+
+      <table class="sf-admin-table" id="adminUsersTable">
+        <thead>
+          <tr>
+            <th>المستخدم</th>
+            <th>البريد الإلكتروني</th>
+            <th>الخطة الحالية</th>
+            <th>تغيير الخطة مباشرة</th>
+            <th>صلاحية الأدمن</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.map(u => {
+            const planNames = { free:'مجاني', basic:'أساسي', pro:'احترافي', business:'بيزنس' }
+            const isUserAdmin = u.isAdmin || u.is_admin || u.role === 'admin'
+            return `
+            <tr class="js-user-row" data-user-text="${((u.name||'')+' '+(u.email||'')).toLowerCase()}">
+              <td>
+                <strong style="color:#0f172a">${u.name || 'مستخدم'}</strong>
+                <div style="font-size:.75rem;color:#64748b">ID: ${u.id}</div>
+              </td>
+              <td style="color:#475569">${u.email}</td>
+              <td>
+                <span class="sf-badge" style="background:#e0e7ff;color:#4338ca">
+                  ${planNames[u.plan] || u.plan || 'مجاني'}
+                </span>
+              </td>
+              <td>
+                <select class="js-change-user-plan" data-user-id="${u.id}" style="padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;font-size:.82rem;font-weight:700">
+                  <option value="free" ${u.plan==='free'?'selected':''}>مجاني (Free)</option>
+                  <option value="basic" ${u.plan==='basic'?'selected':''}>أساسي (Basic)</option>
+                  <option value="pro" ${u.plan==='pro'?'selected':''}>احترافي (Pro)</option>
+                  <option value="business" ${u.plan==='business'?'selected':''}>بيزنس (Business)</option>
+                </select>
+              </td>
+              <td>
+                <button class="btn btn-sm ${isUserAdmin?'btn-outline':'btn-ghost'} js-toggle-admin-btn" data-user-id="${u.id}" data-current="${isUserAdmin?'true':'false'}" style="border-radius:8px;font-size:.78rem">
+                  ${isUserAdmin ? '👑 أدمن (نشط)' : 'مستخدم عادي'}
+                </button>
+              </td>
+            </tr>`
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 3: SITES -->
+  <div id="adminTabContent_sites" class="sf-admin-tab-pane" style="${activeTab==='sites'?'':'display:none'}">
+    <div class="sf-admin-table-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <h3 style="font-size:1.2rem;font-weight:800;margin:0">مواقع المنصة المنشورة</h3>
+        <span style="font-size:.84rem;color:#64748b">إجمالي المواقع: ${sites.length}</span>
+      </div>
+
+      <table class="sf-admin-table">
+        <thead>
+          <tr>
+            <th>عنوان الموقع</th>
+            <th>الرابط / النطاق الفرعي</th>
+            <th>الزيارات</th>
+            <th>الحالة</th>
+            <th>تاريخ الإنشاء</th>
+            <th>معاينة</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sites.map(s => {
+            const url = subdomainUrl(s.slug)
+            return `
+            <tr>
+              <td><strong style="color:#0f172a">${s.title || 'موقع'}</strong></td>
+              <td><a href="${url}" target="_blank" style="color:#4f46e5;font-weight:600;direction:ltr;display:inline-block">${s.slug}</a></td>
+              <td><span style="font-weight:700">${s.views || 0}</span> مشاهدة</td>
+              <td>
+                <span class="sf-badge ${s.published?'sf-badge-completed':'sf-badge-pending'}">
+                  ${s.published ? 'منشور عالمياً' : 'مسودة'}
+                </span>
+              </td>
+              <td style="font-size:.8rem;color:#64748b">${new Date(s.createdAt||s.created_at||Date.now()).toLocaleDateString('ar-EG')}</td>
+              <td>
+                <a href="${url}" target="_blank" class="btn btn-outline btn-sm" style="border-radius:8px;font-size:.78rem;padding:4px 10px">
+                  زيارة الموقع ↗
+                </a>
+              </td>
+            </tr>`
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 4: SETTINGS -->
+  <div id="adminTabContent_settings" class="sf-admin-tab-pane" style="${activeTab==='settings'?'':'display:none'}">
+    <div class="sf-admin-table-card" style="max-width:650px">
+      <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">إعدادات أرقام بوابات الدفع</h3>
+      <p style="font-size:.86rem;color:#64748b;margin-bottom:24px">الأرقام التي تظهر للعملاء في نافذة الدفع للتحويل عليها.</p>
+
+      <form id="adminSettingsForm">
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.88rem">رقم محفظة فودافون كاش (Vodafone Cash)</label>
+          <input type="text" id="adminVodafoneInput" class="sf-pay-input" value="${settings.vodafone || '01028707543'}" required dir="ltr" style="background:#fff;color:#0f172a;border-color:#cbd5e1;text-align:right">
+        </div>
+
+        <div style="margin-bottom:24px">
+          <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.88rem">رقم / عنوان حساب انستاباي (InstaPay)</label>
+          <input type="text" id="adminInstapayInput" class="sf-pay-input" value="${settings.instapay || '01028707543'}" required dir="ltr" style="background:#fff;color:#0f172a;border-color:#cbd5e1;text-align:right">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="border-radius:12px;padding:12px 24px;font-weight:800">
+          💾 حفظ أرقام الدفع
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Lightbox Viewer -->
+<div id="sfReceiptLightbox" class="sf-lightbox" style="display:none">
+  <div class="sf-lightbox-content">
+    <button id="sfReceiptLightboxClose" class="sf-lightbox-close">✕</button>
+    <img id="sfReceiptLightboxImg" class="sf-lightbox-img" src="" alt="Receipt Fullscreen">
+  </div>
+</div>`
+  }
 }

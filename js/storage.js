@@ -85,6 +85,10 @@ const LocalDB = {
   pages: { get() { return LocalDB.get('pages')||[] }, save(p) { LocalDB.set('pages', p) } },
   session: { get() { return LocalDB.get('session') }, set(u) { LocalDB.set('session', u) }, clear() { localStorage.removeItem('sf_session') } },
   payments: { get() { return LocalDB.get('payments')||[] }, save(p) { LocalDB.set('payments', p) } },
+  paymentSettings: {
+    get() { return LocalDB.get('payment_settings') || { vodafone: '01028707543', instapay: '01028707543' } },
+    save(s) { LocalDB.set('payment_settings', s) }
+  },
 
   genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7) },
   clone(o) { return JSON.parse(JSON.stringify(o)) },
@@ -633,48 +637,195 @@ const API = {
     }
   },
 
-  async createPayment(planKey) {
+  async createPayment(planKey, details = {}) {
     const mode = await this._init()
-    if (mode === 'flask') {
-      const r = await this._fetch('/payments/create', {method:'POST', body:JSON.stringify({plan:planKey})})
-      if (r.ok) return (await r.json())
-    }
-    if (mode === 'supabase') { try { const uid=SB.getSession()?.data?.session?.user?.id; if(uid) return await SB.createPayment(uid, planKey, planKey==='pro'?9:29) } catch {} }
-    // local mode — save payment request
     const plans = await this.getPlans()
     const plan = plans[planKey]
-    const uid=(this.token||'').replace('local_','')
-    const payment = {id:LocalDB.genId(), userId:uid, plan:planKey, amount:plan?.price||0, status:'pending', currency:'EGP', created_at:new Date().toISOString()}
+    const defaultAmounts = { basic: 129, pro: 299, business: 599 }
+    const amount = details.amount || plan?.price || defaultAmounts[planKey] || 0
+    const currentUser = (typeof Auth !== 'undefined' && Auth.user) ? Auth.user : null
+    const uid = currentUser?.id || (this.token || '').replace('local_', '').replace('sb_', '') || 'usr_guest'
+
+    const paymentData = {
+      id: LocalDB.genId(),
+      userId: uid,
+      user_id: uid,
+      plan: planKey,
+      amount: amount,
+      currency: 'EGP',
+      status: details.status || 'pending',
+      method: details.method || 'vodafone',
+      sender_phone: details.sender_phone || '',
+      receipt_url: details.receipt_url || '',
+      ref_code: details.ref_code || '',
+      user_name: currentUser?.name || details.user_name || 'عميل',
+      user_email: currentUser?.email || details.user_email || '',
+      created_at: new Date().toISOString()
+    }
+
+    if (mode === 'supabase' && SB.isReady()) {
+      try {
+        const sbRes = await SB.createPayment(uid, planKey, amount, paymentData)
+        if (sbRes?.id) paymentData.id = sbRes.id
+      } catch (err) {
+        console.warn('Supabase createPayment notice:', err)
+      }
+    }
+
+    // LocalDB persistence
     const payments = LocalDB.payments.get()
-    payments.push(payment)
+    payments.unshift(paymentData)
     LocalDB.payments.save(payments)
-    return payment
+    return paymentData
   },
 
   async confirmPayment(id) {
     const mode = await this._init()
-    if (mode === 'flask') {
-      const r = await this._fetch('/payments/confirm/'+id, {method:'POST'})
-      if (r.ok) { const d=await r.json(); return d }
-    }
-    if (mode === 'supabase') { try { await SB.confirmPayment(id); return } catch {} }
-    // local mode — find payment and upgrade user plan
     const payments = LocalDB.payments.get()
-    const p = payments.find(x=>x.id===id)
-    if (p) { p.status='completed'; LocalDB.payments.save(payments); const uid=(this.token||'').replace('local_',''); const users=LocalDB.users.get(); const u=users.find(x=>x.id===uid); if(u){u.plan=p.plan;LocalDB.users.save(users)} }
-    return {ok: true}
+    const p = payments.find(x => x.id === id)
+    if (p) {
+      p.status = 'completed'
+      LocalDB.payments.save(payments)
+      const users = LocalDB.users.get()
+      const u = users.find(x => x.id === p.userId || x.email === p.user_email)
+      if (u) {
+        u.plan = p.plan
+        LocalDB.users.save(users)
+      }
+    }
+
+    if (mode === 'supabase' && SB.isReady()) {
+      try {
+        await SB.confirmPayment(id, p?.plan, p?.userId || p?.user_id)
+      } catch (err) {
+        console.warn('Supabase confirmPayment notice:', err)
+      }
+    }
+    return { ok: true }
+  },
+
+  async rejectPayment(id) {
+    const mode = await this._init()
+    const payments = LocalDB.payments.get()
+    const p = payments.find(x => x.id === id)
+    if (p) {
+      p.status = 'rejected'
+      LocalDB.payments.save(payments)
+    }
+
+    if (mode === 'supabase' && SB.isReady()) {
+      try {
+        await SB.rejectPayment(id)
+      } catch (err) {
+        console.warn('Supabase rejectPayment notice:', err)
+      }
+    }
+    return { ok: true }
   },
 
   async getPayments() {
     const mode = await this._init()
-    if (mode === 'flask') {
-      const r = await this._fetch('/payments')
-      if (r.ok) return (await r.json())
+    const uid = (this.token || '').replace('local_', '').replace('sb_', '')
+    if (mode === 'supabase' && SB.isReady()) {
+      try {
+        const { data } = await SB.client.from('payments').select('*').eq('user_id', uid).order('created_at', { ascending: false })
+        if (data && data.length) return data
+      } catch {}
     }
-    if (mode === 'supabase') { try { const r = await SB.client.from('payments').select('*').order('created_at',{ascending:false}); if(r.data) return r.data } catch {} }
-    // local mode — return user's payments
-    const uid=(this.token||'').replace('local_','')
-    return LocalDB.payments.get().filter(p=>p.userId===uid).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
+    return LocalDB.payments.get().filter(p => p.userId === uid || p.user_id === uid).sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+  },
+
+  async getAllPayments() {
+    const mode = await this._init()
+    let list = []
+    if (mode === 'supabase' && SB.isReady()) {
+      try {
+        const { data } = await SB.client.from('payments').select('*').order('created_at', { ascending: false })
+        if (data && data.length) {
+          list = data.map(d => ({
+            id: d.id,
+            userId: d.user_id,
+            user_id: d.user_id,
+            plan: d.plan,
+            amount: d.amount,
+            currency: d.currency || 'EGP',
+            status: d.status || 'pending',
+            method: d.method || 'vodafone',
+            sender_phone: d.sender_phone || '',
+            receipt_url: d.receipt_url || '',
+            ref_code: d.ref_code || '',
+            user_email: d.user_email || '',
+            user_name: d.user_name || '',
+            created_at: d.created_at
+          }))
+        }
+      } catch (err) {
+        console.warn('SB getAllPayments notice:', err)
+      }
+    }
+    const local = LocalDB.payments.get()
+    const map = new Map()
+    local.forEach(p => map.set(p.id, p))
+    list.forEach(p => map.set(p.id, p))
+    return Array.from(map.values()).sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+  },
+
+  async getAllUsers() {
+    const mode = await this._init()
+    let users = []
+    if (mode === 'supabase' && SB.isReady()) {
+      try {
+        const { data } = await SB.client.from('profiles').select('*').order('created_at', { ascending: false })
+        if (data && data.length) {
+          users = data.map(d => ({
+            id: d.id,
+            name: d.name || d.email.split('@')[0],
+            email: d.email,
+            plan: d.plan || 'free',
+            isAdmin: d.is_admin || false,
+            created_at: d.created_at
+          }))
+        }
+      } catch {}
+    }
+    const localUsers = LocalDB.users.get()
+    const map = new Map()
+    localUsers.forEach(u => map.set(u.id, u))
+    users.forEach(u => map.set(u.id, u))
+    return Array.from(map.values())
+  },
+
+  async updateUserPlan(userId, plan) {
+    const users = LocalDB.users.get()
+    const u = users.find(x => x.id === userId || x.email === userId)
+    if (u) { u.plan = plan; LocalDB.users.save(users) }
+    if (SB.isReady()) {
+      try {
+        await SB.client.from('profiles').update({ plan: plan }).eq('id', userId)
+      } catch {}
+    }
+    return { ok: true }
+  },
+
+  async toggleUserAdmin(userId, isAdmin) {
+    const users = LocalDB.users.get()
+    const u = users.find(x => x.id === userId || x.email === userId)
+    if (u) { u.isAdmin = isAdmin; LocalDB.users.save(users) }
+    if (SB.isReady()) {
+      try {
+        await SB.client.from('profiles').update({ is_admin: isAdmin }).eq('id', userId)
+      } catch {}
+    }
+    return { ok: true }
+  },
+
+  getPaymentSettings() {
+    return LocalDB.paymentSettings.get()
+  },
+
+  savePaymentSettings(settings) {
+    LocalDB.paymentSettings.save(settings)
+    return { ok: true }
   },
 
   async submitForm(slug, name, email, message) {

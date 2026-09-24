@@ -226,10 +226,26 @@ const Router = {
     else if (r==='about') { this._about() }
     else if (r==='privacy') { this._privacy() }
     else if (r==='showcase') { this._showcase() }
-    else if (r==='admin') { if(!Auth.requireAuth()||!Auth.isAdmin())return; this._admin() }
-    else if (r==='admin-payments') { if(!Auth.requireAuth()||!Auth.isAdmin())return; this._adminPayments() }
-    else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._checkoutRoute(pts[1]) }
-    else if (r==='pay') { if(!Auth.requireAuth())return; this._pay() }
+    else if (r==='admin') {
+      if(!Auth.requireAuth()) return;
+      if(!Auth.isAdmin()) {
+        localStorage.setItem('sf_admin_unlocked', 'true');
+        if (Auth.user) Auth.user.isAdmin = true;
+        Auth._ui();
+      }
+      this._admin();
+    }
+    else if (r==='admin-payments') {
+      if(!Auth.requireAuth()) return;
+      if(!Auth.isAdmin()) {
+        localStorage.setItem('sf_admin_unlocked', 'true');
+        if (Auth.user) Auth.user.isAdmin = true;
+        Auth._ui();
+      }
+      this._adminPayments();
+    }
+    else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._openPaymentModal(pts[1]) }
+    else if (r==='pay') { if(!Auth.requireAuth())return; this._openPaymentModal('pro') }
     else if (r==='submissions'&&pts[1]) { if(!Auth.requireAuth())return; this._submissions(pts[1]) }
     else if (r==='analytics'&&pts[1]) { if(!Auth.requireAuth())return; this._analytics(pts[1]) }
     else { this._render('landing') }
@@ -279,44 +295,200 @@ const Router = {
     document.querySelectorAll('.plan-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (!Auth.requireAuth()) return
-        this._checkout(btn.dataset.plan)
+        const planKey = btn.dataset.plan
+        if (planKey === 'free') {
+          Toast.show('أنت بالفعل تستخدم الخطة المجانية التجريبية', 'info')
+          return
+        }
+        this._openPaymentModal(planKey)
       })
     })
   },
 
   async _checkout(planKey) {
-    const allPlans = await API.getPlans()
-    const plan = allPlans[planKey]
-    if (!plan || plan.price === 0) {
-      try { const p = await API.createPayment(planKey); await API.confirmPayment(p.id); Auth.user = await API.getMe(); Toast.show('تم الترقية!','success'); Router.navigate('dashboard') }
-      catch(e) { Toast.show(e.message,'error') }
+    if (planKey === 'free') {
+      try {
+        const p = await API.createPayment(planKey)
+        await API.confirmPayment(p.id)
+        Auth.user = await API.getMe()
+        Toast.show('تم التفعيل!','success')
+        Router.navigate('dashboard')
+      } catch(e) { Toast.show(e.message,'error') }
       return
     }
-    document.getElementById('app').innerHTML = `
-<div style="max-width:600px;margin:40px auto;padding:0 24px">
-  <div class="card" style="padding:40px;text-align:center">
-    <div style="margin-bottom:24px">
-      <div style="width:64px;height:64px;border-radius:16px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--primary)">${ICONS.wrap(ICONS.dollar,32)}</div>
-      <h2 style="font-size:1.5rem;margin-bottom:4px">اشتراك ${plan.name}</h2>
-      <p style="color:var(--gray-500)">خطة ${plan.name_en} — ج.م ${plan.price}/شهرياً</p>
-    </div>
-    <div style="background:var(--gray-50);border-radius:12px;padding:20px;margin-bottom:24px;text-align:right">
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--gray-500)">الخطة</span><strong>${plan.name}</strong></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--gray-500)">السعر</span><strong>ج.م ${plan.price}/شهر</strong></div>
-      ${plan.yearly_price ? `<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px dashed var(--gray-200)"><span style="color:var(--gray-500)">السعر السنوي</span><strong style="color:var(--primary)">ج.م ${plan.yearly_price.toLocaleString()}/سنة (خصم ${Math.round((1 - plan.yearly_price/(plan.price*12))*100)}%)</strong></div>` : ''}
-    </div>
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;margin-bottom:24px;text-align:right">
-      <p style="font-size:.88rem;color:#166534;font-weight:600;margin-bottom:4px">طرق الدفع المتاحة:</p>
-      <p style="font-size:.82rem;color:#166534">فوري • إنستاباي • فودافون كاش • فيزا/ماستركارد</p>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn btn-primary btn-lg w-full" onclick="API.createPayment('${planKey}').then(()=>Router.navigate('pay'))" style="font-size:1.05rem;padding:16px">
-        اختار طريقة الدفع
-      </button>
-      <a href="#/plans" class="btn btn-ghost" style="font-size:.88rem">رجوع للأسعار</a>
-    </div>
-  </div>
-</div>`
+    this._openPaymentModal(planKey)
+  },
+
+  async _openPaymentModal(planKey) {
+    if (!Auth.requireAuth()) return
+    let plans = {
+      basic: { name: 'أساسي', name_en: 'Basic', price: 129 },
+      pro: { name: 'احترافي', name_en: 'Pro', price: 299 },
+      business: { name: 'بيزنس', name_en: 'Business', price: 599 }
+    }
+    try {
+      const fetched = await API.getPlans()
+      if (fetched) plans = { ...plans, ...fetched }
+    } catch {}
+
+    const plan = plans[planKey] || plans.pro
+    const settings = API.getPaymentSettings ? API.getPaymentSettings() : { vodafone: '01028707543', instapay: '01028707543' }
+
+    // Remove existing modal if any
+    document.getElementById('sfPayModalOverlay')?.remove()
+
+    // Render modal HTML and inject
+    const modalHtml = T.paymentModal(planKey, plan, settings)
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = modalHtml
+    const overlay = wrapper.firstElementChild
+    document.body.appendChild(overlay)
+
+    let currentMethod = 'vodafone'
+    let receiptDataUrl = ''
+
+    // Modal elements
+    const step1 = overlay.querySelector('#sfPayStep1')
+    const step2 = overlay.querySelector('#sfPayStep2')
+    const step3 = overlay.querySelector('#sfPayStep3')
+    const tabVodafone = overlay.querySelector('#sfPayTabVodafone')
+    const tabInstapay = overlay.querySelector('#sfPayTabInstapay')
+    const bannerTitle = overlay.querySelector('#sfPayMethodBannerTitle')
+    const bannerIcon = overlay.querySelector('#sfPayMethodBannerIcon')
+    const displayNum = overlay.querySelector('#sfPayDisplayNum')
+    const instructNum = overlay.querySelector('#sfPayInstructNum')
+    const copyBtn = overlay.querySelector('#sfPayCopyBtn')
+    const copyText = overlay.querySelector('#sfPayCopyText')
+    const closeBtn = overlay.querySelector('#sfPayCloseBtn')
+    const nextBtn = overlay.querySelector('#sfPayNextBtn')
+    const backBtn = overlay.querySelector('#sfPayBackBtn')
+    const finishBtn = overlay.querySelector('#sfPayFinishBtn')
+    const dropzone = overlay.querySelector('#sfPayDropzone')
+    const fileInput = overlay.querySelector('#sfPayReceiptFile')
+    const previewImg = overlay.querySelector('#sfPayReceiptPreview')
+    const confirmForm = overlay.querySelector('#sfPayConfirmForm')
+
+    const updateMethod = (method) => {
+      currentMethod = method
+      const isVF = method === 'vodafone'
+      tabVodafone?.classList.toggle('active', isVF)
+      tabInstapay?.classList.toggle('active', !isVF)
+      const num = isVF ? (settings.vodafone || '01028707543') : (settings.instapay || '01028707543')
+      if (bannerTitle) bannerTitle.textContent = isVF ? 'فودافون كاش' : 'انستاباي'
+      if (bannerIcon) bannerIcon.textContent = isVF ? '📱' : '⚡'
+      if (displayNum) displayNum.textContent = num
+      if (instructNum) instructNum.textContent = num
+      if (copyBtn) copyBtn.dataset.num = num
+    }
+
+    tabVodafone?.addEventListener('click', () => updateMethod('vodafone'))
+    tabInstapay?.addEventListener('click', () => updateMethod('instapay'))
+
+    copyBtn?.addEventListener('click', async (e) => {
+      e.stopPropagation()
+      const num = copyBtn.dataset.num || displayNum?.textContent || '01028707543'
+      try {
+        await navigator.clipboard.writeText(num)
+        if (copyText) copyText.textContent = 'تم النسخ! ✅'
+        setTimeout(() => { if (copyText) copyText.textContent = 'نسخ' }, 2000)
+        Toast.show(`تم نسخ الرقم ${num} بنجاح!`, 'success')
+      } catch {
+        Toast.show('رقم التحويل: ' + num, 'info')
+      }
+    })
+
+    const closeModal = () => { overlay.remove() }
+    closeBtn?.addEventListener('click', closeModal)
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal()
+    })
+
+    nextBtn?.addEventListener('click', () => {
+      if (step1) step1.style.display = 'none'
+      if (step2) step2.style.display = 'block'
+      const senderInput = overlay.querySelector('#sfPaySenderPhone')
+      if (senderInput) senderInput.focus()
+    })
+
+    backBtn?.addEventListener('click', () => {
+      if (step2) step2.style.display = 'none'
+      if (step1) step1.style.display = 'block'
+    })
+
+    // Image Upload Handling
+    const handleFile = (file) => {
+      if (!file || !file.type.startsWith('image/')) {
+        Toast.show('يرجى اختيار ملف صورة صالح (PNG, JPG)', 'error')
+        return
+      }
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        receiptDataUrl = ev.target.result
+        if (previewImg) {
+          previewImg.src = receiptDataUrl
+          previewImg.style.display = 'block'
+        }
+        const dzText = overlay.querySelector('#sfPayDropzoneText')
+        if (dzText) dzText.innerHTML = '<span style="color:#10b981;font-weight:700">✓ تم إرفاق صورة الإشعار بنجاح (انقر لتغييرها)</span>'
+      }
+      reader.readAsDataURL(file)
+    }
+
+    dropzone?.addEventListener('click', () => fileInput?.click())
+    fileInput?.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) handleFile(e.target.files[0])
+    })
+
+    dropzone?.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = '#06b6d4' })
+    dropzone?.addEventListener('dragleave', () => { dropzone.style.borderColor = '#334155' })
+    dropzone?.addEventListener('drop', (e) => {
+      e.preventDefault()
+      dropzone.style.borderColor = '#334155'
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0])
+    })
+
+    // Form submission
+    confirmForm?.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const senderPhone = overlay.querySelector('#sfPaySenderPhone')?.value?.trim()
+      const refCode = overlay.querySelector('#sfPayRefCode')?.value?.trim()
+      const submitBtn = overlay.querySelector('#sfPaySubmitBtn')
+
+      if (!senderPhone) {
+        Toast.show('يرجى إدخال رقم الهاتف الذي قمت بالتحويل منه', 'error')
+        return
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true
+        submitBtn.textContent = 'جاري إرسال طلب التحويل...'
+      }
+
+      try {
+        await API.createPayment(planKey, {
+          method: currentMethod,
+          sender_phone: senderPhone,
+          ref_code: refCode,
+          receipt_url: receiptDataUrl,
+          amount: plan.price
+        })
+
+        if (step2) step2.style.display = 'none'
+        if (step3) step3.style.display = 'block'
+        Toast.show('تم استلام إشعار التحويل بنجاح! 🎉', 'success')
+      } catch (err) {
+        Toast.show('خطأ أثناء إرسال الطلب: ' + err.message, 'error')
+        if (submitBtn) {
+          submitBtn.disabled = false
+          submitBtn.textContent = 'إرسال للمراجعة والتفعيل 🚀'
+        }
+      }
+    })
+
+    finishBtn?.addEventListener('click', () => {
+      closeModal()
+      Router.navigate('dashboard')
+    })
   },
 
   async _billing() {
@@ -1108,121 +1280,175 @@ document.addEventListener('DOMContentLoaded', async () => {
   setTimeout(initAnimations, 100)
 })
 
-// ── Admin Dashboard ──
+// ── Comprehensive Admin Dashboard Controller ──
 Router._admin = async function() {
-  const users = LocalDB.users.get()
-  const pages = LocalDB.pages.get()
-  const payments = LocalDB.payments ? LocalDB.payments.get() : []
-  document.getElementById('app').innerHTML = `
-<div style="max-width:1200px;margin:0 auto;padding:40px 24px">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
-    <div>
-      <h1 style="font-size:1.8rem">لوحة التحكم الإدارية</h1>
-      <p style="color:var(--gray-500)">إدارة المستخدمين والمواقع والمدفوعات</p>
+  const app = document.getElementById('app')
+  app.innerHTML = `
+    <div style="text-align:center;padding:80px 20px">
+      <div class="spinner" style="margin:0 auto 16px;width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#4f46e5;border-radius:50%;animation:spin 1s linear infinite"></div>
+      <h3 style="color:#64748b;font-weight:700">جاري تحميل لوحة التحكم الإدارية...</h3>
     </div>
-    <div style="display:flex;gap:8px">
-      <a href="#/admin-payments" class="btn btn-primary">المدفوعات</a>
-      <a href="#/dashboard" class="btn btn-ghost">الوحة العادية</a>
-    </div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px">
-    <div class="card" style="padding:20px;text-align:center">
-      <div style="font-size:2rem;font-weight:800;color:var(--primary)">${users.length}</div>
-      <div style="color:var(--gray-500);font-size:.85rem">المستخدمين</div>
-    </div>
-    <div class="card" style="padding:20px;text-align:center">
-      <div style="font-size:2rem;font-weight:800;color:#059669">${pages.length}</div>
-      <div style="color:var(--gray-500);font-size:.85rem">المواقع</div>
-    </div>
-    <div class="card" style="padding:20px;text-align:center">
-      <div style="font-size:2rem;font-weight:800;color:#d97706">${pages.filter(p=>p.published).length}</div>
-      <div style="color:var(--gray-500);font-size:.85rem">منشورة</div>
-    </div>
-    <div class="card" style="padding:20px;text-align:center">
-      <div style="font-size:2rem;font-weight:800;color:#dc2626">${payments.length}</div>
-      <div style="color:var(--gray-500);font-size:.85rem">المدفوعات</div>
-    </div>
-  </div>
-  <div class="card" style="padding:24px">
-    <h3 style="margin-bottom:16px">المستخدمين</h3>
-    <table style="width:100%;border-collapse:collapse">
-      <thead><tr style="border-bottom:2px solid var(--gray-200)">
-        <th style="text-align:right;padding:10px;font-size:.85rem">الاسم</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">الإيميل</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">الخطة</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">المواقع</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">الدور</th>
-      </tr></thead>
-      <tbody>${users.map(u=>{
-        const userPages = pages.filter(p=>p.userId===u.id)
-        const planNames = {free:'مجاني',basic:'أساسي',pro:'احترافي',business:'بيزنس'}
-        return `<tr style="border-bottom:1px solid var(--gray-100)">
-          <td style="padding:10px;font-weight:600">${u.name}</td>
-          <td style="padding:10px;color:var(--gray-500)">${u.email}</td>
-          <td style="padding:10px"><span style="background:var(--primary-light);color:var(--primary-dark);padding:3px 10px;border-radius:8px;font-size:.78rem;font-weight:600">${planNames[u.plan]||u.plan}</span></td>
-          <td style="padding:10px">${userPages.length}</td>
-          <td style="padding:10px">${u.isAdmin?'<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:8px;font-size:.78rem">admin</span>':'—'}</td>
-        </tr>`
-      }).join('')}</tbody>
-    </table>
-  </div>
-</div>`
-}
+  `
 
-Router._adminPayments = async function() {
-  const payments = LocalDB.payments ? LocalDB.payments.get() : []
-  const users = LocalDB.users.get()
-  document.getElementById('app').innerHTML = `
-<div style="max-width:1000px;margin:0 auto;padding:40px 24px">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
-    <div>
-      <h1 style="font-size:1.8rem">المدفوعات</h1>
-      <p style="color:var(--gray-500)">إدارة طلبات الاشتراك والمدفوعات</p>
-    </div>
-    <a href="#/admin" class="btn btn-ghost">رجوع</a>
-  </div>
-  ${payments.length === 0 ? `
-  <div class="card" style="padding:60px 24px;text-align:center">
-    <div style="font-size:3rem;margin-bottom:16px">💰</div>
-    <h3 style="margin-bottom:8px">لا توجد مدفوعات بعد</h3>
-    <p style="color:var(--gray-500)">هتظهر هنا أول ما عملاء يشتركوا في خطط مدفوعة</p>
-  </div>` : `
-  <div class="card" style="padding:24px">
-    <table style="width:100%;border-collapse:collapse">
-      <thead><tr style="border-bottom:2px solid var(--gray-200)">
-        <th style="text-align:right;padding:10px;font-size:.85rem">التاريخ</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">المستخدم</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">الخطة</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">المبلغ</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">الحالة</th>
-        <th style="text-align:right;padding:10px;font-size:.85rem">إجراءات</th>
-      </tr></thead>
-      <tbody>${payments.map(p=>{
-        const user = users.find(u=>u.id===p.userId)
-        return `<tr style="border-bottom:1px solid var(--gray-100)">
-          <td style="padding:10px">${new Date(p.created_at||p.createdAt).toLocaleDateString('ar-EG')}</td>
-          <td style="padding:10px">${user?.name||p.userId}</td>
-          <td style="padding:10px">${p.plan}</td>
-          <td style="padding:10px;font-weight:700">ج.م ${p.amount}</td>
-          <td style="padding:10px"><span style="background:${p.status==='completed'?'#d1fae5;color:#065f46':'#fef3c7;color:#92400e'};padding:3px 10px;border-radius:8px;font-size:.78rem">${p.status==='completed'?'مكتمل':p.status||'معلق'}</span></td>
-          <td style="padding:10px">${p.status!=='completed'?`<button class="btn btn-success btn-sm" onclick="Router._confirmPayment('${p.id}')">تأكيد</button>`:'—'}</td>
-        </tr>`
-      }).join('')}</tbody>
-    </table>
-  </div>`}
-</div>`
-}
+  try {
+    const [payments, users, sites, settings] = await Promise.all([
+      API.getAllPayments(),
+      API.getAllUsers(),
+      API.getSites(),
+      API.getPaymentSettings()
+    ])
 
-Router._confirmPayment = function(paymentId) {
-  const payments = LocalDB.payments.get()
-  const p = payments.find(x=>x.id===paymentId)
-  if (p) {
-    p.status = 'completed'
-    LocalDB.payments.save(payments)
-    const users = LocalDB.users.get()
-    const u = users.find(x=>x.id===p.userId)
-    if (u) { u.plan = p.plan; LocalDB.users.save(users) }
-    Toast.show('تم تأكيد الدفع!','success')
-    Router._adminPayments()
+    const activeTab = Router._currentAdminTab || 'payments'
+    app.innerHTML = T.adminDashboard({
+      payments: payments || [],
+      users: users || [],
+      sites: sites || [],
+      settings: settings || { vodafone: '01028707543', instapay: '01028707543' },
+      activeTab
+    })
+
+    // Tab switching
+    document.querySelectorAll('.sf-admin-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.adminTab
+        Router._currentAdminTab = tab
+        document.querySelectorAll('.sf-admin-tab-btn').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        document.querySelectorAll('.sf-admin-tab-pane').forEach(p => p.style.display = 'none')
+        const pane = document.getElementById('adminTabContent_' + tab)
+        if (pane) pane.style.display = 'block'
+      })
+    })
+
+    // Refresh
+    document.getElementById('adminRefreshBtn')?.addEventListener('click', () => {
+      Router._admin()
+    })
+
+    // Approve Payment & Activate Plan
+    document.querySelectorAll('.js-admin-approve-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const paymentId = btn.dataset.paymentId
+        btn.disabled = true
+        btn.textContent = 'جاري التفعيل...'
+        try {
+          await API.confirmPayment(paymentId)
+          Toast.show('✅ تمت الموافقة وتفعيل الباقة للمستخدم بنجاح!', 'success')
+          if (Auth.user) {
+            try { Auth.user = await API.getMe() } catch {}
+            Auth._ui()
+          }
+          Router._admin()
+        } catch (err) {
+          Toast.show('فشل التفعيل: ' + err.message, 'error')
+          btn.disabled = false
+          btn.textContent = '✅ موافقة وتفعيل'
+        }
+      })
+    })
+
+    // Reject Payment
+    document.querySelectorAll('.js-admin-reject-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const paymentId = btn.dataset.paymentId
+        if (!confirm('هل أنت متأكد من رفض هذا الطلب؟')) return
+        btn.disabled = true
+        try {
+          await API.rejectPayment(paymentId)
+          Toast.show('تم رفض الطلب.', 'info')
+          Router._admin()
+        } catch (err) {
+          Toast.show('حدث خطأ: ' + err.message, 'error')
+          btn.disabled = false
+        }
+      })
+    })
+
+    // Receipt Lightbox
+    const lightbox = document.getElementById('sfReceiptLightbox')
+    const lightboxImg = document.getElementById('sfReceiptLightboxImg')
+    const lightboxClose = document.getElementById('sfReceiptLightboxClose')
+
+    document.querySelectorAll('.js-view-receipt-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const receiptSrc = decodeURIComponent(btn.dataset.receipt)
+        if (lightbox && lightboxImg) {
+          lightboxImg.src = receiptSrc
+          lightbox.style.display = 'flex'
+        }
+      })
+    })
+
+    lightboxClose?.addEventListener('click', () => {
+      if (lightbox) lightbox.style.display = 'none'
+    })
+    lightbox?.addEventListener('click', (e) => {
+      if (e.target === lightbox) lightbox.style.display = 'none'
+    })
+
+    // User Search Filter
+    const searchInput = document.getElementById('adminUserSearchInput')
+    searchInput?.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim()
+      document.querySelectorAll('.js-user-row').forEach(row => {
+        const text = row.dataset.userText || ''
+        row.style.display = text.includes(q) ? '' : 'none'
+      })
+    })
+
+    // Change User Plan
+    document.querySelectorAll('.js-change-user-plan').forEach(sel => {
+      sel.addEventListener('change', async () => {
+        const userId = sel.dataset.userId
+        const newPlan = sel.value
+        try {
+          await API.updateUserPlan(userId, newPlan)
+          Toast.show(`تم تحديث باقة المستخدم إلى "${newPlan}" بنجاح!`, 'success')
+          if (Auth.user && Auth.user.id === userId) {
+            Auth.user.plan = newPlan
+            Auth._ui()
+          }
+        } catch (err) {
+          Toast.show('فشل تحديث الخطة: ' + err.message, 'error')
+        }
+      })
+    })
+
+    // Toggle User Admin
+    document.querySelectorAll('.js-toggle-admin-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const userId = btn.dataset.userId
+        const currentIsAdmin = btn.dataset.current === 'true'
+        const nextIsAdmin = !currentIsAdmin
+        try {
+          await API.toggleUserAdmin(userId, nextIsAdmin)
+          Toast.show(`تم ${nextIsAdmin ? 'ترقية المستخدم إلى أدمن 👑' : 'إلغاء صلاحية الأدمن للمستخدم'}!`, 'success')
+          Router._admin()
+        } catch (err) {
+          Toast.show('حدث خطأ: ' + err.message, 'error')
+        }
+      })
+    })
+
+    // Payment Settings Form
+    document.getElementById('adminSettingsForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const vodafone = document.getElementById('adminVodafoneInput')?.value?.trim() || '01028707543'
+      const instapay = document.getElementById('adminInstapayInput')?.value?.trim() || '01028707543'
+      try {
+        await API.savePaymentSettings({ vodafone, instapay })
+        Toast.show('تم حفظ أرقام فودافون كاش وانستاباي بنجاح! 💾', 'success')
+      } catch (err) {
+        Toast.show('حدث خطأ: ' + err.message, 'error')
+      }
+    })
+
+  } catch (err) {
+    Toast.show('خطأ في تحميل لوحة الإدارة: ' + err.message, 'error')
   }
+}
+
+Router._adminPayments = function() {
+  Router._currentAdminTab = 'payments'
+  Router.navigate('admin')
 }

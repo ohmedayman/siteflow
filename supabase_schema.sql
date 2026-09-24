@@ -113,9 +113,22 @@ create table if not exists public.payments (
   amount numeric not null default 0,
   currency text default 'EGP',
   plan text not null,
-  status text default 'completed',
+  status text default 'pending',
+  method text default 'vodafone',
+  sender_phone text default '',
+  receipt_url text default '',
+  ref_code text default '',
+  user_email text default '',
+  user_name text default '',
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+alter table public.payments add column if not exists method text default 'vodafone';
+alter table public.payments add column if not exists sender_phone text default '';
+alter table public.payments add column if not exists receipt_url text default '';
+alter table public.payments add column if not exists ref_code text default '';
+alter table public.payments add column if not exists user_email text default '';
+alter table public.payments add column if not exists user_name text default '';
 
 alter table public.payments enable row level security;
 drop policy if exists "Payments all access" on public.payments;

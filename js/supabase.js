@@ -464,21 +464,62 @@ const SB = {
   },
 
   // ── Payments ──
-  async createPayment(userId, plan, amount) {
+  async createPayment(userId, plan, amount, details = {}) {
     if (!this.isReady()) return null;
     try {
-      const { data, error } = await this.client.from('payments').insert({
+      const payload = {
         user_id: userId,
         amount: amount,
         currency: 'EGP',
         plan: plan,
-        status: 'completed'
-      }).select().single();
-      if (error) throw new Error(error.message);
+        status: details.status || 'pending',
+        method: details.method || 'vodafone',
+        sender_phone: details.sender_phone || '',
+        receipt_url: details.receipt_url || '',
+        ref_code: details.ref_code || '',
+        user_email: details.user_email || '',
+        user_name: details.user_name || ''
+      };
+      const { data, error } = await this.client.from('payments').insert(payload).select().single();
+      if (error) {
+        const { data: fb, error: fbErr } = await this.client.from('payments').insert({
+          user_id: userId,
+          amount: amount,
+          currency: 'EGP',
+          plan: plan,
+          status: details.status || 'pending'
+        }).select().single();
+        if (fbErr) throw new Error(fbErr.message);
+        return fb;
+      }
       return data;
     } catch (e) {
       console.warn('Payment insert notice:', e.message);
-      return { id: 'pay_' + Date.now(), plan, amount, status: 'completed' };
+      return { id: 'pay_' + Date.now(), plan, amount, status: 'pending', ...details };
+    }
+  },
+
+  async confirmPayment(id, plan, userId) {
+    if (!this.isReady()) return null;
+    try {
+      await this.client.from('payments').update({ status: 'completed' }).eq('id', id);
+      if (userId && plan) {
+        await this.client.from('profiles').update({ plan: plan }).eq('id', userId);
+      }
+      return { ok: true };
+    } catch (e) {
+      console.warn('Confirm payment notice:', e.message);
+      return { ok: false, error: e.message };
+    }
+  },
+
+  async rejectPayment(id) {
+    if (!this.isReady()) return null;
+    try {
+      await this.client.from('payments').update({ status: 'rejected' }).eq('id', id);
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: e.message };
     }
   },
 

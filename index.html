@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=36">
+<link rel="stylesheet" href="css/style.css?v=37">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
@@ -58,6 +58,10 @@
         <a href="#/settings" class="nav-link nav-link-app" id="navLinkSettings">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
           <span>قاعدة البيانات</span>
+        </a>
+        <a href="#/admin" class="nav-link nav-link-app js-admin-link hidden" id="navLinkAdmin" style="color:#d97706;font-weight:700">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <span>لوحة الأدمن 👑</span>
         </a>
       </nav>
 
@@ -134,16 +138,16 @@
     </div>
   </header>
   <main class="app-main" id="app"></main>
-  <script src="js/icons.js?v=35"></script>
-  <script src="js/presets.js?v=35"></script>
-  <script src="js/templates-data.js?v=35"></script>
-  <script src="js/supabase.js?v=36"></script>
-  <script src="js/storage.js?v=36"></script>
-  <script src="js/auth.js?v=36"></script>
-  <script src="js/ai.js?v=36"></script>
-  <script src="js/templates.js?v=36"></script>
-  <script src="js/builder.js?v=36"></script>
-  <script src="js/app.js?v=36"></script>
+  <script src="js/icons.js?v=37"></script>
+  <script src="js/presets.js?v=37"></script>
+  <script src="js/templates-data.js?v=37"></script>
+  <script src="js/supabase.js?v=37"></script>
+  <script src="js/storage.js?v=37"></script>
+  <script src="js/auth.js?v=37"></script>
+  <script src="js/ai.js?v=37"></script>
+  <script src="js/templates.js?v=37"></script>
+  <script src="js/builder.js?v=37"></script>
+  <script src="js/app.js?v=37"></script>
   <script>
     window.onerror = function(msg, src, line, col, err) {
       if (typeof IS_LOCAL !== 'undefined' && !IS_LOCAL) {
