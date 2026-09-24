@@ -567,30 +567,25 @@ const Dash = {
           const daysLeft = getDaysLeft(p, Auth.user?.plan || 'free')
           const expired = isExpired(p, Auth.user?.plan || 'free')
           return `<div class="site-card card" data-site-status="${p.published?'published':'draft'}">
-            <div class="site-card-preview">
-              <div style="position:absolute;top:12px;left:12px;display:flex;gap:5px">
-                <span style="width:7px;height:7px;border-radius:50%;background:#cbd5e1;display:inline-block"></span>
-                <span style="width:7px;height:7px;border-radius:50%;background:#cbd5e1;display:inline-block"></span>
-                <span style="width:7px;height:7px;border-radius:50%;background:#cbd5e1;display:inline-block"></span>
-              </div>
+            <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}cc,${tc}66)">
               <span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span>
               <span class="view-badge">${ICONS.wrap(ICONS.eye,13)} ${p.views||0}</span>
-              ${(Auth.user?.plan||'free')==='free'?`<span class="view-badge" style="${expired?'background:#fee2e2;color:#dc2626;border-color:#fecaca':'background:#fef3c7;color:#d97706;border-color:#fde68a'};right:auto;left:12px">${expired?'منتهي ⏳':`متبقي ${daysLeft} يوم`}</span>`:''}
+              ${(Auth.user?.plan||'free')==='free'?`<span class="view-badge" style="${expired?'background:#dc2626;color:#fff':'background:#f59e0b;color:#fff'};right:auto;left:12px">${expired?'منتهي ⏳':`متبقي ${daysLeft} يوم`}</span>`:''}
             </div>
             <div class="site-card-body">
               <h3>${p.title}</h3>
               <span class="site-url">${siteUrl}</span>
               <div class="site-meta">
-                <span class="status-badge ${p.published?'status-published':'status-draft'}">${p.published?'منشور (Live)':'مسودة (Draft)'}</span>
-                <span style="font-size:.78rem;color:var(--gray-400)">${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString('ar-EG')}</span>
+                <span class="status-badge ${p.published?'status-published':'status-draft'}">${p.published?'Published':'Draft'}</span>
+                <span style="font-size:.78rem;color:var(--gray-400)">${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString()}</span>
               </div>
             </div>
             <div class="site-card-actions">
-              <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">${ICONS.wrap(ICONS.pencil,14)} تعديل الموقع</a>
-              ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">${ICONS.wrap(ICONS.external,14)} زيارة الموقع</a>`:''}
-              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm" title="الرسائل الواردة">${ICONS.wrap(ICONS.message,15)}</a>
-              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm" title="التحليلات">${ICONS.wrap(ICONS.chart,15)}</a>
-              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="حذف الموقع">${ICONS.wrap(ICONS.trash,15)}</button>
+              <a href="#/builder/${p.id}" class="btn btn-primary btn-sm">${ICONS.wrap(ICONS.pencil,14)} Edit</a>
+              ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">${ICONS.wrap(ICONS.external,14)} View</a>`:''}
+              <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm" title="Submissions">${ICONS.wrap(ICONS.message,15)}</a>
+              <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm" title="Analytics">${ICONS.wrap(ICONS.chart,15)}</a>
+              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="Delete">${ICONS.wrap(ICONS.trash,15)}</button>
             </div>
           </div>`
         }).join('')}</div>`

@@ -12,13 +12,19 @@ const T = {
 
   landing() { return `
 <div class="lp-hero">
-  <div class="lp-badge">المنصة العربية الأولى لبناء المواقع والـ E-Commerce</div>
-  <h1 class="lp-title">ابنِ موقعك الإلكتروني الاحترافي<br>بأعلى معايير السرعة وبدون كود</h1>
-  <p class="lp-subtitle">صمم موقعك أو متجرك في دقائق معدودة مع أسرع محرر مرئي، وانشره فوراً بدومين فرعي مجاني أو دومين خاص بك مع أرشفة فورية في Google.</p>
+  <div class="hero-shapes">
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+    <div class="hero-shape"></div>
+  </div>
+  <div class="lp-badge">${ICONS.wrap(ICONS.sparkles,14)} المنصة العربية الأولى لبناء المواقع والـ E-Commerce</div>
+  <h1 class="lp-title">ابنِ موقعك الإلكتروني <span class="gradient-text">الاحترافي 4K</span><br>بدون كتابة كود برمجي واحد</h1>
+  <p class="lp-subtitle">صمم موقعك أو متجرك في دقائق معدودة مع أسرع محرر مرئي سحب وإفلات،<br>وانشره فوراً بدومين فرعي مجاني أو دومين خاص بك مع تسريع محركات البحث Google.</p>
   <div class="cta-buttons">
-    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest">ابدأ مجاناً الآن 🚀</a>
+    <a href="#/login" class="btn btn-primary btn-lg js-auth-guest" style="padding:16px 32px;font-size:1.1rem;border-radius:14px;box-shadow:0 8px 25px rgba(99,102,241,0.35)">ابدأ مجاناً الآن 🚀</a>
     <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden">الانتقال للوحة التحكم</a>
-    <a href="#/plans" class="btn btn-outline btn-lg">استعرض الأسعار والباقات</a>
+    <a href="#/plans" class="btn btn-outline btn-lg" style="padding:16px 28px;font-size:1.05rem;border-radius:14px">استعرض الأسعار والباقات</a>
   </div>
   <div class="lp-social-proof">
     <div class="lp-avatars">
@@ -111,23 +117,23 @@ const T = {
 <div class="lp-features-bento">
   <div class="bento-card bento-large">
     <div class="bento-img-wrap">
-      <div class="bento-img" style="background:#f8fafc;border:1px solid #e2e8f0;height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
-        <div style="color:#0f172a;text-align:center;padding:32px">
-          <div style="margin-bottom:12px;color:#0f172a">${ICONS.wrap(ICONS.sparkles,44)}</div>
-          <div style="font-size:1.3rem;font-weight:800">محرر مرئي ذكي وسريع</div>
-          <div style="font-size:.88rem;color:#64748b;margin-top:4px">سحب وإفلات وتعديل فوري بدون تعقيد</div>
+      <div class="bento-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
+        <div style="color:#fff;text-align:center;padding:32px">
+          <div style="margin-bottom:12px">${ICONS.wrap(ICONS.sparkles,48)}</div>
+          <div style="font-size:1.4rem;font-weight:800">محرر مرئي ذكي</div>
+          <div style="font-size:.9rem;opacity:.9;margin-top:4px">سحب وإفلات وتعديل مباشر</div>
         </div>
       </div>
     </div>
-    <h3>محرر بصري متطور</h3>
+    <h3>محرر بصري فائق السرعة</h3>
     <p>واجهة سهلة ومرنة تمنحك تحكماً كاملاً بكل عنصر ومحتوى داخل موقعك.</p>
   </div>
   <div class="bento-card bento-top-right">
     <div class="bento-img-wrap">
-      <div class="bento-img" style="background:#f8fafc;border:1px solid #e2e8f0;height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
-        <div style="color:#0f172a;text-align:center;padding:24px">
-          <div style="margin-bottom:8px;color:#0f172a">${ICONS.wrap(ICONS.folder,36)}</div>
-          <div style="font-size:1.05rem;font-weight:800">قوالب عربية جاهزة</div>
+      <div class="bento-img" style="background:linear-gradient(135deg,#1e293b,#334155);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
+        <div style="color:#fff;text-align:center;padding:24px">
+          <div style="margin-bottom:8px">${ICONS.wrap(ICONS.folder,40)}</div>
+          <div style="font-size:1.1rem;font-weight:700">قوالب جاهزة بالعربية</div>
         </div>
       </div>
     </div>
@@ -136,10 +142,10 @@ const T = {
   </div>
   <div class="bento-card bento-bottom-right">
     <div class="bento-img-wrap">
-      <div class="bento-img" style="background:#f8fafc;border:1px solid #e2e8f0;height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
-        <div style="color:#0f172a;text-align:center;padding:24px">
-          <div style="margin-bottom:8px;color:#0f172a">${ICONS.wrap(ICONS.dollar,36)}</div>
-          <div style="font-size:1.05rem;font-weight:800">دعم محلي وسريع</div>
+      <div class="bento-img" style="background:linear-gradient(135deg,#059669,#10b981);height:100%;display:flex;align-items:center;justify-content:center;border-radius:16px">
+        <div style="color:#fff;text-align:center;padding:24px">
+          <div style="margin-bottom:8px">${ICONS.wrap(ICONS.dollar,40)}</div>
+          <div style="font-size:1.1rem;font-weight:700">دعم محلي وسريع</div>
         </div>
       </div>
     </div>
@@ -403,17 +409,40 @@ const T = {
 
   login() { return `
 <div class="auth-page" dir="rtl">
-  <div class="auth-form">
-    <div style="text-align:center;margin-bottom:24px">
-      <img src="assets/sitflow.svg" alt="SiteFlow" width="52" height="52" style="margin:0 auto 12px;border-radius:10px">
-      <h2 style="font-size:1.6rem;font-weight:800;color:#0f172a;margin-bottom:4px">مرحباً بك في SiteFlow</h2>
-      <p style="color:var(--gray-500);font-size:.9rem">سجل دخولك أو أنشئ حسابك لإدارة مواقعك ومبيعاتك</p>
+  <div class="auth-left">
+    <div class="auth-left-content">
+      <div style="margin-bottom:32px;opacity:.9">${ICONS.wrap(ICONS.sparkles,48)}</div>
+      <h1 style="font-size:2.2rem;font-weight:800;color:#fff;line-height:1.3;margin-bottom:16px">
+        ابنِ موقعك الإلكتروني<br>الاحترافي في دقائق
+      </h1>
+      <p style="font-size:1.05rem;color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:32px">
+        المنصة السحابية الأولى لبناء وإطلاق المواقع والمتاجر الإلكترونية المتكاملة بدون كود.
+      </p>
+      <div style="margin-top:40px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px;font-size:1rem;color:#fff">
+          <span style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center">${ICONS.wrap(ICONS.check,16)}</span>
+          محرر مرئي تفاعلي فائق السرعة
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:1rem;color:#fff">
+          <span style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center">${ICONS.wrap(ICONS.check,16)}</span>
+          مكتبة قوالب عربية جاهزة ومجهزة لأفضل المبيعات
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:1rem;color:#fff">
+          <span style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center">${ICONS.wrap(ICONS.check,16)}</span>
+          استضافة سحابية سريعة ودومين مجاني
+        </div>
+      </div>
     </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form" style="max-width:440px;width:100%">
+      <h2 style="font-size:1.8rem;font-weight:800;color:#0f172a;margin-bottom:6px">مرحباً بك في SiteFlow</h2>
+      <p class="subtitle" style="color:var(--gray-500);margin-bottom:24px">سجل دخولك أو أنشئ حسابك لإدارة مواقعك ومبيعاتك</p>
 
-    <div class="auth-tabs" style="margin-bottom:20px">
-      <button class="auth-tab active" data-tab="login" style="font-weight:700">تسجيل الدخول</button>
-      <button class="auth-tab" data-tab="signup" style="font-weight:700">إنشاء حساب جديد</button>
-    </div>
+      <div class="auth-tabs" style="margin-bottom:20px">
+        <button class="auth-tab active" data-tab="login" style="font-weight:700">تسجيل الدخول</button>
+        <button class="auth-tab" data-tab="signup" style="font-weight:700">إنشاء حساب جديد</button>
+      </div>
 
       <div class="auth-error" id="authError" style="display:none;padding:12px 16px;border-radius:10px;background:#fee2e2;color:#dc2626;font-size:.9rem;margin-bottom:16px;font-weight:600"></div>
 
