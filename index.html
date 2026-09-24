@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=29">
+<link rel="stylesheet" href="css/style.css?v=31">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
@@ -30,11 +30,15 @@
 
       <!-- 1. Guest Nav (Marketing links - ONLY for non-logged in visitors) -->
       <nav class="nav-links js-auth-guest">
-        <a href="#/plans" class="nav-link">باقات الأسعار</a>
-        <a href="#/about" class="nav-link">المميزات</a>
-        <a href="#/help" class="nav-link">معرض المواقع</a>
-        <a href="#/help" class="nav-link">المساعدة والدعم</a>
-        <a href="#/login" class="btn btn-primary btn-sm">تسجيل الدخول / حساب جديد</a>
+        <a href="#/plans" class="nav-link js-nav-plans">باقات الأسعار</a>
+        <a href="#/about" class="nav-link js-nav-features">المميزات</a>
+        <a href="#/showcase" class="nav-link js-nav-showcase">معرض المواقع</a>
+        <a href="#/help" class="nav-link js-nav-help">المساعدة والدعم</a>
+        <button class="lang-switcher-btn js-lang-btn" onclick="Auth.toggleLang()" title="تغيير اللغة / Switch Language">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>English</span>
+        </button>
+        <a href="#/login" class="btn btn-primary btn-sm js-nav-login">تسجيل الدخول / حساب جديد</a>
       </nav>
 
       <!-- 2. Authenticated App Nav (SaaS App links - ONLY for logged in users) -->
@@ -59,6 +63,10 @@
 
       <!-- 3. Authenticated User Header Controls (New Site, Notifications, Profile) -->
       <div class="header-user-controls js-auth-user hidden">
+        <button class="lang-switcher-btn js-lang-btn" onclick="Auth.toggleLang()" title="تغيير اللغة / Switch Language">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>English</span>
+        </button>
         <a href="#/templates" class="btn btn-primary btn-sm header-action-btn" title="إنشاء موقع إلكتروني جديد">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           <span>موقع جديد</span>
@@ -126,16 +134,16 @@
     </div>
   </header>
   <main class="app-main" id="app"></main>
-  <script src="js/icons.js?v=30"></script>
-  <script src="js/presets.js?v=30"></script>
-  <script src="js/templates-data.js?v=30"></script>
-  <script src="js/supabase.js?v=30"></script>
-  <script src="js/storage.js?v=30"></script>
-  <script src="js/auth.js?v=30"></script>
-  <script src="js/ai.js?v=30"></script>
-  <script src="js/templates.js?v=30"></script>
-  <script src="js/builder.js?v=30"></script>
-  <script src="js/app.js?v=30"></script>
+  <script src="js/icons.js?v=31"></script>
+  <script src="js/presets.js?v=31"></script>
+  <script src="js/templates-data.js?v=31"></script>
+  <script src="js/supabase.js?v=31"></script>
+  <script src="js/storage.js?v=31"></script>
+  <script src="js/auth.js?v=31"></script>
+  <script src="js/ai.js?v=31"></script>
+  <script src="js/templates.js?v=31"></script>
+  <script src="js/builder.js?v=31"></script>
+  <script src="js/app.js?v=31"></script>
   <script>
     window.onerror = function(msg, src, line, col, err) {
       if (typeof IS_LOCAL !== 'undefined' && !IS_LOCAL) {

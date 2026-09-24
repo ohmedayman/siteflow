@@ -225,6 +225,7 @@ const Router = {
     else if (r==='help') { this._help() }
     else if (r==='about') { this._about() }
     else if (r==='privacy') { this._privacy() }
+    else if (r==='showcase') { this._showcase() }
     else if (r==='admin') { if(!Auth.requireAuth()||!Auth.isAdmin())return; this._admin() }
     else if (r==='admin-payments') { if(!Auth.requireAuth()||!Auth.isAdmin())return; this._adminPayments() }
     else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._checkoutRoute(pts[1]) }
@@ -494,6 +495,7 @@ const Router = {
   _help() { document.getElementById('app').innerHTML = T.help() },
   _about() { document.getElementById('app').innerHTML = T.about() },
   _privacy() { document.getElementById('app').innerHTML = T.privacy() },
+  _showcase() { document.getElementById('app').innerHTML = T.showcase() },
 
   async _checkoutRoute(planKey) { this._checkout(planKey) },
 
