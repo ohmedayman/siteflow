@@ -1617,7 +1617,6 @@ const T = {
   },
 
   settings(user) {
-  settings(user) {
     const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const planNames = { free: 'تجريبي مجاني', basic: 'أساسي (Basic)', pro: 'احترافي (Pro) 🔥', business: 'بيزنس (Business) 🚀' }
     const currentPlanName = planNames[user?.plan] || user?.plan || 'مجاني'
