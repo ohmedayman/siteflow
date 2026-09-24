@@ -85,11 +85,15 @@ const Builder = {
   _renderCanvas() {
     const frame = document.getElementById('canvasFrame')
     if (!frame) return
-    frame.classList.toggle('mobile', this.mobileMode)
     frame.innerHTML = '<div class="canvas-sections">' + this.page.sections.map((s, i) => {
       const isActive = i === this.editingIdx
       const wrapper = `<div class="canvas-section-wrapper ${isActive ? 'editing' : ''}" data-cidx="${i}">
-        <div class="canvas-section-overlay"><span>${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</span></div>
+        <div class="sec-quick-bar">
+          <button class="sqb-btn" data-sqb="up" data-idx="${i}" title="تحريك لأعلى" ${i === 0 ? 'disabled' : ''}>↑</button>
+          <button class="sqb-btn" data-sqb="down" data-idx="${i}" title="تحريك لأسفل" ${i === this.page.sections.length - 1 ? 'disabled' : ''}>↓</button>
+          <button class="sqb-btn" data-sqb="dup" data-idx="${i}" title="مضاعفة القسم">📋</button>
+          <button class="sqb-btn sqb-del" data-sqb="del" data-idx="${i}" title="حذف القسم">🗑️</button>
+        </div>
         ${this._renderSection(s, i)}
       </div>`
       return wrapper
@@ -101,10 +105,23 @@ const Builder = {
     </div>`
     this._applyTheme()
 
+    // Quick bar buttons
+    frame.querySelectorAll('.sqb-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const idx = parseInt(btn.dataset.idx)
+        const act = btn.dataset.sqb
+        if (act === 'up') this._moveSection(idx, -1)
+        else if (act === 'down') this._moveSection(idx, 1)
+        else if (act === 'dup') this._duplicateSection(idx)
+        else if (act === 'del') this._deleteSection(idx)
+      })
+    })
+
     // Click on canvas section to select it
     frame.querySelectorAll('.canvas-section-wrapper').forEach(el => {
       el.addEventListener('click', (e) => {
-        if (e.target.closest('input, textarea, select, a, button')) return
+        if (e.target.closest('input, textarea, select, a, button, .sqb-btn')) return
         this.editingIdx = parseInt(el.dataset.cidx)
         this._renderSections()
         frame.querySelectorAll('.canvas-section-wrapper').forEach(w => w.classList.remove('editing'))
@@ -118,28 +135,58 @@ const Builder = {
   },
 
   _renderSection(s, i) {
-    switch (s.type) {
-      case 'hero': return T.heroSection(s.data, i === this.editingIdx)
-      case 'about': return T.aboutSection(s.data, i === this.editingIdx)
-      case 'gallery': return T.gallerySection(s.data, i === this.editingIdx)
-      case 'contact': return T.contactSection(s.data, i === this.editingIdx)
-      case 'services': return T.servicesSection(s.data, i === this.editingIdx)
-      case 'testimonials': return T.testimonialsSection(s.data, i === this.editingIdx)
-      case 'pricing': return T.pricingSection(s.data, i === this.editingIdx)
-      case 'faq': return T.faqSection(s.data, i === this.editingIdx)
-      case 'team': return T.teamSection(s.data, i === this.editingIdx)
-      case 'footer': return T.footerSection(s.data, i === this.editingIdx)
-      case 'blog': return T.blogSection(s.data, i === this.editingIdx)
-      case 'portfolio': return T.portfolioSection(s.data, i === this.editingIdx)
-      case 'counters': return T.countersSection(s.data, i === this.editingIdx)
-      case 'timeline': return T.timelineSection(s.data, i === this.editingIdx)
-      case 'menu': return T.menuSection(s.data, i === this.editingIdx)
-      case 'location': return T.locationSection(s.data, i === this.editingIdx)
-      case 'cta': return T.ctaSection(s.data, i === this.editingIdx)
-      case 'features': return T.featuresSection(s.data, i === this.editingIdx)
-      case 'stats': return T.statsSection(s.data, i === this.editingIdx)
-      default: return `<div class="editable-section" style="padding:40px;text-align:center;color:#999">Section: ${s.type}</div>`
+    if (typeof T !== 'undefined' && T.renderSection) {
+      return T.renderSection(s, i === this.editingIdx, this.page.theme)
     }
+    return `<div class="editable-section" style="padding:40px;text-align:center;color:#999">Section: ${s.type}</div>`
+  },
+
+  _moveSection(idx, dir) {
+    const target = idx + dir
+    if (target < 0 || target >= this.page.sections.length) return
+    this._pushUndo()
+    const [item] = this.page.sections.splice(idx, 1)
+    this.page.sections.splice(target, 0, item)
+    this.editingIdx = target
+    this._saveNow()
+    this._render()
+    Toast.show('تم تحريك القسم', 'info')
+  },
+
+  _duplicateSection(idx) {
+    this._pushUndo()
+    const copy = JSON.parse(JSON.stringify(this.page.sections[idx]))
+    this.page.sections.splice(idx + 1, 0, copy)
+    this.editingIdx = idx + 1
+    this._saveNow()
+    this._render()
+    Toast.show('تمت مضاعفة القسم بنجاح', 'success')
+  },
+
+  _deleteSection(idx) {
+    if (this.page.sections.length <= 1) {
+      Toast.show('لا يمكن حذف القسم الأخير بالموقع', 'error')
+      return
+    }
+    this._pushUndo()
+    this.page.sections.splice(idx, 1)
+    if (this.editingIdx >= this.page.sections.length) {
+      this.editingIdx = Math.max(0, this.page.sections.length - 1)
+    }
+    this._saveNow()
+    this._render()
+    Toast.show('تم حذف القسم', 'info')
+  },
+
+  _setField(obj, path, val) {
+    const parts = path.split('.')
+    let cur = obj
+    for (let i = 0; i < parts.length - 1; i++) {
+      const p = parts[i]
+      if (cur[p] === undefined) cur[p] = isNaN(parts[i + 1]) ? {} : []
+      cur = cur[p]
+    }
+    cur[parts[parts.length - 1]] = val
   },
 
   _applyTheme() {
@@ -243,12 +290,17 @@ const Builder = {
     document.getElementById('previewBtn')?.addEventListener('click', () => { this._saveNow(); window.open('#/preview/' + this.page.id, '_blank') })
     document.getElementById('exportBtn')?.addEventListener('click', () => this._exportHtml())
     document.getElementById('publishBtn')?.addEventListener('click', () => this._publish())
-    document.getElementById('saveBtn')?.addEventListener('click', () => { this._saveNow(); Toast.show('Saved!', 'success') })
+    document.getElementById('saveBtn')?.addEventListener('click', () => { this._saveNow(); Toast.show('تم الحفظ بنجاح!', 'success') })
     document.getElementById('deviceToggle')?.addEventListener('click', e => {
       const btn = e.target.closest('.device-btn'); if (!btn) return
       document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active')
-      this.mobileMode = btn.dataset.device === 'mobile'
-      document.getElementById('canvasFrame')?.classList.toggle('mobile', this.mobileMode)
+      const dev = btn.dataset.device
+      const frame = document.getElementById('canvasFrame')
+      if (frame) {
+        frame.classList.remove('tablet', 'mobile')
+        if (dev === 'tablet') frame.classList.add('tablet')
+        else if (dev === 'mobile') frame.classList.add('mobile')
+      }
     })
   },
 
@@ -409,25 +461,37 @@ const Builder = {
 
   _bindEditing() {
     document.querySelectorAll('[contenteditable]').forEach(el => {
-      el.addEventListener('blur', () => {
-        const s = this.page.sections[this.editingIdx]; if (!s) return
-        const f = el.dataset.field; if (!f) return
-        const parts = f.split('.')
-        if (parts.length === 3) {
-          const [arr, idx, prop] = parts
-          if (s.data[arr] && s.data[arr][parseInt(idx)]) s.data[arr][parseInt(idx)][prop] = el.innerText
-        } else if (parts.length === 2) {
-          const [arr, idx] = parts
-          if (s.data[arr]) s.data[arr][parseInt(idx)] = el.innerText
-        } else {
-          s.data[f] = el.innerText
+      el.addEventListener('focus', () => {
+        el.classList.add('editing')
+        const wrapper = el.closest('.canvas-section-wrapper')
+        if (wrapper && wrapper.dataset.cidx !== undefined) {
+          const idx = parseInt(wrapper.dataset.cidx)
+          if (this.editingIdx !== idx) {
+            this.editingIdx = idx
+            document.querySelectorAll('.canvas-section-wrapper').forEach(w => w.classList.remove('editing'))
+            wrapper.classList.add('editing')
+            this._renderSections()
+          }
         }
+      })
+
+      el.addEventListener('blur', () => {
+        el.classList.remove('editing')
+        const wrapper = el.closest('.canvas-section-wrapper')
+        const secIdx = wrapper && wrapper.dataset.cidx !== undefined ? parseInt(wrapper.dataset.cidx) : this.editingIdx
+        const s = this.page.sections[secIdx]
+        if (!s) return
+        const f = el.dataset.field
+        if (!f) return
+        this._setField(s.data, f, el.innerText.trim())
         this._saveLater()
       })
-      el.addEventListener('focus', () => { el.classList.add('editing') })
-      el.addEventListener('blur', () => { el.classList.remove('editing') })
+
       el.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.execCommand('insertLineBreak') }
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault()
+          document.execCommand('insertLineBreak')
+        }
       })
     })
 
@@ -435,16 +499,7 @@ const Builder = {
       el.addEventListener('input', () => {
         const s = this.page.sections[this.editingIdx]; if (!s) return
         const f = el.dataset.field; if (!f) return
-        const parts = f.split('.')
-        if (parts.length === 3) {
-          const [arr, idx, prop] = parts
-          if (s.data[arr] && s.data[arr][parseInt(idx)]) s.data[arr][parseInt(idx)][prop] = el.value
-        } else if (parts.length === 2) {
-          const [arr, idx] = parts
-          if (s.data[arr]) s.data[arr][parseInt(idx)] = el.value
-        } else {
-          s.data[f] = el.value
-        }
+        this._setField(s.data, f, el.value)
         this._saveLater()
       })
     })
@@ -466,6 +521,7 @@ const Builder = {
     document.getElementById('galleryImageInput')?.addEventListener('change', async e => {
       const files = Array.from(e.target.files); if (!files.length) return
       const s = this.page.sections[this.editingIdx]; if (!s) return
+      if (!Array.isArray(s.data.images)) s.data.images = []
       let loaded = 0
       for (const file of files) {
         const url = await API.uploadImage(file)
@@ -477,12 +533,14 @@ const Builder = {
     document.getElementById('portfolioImageInput')?.addEventListener('change', async e => {
       const files = Array.from(e.target.files); if (!files.length) return
       const s = this.page.sections[this.editingIdx]; if (!s) return
+      if (!Array.isArray(s.data.items)) s.data.items = []
       for (const file of files) {
         const url = await API.uploadImage(file)
         s.data.items.push({ title: 'New Item', desc: 'Description', image: url })
       }
       this._saveNow(); this._render()
     })
+    document.getElementById('addPortfolioBtn')?.addEventListener('click', () => document.getElementById('portfolioImageInput')?.click())
   },
 
   _bindTheme() {
@@ -618,17 +676,24 @@ const Builder = {
   },
 
   _saveLater() {
+    const ind = document.getElementById('saveStatusIndicator')
+    if (ind) { ind.textContent = '⏳ جاري الحفظ...'; ind.style.color = 'var(--primary)' }
     clearTimeout(this.autoSaveTimer)
     this.autoSaveTimer = setTimeout(() => this._saveNow(), 800)
   },
 
   async _saveNow() {
+    const ind = document.getElementById('saveStatusIndicator')
     try {
       this.page = await API.updateSite(this.page.id, {
         title: this.page.title, slug: this.page.slug, sections: this.page.sections,
         seo: this.page.seo, theme: this.page.theme, customDomain: this.page.customDomain
       })
-    } catch (e) { console.error('Save failed:', e) }
+      if (ind) { ind.textContent = '✓ محفوظة'; ind.style.color = 'var(--gray-400)' }
+    } catch (e) {
+      console.error('Save failed:', e)
+      if (ind) { ind.textContent = '⚠️ فشل الحفظ'; ind.style.color = '#dc2626' }
+    }
   },
 
   async _publish() {

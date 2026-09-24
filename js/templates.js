@@ -731,48 +731,60 @@ const T = {
 </div>` },
 
   builder(page) {
-    const t=page.theme||{color:'#6366f1',font:'Inter'}
-    return `<div class="builder-toolbar">
-      <div class="left">
+    const t = page.theme || { color: '#6366f1', font: 'Cairo' }
+    const siteUrl = subdomainUrl(page.slug || 'site')
+    return `<div class="builder-toolbar builder-toolbar-clean">
+      <div class="left" style="display:flex;align-items:center;gap:12px">
         <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')" title="Back to Dashboard" style="padding:6px 10px">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
-        <span style="width:1px;height:24px;background:var(--gray-200);margin:0 4px"></span>
-        <span class="truncate" style="font-weight:700;font-size:.92rem;color:var(--gray-800);max-width:200px">${page.title}</span>
-        <span style="font-size:.7rem;padding:3px 10px;border-radius:20px;font-weight:600;${page.published?'background:#dcfce7;color:#16a34a':'background:#fef3c7;color:#d97706'};letter-spacing:.02em">${page.published?'Published':'Draft'}</span>
+        <span style="width:1px;height:24px;background:var(--gray-200);margin:0 2px"></span>
+        <div style="display:flex;flex-direction:column;line-height:1.2">
+          <span class="truncate" style="font-weight:700;font-size:.92rem;color:var(--gray-800);max-width:200px">${page.title}</span>
+          <a href="${siteUrl}" target="_blank" style="font-size:0.75rem;color:var(--primary);text-decoration:none;direction:ltr;display:inline-flex;align-items:center;gap:4px">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981"></span>
+            ${page.slug || 'site'}.${MAIN_DOMAIN} ↗
+          </a>
+        </div>
+        <span style="font-size:.7rem;padding:3px 10px;border-radius:20px;font-weight:600;${page.published ? 'background:#dcfce7;color:#16a34a' : 'background:#fef3c7;color:#d97706'};letter-spacing:.02em">${page.published ? 'منشور (Live)' : 'مسودة (Draft)'}</span>
       </div>
-      <div class="right">
-        <button class="btn btn-ghost btn-sm" id="undoBtn" title="Undo (Ctrl+Z)" style="padding:6px 8px">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-        </button>
-        <button class="btn btn-ghost btn-sm" id="redoBtn" title="Redo (Ctrl+Y)" style="padding:6px 8px">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-        </button>
-        <span style="width:1px;height:24px;background:var(--gray-200);margin:0 4px"></span>
-        <div class="device-toggle" id="deviceToggle">
-          <button class="device-btn active" data-device="desktop" title="Desktop view">
+      <div class="center" style="display:flex;align-items:center;gap:8px">
+        <div class="device-toggle" id="deviceToggle" style="background:#f1f5f9;padding:3px;border-radius:10px;display:flex;gap:4px">
+          <button class="device-btn active" data-device="desktop" title="شاشة الكمبيوتر (Desktop)" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           </button>
-          <button class="device-btn" data-device="mobile" title="Mobile view">
+          <button class="device-btn" data-device="tablet" title="جهاز لوحي (Tablet)" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </button>
+          <button class="device-btn" data-device="mobile" title="هاتف ذكي (Mobile)" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
           </button>
         </div>
+      </div>
+      <div class="right" style="display:flex;align-items:center;gap:8px">
+        <span id="saveStatusIndicator" style="font-size:0.75rem;color:var(--gray-400);margin-left:4px">✓ محفوظة</span>
+        <button class="btn btn-ghost btn-sm" id="undoBtn" title="تراجع (Ctrl+Z)" style="padding:6px 8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-sm" id="redoBtn" title="إعادة (Ctrl+Y)" style="padding:6px 8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        </button>
         <span style="width:1px;height:24px;background:var(--gray-200);margin:0 4px"></span>
-        <button class="btn btn-ghost btn-sm" id="previewBtn" title="Preview in new tab">
+        <button class="btn btn-ghost btn-sm" id="previewBtn" title="معاينة في تبويب جديد">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          Preview
+          معاينة
         </button>
         <button class="btn btn-ghost btn-sm" id="exportBtn" title="تصدير كود HTML كامل للموقع">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           تصدير HTML
         </button>
-        <button class="btn btn-ghost btn-sm" id="saveBtn" title="Save (Ctrl+S)">
+        <button class="btn btn-ghost btn-sm" id="saveBtn" title="حفظ (Ctrl+S)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Save
+          حفظ
         </button>
         <button class="btn btn-primary btn-sm" id="publishBtn" style="padding:8px 18px;font-weight:700">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-          ${page.published?'Update':'Publish'}
+          ${page.published ? 'تحديث النشر' : 'نشر الموقع'}
         </button>
       </div>
     </div>
@@ -916,26 +928,632 @@ const T = {
     </div>`
   },
 
-  heroSection(d,a) { return `<div class="editable-section hero-section ${a?'editing':''}" data-section="hero"><div class="section-label">Hero</div><h1 contenteditable="true" data-field="heading" class="hero-heading">${d.heading||'Welcome'}</h1><p contenteditable="true" data-field="description" style="font-size:1.15rem;color:var(--gray-500);max-width:550px;line-height:1.7">${d.description||''}</p>${d.image?`<div class="hero-image-wrap"><img src="${d.image}"><button class="remove-img" style="position:absolute;top:6px;right:6px;z-index:2;background:#fff;border-radius:50%;width:24px;height:24px;border:none;cursor:pointer" data-hero-remove>✕</button></div>`:`<div class="hero-image-wrap" id="heroImagePlaceholder"><span>+</span></div>`}<input type="file" accept="image/*" id="heroImageInput" style="display:none"></div>` },
-  aboutSection(d,a) { return `<div class="editable-section about-section ${a?'editing':''}" data-section="about"><div class="section-label">About</div><h2 contenteditable="true" data-field="heading">${d.heading||'About'}</h2><p contenteditable="true" data-field="content" style="font-size:1.05rem;line-height:1.8">${d.content||''}</p></div>` },
-  gallerySection(d,a) { const im=d.images||[]; return `<div class="editable-section gallery-section ${a?'editing':''}" data-section="gallery"><div class="section-label">Gallery</div><h2 contenteditable="true" data-field="heading">${d.heading||'Gallery'}</h2><div class="gallery-grid" id="galleryGrid">${im.length===0?'<div style="grid-column:1/-1;text-align:center;color:var(--gray-400);padding:40px;border:2px dashed var(--gray-200);border-radius:8px">Click + to add images</div>':''}${im.map((img,i)=>`<div class="gallery-item" style="border-style:solid"><img src="${img}"><button class="remove-img" data-index="${i}">✕</button></div>`).join('')}<div class="gallery-item" id="addGalleryBtn" style="cursor:pointer;border:2px dashed var(--gray-300)"><span>+</span></div></div><input type="file" accept="image/*" id="galleryImageInput" style="display:none" multiple></div>` },
-  contactSection(d,a) { return `<div class="editable-section contact-section ${a?'editing':''}" data-section="contact"><div class="section-label">Contact</div><h2 contenteditable="true" data-field="heading">${d.heading||'Contact'}</h2><div class="contact-form"><div class="input-group"><label>Name</label><input class="input" placeholder="Your Name" disabled style="opacity:.6"></div><div class="input-group"><label>Email</label><input class="input" placeholder="your@email.com" disabled style="opacity:.6"></div><div class="input-group"><label>Message</label><textarea class="input textarea" placeholder="Your message..." disabled style="opacity:.6"></textarea></div><button class="btn btn-primary" disabled style="opacity:.6">Send</button></div></div>` },
-  servicesSection(d,a) { const items=d.items||[]; return `<div class="editable-section services-section ${a?'editing':''}" data-section="services"><div class="section-label">Services</div><h2 contenteditable="true" data-field="heading">${d.heading||'Services'}</h2><div class="services-grid">${items.map((item,i)=>`<div class="service-card"><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc}</p></div>`).join('')}</div></div>` },
-  testimonialsSection(d,a) { const items=d.items||[]; return `<div class="editable-section testimonials-section ${a?'editing':''}" data-section="testimonials"><div class="section-label">Testimonials</div><h2 contenteditable="true" data-field="heading">${d.heading||'Testimonials'}</h2><div class="testimonials-grid">${items.map((item,i)=>`<div class="testimonial-card"><p contenteditable="true" data-field="items.${i}.text">"${item.text}"</p><div class="testimonial-author"><strong contenteditable="true" data-field="items.${i}.name">${item.name}</strong><span contenteditable="true" data-field="items.${i}.role">${item.role||''}</span></div></div>`).join('')}</div></div>` },
-  pricingSection(d,a) { const plans=d.plans||[]; return `<div class="editable-section pricing-section ${a?'editing':''}" data-section="pricing"><div class="section-label">Pricing</div><h2 contenteditable="true" data-field="heading">${d.heading||'Pricing'}</h2><div class="pricing-grid">${plans.map((p,i)=>`<div class="pricing-card"><h3 contenteditable="true" data-field="plans.${i}.name">${p.name}</h3><div class="price" contenteditable="true" data-field="plans.${i}.price">${p.price}</div><ul>${(p.features||[]).map((f,fi)=>`<li contenteditable="true" data-field="plans.${i}.features.${fi}">${f}</li>`).join('')}</ul></div>`).join('')}</div></div>` },
-  faqSection(d,a) { const items=d.items||[]; return `<div class="editable-section faq-section ${a?'editing':''}" data-section="faq"><div class="section-label">FAQ</div><h2 contenteditable="true" data-field="heading">${d.heading||'FAQ'}</h2><div class="faq-list">${items.map((item,i)=>`<div class="faq-item"><h3 contenteditable="true" data-field="items.${i}.q">${item.q}</h3><p contenteditable="true" data-field="items.${i}.a">${item.a}</p></div>`).join('')}</div></div>` },
-  teamSection(d,a) { const items=d.items||[]; return `<div class="editable-section team-section ${a?'editing':''}" data-section="team"><div class="section-label">Team</div><h2 contenteditable="true" data-field="heading">${d.heading||'Our Team'}</h2><div class="team-grid">${items.map((item,i)=>`<div class="team-card"><div class="team-avatar">${item.name?item.name.charAt(0):''}</div><h3 contenteditable="true" data-field="items.${i}.name">${item.name}</h3><p contenteditable="true" data-field="items.${i}.role">${item.role||''}</p></div>`).join('')}</div></div>` },
-  footerSection(d,a) { return `<div class="editable-section footer-section ${a?'editing':''}" data-section="footer"><div class="section-label">Footer</div><div class="footer-content"><p contenteditable="true" data-field="copyright">${d.copyright||'© 2026 All rights reserved.'}</p><p contenteditable="true" data-field="text">${d.text||'Powered by Site Flow'}</p></div></div>` },
+  renderSection(s, isEditing = false, theme = {}) {
+    const t = theme || { color: '#6366f1', font: 'Cairo' }
+    const pColor = t.color || '#6366f1'
+    const d = s.data || {}
+    const a = !!isEditing
+    const type = s.type || 'hero'
 
-  blogSection(d,a) { const items=d.items||[]; return `<div class="editable-section blog-section ${a?'editing':''}" data-section="blog"><div class="section-label">Blog</div><h2 contenteditable="true" data-field="heading">${d.heading||'Blog'}</h2><div class="blog-grid">${items.map((item,i)=>`<div class="blog-card"><div class="blog-date">${item.date||''}</div><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.excerpt">${item.excerpt||''}</p></div>`).join('')}</div></div>` },
-  portfolioSection(d,a) { const items=d.items||[]; return `<div class="editable-section portfolio-section ${a?'editing':''}" data-section="portfolio"><div class="section-label">Portfolio</div><h2 contenteditable="true" data-field="heading">${d.heading||'Portfolio'}</h2><div class="portfolio-grid">${items.map((item,i)=>`<div class="portfolio-card"><div class="portfolio-img" style="background:var(--gray-100);height:160px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--gray-400)">${item.image?`<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`:ICONS.wrap(ICONS.folder,32)}</div><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc||''}</p></div>`).join('')}${a?`<div class="portfolio-card add-card" id="addPortfolioBtn" style="cursor:pointer;border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;padding:40px;color:var(--gray-400)"><span>+ Add Item</span></div><input type="file" accept="image/*" id="portfolioImageInput" style="display:none" multiple>`:''}</div></div>` },
-  countersSection(d,a) { const items=d.items||[]; return `<div class="editable-section counters-section ${a?'editing':''}" data-section="counters"><div class="section-label">Counters</div><h2 contenteditable="true" data-field="heading">${d.heading||'Stats'}</h2><div class="counters-grid">${items.map((item,i)=>`<div class="counter-card"><div class="counter-number" contenteditable="true" data-field="items.${i}.number">${item.number}</div><div class="counter-label" contenteditable="true" data-field="items.${i}.label">${item.label}</div></div>`).join('')}</div></div>` },
-  timelineSection(d,a) { const items=d.items||[]; return `<div class="editable-section timeline-section ${a?'editing':''}" data-section="timeline"><div class="section-label">Timeline</div><h2 contenteditable="true" data-field="heading">${d.heading||'Timeline'}</h2><div class="timeline">${items.map((item,i)=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-year" contenteditable="true" data-field="items.${i}.year">${item.year||''}</div><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc||''}</p></div></div>`).join('')}</div></div>` },
-  menuSection(d,a) { const items=d.items||[]; const cats=[...new Set(items.map(i=>i.category||'Main'))]; return `<div class="editable-section menu-section ${a?'editing':''}" data-section="menu"><div class="section-label">Menu</div><h2 contenteditable="true" data-field="heading">${d.heading||'Menu'}</h2>${cats.map(cat=>`<div class="menu-category"><h3>${cat}</h3>${items.filter(i=>(i.category||'Main')===cat).map((item,i)=>{const gi=items.indexOf(item);return `<div class="menu-item"><div class="menu-item-info"><h4 contenteditable="true" data-field="items.${gi}.title">${item.title}</h4><p contenteditable="true" data-field="items.${gi}.desc">${item.desc||''}</p></div><span class="menu-price" contenteditable="true" data-field="items.${gi}.price">${item.price||''}</span></div>`}).join('')}</div>`).join('')}</div></div>` },
-  locationSection(d,a) { return `<div class="editable-section location-section ${a?'editing':''}" data-section="location"><div class="section-label">Location</div><h2 contenteditable="true" data-field="heading">${d.heading||'Location'}</h2><div class="location-info"><p>${ICONS.wrap(ICONS.mapPin,16)} <strong>Address:</strong> <span contenteditable="true" data-field="address">${d.address||''}</span></p><p>${ICONS.wrap(ICONS.phone,16)} <strong>Phone:</strong> <span contenteditable="true" data-field="phone">${d.phone||''}</span></p><p>${ICONS.wrap(ICONS.clock,16)} <strong>Hours:</strong> <span contenteditable="true" data-field="hours">${d.hours||''}</span></p></div><div class="location-map"><div style="background:var(--grey-100);padding:40px;text-align:center;border-radius:8px;color:var(--gray-500)">Map placeholder — connect Google Maps</div></div></div>` },
-  featuresSection(d,a) { const items=d.items||[]; return `<div class="editable-section features-section ${a?'editing':''}" data-section="features"><div class="section-label">Features</div><h2 contenteditable="true" data-field="heading">${d.heading||' المميزات'}</h2><div class="services-grid">${items.map((item,i)=>`<div class="service-card"><h3 contenteditable="true" data-field="items.${i}.title">${item.title}</h3><p contenteditable="true" data-field="items.${i}.desc">${item.desc}</p></div>`).join('')}</div></div>` },
-  statsSection(d,a) { const items=d.items||[]; return `<div class="editable-section stats-section ${a?'editing':''}" data-section="stats"><div class="section-label">Stats</div><h2 contenteditable="true" data-field="heading">${d.heading||'الإحصائيات'}</h2><div class="counters-grid">${items.map((item,i)=>`<div class="counter-card"><div class="counter-number" contenteditable="true" data-field="items.${i}.number">${item.number}</div><div class="counter-label" contenteditable="true" data-field="items.${i}.label">${item.label}</div></div>`).join('')}</div></div>` },
-  ctaSection(d,a) { return `<div class="editable-section cta-section ${a?'editing':''}" data-section="cta" style="text-align:center;padding:60px 40px;background:var(--p-color,#6366f1);color:#fff;border-radius:16px"><div class="section-label">CTA</div><h2 contenteditable="true" data-field="heading" style="color:#fff">${d.heading||'ابدأ الآن'}</h2><p contenteditable="true" data-field="subheading" style="opacity:.9;margin-top:8px">${d.subheading||d.description||''}</p><a href="${d.buttonUrl||'#'}" class="btn" style="background:#fff;color:var(--p-color,#6366f1);margin-top:16px;font-weight:700" contenteditable="true" data-field="buttonText">${d.buttonText||'تواصل معنا'}</a></div>` },
+    switch (type) {
+      case 'hero': {
+        const heading = d.heading || 'أهلاً بكم في موقعنا المميز'
+        const desc = d.description || 'نقدم لكم أرقى الخدمات وأفضل العروض بأعلى معايير الجودة والاحترافية والابتكار المستمر.'
+        const btnText = d.buttonText || d.ctaText || 'تواصل معنا الآن'
+        const btnUrl = d.buttonUrl || '#contact'
+        const hasImg = !!d.image
+        return `
+        <section class="sf-section sf-hero hero-section editable-section ${a ? 'editing' : ''}" data-section="hero" style="--p-color:${pColor};padding:80px 24px;background:linear-gradient(135deg, ${pColor}0d 0%, #ffffff 100%);text-align:center;position:relative">
+          ${a ? '<div class="section-label">Hero / البانر الرئيسي</div>' : ''}
+          <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center">
+            ${hasImg ? `
+              <div class="sf-hero-img-wrap" style="position:relative;width:100%;max-width:680px;height:320px;border-radius:20px;overflow:hidden;margin-bottom:28px;box-shadow:0 20px 40px rgba(0,0,0,0.08);border:1px solid #e2e8f0">
+                <img src="${d.image}" alt="Hero Image" style="width:100%;height:100%;object-fit:cover;display:block">
+                ${a ? '<button class="remove-img" style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(255,255,255,0.9);border-radius:50%;width:32px;height:32px;border:none;cursor:pointer;font-size:14px;box-shadow:0 4px 10px rgba(0,0,0,0.15)" data-hero-remove title="حذف الصورة">✕</button>' : ''}
+              </div>
+            ` : a ? `
+              <div class="sf-hero-img-wrap" id="heroImagePlaceholder" style="width:100%;max-width:680px;height:180px;border-radius:20px;border:2px dashed #cbd5e1;background:#f8fafc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:28px;color:#64748b;transition:all .2s">
+                <span style="font-size:1.8rem;background:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.06)">+</span>
+                <span style="font-size:.85rem;font-weight:600">انقر هنا لرفع صورة البانر الرئيسي</span>
+              </div>
+            ` : ''}
+            <input type="file" accept="image/*" id="heroImageInput" style="display:none">
+            <h1 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:clamp(2rem, 5vw, 3.2rem);font-weight:900;color:#0f172a;line-height:1.25;margin-bottom:16px;max-width:800px;letter-spacing:-0.02em">
+              ${heading}
+            </h1>
+            <p ${a ? 'contenteditable="true" data-field="description"' : ''} style="font-size:1.15rem;color:#475569;line-height:1.8;max-width:620px;margin-bottom:32px">
+              ${desc}
+            </p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+              <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn sf-btn-primary" style="background:${pColor};color:#fff;padding:14px 32px;font-size:1.05rem;font-weight:700;border-radius:14px;box-shadow:0 8px 20px ${pColor}40;text-decoration:none;display:inline-flex;align-items:center;gap:8px">
+                ${btnText}
+              </a>
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'about': {
+        const heading = d.heading || 'من نحن'
+        const content = d.content || d.description || 'نحن فريق شغوف نسعى لتقديم حلول مبتكرة وخدمات متكاملة ترتقي بتجربة عملائنا وتلبي تطلعاتهم بأعلى معايير الدقة والإتقان.'
+        return `
+        <section class="sf-section sf-about about-section editable-section ${a ? 'editing' : ''}" data-section="about" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+          ${a ? '<div class="section-label">About / من نحن</div>' : ''}
+          <div style="max-width:800px;margin:0 auto;text-align:center">
+            <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:20px">
+              ${heading}
+            </h2>
+            <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto 28px"></div>
+            <p ${a ? 'contenteditable="true" data-field="content"' : ''} style="font-size:1.1rem;line-height:1.9;color:#334155;white-space:pre-line">
+              ${content}
+            </p>
+          </div>
+        </section>`
+      }
+
+      case 'services':
+      case 'features': {
+        const isFeat = type === 'features'
+        const heading = d.heading || (isFeat ? 'مميزاتنا الاستثنائية' : 'خدماتنا المتميزة')
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { title: 'جودة فائقة', desc: 'نلتزم بأعلى معايير الجودة في جميع خدماتنا ومنتجاتنا.' },
+          { title: 'دعم فني مستمر', desc: 'فريق عمل متواجد دائماً لتقديم المساعدة والاستشارات.' },
+          { title: 'سرعة ودقة', desc: 'إنجاز فوري ودقة متناهية تلبي كافة احتياجاتكم.' }
+        ]
+        return `
+        <section class="sf-section sf-services services-section editable-section ${a ? 'editing' : ''}" data-section="${type}" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+          ${a ? `<div class="section-label">${isFeat ? 'Features / المميزات' : 'Services / الخدمات'}</div>` : ''}
+          <div style="max-width:1100px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:50px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="services-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+              ${items.map((it, i) => `
+                <div class="service-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:32px 24px;box-shadow:0 4px 20px rgba(0,0,0,0.04);transition:all .3s">
+                  <div style="width:48px;height:48px;border-radius:12px;background:${pColor}15;color:${pColor};display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;margin-bottom:20px">
+                    ${i + 1}
+                  </div>
+                  <h3 ${a ? `contenteditable="true" data-field="items.${i}.title"` : ''} style="font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:10px">
+                    ${it.title || 'عنوان الخدمة'}
+                  </h3>
+                  <p ${a ? `contenteditable="true" data-field="items.${i}.desc"` : ''} style="font-size:.95rem;color:#64748b;line-height:1.7">
+                    ${it.desc || 'وصف مختصر ومبسط للخدمة يوضح الفائدة التي يحصل عليها العميل.'}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'menu': {
+        const heading = d.heading || 'قائمة الطعام والأسعار'
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { title: 'وجبة مميزة 1', desc: 'مكونات طازجة مع لمستنا الخاصة اللذيذة', price: '75 ج.م', category: 'الأطباق الرئيسية' },
+          { title: 'وجبة مميزة 2', desc: 'تتبيلة شهية مع صوص جانبي مقرمش', price: '95 ج.م', category: 'الأطباق الرئيسية' },
+          { title: 'مشروب منعش', desc: 'عصير طبيعي مثلج وطازج', price: '30 ج.م', category: 'المشروبات' }
+        ]
+        const cats = [...new Set(items.map(it => it.category || 'عام'))]
+        return `
+        <section class="sf-section sf-menu menu-section editable-section ${a ? 'editing' : ''}" data-section="menu" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+          ${a ? '<div class="section-label">Menu / قائمة الطعام والمنتجات</div>' : ''}
+          <div style="max-width:960px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:40px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            ${cats.map(cat => `
+              <div class="menu-category" style="margin-bottom:36px">
+                <h3 style="font-size:1.3rem;font-weight:800;color:${pColor};border-bottom:2px solid ${pColor}30;padding-bottom:8px;margin-bottom:18px">${cat}</h3>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  ${items.filter(it => (it.category || 'عام') === cat).map(item => {
+                    const gi = items.indexOf(item)
+                    const waText = encodeURIComponent(`مرحباً، أود طلب: ${item.title}${item.price ? ' بسعر ' + item.price : ''}`)
+                    return `
+                    <div class="menu-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+                      <div class="menu-item-info" style="flex:1;min-width:200px">
+                        <h4 ${a ? `contenteditable="true" data-field="items.${gi}.title"` : ''} style="font-size:1.1rem;font-weight:700;color:#0f172a;margin-bottom:4px">
+                          ${item.title}
+                        </h4>
+                        <p ${a ? `contenteditable="true" data-field="items.${gi}.desc"` : ''} style="font-size:.85rem;color:#64748b;margin:0">
+                          ${item.desc || ''}
+                        </p>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:14px">
+                        <span ${a ? `contenteditable="true" data-field="items.${gi}.price"` : ''} class="menu-price" style="font-size:1.15rem;font-weight:800;color:${pColor};background:${pColor}12;padding:6px 14px;border-radius:10px">
+                          ${item.price || ''}
+                        </span>
+                        <a href="https://wa.me/?text=${waText}" target="_blank" class="sf-whatsapp-btn" style="background:#25d366;color:#fff;border-radius:10px;padding:8px 16px;font-size:.85rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(37,211,102,0.25)">
+                          طلب عبر واتساب 💬
+                        </a>
+                      </div>
+                    </div>`
+                  }).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </section>`
+      }
+
+      case 'testimonials': {
+        const heading = d.heading || 'آراء وتجارب عملائنا'
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { name: 'أحمد محمود', role: 'عميل مميز', text: 'تجربة رائعة وتعامل راقي جداً، أنصح الجميع بالتعامل معهم دون تردد!' },
+          { name: 'سارة علي', role: 'مديرة تسويق', text: 'خدمة سريعة واحترافية فائقة، فاقوا كل توقعاتي في الجودة والمواعيد.' }
+        ]
+        return `
+        <section class="sf-section sf-testimonials testimonials-section editable-section ${a ? 'editing' : ''}" data-section="testimonials" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+          ${a ? '<div class="section-label">Testimonials / آراء العملاء</div>' : ''}
+          <div style="max-width:1000px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:48px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="testimonials-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+              ${items.map((it, i) => `
+                <div class="testimonial-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,0.04);display:flex;flex-direction:column;justify-content:space-between">
+                  <p ${a ? `contenteditable="true" data-field="items.${i}.text"` : ''} style="font-size:1.05rem;line-height:1.8;color:#334155;margin-bottom:20px;font-style:italic">
+                    "${it.text}"
+                  </p>
+                  <div class="testimonial-author" style="display:flex;align-items:center;gap:12px;border-top:1px solid #f1f5f9;padding-top:16px">
+                    <div style="width:42px;height:42px;border-radius:50%;background:${pColor};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem">
+                      ${it.name ? it.name.charAt(0) : '👤'}
+                    </div>
+                    <div>
+                      <strong ${a ? `contenteditable="true" data-field="items.${i}.name"` : ''} style="display:block;color:#0f172a;font-size:.95rem">
+                        ${it.name}
+                      </strong>
+                      <span ${a ? `contenteditable="true" data-field="items.${i}.role"` : ''} style="font-size:.8rem;color:#64748b">
+                        ${it.role || ''}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'pricing': {
+        const heading = d.heading || 'باقات الأسعار والاشتراكات'
+        const plans = Array.isArray(d.plans) && d.plans.length ? d.plans : [
+          { name: 'الباقة الأساسية', price: '199 ج.م', features: ['ميزة رقم 1', 'ميزة رقم 2', 'دعم فني قياسي'] },
+          { name: 'الباقة الاحترافية', price: '399 ج.م', features: ['كافة ميزات الأساسية', 'ميزة إضافية حصرية', 'أولوية في الدعم'] }
+        ]
+        return `
+        <section class="sf-section sf-pricing pricing-section editable-section ${a ? 'editing' : ''}" data-section="pricing" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+          ${a ? '<div class="section-label">Pricing / باقات الأسعار</div>' : ''}
+          <div style="max-width:1000px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:48px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="pricing-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+              ${plans.map((p, i) => `
+                <div class="pricing-card" style="background:#fff;border:2px solid #e2e8f0;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.04);display:flex;flex-direction:column;justify-content:space-between">
+                  <div>
+                    <h3 ${a ? `contenteditable="true" data-field="plans.${i}.name"` : ''} style="font-size:1.35rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                      ${p.name}
+                    </h3>
+                    <div ${a ? `contenteditable="true" data-field="plans.${i}.price"` : ''} class="price" style="font-size:2.4rem;font-weight:900;color:${pColor};margin-bottom:24px">
+                      ${p.price}
+                    </div>
+                    <ul style="list-style:none;padding:0;margin:0 0 28px;display:flex;flex-direction:column;gap:10px;text-align:right">
+                      ${(p.features || []).map((f, fi) => `
+                        <li ${a ? `contenteditable="true" data-field="plans.${i}.features.${fi}"` : ''} style="font-size:.95rem;color:#475569;display:flex;align-items:center;gap:8px">
+                          <span style="color:#10b981;font-weight:800">✓</span> ${f}
+                        </li>
+                      `).join('')}
+                    </ul>
+                  </div>
+                  <a href="#contact" class="btn" style="background:${pColor};color:#fff;padding:12px;border-radius:12px;font-weight:700;text-decoration:none;display:block">
+                    اختيار هذه الخطة
+                  </a>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'gallery': {
+        const heading = d.heading || 'معرض الصور'
+        const im = Array.isArray(d.images) ? d.images : []
+        return `
+        <section class="sf-section sf-gallery gallery-section editable-section ${a ? 'editing' : ''}" data-section="gallery" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+          ${a ? '<div class="section-label">Gallery / معرض الصور</div>' : ''}
+          <div style="max-width:1100px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:48px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="gallery-grid" id="galleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
+              ${im.length === 0 && !a ? '<p style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:40px">لا توجد صور بعد في المعرض.</p>' : ''}
+              ${im.length === 0 && a ? '<div style="grid-column:1/-1;text-align:center;color:#64748b;padding:40px;border:2px dashed #cbd5e1;border-radius:14px;background:#fff">انقر على زر + بالأسفل لإضافة صورك إلى المعرض</div>' : ''}
+              ${im.map((img, i) => `
+                <div class="gallery-item" style="position:relative;border-radius:14px;overflow:hidden;height:180px;box-shadow:0 4px 15px rgba(0,0,0,0.06)">
+                  <img src="${img}" alt="Gallery item" style="width:100%;height:100%;object-fit:cover;display:block">
+                  ${a ? `<button class="remove-img" data-index="${i}" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-weight:700" title="حذف">✕</button>` : ''}
+                </div>
+              `).join('')}
+              ${a ? `
+                <div class="gallery-item" id="addGalleryBtn" style="cursor:pointer;border:2px dashed #94a3b8;border-radius:14px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;color:#64748b;font-weight:700">
+                  <span style="font-size:2rem">+</span>
+                  <span style="font-size:.8rem">إضافة صورة</span>
+                </div>
+                <input type="file" accept="image/*" id="galleryImageInput" style="display:none" multiple>
+              ` : ''}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'faq': {
+        const heading = d.heading || 'الأسئلة الشائعة والأجوبة'
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { q: 'كيف يمكنني التواصل والطلب؟', a: 'يمكنك التواصل معنا مباشرة عبر زر الواتساب أو ملء نموذج التواصل أسفل الصفحة.' },
+          { q: 'ما هي مواعيد العمل لديكم؟', a: 'نعمل يومياً من الساعة 9 صباحاً حتى الساعة 10 مساءً لخدمتكم بأفضل صورة.' }
+        ]
+        return `
+        <section class="sf-section sf-faq faq-section editable-section ${a ? 'editing' : ''}" data-section="faq" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+          ${a ? '<div class="section-label">FAQ / الأسئلة الشائعة</div>' : ''}
+          <div style="max-width:800px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:48px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="faq-list" style="display:flex;flex-direction:column;gap:16px">
+              ${items.map((it, i) => `
+                <div class="faq-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px 24px">
+                  <h3 ${a ? `contenteditable="true" data-field="items.${i}.q"` : ''} style="font-size:1.15rem;font-weight:700;color:#0f172a;margin-bottom:8px">
+                    ${it.q}
+                  </h3>
+                  <p ${a ? `contenteditable="true" data-field="items.${i}.a"` : ''} style="font-size:.95rem;color:#475569;line-height:1.7;margin:0">
+                    ${it.a}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'counters':
+      case 'stats': {
+        const heading = d.heading || 'إحصائيات وأرقام قياسية'
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { number: '+1500', label: 'عميل سعيد' },
+          { number: '+99%', label: 'نسبة الرضا' },
+          { number: '24/7', label: 'دعم متواصل' }
+        ]
+        return `
+        <section class="sf-section sf-counters counters-section editable-section ${a ? 'editing' : ''}" data-section="${type}" style="--p-color:${pColor};padding:70px 24px;background:linear-gradient(135deg, ${pColor}12 0%, #ffffff 100%)">
+          ${a ? '<div class="section-label">Counters / الإحصائيات</div>' : ''}
+          <div style="max-width:1000px;margin:0 auto">
+            <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="text-align:center;font-size:2rem;font-weight:800;color:#0f172a;margin-bottom:40px">
+              ${heading}
+            </h2>
+            <div class="counters-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:center">
+              ${items.map((it, i) => `
+                <div class="counter-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:28px 20px;box-shadow:0 4px 15px rgba(0,0,0,0.03)">
+                  <div ${a ? `contenteditable="true" data-field="items.${i}.number"` : ''} class="counter-number" style="font-size:2.5rem;font-weight:900;color:${pColor};margin-bottom:6px">
+                    ${it.number}
+                  </div>
+                  <div ${a ? `contenteditable="true" data-field="items.${i}.label"` : ''} class="counter-label" style="font-size:1rem;font-weight:700;color:#475569">
+                    ${it.label}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'team': {
+        const heading = d.heading || 'فريق العمل'
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { name: 'محمد أحمد', role: 'المؤسس والمدير التنفيذي' },
+          { name: 'كريم خالد', role: 'مسؤول العمليات والخدمات' }
+        ]
+        return `
+        <section class="sf-section sf-team team-section editable-section ${a ? 'editing' : ''}" data-section="team" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+          ${a ? '<div class="section-label">Team / فريق العمل</div>' : ''}
+          <div style="max-width:1000px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:48px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="team-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px">
+              ${items.map((it, i) => `
+                <div class="team-card" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:32px 20px;text-align:center">
+                  <div class="team-avatar" style="width:72px;height:72px;border-radius:50%;background:${pColor};color:#fff;font-size:1.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 6px 16px ${pColor}33">
+                    ${it.name ? it.name.charAt(0) : '👤'}
+                  </div>
+                  <h3 ${a ? `contenteditable="true" data-field="items.${i}.name"` : ''} style="font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:6px">
+                    ${it.name}
+                  </h3>
+                  <p ${a ? `contenteditable="true" data-field="items.${i}.role"` : ''} style="font-size:.9rem;color:#64748b;margin:0">
+                    ${it.role || ''}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'portfolio': {
+        const heading = d.heading || 'معرض أعمالنا'
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { title: 'مشروع مميز 1', desc: 'تصميم وتنفيذ متكامل يلبي كافة الاحتياجات' },
+          { title: 'مشروع مميز 2', desc: 'حلول ذكية ومبتكرة ذات أثر ملموس' }
+        ]
+        return `
+        <section class="sf-section sf-portfolio portfolio-section editable-section ${a ? 'editing' : ''}" data-section="portfolio" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+          ${a ? '<div class="section-label">Portfolio / معرض الأعمال</div>' : ''}
+          <div style="max-width:1100px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:48px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="portfolio-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+              ${items.map((it, i) => `
+                <div class="portfolio-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.04)">
+                  <div class="portfolio-img" style="background:#e2e8f0;height:180px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:2.5rem">
+                    ${it.image ? `<img src="${it.image}" alt="Portfolio item" style="width:100%;height:100%;object-fit:cover">` : '📁'}
+                  </div>
+                  <div style="padding:20px">
+                    <h3 ${a ? `contenteditable="true" data-field="items.${i}.title"` : ''} style="font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:6px">
+                      ${it.title}
+                    </h3>
+                    <p ${a ? `contenteditable="true" data-field="items.${i}.desc"` : ''} style="font-size:.9rem;color:#64748b;margin:0;line-height:1.6">
+                      ${it.desc || ''}
+                    </p>
+                  </div>
+                </div>
+              `).join('')}
+              ${a ? `
+                <div class="portfolio-card add-card" id="addPortfolioBtn" style="cursor:pointer;border:2px dashed #cbd5e1;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;color:#64748b;background:#fff">
+                  <span style="font-size:2rem">+</span>
+                  <span style="font-size:.85rem;font-weight:700">إضافة عنصر جديد</span>
+                </div>
+                <input type="file" accept="image/*" id="portfolioImageInput" style="display:none" multiple>
+              ` : ''}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'timeline': {
+        const heading = d.heading || 'مسيرة تطورنا'
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { year: '2024', title: 'الانطلاقة الأولى', desc: 'بدء العمل وتقديم أولى الخدمات لعملائنا.' },
+          { year: '2026', title: 'التوسع والريادة', desc: 'توسيع نطاق الخدمات وتطوير البنية التقنية.' }
+        ]
+        return `
+        <section class="sf-section sf-timeline timeline-section editable-section ${a ? 'editing' : ''}" data-section="timeline" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+          ${a ? '<div class="section-label">Timeline / الجدول الزمني</div>' : ''}
+          <div style="max-width:800px;margin:0 auto">
+            <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="text-align:center;font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:48px">
+              ${heading}
+            </h2>
+            <div class="timeline" style="display:flex;flex-direction:column;gap:24px;position:relative;border-right:3px solid ${pColor}30;padding-right:24px;margin-right:20px">
+              ${items.map((it, i) => `
+                <div class="timeline-item" style="position:relative">
+                  <div class="timeline-dot" style="position:absolute;right:-31px;top:6px;width:15px;height:15px;border-radius:50%;background:${pColor};box-shadow:0 0 0 4px ${pColor}20"></div>
+                  <div class="timeline-content" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px 24px">
+                    <div ${a ? `contenteditable="true" data-field="items.${i}.year"` : ''} class="timeline-year" style="font-size:1.1rem;font-weight:900;color:${pColor};margin-bottom:6px">
+                      ${it.year || ''}
+                    </div>
+                    <h3 ${a ? `contenteditable="true" data-field="items.${i}.title"` : ''} style="font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:6px">
+                      ${it.title}
+                    </h3>
+                    <p ${a ? `contenteditable="true" data-field="items.${i}.desc"` : ''} style="font-size:.95rem;color:#64748b;margin:0;line-height:1.7">
+                      ${it.desc || ''}
+                    </p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'blog': {
+        const heading = d.heading || 'أحدث المقالات والأخبار'
+        const items = Array.isArray(d.items) && d.items.length ? d.items : [
+          { date: '2026-03-24', title: 'مقال حصري رقم 1', excerpt: 'نظرة معمقة وتفاصيل شيقة حول أحدث التطورات والنصائح.' }
+        ]
+        return `
+        <section class="sf-section sf-blog blog-section editable-section ${a ? 'editing' : ''}" data-section="blog" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+          ${a ? '<div class="section-label">Blog / المدونة</div>' : ''}
+          <div style="max-width:1000px;margin:0 auto">
+            <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="text-align:center;font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:48px">
+              ${heading}
+            </h2>
+            <div class="blog-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+              ${items.map((it, i) => `
+                <div class="blog-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:28px 24px;box-shadow:0 4px 15px rgba(0,0,0,0.03)">
+                  <div class="blog-date" style="font-size:.8rem;font-weight:700;color:${pColor};margin-bottom:8px">
+                    ${it.date || ''}
+                  </div>
+                  <h3 ${a ? `contenteditable="true" data-field="items.${i}.title"` : ''} style="font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:10px">
+                    ${it.title}
+                  </h3>
+                  <p ${a ? `contenteditable="true" data-field="items.${i}.excerpt"` : ''} style="font-size:.95rem;color:#64748b;line-height:1.7;margin:0">
+                    ${it.excerpt || ''}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'location': {
+        const heading = d.heading || 'موقعنا وساعات العمل'
+        return `
+        <section class="sf-section sf-location location-section editable-section ${a ? 'editing' : ''}" data-section="location" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+          ${a ? '<div class="section-label">Location / العنوان والموقع</div>' : ''}
+          <div style="max-width:800px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:40px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="location-info" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:32px 28px;display:flex;flex-direction:column;gap:16px">
+              <p style="font-size:1.05rem;color:#334155;margin:0;display:flex;align-items:center;gap:10px">
+                📍 <strong>العنوان:</strong> <span ${a ? 'contenteditable="true" data-field="address"' : ''}>${d.address || 'القاهرة، مصر'}</span>
+              </p>
+              <p style="font-size:1.05rem;color:#334155;margin:0;display:flex;align-items:center;gap:10px">
+                📞 <strong>الهاتف:</strong> <span ${a ? 'contenteditable="true" data-field="phone"' : ''}>${d.phone || '+20 100 000 0000'}</span>
+              </p>
+              <p style="font-size:1.05rem;color:#334155;margin:0;display:flex;align-items:center;gap:10px">
+                ⏰ <strong>ساعات العمل:</strong> <span ${a ? 'contenteditable="true" data-field="hours"' : ''}>${d.hours || 'السبت - الخميس: 9:00 ص - 10:00 م'}</span>
+              </p>
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'contact': {
+        const heading = d.heading || 'تواصل معنا'
+        return `
+        <section class="sf-section sf-contact contact-section editable-section ${a ? 'editing' : ''}" data-section="contact" id="contact" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+          ${a ? '<div class="section-label">Contact / نموذج التواصل</div>' : ''}
+          <div style="max-width:680px;margin:0 auto">
+            <div style="text-align:center;margin-bottom:40px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+                ${heading}
+              </h2>
+              <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+            </div>
+            <div class="contact-form" id="pubContactForm" style="background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:36px 32px;box-shadow:0 8px 30px rgba(0,0,0,0.04)">
+              <div class="input-group" style="margin-bottom:18px">
+                <label style="display:block;font-size:.9rem;font-weight:700;color:#334155;margin-bottom:6px">الاسم بالكامل</label>
+                <input class="input" id="cfName" placeholder="اكتب اسمك..." style="width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font-size:.95rem" ${a ? 'disabled' : 'required'}>
+              </div>
+              <div class="input-group" style="margin-bottom:18px">
+                <label style="display:block;font-size:.9rem;font-weight:700;color:#334155;margin-bottom:6px">البريد الإلكتروني أو الهاتف</label>
+                <input class="input" id="cfEmail" placeholder="your@email.com / 01xxxxxxxxx" style="width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font-size:.95rem" ${a ? 'disabled' : 'required'}>
+              </div>
+              <div class="input-group" style="margin-bottom:24px">
+                <label style="display:block;font-size:.9rem;font-weight:700;color:#334155;margin-bottom:6px">رسالتك أو استفسارك</label>
+                <textarea class="input textarea" id="cfMessage" rows="4" placeholder="كيف يمكننا مساعدتك؟" style="width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font-size:.95rem" ${a ? 'disabled' : 'required'}></textarea>
+              </div>
+              <button class="btn sf-btn-primary" id="cfSubmitBtn" style="background:${pColor};color:#fff;width:100%;padding:14px;border-radius:12px;font-size:1.05rem;font-weight:800;border:none;cursor:pointer;box-shadow:0 6px 18px ${pColor}33" ${a ? 'disabled' : ''}>
+                إرسال الرسالة الآن 🚀
+              </button>
+              <p id="cfMsg" style="font-size:.9rem;margin-top:12px;text-align:center;display:none;font-weight:700"></p>
+            </div>
+          </div>
+        </section>`
+      }
+
+      case 'cta': {
+        const heading = d.heading || 'جاهز للبدء وتطوير أعمالك معنا؟'
+        const subheading = d.subheading || d.description || 'انضم إلى نخبة عملائنا المميزين اليوم واستفد من عروضنا الحصرية.'
+        const btnText = d.buttonText || 'تواصل معنا الآن'
+        const btnUrl = d.buttonUrl || '#contact'
+        return `
+        <section class="sf-section sf-cta cta-section editable-section ${a ? 'editing' : ''}" data-section="cta" style="--p-color:${pColor};padding:80px 24px;background:${pColor};color:#ffffff;text-align:center">
+          ${a ? '<div class="section-label">CTA / تحفيز التواصل</div>' : ''}
+          <div style="max-width:800px;margin:0 auto">
+            <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:clamp(1.8rem, 4vw, 2.8rem);font-weight:900;color:#fff;margin-bottom:14px;line-height:1.3">
+              ${heading}
+            </h2>
+            <p ${a ? 'contenteditable="true" data-field="subheading"' : ''} style="font-size:1.15rem;opacity:.92;line-height:1.7;max-width:600px;margin:0 auto 28px">
+              ${subheading}
+            </p>
+            <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn" style="background:#ffffff;color:${pColor};padding:14px 36px;font-size:1.05rem;font-weight:800;border-radius:14px;text-decoration:none;display:inline-block;box-shadow:0 10px 25px rgba(0,0,0,0.15)">
+              ${btnText}
+            </a>
+          </div>
+        </section>`
+      }
+
+      case 'footer': {
+        const copyright = d.copyright || `© ${new Date().getFullYear()} جميع الحقوق محفوظة.`
+        const text = d.text || 'مدعوم بواسطة SiteFlow Platform'
+        return `
+        <footer class="sf-section sf-footer footer-section editable-section ${a ? 'editing' : ''}" data-section="footer" style="padding:48px 24px;background:#0f172a;color:#94a3b8;text-align:center">
+          ${a ? '<div class="section-label">Footer / التذييل</div>' : ''}
+          <div style="max-width:800px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <p ${a ? 'contenteditable="true" data-field="copyright"' : ''} style="font-size:.95rem;margin:0;color:#cbd5e1">
+              ${copyright}
+            </p>
+            <p ${a ? 'contenteditable="true" data-field="text"' : ''} style="font-size:.85rem;margin:0;color:#64748b">
+              ${text}
+            </p>
+          </div>
+        </footer>`
+      }
+
+      default: {
+        return `<section class="sf-section editable-section ${a ? 'editing' : ''}" style="padding:40px;text-align:center;color:#94a3b8">قسم: ${type}</section>`
+      }
+    }
+  },
+
+  heroSection(d, a, t) { return this.renderSection({ type: 'hero', data: d }, a, t) },
+  aboutSection(d, a, t) { return this.renderSection({ type: 'about', data: d }, a, t) },
+  gallerySection(d, a, t) { return this.renderSection({ type: 'gallery', data: d }, a, t) },
+  contactSection(d, a, t) { return this.renderSection({ type: 'contact', data: d }, a, t) },
+  servicesSection(d, a, t) { return this.renderSection({ type: 'services', data: d }, a, t) },
+  testimonialsSection(d, a, t) { return this.renderSection({ type: 'testimonials', data: d }, a, t) },
+  pricingSection(d, a, t) { return this.renderSection({ type: 'pricing', data: d }, a, t) },
+  faqSection(d, a, t) { return this.renderSection({ type: 'faq', data: d }, a, t) },
+  teamSection(d, a, t) { return this.renderSection({ type: 'team', data: d }, a, t) },
+  footerSection(d, a, t) { return this.renderSection({ type: 'footer', data: d }, a, t) },
+  blogSection(d, a, t) { return this.renderSection({ type: 'blog', data: d }, a, t) },
+  portfolioSection(d, a, t) { return this.renderSection({ type: 'portfolio', data: d }, a, t) },
+  countersSection(d, a, t) { return this.renderSection({ type: 'counters', data: d }, a, t) },
+  timelineSection(d, a, t) { return this.renderSection({ type: 'timeline', data: d }, a, t) },
+  menuSection(d, a, t) { return this.renderSection({ type: 'menu', data: d }, a, t) },
+  locationSection(d, a, t) { return this.renderSection({ type: 'location', data: d }, a, t) },
+  featuresSection(d, a, t) { return this.renderSection({ type: 'features', data: d }, a, t) },
+  statsSection(d, a, t) { return this.renderSection({ type: 'stats', data: d }, a, t) },
+  ctaSection(d, a, t) { return this.renderSection({ type: 'cta', data: d }, a, t) },
+
+  pubHero(d, t) { return this.renderSection({ type: 'hero', data: d }, false, t) },
+  pubAbout(d, t) { return this.renderSection({ type: 'about', data: d }, false, t) },
+  pubGallery(d, t) { return this.renderSection({ type: 'gallery', data: d }, false, t) },
+  pubContact(d, t) { return this.renderSection({ type: 'contact', data: d }, false, t) },
+  pubServices(d, t) { return this.renderSection({ type: 'services', data: d }, false, t) },
+  pubTestimonials(d, t) { return this.renderSection({ type: 'testimonials', data: d }, false, t) },
+  pubPricing(d, t) { return this.renderSection({ type: 'pricing', data: d }, false, t) },
+  pubFaq(d, t) { return this.renderSection({ type: 'faq', data: d }, false, t) },
+  pubTeam(d, t) { return this.renderSection({ type: 'team', data: d }, false, t) },
+  pubFooter(d, t) { return this.renderSection({ type: 'footer', data: d }, false, t) },
+  pubBlog(d, t) { return this.renderSection({ type: 'blog', data: d }, false, t) },
+  pubPortfolio(d, t) { return this.renderSection({ type: 'portfolio', data: d }, false, t) },
+  pubCounters(d, t) { return this.renderSection({ type: 'counters', data: d }, false, t) },
+  pubTimeline(d, t) { return this.renderSection({ type: 'timeline', data: d }, false, t) },
+  pubMenu(d, t) { return this.renderSection({ type: 'menu', data: d }, false, t) },
+  pubLocation(d, t) { return this.renderSection({ type: 'location', data: d }, false, t) },
+  pubFeatures(d, t) { return this.renderSection({ type: 'features', data: d }, false, t) },
+  pubStats(d, t) { return this.renderSection({ type: 'stats', data: d }, false, t) },
+  pubCta(d, t) { return this.renderSection({ type: 'cta', data: d }, false, t) },
 
   publicPage(page) {
     const userPlan = page.userPlan || Auth.user?.plan || 'free'
@@ -970,7 +1588,7 @@ const T = {
     return `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
     <div class="public-page" style="--p-color:${t.color};--p-font:${t.font};font-family:${t.font},sans-serif">
       <div class="public-nav"><span class="brand" style="color:${t.color}">${page.title}</span><span style="font-size:.75rem;color:var(--gray-400)">مطور بواسطة SiteFlow</span></div>
-      <div class="public-content">${page.sections.map(s => { switch(s.type){ case'hero':return T.pubHero(s.data,t); case'about':return T.pubAbout(s.data,t); case'gallery':return T.pubGallery(s.data,t); case'contact':return T.pubContact(s.data,t); case'services':return T.pubServices(s.data,t); case'testimonials':return T.pubTestimonials(s.data,t); case'pricing':return T.pubPricing(s.data,t); case'faq':return T.pubFaq(s.data,t); case'team':return T.pubTeam(s.data,t); case'footer':return T.pubFooter(s.data,t); case'blog':return T.pubBlog(s.data,t); case'portfolio':return T.pubPortfolio(s.data,t); case'counters':return T.pubCounters(s.data,t); case'timeline':return T.pubTimeline(s.data,t); case'menu':return T.pubMenu(s.data,t); case'location':return T.pubLocation(s.data,t); case'features':return T.pubFeatures(s.data,t); case'stats':return T.pubStats(s.data,t); case'cta':return T.pubCta(s.data,t); default:return ''} }).join('')}</div>
+      <div class="public-content">${page.sections.map(s => this.renderSection(s, false, t)).join('')}</div>
       
       <!-- Floating AI Chatbot Widget for Visitors -->
       <div id="sfAiChatWidget" style="position:fixed;bottom:24px;left:24px;z-index:9999;font-family:inherit" dir="rtl">
@@ -1002,26 +1620,6 @@ const T = {
       </div>
     </div>`
   },
-  pubHero(d,t) { return `<div class="editable-section hero-section" style="background:linear-gradient(135deg,${t.color}11,#fff)">${d.image?`<div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 20px ${t.color}33"><img src="${d.image}" style="width:100%;height:100%;object-fit:cover"></div>`:''}<h1 style="color:${t.color}">${d.heading}</h1><p>${d.description}</p></div>` },
-  pubAbout(d,t) { return `<div class="editable-section about-section"><h2 style="color:${t.color}">${d.heading}</h2><p>${d.content}</p></div>` },
-  pubGallery(d,t) { const im=d.images||[]; return `<div class="editable-section gallery-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="gallery-grid">${im.length===0?'<p style="grid-column:1/-1;color:var(--gray-400)">No images</p>':''}${im.map(i=>`<div class="gallery-item" style="border-style:none"><img src="${i}"></div>`).join('')}</div></div>` },
-  pubContact(d,t) { return `<div class="editable-section contact-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="contact-form" id="pubContactForm"><div class="input-group"><label>Name</label><input class="input" id="cfName" required></div><div class="input-group"><label>Email</label><input class="input" id="cfEmail" type="email" required></div><div class="input-group"><label>Message</label><textarea class="input textarea" id="cfMessage" required></textarea></div><button class="btn w-full" style="background:${t.color};color:#fff" id="cfSubmitBtn">Send</button><p id="cfMsg" style="font-size:.85rem;margin-top:8px;display:none"></p></div></div>` },
-  pubServices(d,t) { const items=d.items||[]; return `<div class="editable-section services-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="services-grid">${items.map(item=>`<div class="service-card"><h3>${item.title}</h3><p>${item.desc}</p></div>`).join('')}</div></div>` },
-  pubTestimonials(d,t) { const items=d.items||[]; return `<div class="editable-section testimonials-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="testimonials-grid">${items.map(item=>`<div class="testimonial-card"><p>"${item.text}"</p><div class="testimonial-author"><strong>${item.name}</strong><span>${item.role||''}</span></div></div>`).join('')}</div></div>` },
-  pubPricing(d,t) { const plans=d.plans||[]; return `<div class="editable-section pricing-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="pricing-grid">${plans.map(p=>`<div class="pricing-card"><h3>${p.name}</h3><div class="price">${p.price}</div><ul>${(p.features||[]).map(f=>`<li>${f}</li>`).join('')}</ul><button class="btn" style="background:${t.color};color:#fff;width:100%;margin-top:16px">Choose Plan</button></div>`).join('')}</div></div>` },
-  pubFaq(d,t) { const items=d.items||[]; return `<div class="editable-section faq-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="faq-list">${items.map(item=>`<div class="faq-item"><h3>${item.q}</h3><p>${item.a}</p></div>`).join('')}</div></div>` },
-  pubTeam(d,t) { const items=d.items||[]; return `<div class="editable-section team-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="team-grid">${items.map(item=>`<div class="team-card"><div class="team-avatar">${item.name?item.name.charAt(0):''}</div><h3>${item.name}</h3><p>${item.role||''}</p></div>`).join('')}</div></div>` },
-  pubFooter(d,t) { return `<div class="editable-section footer-section" style="background:#0f172a;color:#94a3b8"><div class="footer-content"><p>${d.copyright||'© 2026 All rights reserved.'}</p><p>${d.text||'Powered by Site Flow'}</p></div></div>` },
-
-  pubBlog(d,t) { const items=d.items||[]; return `<div class="editable-section blog-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="blog-grid">${items.map(item=>`<div class="blog-card"><div class="blog-date">${item.date||''}</div><h3>${item.title}</h3><p>${item.excerpt||''}</p></div>`).join('')}</div></div>` },
-  pubPortfolio(d,t) { const items=d.items||[]; return `<div class="editable-section portfolio-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="portfolio-grid">${items.map(item=>`<div class="portfolio-card"><div class="portfolio-img" style="background:var(--gray-100);height:160px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--gray-400)">${item.image?`<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`:ICONS.wrap(ICONS.folder,40)}</div><h3>${item.title}</h3><p>${item.desc||''}</p></div>`).join('')}</div></div>` },
-  pubCounters(d,t) { const items=d.items||[]; return `<div class="editable-section counters-section" style="background:${t.color}11"><h2 style="color:${t.color}">${d.heading}</h2><div class="counters-grid">${items.map(item=>`<div class="counter-card"><div class="counter-number" style="color:${t.color}">${item.number}</div><div class="counter-label">${item.label}</div></div>`).join('')}</div></div>` },
-  pubTimeline(d,t) { const items=d.items||[]; return `<div class="editable-section timeline-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="timeline">${items.map(item=>`<div class="timeline-item"><div class="timeline-dot" style="background:${t.color}"></div><div class="timeline-content"><div class="timeline-year" style="color:${t.color}">${item.year||''}</div><h3>${item.title}</h3><p>${item.desc||''}</p></div></div>`).join('')}</div></div>` },
-  pubMenu(d,t) { const items=d.items||[]; const cats=[...new Set(items.map(i=>i.category||'Main'))]; return `<div class="editable-section menu-section"><h2 style="color:${t.color}">${d.heading}</h2>${cats.map(cat=>`<div class="menu-category"><h3 style="color:${t.color}">${cat}</h3>${items.filter(i=>(i.category||'Main')===cat).map(item=>`<div class="menu-item"><div class="menu-item-info"><h4>${item.title}</h4><p>${item.desc||''}</p></div><div style="display:flex;align-items:center;gap:12px"><span class="menu-price" style="color:${t.color};font-weight:700">${item.price||''}</span><a href="https://wa.me/?text=${encodeURIComponent('مرحباً، أود طلب: ' + item.title + (item.price ? ' بسعر ' + item.price : ''))}" target="_blank" class="btn btn-sm" style="background:#25d366;color:#fff;border-radius:8px;padding:6px 12px;font-size:.78rem;font-weight:700;display:inline-flex;align-items:center;gap:4px">طلب عبر واتساب 💬</a></div></div>`).join('')}</div>`).join('')}</div></div>` },
-  pubLocation(d,t) { return `<div class="editable-section location-section"><h2 style="color:${t.color}">${d.heading}</h2><div class="location-info"><p>${ICONS.wrap(ICONS.mapPin,16)} Address: ${d.address||''}</p><p>${ICONS.wrap(ICONS.phone,16)} Phone: ${d.phone||''}</p><p>${ICONS.wrap(ICONS.clock,16)} Hours: ${d.hours||''}</p></div></div>` },
-  pubFeatures(d,t) { const items=d.items||[]; return `<div class="editable-section" style="padding:60px 40px"><h2 style="text-align:center;color:${t.color}">${d.heading||'Features'}</h2><div class="services-grid">${items.map(item=>`<div class="service-card"><h3>${item.title}</h3><p>${item.desc}</p></div>`).join('')}</div></div>` },
-  pubStats(d,t) { const items=d.items||[]; return `<div class="editable-section" style="padding:60px 40px;text-align:center;background:${t.color}11"><h2 style="color:${t.color}">${d.heading||'Statistics'}</h2><div class="counters-grid">${items.map(item=>`<div class="counter-card"><div class="counter-number" style="color:${t.color}">${item.number}</div><div class="counter-label">${item.label}</div></div>`).join('')}</div></div>` },
-  pubCta(d,t) { return `<div class="editable-section" style="text-align:center;padding:60px 40px;background:${t.color};color:#fff"><h2>${d.heading||'Call to Action'}</h2>${d.subheading?`<p style="opacity:.9;margin-top:8px">${d.subheading}</p>`:''}${d.buttonText?`<a href="${d.buttonUrl||'#'}" class="btn" style="background:#fff;color:${t.color};margin-top:16px">${d.buttonText}</a>`:''}</div></div>` },
 
   settings(user) {
     const sbConfig = typeof SB !== 'undefined' ? SB.getConfig() : { url: '', key: '', isReady: false };
