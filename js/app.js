@@ -604,15 +604,98 @@ const Router = {
 
   _bindAuth() {
     const tabs = document.querySelectorAll('.auth-tab')
-    const lf = document.getElementById('loginForm'), sf = document.getElementById('signupForm'), err = document.getElementById('authError')
-    
+    const authTabsWrap = document.querySelector('.auth-tabs')
+    const lf = document.getElementById('loginForm')
+    const sf = document.getElementById('signupForm')
+    const otpSection = document.getElementById('otpSection')
+    const otpForm = document.getElementById('otpForm')
+    const otpEmailDisplay = document.getElementById('otpEmailDisplay')
+    const otpCodeInput = document.getElementById('otpCodeInput')
+    const resendOtpBtn = document.getElementById('resendOtpBtn')
+    const backToLoginBtn = document.getElementById('backToLoginBtn')
+    const err = document.getElementById('authError')
+
+    let currentVerificationEmail = ''
+
+    function showOtp(email) {
+      currentVerificationEmail = email
+      if (authTabsWrap) authTabsWrap.classList.add('hidden')
+      if (lf) lf.classList.add('hidden')
+      if (sf) sf.classList.add('hidden')
+      if (otpSection) {
+        otpSection.classList.remove('hidden')
+        if (otpEmailDisplay) otpEmailDisplay.textContent = email
+        if (otpCodeInput) {
+          otpCodeInput.value = ''
+          setTimeout(() => otpCodeInput.focus(), 150)
+        }
+      }
+      if (err) err.style.display = 'none'
+    }
+
+    function showLogin() {
+      if (authTabsWrap) authTabsWrap.classList.remove('hidden')
+      if (otpSection) otpSection.classList.add('hidden')
+      tabs.forEach(x => x.classList.toggle('active', x.dataset.tab === 'login'))
+      if (lf) lf.classList.remove('hidden')
+      if (sf) sf.classList.add('hidden')
+      if (err) err.style.display = 'none'
+    }
+
     tabs.forEach(t => t.addEventListener('click', () => {
       tabs.forEach(x => x.classList.remove('active'))
       t.classList.add('active')
-      lf.classList.toggle('hidden', t.dataset.tab !== 'login')
-      sf.classList.toggle('hidden', t.dataset.tab !== 'signup')
+      if (lf) lf.classList.toggle('hidden', t.dataset.tab !== 'login')
+      if (sf) sf.classList.toggle('hidden', t.dataset.tab !== 'signup')
+      if (otpSection) otpSection.classList.add('hidden')
       if (err) err.style.display = 'none'
     }))
+
+    backToLoginBtn?.addEventListener('click', () => showLogin())
+
+    resendOtpBtn?.addEventListener('click', async () => {
+      if (!currentVerificationEmail) return
+      resendOtpBtn.disabled = true
+      resendOtpBtn.textContent = 'جاري الإرسال...'
+      try {
+        await Auth.resendOtp(currentVerificationEmail)
+        Toast.show('تم إعادة إرسال رمز التحقق OTP إلى بريدك بنجاح 📩', 'info')
+      } catch (e) {
+        Toast.show(e.message || 'فشل إعادة الإرسال', 'error')
+      } finally {
+        setTimeout(() => {
+          resendOtpBtn.disabled = false
+          resendOtpBtn.textContent = 'إعادة إرسال الرمز'
+        }, 5000)
+      }
+    })
+
+    otpForm?.addEventListener('submit', async e => {
+      e.preventDefault()
+      const btn = document.getElementById('otpSubmitBtn')
+      const token = (otpCodeInput?.value || '').trim()
+      if (!token) {
+        Toast.show('يرجى إدخال رمز التحقق المكون من 6 أرقام', 'error')
+        return
+      }
+      btn.disabled = true
+      btn.textContent = 'جاري التحقق والتفعيل...'
+      if (err) err.style.display = 'none'
+
+      try {
+        await Auth.verifyOtp(currentVerificationEmail, token)
+        Toast.show('تم تفعيل بريدك الإلكتروني بنجاح! مرحباً بك 🚀', 'success')
+        Router.navigate('dashboard')
+      } catch (e) {
+        if (err) {
+          err.textContent = e.message || 'رمز التحقق غير صحيح أو انتهت صلاحيته'
+          err.style.display = 'block'
+        }
+      } finally {
+        btn.disabled = false
+        btn.textContent = 'تأكيد وتفعيل الحساب 🚀'
+      }
+    })
 
     lf?.addEventListener('submit', async e => {
       e.preventDefault()
@@ -627,8 +710,13 @@ const Router = {
         Toast.show('مرحباً بك! تم تسجيل الدخول بنجاح 🚀', 'success')
         Router.navigate('dashboard')
       } catch (e) {
+        if (e.code === 'EMAIL_NOT_CONFIRMED' || (e.message && e.message.includes('غير مؤكد'))) {
+          showOtp(email)
+          Toast.show('بريدك الإلكتروني غير مؤكد بعد. يرجى إدخال رمز التحقق لتفعيل حسابك.', 'warning')
+          return
+        }
         if (err) {
-          err.textContent = e.message || 'فشل تسجيل الدخول. تأكد من صحة البريد وكلمة المرور.'
+          err.textContent = e.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'
           err.style.display = 'block'
         }
       } finally {
@@ -656,7 +744,12 @@ const Router = {
       if (err) err.style.display = 'none'
 
       try {
-        await Auth.signup(name, email, password)
+        const res = await Auth.signup(name, email, password)
+        if (res && res.requiresVerification) {
+          showOtp(email)
+          Toast.show('تم إنشاء الحساب! أرسلنا رمز التحقق OTP إلى بريدك الإلكتروني.', 'info')
+          return
+        }
         Toast.show('تم إنشاء حسابك بنجاح! مرحباً بك في SiteFlow 🎉', 'success')
         Router.navigate('dashboard')
       } catch (e) {

@@ -135,6 +135,12 @@ const SB = {
     if (!this.isReady()) throw new Error('قاعدة بيانات Supabase غير متصلة حالياً');
     const { data, error } = await this.client.auth.signInWithPassword({ email, password });
     if (error) {
+      if (error.message.toLowerCase().includes('email not confirmed')) {
+        const err = new Error('البريد الإلكتروني غير مؤكد بعد. يرجى إدخال رمز التحقق OTP لتفعيل الحساب.');
+        err.code = 'EMAIL_NOT_CONFIRMED';
+        err.email = email;
+        throw err;
+      }
       if (error.message === 'Invalid login credentials') {
         throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
       }
@@ -158,6 +164,50 @@ const SB = {
         isAdmin: profile?.is_admin || false
       }
     };
+  },
+
+  async verifyOtp(email, token, type='signup') {
+    if (!this.isReady()) throw new Error('قاعدة بيانات Supabase غير متصلة حالياً');
+    let res = await this.client.auth.verifyOtp({ email, token, type });
+    if (res.error) {
+      res = await this.client.auth.verifyOtp({ email, token, type: type === 'signup' ? 'email' : 'signup' });
+    }
+    if (res.error) {
+      throw new Error(res.error.message.includes('expired') || res.error.message.includes('invalid') ? 'رمز التحقق OTP غير صحيح أو انتهت صلاحيته' : res.error.message);
+    }
+    const user = res.data?.user;
+    let profile = null;
+    if (user) {
+      try {
+        const { data: prof } = await this.client.from('profiles').select('*').eq('id', user.id).maybeSingle();
+        profile = prof;
+      } catch {}
+    }
+    return {
+      session: res.data?.session,
+      user: {
+        id: user ? user.id : 'usr_' + Date.now().toString(36),
+        name: profile?.name || user?.user_metadata?.name || email.split('@')[0],
+        email: email,
+        plan: profile?.plan || 'free',
+        lang: profile?.lang || 'ar',
+        isAdmin: profile?.is_admin || false
+      }
+    };
+  },
+
+  async resendOtp(email, type='signup') {
+    if (!this.isReady()) throw new Error('قاعدة بيانات Supabase غير متصلة حالياً');
+    const { data, error } = await this.client.auth.resend({ email, type });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  async signInWithOtp(email) {
+    if (!this.isReady()) throw new Error('قاعدة بيانات Supabase غير متصلة حالياً');
+    const { data, error } = await this.client.auth.signInWithOtp({ email });
+    if (error) throw new Error(error.message);
+    return data;
   },
 
   async signInWithGoogle() {

@@ -229,10 +229,14 @@ const API = {
     if (mode === 'supabase') {
       try {
         const { session, user } = await SB.signUp(name, email, password)
-        if (session) this._saveToken(session.access_token)
-        else this._saveToken('sb_' + user.id)
-        LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), user])
-        return { user }
+        if (session) {
+          this._saveToken(session.access_token)
+          LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), user])
+          return { user, verified: true }
+        } else {
+          // Email confirmation is required by Supabase!
+          return { user, requiresVerification: true, email }
+        }
       } catch (e) {
         throw new Error(e.message || 'فشل إنشاء الحساب عبر Supabase')
       }
@@ -257,6 +261,32 @@ const API = {
     LocalDB.users.save([...users, u])
     this._saveToken('local_' + u.id)
     return { user: { id: u.id, name: u.name, email: u.email, plan: 'free', lang: 'ar', isAdmin: false } }
+  },
+
+  async verifyOtp(email, token, type='signup') {
+    const mode = await this._init()
+    if (mode === 'supabase') {
+      const { session, user } = await SB.verifyOtp(email, token, type)
+      if (session) this._saveToken(session.access_token)
+      else this._saveToken('sb_' + user.id)
+      LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), user])
+      return { user }
+    }
+    throw new Error('التحقق برمز OTP متاح عبر قاعدة بيانات Supabase')
+  },
+
+  async resendOtp(email, type='signup') {
+    const mode = await this._init()
+    if (mode === 'supabase') {
+      return await SB.resendOtp(email, type)
+    }
+  },
+
+  async loginWithOtp(email) {
+    const mode = await this._init()
+    if (mode === 'supabase') {
+      return await SB.signInWithOtp(email)
+    }
   },
 
   async googleLogin() {

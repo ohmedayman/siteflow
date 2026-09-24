@@ -32,10 +32,24 @@ const Auth = {
 
   async signup(name, email, password) {
     const r = await API.signup(name, email, password)
+    if (!r.requiresVerification) {
+      this.user = r.user
+      this._ui()
+      API.syncToBackend()
+    }
+    return r
+  },
+
+  async verifyOtp(email, token) {
+    const r = await API.verifyOtp(email, token)
     this.user = r.user
     this._ui()
     API.syncToBackend()
     return r
+  },
+
+  async resendOtp(email) {
+    return await API.resendOtp(email)
   },
 
   async googleLogin() {

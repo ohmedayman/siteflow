@@ -477,6 +477,37 @@ const T = {
         </div>
         <button type="submit" class="btn btn-primary btn-lg w-full" style="font-weight:700;margin-top:8px">إنشاء الحساب الآن</button>
       </form>
+
+      <!-- 3. OTP Email Verification Form -->
+      <div id="otpSection" class="hidden" style="text-align:center;padding:10px 0">
+        <div style="width:60px;height:60px;border-radius:18px;background:rgba(99,102,241,0.1);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <h3 style="font-size:1.4rem;font-weight:800;color:#0f172a;margin-bottom:6px">تأكيد البريد الإلكتروني (OTP)</h3>
+        <p style="color:var(--gray-500);font-size:.88rem;margin-bottom:20px;line-height:1.6">
+          تم إرسال رمز التحقق أو رابط التفعيل إلى بريدك:<br>
+          <strong id="otpEmailDisplay" style="color:var(--gray-900);font-family:monospace;direction:ltr;display:inline-block;margin-top:4px"></strong>
+        </p>
+
+        <form id="otpForm">
+          <div class="input-group">
+            <label style="font-weight:600;margin-bottom:8px">أدخل رمز التحقق (OTP)</label>
+            <input type="text" class="input" id="otpCodeInput" placeholder="123456" maxlength="8" required style="font-size:1.6rem;letter-spacing:6px;text-align:center;font-weight:800;font-family:monospace;direction:ltr">
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full" id="otpSubmitBtn" style="font-weight:700;margin-top:12px">
+            تأكيد وتفعيل الحساب 🚀
+          </button>
+        </form>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:.85rem">
+          <button type="button" class="btn btn-ghost btn-sm" id="resendOtpBtn" style="color:var(--primary)">
+            إعادة إرسال الرمز
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm" id="backToLoginBtn">
+            ← العودة لتسجيل الدخول
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>` },
