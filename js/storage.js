@@ -100,6 +100,28 @@ const LocalDB = {
     },
     save(c) { LocalDB.set('admin_creds', c) }
   },
+  maintenanceSettings: {
+    get() {
+      return LocalDB.get('maintenance_settings') || {
+        enabled: false,
+        message: 'نقوم حالياً ببعض أعمال الصيانة والترقيات الدورية لتحسين خدمات المنصة. سنعود للعمل بكامل طاقتنا في أقرب وقت! 🛠️',
+        estimatedTime: 'قريباً جداً'
+      }
+    },
+    save(s) { LocalDB.set('maintenance_settings', s) }
+  },
+  toggleSiteSuspension(id, isSuspended, reason = '') {
+    const pages = LocalDB.pages.get();
+    const p = pages.find(x => x.id === id);
+    if (p) {
+      p.suspended = isSuspended;
+      p.status = isSuspended ? 'suspended' : (p.published ? 'published' : 'draft');
+      p.suspension_reason = reason;
+      LocalDB.pages.save(pages);
+      return p;
+    }
+    return null;
+  },
 
   genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7) },
   clone(o) { return JSON.parse(JSON.stringify(o)) },
@@ -417,34 +439,71 @@ const API = {
 
   async getMe() {
     const mode = await this._init()
-    if (mode === 'supabase') {
-      const u = await SB.getCurrentUser()
-      if (u) return u
-      if (this.token && this.token.startsWith('sb_')) {
-        const rawId = this.token.replace('sb_', '')
-        try {
-          const { data: prof } = await SB.client.from('profiles').select('*').eq('id', rawId).maybeSingle()
-          if (prof) {
-            return {
-              id: prof.id,
-              name: prof.name || prof.email.split('@')[0],
-              email: prof.email,
-              plan: prof.plan || 'free',
-              lang: prof.lang || 'ar',
-              isAdmin: prof.is_admin || false
+    const rawId = (this.token || '').replace('sb_', '').replace('local_', '')
+    let localU = LocalDB.users.get().find(x => x.id === rawId || x.email === rawId)
+
+    if (mode === 'supabase' || SB.isReady()) {
+      try {
+        const u = await SB.getCurrentUser()
+        if (u) {
+          if (localU) {
+            localU.plan = u.plan || localU.plan
+            localU.isAdmin = u.isAdmin !== undefined ? u.isAdmin : localU.isAdmin
+            const allUsers = LocalDB.users.get()
+            const idx = allUsers.findIndex(x => x.id === localU.id || x.email === localU.email)
+            if (idx !== -1) {
+              allUsers[idx] = { ...allUsers[idx], plan: u.plan, isAdmin: u.isAdmin }
+              LocalDB.users.save(allUsers)
             }
           }
-        } catch {}
+          return u
+        }
+
+        // Query profiles by ID or by local user email to catch admin approvals immediately
+        let prof = null
+        if (rawId && !rawId.startsWith('usr_guest')) {
+          const cleanId = rawId.replace('usr_', '')
+          const { data } = await SB.client.from('profiles').select('*').or(`id.eq.${rawId},id.eq.${cleanId}`).maybeSingle()
+          prof = data
+        }
+        if (!prof && localU?.email) {
+          const { data } = await SB.client.from('profiles').select('*').ilike('email', localU.email.trim()).maybeSingle()
+          prof = data
+        }
+
+        if (prof) {
+          const userObj = {
+            id: prof.id || rawId,
+            name: prof.name || (prof.email ? prof.email.split('@')[0] : 'User'),
+            email: prof.email,
+            plan: prof.plan || 'free',
+            lang: prof.lang || 'ar',
+            isAdmin: prof.is_admin || false
+          }
+          if (localU) {
+            localU.plan = userObj.plan
+            localU.isAdmin = userObj.isAdmin
+            const allUsers = LocalDB.users.get()
+            const idx = allUsers.findIndex(x => x.id === localU.id || x.email === localU.email)
+            if (idx !== -1) {
+              allUsers[idx] = { ...allUsers[idx], plan: userObj.plan, isAdmin: userObj.isAdmin }
+              LocalDB.users.save(allUsers)
+            }
+          }
+          return userObj
+        }
+      } catch (err) {
+        console.warn('API getMe Supabase check notice:', err)
       }
     }
+
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/auth/me')
       if (r.ok) return await r.json()
     }
-    const uid = (this.token || '').replace('local_', '').replace('sb_', '')
-    const u = LocalDB.users.get().find(x => x.id === uid || x.email === uid)
-    if (!u) throw new Error('Not logged in')
-    return { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang, isAdmin: u.isAdmin || false }
+
+    if (!localU) throw new Error('Not logged in')
+    return { id: localU.id, name: localU.name, email: localU.email, plan: localU.plan, lang: localU.lang, isAdmin: localU.isAdmin || false }
   },
 
   logout() {
@@ -729,8 +788,32 @@ const API = {
 
   async confirmPayment(id) {
     const mode = await this._init()
-    const payments = LocalDB.payments.get()
-    const p = payments.find(x => x.id === id)
+    let payments = LocalDB.payments.get()
+    let p = payments.find(x => x.id === id)
+
+    // If not found in LocalDB, fetch it from Supabase
+    if (!p && SB.isReady()) {
+      try {
+        const { data: sbP } = await SB.client.from('payments').select('*').eq('id', id).maybeSingle()
+        if (sbP) {
+          p = {
+            id: sbP.id,
+            userId: sbP.user_id,
+            user_id: sbP.user_id,
+            plan: sbP.plan,
+            amount: sbP.amount,
+            status: sbP.status,
+            method: sbP.method,
+            user_email: sbP.user_email,
+            user_name: sbP.user_name
+          }
+          payments.push(p)
+        }
+      } catch (err) {
+        console.warn('Supabase fetch payment notice:', err)
+      }
+    }
+
     if (p) {
       p.status = 'completed'
       LocalDB.payments.save(payments)
@@ -752,14 +835,21 @@ const API = {
       LocalDB.users.save(users)
     }
 
-    if (mode === 'supabase' && SB.isReady()) {
+    // Update in Supabase (payments table and profiles table)
+    if (SB.isReady()) {
       try {
         await SB.confirmPayment(id, p?.plan, p?.userId || p?.user_id, p?.user_email)
       } catch (err) {
         console.warn('Supabase confirmPayment notice:', err)
       }
     }
-    return { ok: true }
+
+    // Broadcast update across tabs
+    try {
+      localStorage.setItem('sf_plan_updated', Date.now().toString())
+    } catch {}
+
+    return { ok: true, plan: p?.plan }
   },
 
   async rejectPayment(id) {
@@ -771,7 +861,7 @@ const API = {
       LocalDB.payments.save(payments)
     }
 
-    if (mode === 'supabase' && SB.isReady()) {
+    if (SB.isReady()) {
       try {
         await SB.rejectPayment(id)
       } catch (err) {
@@ -837,7 +927,9 @@ const API = {
         status: p.status || existing.status || 'pending'
       })
     })
-    return Array.from(map.values()).sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    const merged = Array.from(map.values()).sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    LocalDB.payments.save(merged)
+    return merged
   },
 
   async getAllUsers() {
@@ -849,7 +941,7 @@ const API = {
         if (data && data.length) {
           users = data.map(d => ({
             id: d.id,
-            name: d.name || d.email.split('@')[0],
+            name: d.name || (d.email ? d.email.split('@')[0] : 'User'),
             email: d.email,
             plan: d.plan || 'free',
             isAdmin: d.is_admin || false,
@@ -872,7 +964,14 @@ const API = {
       try {
         const { data } = await SB.client.from('sites').select('*').order('created_at', { ascending: false })
         if (data && data.length) {
-          sites = data.map(s => SB._formatSite ? SB._formatSite(s) : s)
+          sites = data.map(s => {
+            const formatted = SB._formatSite ? SB._formatSite(s) : s
+            return {
+              ...formatted,
+              suspended: s.suspended === true || s.status === 'suspended',
+              suspension_reason: s.suspension_reason || ''
+            }
+          })
         }
       } catch (err) {
         console.warn('getAllSites SB notice:', err)
@@ -881,19 +980,89 @@ const API = {
     const local = LocalDB.pages.get()
     const map = new Map()
     local.forEach(s => map.set(s.id, s))
-    sites.forEach(s => map.set(s.id, s))
-    return Array.from(map.values()).sort((a,b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0))
+    sites.forEach(s => {
+      const existing = map.get(s.id) || {}
+      map.set(s.id, {
+        ...existing,
+        ...s,
+        suspended: s.suspended !== undefined ? s.suspended : existing.suspended,
+        suspension_reason: s.suspension_reason || existing.suspension_reason || ''
+      })
+    })
+    const merged = Array.from(map.values()).sort((a,b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0))
+    LocalDB.pages.save(merged)
+    return merged
+  },
+
+  async toggleSiteSuspension(siteId, isSuspended, reason = '') {
+    LocalDB.toggleSiteSuspension(siteId, isSuspended, reason)
+    if (SB.isReady()) {
+      try {
+        await SB.toggleSiteSuspension(siteId, isSuspended, reason)
+      } catch (err) {
+        console.warn('Supabase site suspension error:', err)
+      }
+    }
+    try {
+      localStorage.setItem('sf_site_suspended_' + siteId, isSuspended ? '1' : '0')
+    } catch {}
+    return { ok: true }
+  },
+
+  async deleteSiteAdmin(siteId) {
+    return await this.deleteSite(siteId)
+  },
+
+  async getMaintenanceSettings() {
+    let local = LocalDB.maintenanceSettings.get()
+    if (SB.isReady()) {
+      try {
+        const sbSettings = await SB.getMaintenanceSettings()
+        if (sbSettings) {
+          LocalDB.maintenanceSettings.save(sbSettings)
+          return sbSettings
+        }
+      } catch {}
+    }
+    return local
+  },
+
+  async setMaintenanceSettings(settings) {
+    LocalDB.maintenanceSettings.save(settings)
+    if (SB.isReady()) {
+      try {
+        await SB.setMaintenanceSettings(settings)
+      } catch (err) {
+        console.warn('setMaintenanceSettings notice:', err)
+      }
+    }
+    try {
+      localStorage.setItem('sf_maintenance_broadcast', JSON.stringify({ ...settings, _t: Date.now() }))
+    } catch {}
+    return { ok: true }
   },
 
   async updateUserPlan(userId, plan) {
     const users = LocalDB.users.get()
     const u = users.find(x => x.id === userId || x.email === userId)
-    if (u) { u.plan = plan; LocalDB.users.save(users) }
+    if (u) {
+      u.plan = plan
+      LocalDB.users.save(users)
+    }
     if (SB.isReady()) {
       try {
-        await SB.client.from('profiles').update({ plan: plan }).eq('id', userId)
-      } catch {}
+        const cleanId = String(userId).replace('usr_', '')
+        await SB.client.from('profiles').update({ plan: plan }).or(`id.eq.${userId},id.eq.${cleanId}`)
+        if (u?.email) {
+          await SB.client.from('profiles').update({ plan: plan }).ilike('email', u.email.trim())
+        }
+      } catch (err) {
+        console.warn('updateUserPlan SB notice:', err)
+      }
     }
+    try {
+      localStorage.setItem('sf_plan_updated', Date.now().toString())
+    } catch {}
     return { ok: true }
   },
 
@@ -903,7 +1072,8 @@ const API = {
     if (u) { u.isAdmin = isAdmin; LocalDB.users.save(users) }
     if (SB.isReady()) {
       try {
-        await SB.client.from('profiles').update({ is_admin: isAdmin }).eq('id', userId)
+        const cleanId = String(userId).replace('usr_', '')
+        await SB.client.from('profiles').update({ is_admin: isAdmin }).or(`id.eq.${userId},id.eq.${cleanId}`)
       } catch {}
     }
     return { ok: true }

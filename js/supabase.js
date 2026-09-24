@@ -510,19 +510,50 @@ const SB = {
   async confirmPayment(id, plan, userId, userEmail) {
     if (!this.isReady()) return null;
     try {
+      // 1. If plan or userEmail is missing, fetch the payment row from Supabase
+      if (!plan || !userEmail) {
+        try {
+          const { data: pRow } = await this.client.from('payments').select('*').eq('id', id).maybeSingle();
+          if (pRow) {
+            plan = plan || pRow.plan;
+            userId = userId || pRow.user_id;
+            userEmail = userEmail || pRow.user_email;
+          }
+        } catch {}
+      }
+
+      // 2. Mark payment completed
       await this.client.from('payments').update({ status: 'completed' }).eq('id', id);
+
+      // 3. Update profiles table with the new plan
       if (plan) {
         if (userEmail) {
-          try { await this.client.from('profiles').update({ plan: plan }).eq('email', userEmail); } catch {}
+          const cleanEmail = String(userEmail).trim().toLowerCase();
+          try {
+            const { data: updated } = await this.client.from('profiles').update({ plan: plan }).ilike('email', cleanEmail).select();
+            if (!updated || updated.length === 0) {
+              await this.client.from('profiles').upsert({
+                email: cleanEmail,
+                plan: plan,
+                name: userEmail.split('@')[0]
+              }, { onConflict: 'email' });
+            }
+          } catch (e1) {
+            console.warn('Update profile by email notice:', e1.message);
+          }
         }
         if (userId && !String(userId).startsWith('usr_guest')) {
           const cleanId = String(userId).replace('usr_', '');
-          try { await this.client.from('profiles').update({ plan: plan }).eq('id', cleanId); } catch {}
+          try {
+            await this.client.from('profiles').update({ plan: plan }).eq('id', cleanId);
+          } catch (e2) {
+            console.warn('Update profile by ID notice:', e2.message);
+          }
         }
       }
-      return { ok: true };
+      return { ok: true, plan, userEmail };
     } catch (e) {
-      console.warn('Confirm payment notice:', e.message);
+      console.warn('Confirm payment error:', e.message);
       return { ok: false, error: e.message };
     }
   },
@@ -533,6 +564,54 @@ const SB = {
       await this.client.from('payments').update({ status: 'rejected' }).eq('id', id);
       return { ok: true };
     } catch (e) {
+      return { ok: false, error: e.message };
+    }
+  },
+
+  async toggleSiteSuspension(id, isSuspended, reason = '') {
+    if (!this.isReady()) return null;
+    try {
+      const updates = {
+        status: isSuspended ? 'suspended' : 'published'
+      };
+      try {
+        await this.client.from('sites').update({
+          ...updates,
+          suspended: isSuspended,
+          suspension_reason: reason
+        }).eq('id', id);
+      } catch {
+        await this.client.from('sites').update(updates).eq('id', id);
+      }
+      return { ok: true };
+    } catch (e) {
+      console.warn('Supabase toggleSiteSuspension notice:', e.message);
+      return { ok: false, error: e.message };
+    }
+  },
+
+  async getMaintenanceSettings() {
+    if (!this.isReady()) return null;
+    try {
+      const { data } = await this.client.from('platform_settings').select('*').eq('key', 'maintenance').maybeSingle();
+      if (data && data.value) {
+        return typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
+      }
+    } catch {}
+    return null;
+  },
+
+  async setMaintenanceSettings(settings) {
+    if (!this.isReady()) return null;
+    try {
+      await this.client.from('platform_settings').upsert({
+        key: 'maintenance',
+        value: JSON.stringify(settings),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'key' });
+      return { ok: true };
+    } catch (e) {
+      console.warn('Supabase setMaintenanceSettings notice:', e.message);
       return { ok: false, error: e.message };
     }
   },

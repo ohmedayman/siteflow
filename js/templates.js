@@ -3366,11 +3366,90 @@ const T = {
 </div>`
   },
 
-  adminDashboard({ payments = [], users = [], sites = [], settings = { vodafone: '01028707543', instapay: '01028707543' }, activeTab = 'payments' }) {
+  platformMaintenance(settings = {}) {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    const msg = settings.message || 'نقوم حالياً ببعض أعمال الصيانة والترقيات الدورية على خوادم المنصة لتحسين الأداء وتثبيت الميزات الجديدة. سنعود للعمل بكامل طاقتنا في أقرب وقت ممكن! 🛠️'
+    const est = settings.estimatedTime || 'قريباً جداً'
+    return `
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at top,#0f172a,#020617);color:#f8fafc;padding:30px 20px;font-family:'Cairo','Tajawal',sans-serif" dir="${isAr ? 'rtl' : 'ltr'}">
+  <div style="max-width:560px;width:100%;background:rgba(30,41,59,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:28px;padding:48px 36px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.5);backdrop-filter:blur(16px)">
+    <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);padding:8px 20px;border-radius:30px;margin-bottom:28px">
+      <img src="assets/sitflow.svg" alt="SiteFlow" width="28" height="28">
+      <span style="font-weight:900;font-size:1.05rem;color:#818cf8">SiteFlow</span>
+      <span style="background:#f59e0b;color:#000;font-size:.72rem;font-weight:900;padding:2px 8px;border-radius:10px">صيانة وتحديث</span>
+    </div>
+
+    <div style="font-size:4rem;margin-bottom:16px">
+      🛠️
+    </div>
+
+    <h1 style="font-size:1.8rem;font-weight:900;margin-bottom:14px;color:#fff;line-height:1.3">
+      المنصة في وضع صيانة وتطوير مجدول
+    </h1>
+
+    <p style="font-size:1rem;color:#94a3b8;line-height:1.7;margin-bottom:28px">
+      ${msg}
+    </p>
+
+    <div style="background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px;margin-bottom:30px;display:flex;align-items:center;justify-content:center;gap:12px">
+      <span style="font-size:1.2rem">⏳</span>
+      <span style="color:#cbd5e1;font-size:.9rem;font-weight:600">الوقت المتوقع للاكتمال: <strong style="color:#38bdf8">${est}</strong></span>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="https://wa.me/201028707543" target="_blank" class="btn btn-primary btn-lg" style="background:#25D366;border-color:#25D366;border-radius:12px;font-weight:800;display:inline-flex;align-items:center;gap:8px">
+        <span>💬</span> <span>تواصل مع الدعم الفني</span>
+      </a>
+      <a href="admin.html" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,0.2);color:#cbd5e1;border-radius:12px;font-size:.9rem">
+        دخول الإدارة 👑
+      </a>
+    </div>
+  </div>
+</div>`
+  },
+
+  siteSuspended(site = {}) {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    const reason = site.suspension_reason ? `<div style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 16px;border-radius:12px;margin-bottom:20px;font-size:.85rem;font-weight:600">سبب الإيقاف: ${site.suspension_reason}</div>` : ''
+    return `
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:30px 16px;font-family:'Cairo','Tajawal',sans-serif" dir="${isAr ? 'rtl' : 'ltr'}">
+  <div style="max-width:520px;width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;padding:44px 32px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.06)">
+    <div style="width:76px;height:76px;border-radius:50%;background:#fee2e2;color:#dc2626;font-size:2.4rem;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+      ⚠️
+    </div>
+
+    <h2 style="font-size:1.6rem;font-weight:900;color:#0f172a;margin-bottom:8px">
+      هذا الموقع متوقف حالياً
+    </h2>
+
+    <p style="color:#64748b;font-size:.95rem;line-height:1.6;margin-bottom:20px">
+      تم إيقاف تشغيل موقع <strong>${site.title || site.slug || ''}</strong> مؤقتاً بقرار من إدارة المنصة.
+    </p>
+
+    ${reason}
+
+    <p style="font-size:.84rem;color:#94a3b8;line-height:1.6;margin-bottom:28px">
+      إذا كنت صاحب هذا الموقع، يرجى تسجيل الدخول إلى لوحة التحكم الخاصة بك أو التواصل مع فريق الدعم الفني لتفعيل الموقع ومراجعة بيانات الاشتراك.
+    </p>
+
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <a href="https://wa.me/201028707543" target="_blank" class="btn btn-primary" style="background:#25D366;border-color:#25D366;border-radius:12px;font-weight:700">
+        تواصل مع الإدارة عبر واتساب 💬
+      </a>
+      <a href="./#/" class="btn btn-outline" style="border-radius:12px">
+        الصفحة الرئيسية للمنصة
+      </a>
+    </div>
+  </div>
+</div>`
+  },
+
+  adminDashboard({ payments = [], users = [], sites = [], settings = { vodafone: '01028707543', instapay: '01028707543' }, maintenance = { enabled: false }, activeTab = 'payments' }) {
     const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const pendingCount = payments.filter(p => p.status === 'pending').length
     const approvedRevenue = payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
-    const publishedSites = sites.filter(s => s.published).length
+    const publishedSites = sites.filter(s => s.published && !s.suspended).length
+    const suspendedSites = sites.filter(s => s.suspended).length
 
     return `
 <div class="sf-admin-page" dir="${isAr ? 'rtl' : 'ltr'}">
@@ -3378,7 +3457,7 @@ const T = {
   <div class="sf-admin-header">
     <div class="sf-admin-title-box">
       <h1><span>لوحة التحكم الإدارية الشاملة 👑</span></h1>
-      <p>مراجعة وتفعيل اشتراكات فودافون كاش وانستاباي، وإدارة مستخدمي ومواقع منصة SiteFlow</p>
+      <p>مراجعة وتفعيل اشتراكات فودافون كاش وانستاباي، والتحكم الفوري في المواقع ووضع الصيانة</p>
     </div>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <span style="background:#fef3c7;color:#92400e;padding:6px 14px;border-radius:12px;font-size:.82rem;font-weight:800;border:1px solid #fde68a;display:inline-flex;align-items:center;gap:6px">
@@ -3389,6 +3468,28 @@ const T = {
       </button>
       <button class="btn btn-ghost btn-sm" id="adminLogoutBtn" style="border-radius:10px;color:#dc2626;border:1px solid #fee2e2">
         <span>🚪 خروج الأدمن</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Platform Maintenance Control Banner -->
+  <div class="sf-admin-maintenance-banner" style="background:${maintenance.enabled ? '#fef2f2' : '#f0fdf4'};border:1.5px solid ${maintenance.enabled ? '#fca5a5' : '#86efac'};border-radius:18px;padding:18px 24px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;box-shadow:0 4px 15px rgba(0,0,0,0.02)">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:48px;height:48px;border-radius:14px;background:${maintenance.enabled ? '#fee2e2' : '#dcfce7'};display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0">
+        ${maintenance.enabled ? '🛠️' : '🟢'}
+      </div>
+      <div>
+        <div style="font-weight:900;font-size:1rem;color:${maintenance.enabled ? '#991b1b' : '#166534'}">
+          ${maintenance.enabled ? 'وضع صيانة المنصة مُفعل حالياً ⚠️' : 'المنصة تعمل وتستقبل الزوار والمشتركين بشكل طبيعي 🚀'}
+        </div>
+        <p style="margin:3px 0 0;font-size:.82rem;color:${maintenance.enabled ? '#b91c1c' : '#15803d'}">
+          ${maintenance.enabled ? (maintenance.message || 'صفحة الصيانة تظهر لجميع الزوار والمستخدمين لحين الانتهاء.') : 'يمكنك تفعيل وضع الصيانة في أي وقت عند إجراء تحديثات لإيقاف المنصة مؤقتاً.'}
+        </p>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn btn-sm ${maintenance.enabled ? 'btn-success' : 'btn-outline'} js-toggle-maintenance-quick" data-currently-enabled="${maintenance.enabled ? 'true' : 'false'}" style="font-weight:800;border-radius:10px;padding:8px 18px">
+        ${maintenance.enabled ? '✅ إيقاف وضع الصيانة وإتاحة المنصة' : '🛠️ تفعيل وضع الصيانة العام'}
       </button>
     </div>
   </div>
@@ -3422,11 +3523,11 @@ const T = {
       </div>
     </div>
 
-    <!-- Published Sites -->
+    <!-- Published / Suspended Sites -->
     <div class="sf-admin-stat-card">
       <div class="sf-admin-stat-icon" style="background:#f0fdf4;color:#16a34a">🌐</div>
       <div>
-        <div class="sf-admin-stat-val">${publishedSites} <span style="font-size:1rem;color:#64748b">/ ${sites.length}</span></div>
+        <div class="sf-admin-stat-val">${publishedSites} <span style="font-size:.9rem;color:#64748b">نشط</span> ${suspendedSites > 0 ? `<span style="font-size:.85rem;color:#dc2626">(${suspendedSites} موقوف)</span>` : ''}</div>
         <div class="sf-admin-stat-lbl">المواقع المنشورة عالمياً</div>
       </div>
     </div>
@@ -3443,20 +3544,31 @@ const T = {
       <span style="background:#f1f5f9;color:#475569;font-size:.72rem;padding:2px 8px;border-radius:12px">${users.length}</span>
     </button>
     <button class="sf-admin-tab-btn ${activeTab==='sites'?'active':''}" data-admin-tab="sites">
-      <span>🌐 مواقع المنصة</span>
+      <span>🌐 مواقع المنصة والتحكم</span>
       <span style="background:#f1f5f9;color:#475569;font-size:.72rem;padding:2px 8px;border-radius:12px">${sites.length}</span>
     </button>
     <button class="sf-admin-tab-btn ${activeTab==='settings'?'active':''}" data-admin-tab="settings">
-      <span>⚙️ أرقام الدفع والتحويل</span>
+      <span>⚙️ الإعدادات والصيانة</span>
     </button>
   </div>
 
   <!-- TAB 1: PAYMENTS -->
   <div id="adminTabContent_payments" class="sf-admin-tab-pane" style="${activeTab==='payments'?'':'display:none'}">
     <div class="sf-admin-table-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-        <h3 style="font-size:1.2rem;font-weight:800;margin:0">سجل طلبات الدفع والتحويل</h3>
-        <span style="font-size:.84rem;color:#64748b">إجمالي الطلبات: ${payments.length}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3 style="font-size:1.2rem;font-weight:800;margin:0 0 4px">سجل طلبات الدفع والتحويل</h3>
+          <span style="font-size:.84rem;color:#64748b">إجمالي الطلبات: ${payments.length}</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input type="text" id="adminPaymentSearchInput" placeholder="بحث بالاسم، الإيميل، الهاتف، الكود..." style="padding:8px 14px;border:1px solid #cbd5e1;border-radius:10px;font-size:.85rem;min-width:240px">
+          <select id="adminPaymentFilterSelect" style="padding:8px 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:.85rem;font-weight:700">
+            <option value="all">كل الحالات (${payments.length})</option>
+            <option value="pending" ${pendingCount>0?'selected':''}>بانتظار المراجعة (${pendingCount})</option>
+            <option value="completed">مكتمل ومفعل (${payments.filter(p=>p.status==='completed').length})</option>
+            <option value="rejected">مرفوض (${payments.filter(p=>p.status==='rejected').length})</option>
+          </select>
+        </div>
       </div>
 
       ${payments.length === 0 ? `
@@ -3466,7 +3578,7 @@ const T = {
           <p style="font-size:.85rem;margin:0">عندما يختار أي عميل خطة ويحول عبر فودافون كاش أو انستاباي، ستظهر بياناته وصورة الإشعار هنا فوراً للموافقة.</p>
         </div>
       ` : `
-        <table class="sf-admin-table">
+        <table class="sf-admin-table" id="adminPaymentsTable">
           <thead>
             <tr>
               <th>التاريخ</th>
@@ -3485,9 +3597,10 @@ const T = {
               const planNames = { free:'مجاني', basic:'أساسي', pro:'احترافي 🔥', business:'بيزنس 🚀' }
               const methodLabel = p.method === 'instapay' ? 'انستاباي IP' : 'فودافون كاش VF'
               const methodColor = p.method === 'instapay' ? '#702b84' : '#e60000'
+              const searchIndex = `${p.user_name||''} ${p.user_email||''} ${p.sender_phone||''} ${p.ref_code||''}`.toLowerCase()
 
               return `
-              <tr>
+              <tr class="js-payment-row" data-search="${searchIndex}" data-status="${p.status || 'pending'}">
                 <td style="font-size:.8rem;color:#64748b;white-space:nowrap">${dt}</td>
                 <td>
                   <strong style="display:block;color:#0f172a">${p.user_name || p.userName || 'عميل'}</strong>
@@ -3522,7 +3635,7 @@ const T = {
                   <div style="display:flex;gap:6px;flex-wrap:wrap">
                     ${p.status !== 'completed' ? `
                       <button class="btn btn-primary btn-sm js-admin-approve-btn" data-payment-id="${p.id}" style="background:#10b981;border-color:#10b981;border-radius:8px;font-weight:700;font-size:.78rem;padding:6px 12px">
-                        ✅ موافقة وتفعيل
+                        ✅ موافقة وتفعيل فوري
                       </button>
                     ` : '<span style="color:#059669;font-weight:700;font-size:.82rem">تم التفعيل ✨</span>'}
                     ${p.status === 'pending' ? `
@@ -3560,7 +3673,7 @@ const T = {
         </thead>
         <tbody>
           ${users.map(u => {
-            const planNames = { free:'مجاني', basic:'أساسي', pro:'احترافي', business:'بيزنس' }
+            const planNames = { free:'مجاني', basic:'أساسي', pro:'احترافي 🔥', business:'بيزنس 🚀' }
             const isUserAdmin = u.isAdmin || u.is_admin || u.role === 'admin'
             return `
             <tr class="js-user-row" data-user-text="${((u.name||'')+' '+(u.email||'')).toLowerCase()}">
@@ -3597,40 +3710,76 @@ const T = {
   <!-- TAB 3: SITES -->
   <div id="adminTabContent_sites" class="sf-admin-tab-pane" style="${activeTab==='sites'?'':'display:none'}">
     <div class="sf-admin-table-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-        <h3 style="font-size:1.2rem;font-weight:800;margin:0">مواقع المنصة المنشورة</h3>
-        <span style="font-size:.84rem;color:#64748b">إجمالي المواقع: ${sites.length}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h3 style="font-size:1.2rem;font-weight:800;margin:0 0 4px">مواقع المنصة والتحكم في الإيقاف</h3>
+          <span style="font-size:.84rem;color:#64748b">إجمالي المواقع: ${sites.length} (نشط: ${publishedSites} | موقوف: ${suspendedSites})</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input type="text" id="adminSiteSearchInput" placeholder="بحث بعنوان الموقع أو الرابط..." style="padding:8px 14px;border:1px solid #cbd5e1;border-radius:10px;font-size:.85rem;min-width:240px">
+          <select id="adminSiteFilterSelect" style="padding:8px 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:.85rem;font-weight:700">
+            <option value="all">كل المواقع (${sites.length})</option>
+            <option value="active">المواقع النشطة (${sites.filter(s=>!s.suspended).length})</option>
+            <option value="suspended">المواقع الموقوفة (${suspendedSites})</option>
+          </select>
+        </div>
       </div>
 
-      <table class="sf-admin-table">
+      <table class="sf-admin-table" id="adminSitesTable">
         <thead>
           <tr>
             <th>عنوان الموقع</th>
-            <th>الرابط / النطاق الفرعي</th>
+            <th>الرابط / الدومين</th>
             <th>الزيارات</th>
-            <th>الحالة</th>
+            <th>حالة الموقع</th>
             <th>تاريخ الإنشاء</th>
-            <th>معاينة</th>
+            <th>التحكم الإداري والإيقاف</th>
           </tr>
         </thead>
         <tbody>
           ${sites.map(s => {
             const url = subdomainUrl(s.slug)
+            const isSuspended = !!s.suspended
+            const searchIndex = `${s.title||''} ${s.slug||''}`.toLowerCase()
+
             return `
-            <tr>
-              <td><strong style="color:#0f172a">${s.title || 'موقع'}</strong></td>
+            <tr class="js-site-row" data-search="${searchIndex}" data-status="${isSuspended ? 'suspended' : 'active'}">
+              <td>
+                <strong style="color:#0f172a;display:block">${s.title || 'موقع'}</strong>
+                ${s.suspension_reason ? `<span style="font-size:.75rem;color:#dc2626">سبب الإيقاف: ${s.suspension_reason}</span>` : ''}
+              </td>
               <td><a href="${url}" target="_blank" style="color:#4f46e5;font-weight:600;direction:ltr;display:inline-block">${s.slug}</a></td>
               <td><span style="font-weight:700">${s.views || 0}</span> مشاهدة</td>
               <td>
-                <span class="sf-badge ${s.published?'sf-badge-completed':'sf-badge-pending'}">
-                  ${s.published ? 'منشور عالمياً' : 'مسودة'}
-                </span>
+                ${isSuspended ? `
+                  <span class="sf-badge" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5">
+                    🔴 موقوف من الإدارة
+                  </span>
+                ` : `
+                  <span class="sf-badge ${s.published?'sf-badge-completed':'sf-badge-pending'}">
+                    ${s.published ? '🟢 نشط ومنشور' : 'مسودة'}
+                  </span>
+                `}
               </td>
               <td style="font-size:.8rem;color:#64748b">${new Date(s.createdAt||s.created_at||Date.now()).toLocaleDateString('ar-EG')}</td>
               <td>
-                <a href="${url}" target="_blank" class="btn btn-outline btn-sm" style="border-radius:8px;font-size:.78rem;padding:4px 10px">
-                  زيارة الموقع ↗
-                </a>
+                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                  ${isSuspended ? `
+                    <button class="btn btn-sm btn-success js-admin-activate-site-btn" data-site-id="${s.id}" style="border-radius:8px;font-size:.78rem;padding:5px 12px;font-weight:700">
+                      ▶️ إعادة تشغيل الموقع
+                    </button>
+                  ` : `
+                    <button class="btn btn-sm btn-outline js-admin-suspend-site-btn" data-site-id="${s.id}" style="border-radius:8px;font-size:.78rem;padding:5px 12px;color:#dc2626;border-color:#fca5a5">
+                      ⏸️ إيقاف الموقع
+                    </button>
+                  `}
+                  <a href="${url}" target="_blank" class="btn btn-ghost btn-sm" style="border-radius:8px;font-size:.78rem;padding:5px 8px">
+                    معاينة ↗
+                  </a>
+                  <button class="btn btn-ghost btn-sm js-admin-delete-site-btn" data-site-id="${s.id}" data-site-title="${s.title}" style="color:#ef4444;border-radius:8px;font-size:.78rem;padding:5px 8px" title="حذف نهائي">
+                    🗑️
+                  </button>
+                </div>
               </td>
             </tr>`
           }).join('')}
@@ -3639,9 +3788,49 @@ const T = {
     </div>
   </div>
 
-  <!-- TAB 4: SETTINGS -->
+  <!-- TAB 4: SETTINGS & MAINTENANCE -->
   <div id="adminTabContent_settings" class="sf-admin-tab-pane" style="${activeTab==='settings'?'':'display:none'}">
-    <div class="sf-admin-table-card" style="max-width:650px">
+    <!-- Platform Maintenance Mode Configuration Card -->
+    <div class="sf-admin-table-card" style="max-width:700px;margin-bottom:24px;border:1.5px solid ${maintenance.enabled ? '#f87171' : '#c7d2fe'};background:${maintenance.enabled ? '#fff5f5' : '#f8faff'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.4rem">🛠️</span>
+          <h3 style="font-size:1.2rem;font-weight:800;color:#0f172a;margin:0">إعدادات وضع صيانة المنصة بالكامل</h3>
+        </div>
+        <span class="sf-badge" style="${maintenance.enabled ? 'background:#fee2e2;color:#dc2626;border:1px solid #fca5a5' : 'background:#dcfce7;color:#16a34a;border:1px solid #86efac'}">
+          ${maintenance.enabled ? 'مفعل حالياً 🔴' : 'معطل 🟢'}
+        </span>
+      </div>
+      <p style="font-size:.86rem;color:#475569;margin-bottom:20px;line-height:1.6">
+        عند تفعيل هذا الخيار، سيتم حجب المنصة عن كافة الزوار والمستخدمين وعرض شاشة الصيانة الاحترافية مع رسالتك ووقت العودة، بينما تظل لوحة الأدمن متاحة لك فقط.
+      </p>
+
+      <form id="adminMaintenanceForm">
+        <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px;background:#fff;padding:12px 16px;border-radius:12px;border:1px solid #cbd5e1">
+          <input type="checkbox" id="adminMaintenanceToggle" style="width:20px;height:20px;cursor:pointer" ${maintenance.enabled ? 'checked' : ''}>
+          <label for="adminMaintenanceToggle" style="font-weight:800;font-size:.9rem;color:#0f172a;cursor:pointer">
+            تفعيل وضع الصيانة العام للمنصة الآن
+          </label>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.88rem">رسالة الصيانة المعروضة للزوار</label>
+          <textarea id="adminMaintenanceMessage" rows="3" class="sf-pay-input" style="background:#fff;color:#0f172a;border-color:#cbd5e1;line-height:1.5">${maintenance.message || 'نقوم حالياً ببعض أعمال الصيانة والترقيات الدورية على خوادم المنصة لتحسين الأداء وتثبيت الميزات الجديدة. سنعود للعمل بكامل طاقتنا في أقرب وقت ممكن! 🛠️'}</textarea>
+        </div>
+
+        <div style="margin-bottom:20px">
+          <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.88rem">الوقت المتوقع للاكتمال</label>
+          <input type="text" id="adminMaintenanceEstTime" class="sf-pay-input" value="${maintenance.estimatedTime || 'خلال 30 دقيقة'}" style="background:#fff;color:#0f172a;border-color:#cbd5e1">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="border-radius:12px;padding:12px 24px;font-weight:800">
+          💾 حفظ وتحديث حالة الصيانة
+        </button>
+      </form>
+    </div>
+
+    <!-- Payment Gateways Configuration Card -->
+    <div class="sf-admin-table-card" style="max-width:700px;margin-bottom:24px">
       <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:8px">إعدادات أرقام بوابات الدفع</h3>
       <p style="font-size:.86rem;color:#64748b;margin-bottom:24px">الأرقام التي تظهر للعملاء في نافذة الدفع للتحويل عليها.</p>
 
@@ -3663,7 +3852,7 @@ const T = {
     </div>
 
     <!-- Admin Login Credentials Setting Card -->
-    <div class="sf-admin-table-card" style="max-width:650px;margin-top:24px;border:1px solid #f59e0b;background:#fffdfa">
+    <div class="sf-admin-table-card" style="max-width:700px;border:1px solid #f59e0b;background:#fffdfa">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <span style="font-size:1.3rem">🔐</span>
         <h3 style="font-size:1.2rem;font-weight:800;color:#92400e;margin:0">بيانات دخول لوحة الأدمن (الاسم وكلمة السر)</h3>

@@ -1490,6 +1490,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 .app-card { transition: border-color .2s, box-shadow .2s; }
 .app-card:hover { border-color: #94a3b8; }
 .domain-check-box { animation: sfModalIn .2s ease-out; }
+.sf-admin-maintenance-banner { transition: all .2s ease-in-out; }
+.sf-badge-suspended { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
 
 
 

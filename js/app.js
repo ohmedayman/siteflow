@@ -412,6 +412,11 @@ const Router = {
     try {
       const s = await API.getPublicPage(slug)
       if (!s) throw new Error('404')
+      if (s.suspended || s.status === 'suspended') {
+        document.title = (s.title || 'الموقع') + ' — متوقف حالياً'
+        document.getElementById('app').innerHTML = T.siteSuspended(s)
+        return
+      }
       document.title = s.seo?.title||s.title
       document.getElementById('app').innerHTML = T.publicPage(s)
       this._bindPublicContactForm(s.slug)
@@ -1154,13 +1159,22 @@ const Router = {
 const Dash = {
   async render() {
     const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    if (API.token) {
+      try {
+        const freshUser = await API.getMe()
+        if (freshUser) {
+          Auth.user = freshUser
+          Auth._ui()
+        }
+      } catch {}
+    }
     const app = document.getElementById('app')
     app.innerHTML = T.dashboard()
     try {
       const sites = await API.getSites() || []
       const statsEl = document.getElementById('dashStats')
       const container = document.getElementById('sitesContainer')
-      const published = sites.filter(s=>s.published).length
+      const published = sites.filter(s=>s.published && !s.suspended).length
       const totalViews = sites.reduce((s,p)=>s+(p.views||0),0)
       const drafts = sites.filter(s=>!s.published).length
 
@@ -1247,17 +1261,18 @@ const Dash = {
           const siteUrl = subdomainUrl(p.slug)
           const daysLeft = getDaysLeft(p, Auth.user?.plan || 'free')
           const expired = isExpired(p, Auth.user?.plan || 'free')
+          const isSuspended = !!p.suspended
           return `<div class="site-card card" data-site-status="${p.published?'published':'draft'}">
             <div class="site-card-preview" style="background:linear-gradient(135deg,${tc}cc,${tc}66)">
               <span class="initial">${(p.title||'S').charAt(0).toUpperCase()}</span>
               <span class="view-badge">${ICONS.wrap(ICONS.eye,13)} ${p.views||0}</span>
-              ${(Auth.user?.plan||'free')==='free'?`<span class="view-badge" style="${expired?'background:#dc2626;color:#fff':'background:#f59e0b;color:#fff'};right:auto;left:12px">${expired?'منتهي ⏳':`متبقي ${daysLeft} يوم`}</span>`:''}
+              ${isSuspended ? `<span class="view-badge" style="background:#dc2626;color:#fff;right:auto;left:12px">⚠️ موقوف</span>` : ((Auth.user?.plan||'free')==='free'?`<span class="view-badge" style="${expired?'background:#dc2626;color:#fff':'background:#f59e0b;color:#fff'};right:auto;left:12px">${expired?'منتهي ⏳':`متبقي ${daysLeft} يوم`}</span>`:'')}
             </div>
             <div class="site-card-body">
               <h3>${p.title}</h3>
               <span class="site-url">${siteUrl}</span>
               <div class="site-meta">
-                <span class="status-badge ${p.published?'status-published':'status-draft'}">${p.published?(isAr?'منشور':'Published'):(isAr?'مسودة':'Draft')}</span>
+                ${isSuspended ? `<span class="status-badge" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5">⚠️ ${isAr?'موقوف من الإدارة':'Suspended'}</span>` : `<span class="status-badge ${p.published?'status-published':'status-draft'}">${p.published?(isAr?'منشور':'Published'):(isAr?'مسودة':'Draft')}</span>`}
                 <span style="font-size:.78rem;color:var(--gray-400)">${new Date(p.createdAt||p.created_at||p.updatedAt).toLocaleDateString()}</span>
               </div>
             </div>
@@ -1415,6 +1430,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     return
   }
 
+  // Check Platform Maintenance Mode
+  const maintenance = await API.getMaintenanceSettings()
+  const isAdminRequest = window.location.hash.startsWith('#/admin') || API.isAdminSession()
+  if (maintenance?.enabled && !isAdminRequest && !isSubdomain) {
+    document.querySelector('.app-header')?.classList.add('hidden')
+    const app = document.getElementById('app')
+    if (app) app.innerHTML = T.platformMaintenance(maintenance)
+    return
+  }
+
   if (isSubdomain && targetSlug) {
     if (isReservedSlug(targetSlug)) {
       // Reserved subdomain — redirect to main platform domain
@@ -1427,16 +1452,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (app) app.innerHTML = T.loading()
     try {
       const site = await API.getPublicPage(targetSlug)
-      if (site && site.published) {
-        document.title = site.seo?.title || site.title
-        app.innerHTML = T.publicPage(site)
-        Router._bindPublicContactForm(targetSlug)
-        Router._bindPublicAiChat(site)
-        if (API.mode !== 'local') {
-          try { await API._fetch('/p/' + targetSlug + '/view', { method: 'POST', body: JSON.stringify({ ip: '', ua: navigator.userAgent }) }) } catch (e) {}
+      if (site) {
+        if (site.suspended || site.status === 'suspended') {
+          document.title = (site.title || 'الموقع') + ' — متوقف حالياً'
+          app.innerHTML = T.siteSuspended(site)
+          return
         }
-        LocalDB.incrementViews(targetSlug)
-        return
+        if (site.published) {
+          document.title = site.seo?.title || site.title
+          app.innerHTML = T.publicPage(site)
+          Router._bindPublicContactForm(targetSlug)
+          Router._bindPublicAiChat(site)
+          if (API.mode !== 'local') {
+            try { await API._fetch('/p/' + targetSlug + '/view', { method: 'POST', body: JSON.stringify({ ip: '', ua: navigator.userAgent }) }) } catch (e) {}
+          }
+          LocalDB.incrementViews(targetSlug)
+          return
+        }
       }
     } catch {}
     if (app) app.innerHTML = T.notFound('الموقع غير منشور بعد', 'تأكد من كتابة رابط الموقع الصحيح أو نشر الموقع من لوحة التحكم.')
@@ -1511,11 +1543,12 @@ Router._admin = async function() {
   `
 
   try {
-    const [payments, users, sites, settings] = await Promise.all([
+    const [payments, users, sites, settings, maintenance] = await Promise.all([
       API.getAllPayments(),
       API.getAllUsers(),
       API.getAllSites(),
-      API.getPaymentSettings()
+      API.getPaymentSettings(),
+      API.getMaintenanceSettings()
     ])
 
     const activeTab = Router._currentAdminTab || 'payments'
@@ -1524,7 +1557,30 @@ Router._admin = async function() {
       users: users || [],
       sites: sites || [],
       settings: settings || { vodafone: '01028707543', instapay: '01028707543' },
+      maintenance: maintenance || { enabled: false },
       activeTab
+    })
+
+    // Quick Maintenance Toggle
+    document.querySelectorAll('.js-toggle-maintenance-quick').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const currentlyEnabled = btn.dataset.currentlyEnabled === 'true'
+        const nextState = !currentlyEnabled
+        btn.disabled = true
+        btn.textContent = 'جاري التحديث...'
+        try {
+          const currentSettings = await API.getMaintenanceSettings()
+          await API.setMaintenanceSettings({
+            ...currentSettings,
+            enabled: nextState
+          })
+          Toast.show(nextState ? '🔴 تم تفعيل وضع صيانة المنصة بنجاح!' : '🟢 تم إلغاء وضع الصيانة وإتاحة المنصة للجميع!', 'success')
+          Router._admin()
+        } catch (err) {
+          Toast.show('حدث خطأ: ' + err.message, 'error')
+          btn.disabled = false
+        }
+      })
     })
 
     // Admin Logout
@@ -1552,6 +1608,21 @@ Router._admin = async function() {
       Toast.show('تم حفظ وتحديث بيانات دخول الأدمن بنجاح! 🔐', 'success')
     })
 
+    // Maintenance Settings Form in Settings Tab
+    document.getElementById('adminMaintenanceForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const enabled = !!document.getElementById('adminMaintenanceToggle')?.checked
+      const message = document.getElementById('adminMaintenanceMessage')?.value?.trim()
+      const estimatedTime = document.getElementById('adminMaintenanceEstTime')?.value?.trim() || 'قريباً جداً'
+      try {
+        await API.setMaintenanceSettings({ enabled, message, estimatedTime })
+        Toast.show('تم حفظ إعدادات وضع الصيانة وتحديثها للمنصة بنجاح! 💾', 'success')
+        Router._admin()
+      } catch (err) {
+        Toast.show('حدث خطأ: ' + err.message, 'error')
+      }
+    })
+
     // Tab switching
     document.querySelectorAll('.sf-admin-tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1575,10 +1646,10 @@ Router._admin = async function() {
       btn.addEventListener('click', async () => {
         const paymentId = btn.dataset.paymentId
         btn.disabled = true
-        btn.textContent = 'جاري التفعيل...'
+        btn.textContent = 'جاري التفعيل الفوري...'
         try {
-          await API.confirmPayment(paymentId)
-          Toast.show('✅ تمت الموافقة وتفعيل الباقة للمستخدم بنجاح!', 'success')
+          const res = await API.confirmPayment(paymentId)
+          Toast.show(`✅ تمت الموافقة وتفعيل باقة "${res.plan || 'المدفوعة'}" للمستخدم وسُمعت فوراً!`, 'success')
           if (Auth.user) {
             try { Auth.user = await API.getMe() } catch {}
             Auth._ui()
@@ -1587,7 +1658,7 @@ Router._admin = async function() {
         } catch (err) {
           Toast.show('فشل التفعيل: ' + err.message, 'error')
           btn.disabled = false
-          btn.textContent = '✅ موافقة وتفعيل'
+          btn.textContent = '✅ موافقة وتفعيل فوري'
         }
       })
     })
@@ -1608,6 +1679,90 @@ Router._admin = async function() {
         }
       })
     })
+
+    // Payment Search & Filter
+    const paySearchInput = document.getElementById('adminPaymentSearchInput')
+    const payFilterSelect = document.getElementById('adminPaymentFilterSelect')
+    function filterPayments() {
+      const q = (paySearchInput?.value || '').toLowerCase().trim()
+      const f = payFilterSelect?.value || 'all'
+      document.querySelectorAll('.js-payment-row').forEach(row => {
+        const text = row.dataset.search || ''
+        const st = row.dataset.status || 'pending'
+        const matchText = !q || text.includes(q)
+        const matchStatus = f === 'all' || st === f
+        row.style.display = (matchText && matchStatus) ? '' : 'none'
+      })
+    }
+    paySearchInput?.addEventListener('input', filterPayments)
+    payFilterSelect?.addEventListener('change', filterPayments)
+
+    // Site Suspend Handler
+    document.querySelectorAll('.js-admin-suspend-site-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const siteId = btn.dataset.siteId
+        const reason = prompt('أدخل سبب إيقاف الموقع (سيظهر لزوار الموقع):', 'مخالفة أو انتهاء فترة الاشتراك')
+        if (reason === null) return
+        btn.disabled = true
+        try {
+          await API.toggleSiteSuspension(siteId, true, reason.trim())
+          Toast.show('تم إيقاف الموقع بنجاح وسيظهر للزوار أنه متوقف ⏸️', 'info')
+          Router._admin()
+        } catch (err) {
+          Toast.show('حدث خطأ: ' + err.message, 'error')
+          btn.disabled = false
+        }
+      })
+    })
+
+    // Site Activate Handler
+    document.querySelectorAll('.js-admin-activate-site-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const siteId = btn.dataset.siteId
+        btn.disabled = true
+        try {
+          await API.toggleSiteSuspension(siteId, false, '')
+          Toast.show('تم إعادة تشغيل وتفعيل الموقع بنجاح! 🚀', 'success')
+          Router._admin()
+        } catch (err) {
+          Toast.show('حدث خطأ: ' + err.message, 'error')
+          btn.disabled = false
+        }
+      })
+    })
+
+    // Site Delete Handler
+    document.querySelectorAll('.js-admin-delete-site-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const siteId = btn.dataset.siteId
+        const siteTitle = btn.dataset.siteTitle || 'هذا الموقع'
+        if (!confirm(`هل أنت متأكد من حذف موقع "${siteTitle}" نهائياً من المنصة؟ هذا الإجراء لا يمكن التراجع عنه!`)) return
+        try {
+          await API.deleteSiteAdmin(siteId)
+          Toast.show('تم حذف الموقع نهائياً بنجاح.', 'info')
+          Router._admin()
+        } catch (err) {
+          Toast.show('حدث خطأ أثناء الحذف: ' + err.message, 'error')
+        }
+      })
+    })
+
+    // Site Search & Filter
+    const siteSearchInput = document.getElementById('adminSiteSearchInput')
+    const siteFilterSelect = document.getElementById('adminSiteFilterSelect')
+    function filterSites() {
+      const q = (siteSearchInput?.value || '').toLowerCase().trim()
+      const f = siteFilterSelect?.value || 'all'
+      document.querySelectorAll('.js-site-row').forEach(row => {
+        const text = row.dataset.search || ''
+        const st = row.dataset.status || 'active'
+        const matchText = !q || text.includes(q)
+        const matchStatus = f === 'all' || st === f
+        row.style.display = (matchText && matchStatus) ? '' : 'none'
+      })
+    }
+    siteSearchInput?.addEventListener('input', filterSites)
+    siteFilterSelect?.addEventListener('change', filterSites)
 
     // Receipt Lightbox
     const lightbox = document.getElementById('sfReceiptLightbox')
@@ -1648,8 +1803,8 @@ Router._admin = async function() {
         const newPlan = sel.value
         try {
           await API.updateUserPlan(userId, newPlan)
-          Toast.show(`تم تحديث باقة المستخدم إلى "${newPlan}" بنجاح!`, 'success')
-          if (Auth.user && Auth.user.id === userId) {
+          Toast.show(`تم تحديث باقة المستخدم إلى "${newPlan}" وسُمعت فوراً في حسابه! 🚀`, 'success')
+          if (Auth.user && (Auth.user.id === userId || Auth.user.email === userId)) {
             Auth.user.plan = newPlan
             Auth._ui()
           }
