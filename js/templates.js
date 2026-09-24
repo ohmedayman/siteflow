@@ -652,15 +652,10 @@ const T = {
     <div class="dash-header-info">
       <div class="dash-title-row">
         <h1>${isAr ? 'أهلاً بك،' : 'Welcome,'} <span class="js-user-name"></span></h1>
-        <span class="dash-status-badge">🟢 ${isAr ? 'Supabase متصل' : 'Cloud Connected'}</span>
       </div>
       <p class="dash-subtitle">${isAr ? 'إدارة ومتابعة أداء وتفاعل مواقعك ومتاجرك الإلكترونية' : 'Manage and monitor your websites, stores, and analytics'}</p>
     </div>
     <div class="dash-header-actions">
-      ${Auth.isAdmin() ? `<a href="#/admin" class="btn btn-ghost btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d">${isAr ? 'لوحة المشرف' : 'Admin Panel'}</a>` : ''}
-      <a href="#/settings" class="btn btn-outline btn-sm dash-btn-outline" title="${isAr ? 'إعدادات قاعدة البيانات' : 'Database Settings'}">
-        ${ICONS.wrap(ICONS.settings, 14)} <span>${isAr ? 'قاعدة البيانات' : 'Cloud DB'}</span>
-      </a>
       <a href="#/plans" class="btn btn-outline btn-sm dash-btn-outline" id="upgradeBtn">
         ${ICONS.wrap(ICONS.trendingUp, 14)} <span>${isAr ? 'ترقية الخطة' : 'Upgrade Plan'}</span>
       </a>
@@ -1622,67 +1617,70 @@ const T = {
   },
 
   settings(user) {
-    const sbConfig = typeof SB !== 'undefined' ? SB.getConfig() : { url: '', key: '', isReady: false };
+  settings(user) {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    const planNames = { free: 'تجريبي مجاني', basic: 'أساسي (Basic)', pro: 'احترافي (Pro) 🔥', business: 'بيزنس (Business) 🚀' }
+    const currentPlanName = planNames[user?.plan] || user?.plan || 'مجاني'
+
     return `
-<div style="max-width:700px;margin:0 auto;padding:40px 24px">
+<div style="max-width:700px;margin:0 auto;padding:40px 24px" dir="${isAr ? 'rtl' : 'ltr'}">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-    <h1 style="font-size:1.8rem;margin:0">إعدادات الحساب وقاعدة البيانات</h1>
-    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">← العودة للوحة التحكم</button>
+    <div>
+      <h1 style="font-size:1.8rem;font-weight:900;margin:0 0 4px">${isAr ? 'إعدادات الحساب' : 'Account Settings'}</h1>
+      <p style="color:var(--gray-500);margin:0;font-size:.9rem">${isAr ? 'إدارة بياناتك الشخصية وتفاصيل حسابك' : 'Manage your personal details and account'}</p>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">${isAr ? '← العودة للوحة التحكم' : '← Back'}</button>
   </div>
 
-  <div class="card mb-24">
-    <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:8px">
-      ${ICONS.wrap(ICONS.sparkles, 18)} البيانات الشخصية
+  <!-- Personal Information Card -->
+  <div class="card mb-24" style="padding:28px">
+    <h3 style="margin-bottom:18px;display:flex;align-items:center;gap:8px;font-size:1.15rem;font-weight:800">
+      ${ICONS.wrap(ICONS.sparkles, 18)} ${isAr ? 'البيانات الشخصية' : 'Personal Information'}
     </h3>
-    <div class="input-group"><label>الاسم</label><input class="input" id="settingsName" value="${user?.name||''}"></div>
-    <div class="input-group"><label>اللغة</label><select class="input" id="settingsLang"><option value="ar" ${(user?.lang||'ar')==='ar'?'selected':''}>العربية</option><option value="en" ${(user?.lang||'ar')==='en'?'selected':''}>English</option></select></div>
-    <div class="input-group"><label>كلمة المرور الجديدة (اختياري)</label><input class="input" id="settingsPassword" type="password" placeholder="اترك الحقل فارغاً للاحتفاظ بكلمة المرور الحالية"></div>
-    <button class="btn btn-primary" id="saveSettingsBtn">حفظ التغييرات الشخصية</button>
+    <div class="input-group" style="margin-bottom:16px">
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">${isAr ? 'الاسم الكامل' : 'Full Name'}</label>
+      <input class="input" id="settingsName" value="${user?.name||''}" placeholder="${isAr ? 'اسمك' : 'Your name'}">
+    </div>
+    <div class="input-group" style="margin-bottom:16px">
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">${isAr ? 'البريد الإلكتروني' : 'Email Address'}</label>
+      <input class="input" value="${user?.email||''}" disabled style="background:#f1f5f9;color:#64748b;cursor:not-allowed">
+    </div>
+    <div class="input-group" style="margin-bottom:16px">
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">${isAr ? 'لغة الواجهة المفضلة' : 'Interface Language'}</label>
+      <select class="input" id="settingsLang">
+        <option value="ar" ${(user?.lang||'ar')==='ar'?'selected':''}>العربية (Arabic)</option>
+        <option value="en" ${(user?.lang||'ar')==='en'?'selected':''}>English</option>
+      </select>
+    </div>
+    <div class="input-group" style="margin-bottom:20px">
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">${isAr ? 'كلمة المرور الجديدة (اختياري)' : 'New Password (Optional)'}</label>
+      <input class="input" id="settingsPassword" type="password" placeholder="${isAr ? 'اترك الحقل فارغاً للاحتفاظ بكلمة المرور الحالية' : 'Leave empty to keep current password'}">
+    </div>
+    <button class="btn btn-primary" id="saveSettingsBtn" style="border-radius:10px;font-weight:700">
+      ${isAr ? 'حفظ التغييرات الشخصية' : 'Save Profile Changes'}
+    </button>
   </div>
 
-  <!-- Real Cloud Database (Supabase) Card -->
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+  <!-- Subscription Overview Card -->
+  <div class="card" style="padding:28px">
+    <h3 style="margin-bottom:14px;font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:8px">
+      ${ICONS.wrap(ICONS.trendingUp, 18)} ${isAr ? 'خطة الاشتراك الحالية' : 'Current Subscription'}
+    </h3>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:20px">
       <div>
-        <h3 style="margin:0 0 6px 0;display:flex;align-items:center;gap:8px">
-          ${ICONS.wrap(ICONS.settings, 18)} قاعدة البيانات السحابية الحقيقية (Supabase PostgreSQL)
-        </h3>
-        <p style="margin:0;font-size:0.85rem;color:var(--gray-500)">
-          ربط المنصة مباشرة مع قاعدة بيانات PostgreSQL سحابية لتخزين المواقع والمستخدمين بشكل حقيقي ودائم.
-        </p>
+        <div style="font-size:.82rem;color:#64748b;margin-bottom:4px">${isAr ? 'الخطة المفعلة لحسابك' : 'Active Plan'}</div>
+        <div style="font-size:1.3rem;font-weight:900;color:#0f172a">${currentPlanName}</div>
       </div>
       <div>
-        ${sbConfig.isReady
-          ? '<span class="badge" style="background:#dcfce7;color:#166534;padding:4px 10px;border-radius:20px;font-size:0.82rem;font-weight:600">🟢 متصل بنجاح مع Supabase</span>'
-          : '<span class="badge" style="background:#fee2e2;color:#991b1b;padding:4px 10px;border-radius:20px;font-size:0.82rem;font-weight:600">⚠️ غير متصل (تحقق من الرابط أو تفعيل المشروع)</span>'
-        }
+        <a href="#/plans" class="btn btn-primary btn-sm" style="border-radius:10px;font-weight:700">
+          ${isAr ? 'ترقية / تعديل الخطة 🚀' : 'Upgrade Plan 🚀'}
+        </a>
       </div>
     </div>
-
-    <div class="input-group">
-      <label>رابط مشروع Supabase (Project URL)</label>
-      <input class="input" id="sbProjectUrl" value="${sbConfig.url||''}" placeholder="https://xyzcompany.supabase.co" dir="ltr" style="font-family:monospace;font-size:0.88rem">
-    </div>
-
-    <div class="input-group">
-      <label>المفتاح العام (Supabase Anon Key)</label>
-      <input class="input" id="sbAnonKey" type="password" value="${sbConfig.key||''}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." dir="ltr" style="font-family:monospace;font-size:0.88rem">
-    </div>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-      <button class="btn btn-primary" id="saveSbConfigBtn">
-        ${ICONS.wrap(ICONS.check, 16)} حفظ واختبار الاتصال
-      </button>
-      <button class="btn btn-outline" id="copySqlSchemaBtn">
-        ${ICONS.wrap(ICONS.code, 16)} نسخ كود إنشاء الجداول (SQL Schema)
-      </button>
-      <button class="btn btn-ghost" id="syncToSbBtn">
-        ${ICONS.wrap(ICONS.refresh, 16)} مزامنة المواقع الحالية إلى Supabase
-      </button>
-    </div>
-
-    <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:12px 16px;margin-top:16px;font-size:0.82rem;color:var(--gray-600);line-height:1.6">
-      💡 <strong>ملاحظة هامة:</strong> إذا كان مشروعك على Supabase في الخطة المجانية ولم يتم استخدامه لمدة 7 أيام، تقوم Supabase بإيقافه مؤقتاً (Paused). يمكنك فتح لوحة تحكم Supabase والضغط على <strong>Restore Project</strong> لإعادة تشغيله فوراً، أو إدخال بيانات مشروع جديد أعلاه.
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="#/billing" class="btn btn-outline btn-sm" style="border-radius:10px">
+        ${isAr ? 'عرض سجل الفواتير والمدفوعات' : 'View Billing History'}
+      </a>
     </div>
   </div>
 </div>` },
