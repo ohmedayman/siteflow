@@ -1,11 +1,200 @@
 /** Site Flow — Main Application */
 
 const Toast = {
-  show(msg, type='info') {
+  show(msg, type='info', title='') {
     let c = document.querySelector('.toast-container')
-    if (!c) { c = document.createElement('div'); c.className='toast-container'; document.body.appendChild(c) }
-    const t = document.createElement('div'); t.className='toast '+type; t.innerHTML=msg; c.appendChild(t)
-    setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(100px)'; setTimeout(()=>t.remove(),300) }, 3500)
+    if (!c) {
+      c = document.createElement('div')
+      c.className = 'toast-container'
+      document.body.appendChild(c)
+    }
+    const t = document.createElement('div')
+    t.className = 'toast ' + type
+
+    const iconSvg = {
+      success: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`,
+      error: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+      warning: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+      info: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+    }[type] || `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+
+    t.innerHTML = `
+      <div class="toast-icon">${iconSvg}</div>
+      <div class="toast-content">
+        ${title ? `<strong class="toast-title">${title}</strong>` : ''}
+        <div class="toast-text">${msg}</div>
+      </div>
+      <button class="toast-close" onclick="this.parentElement.remove()" title="إغلاق">✕</button>
+    `
+    c.appendChild(t)
+    setTimeout(() => {
+      t.style.opacity = '0'
+      t.style.transform = 'translateY(16px) scale(0.96)'
+      setTimeout(() => t.remove(), 300)
+    }, 4200)
+  }
+}
+
+const Notif = {
+  items: [],
+  initialized: false,
+
+  _getDefaults() {
+    return [
+      {
+        id: 'n_supa',
+        title: 'قاعدة بيانات Supabase متصلة',
+        desc: 'تم ربط مشروعك السحابي PostgreSQL بنجاح. كافة المواقع والبيانات محفوظة ومؤمنة سحابياً.',
+        type: 'success',
+        time: 'الآن',
+        unread: true
+      },
+      {
+        id: 'n_welcome',
+        title: 'مرحباً بك في SiteFlow',
+        desc: 'ابدأ بإنشاء أول موقع إلكتروني لك من قسم القوالب الجاهزة أو من الصفر في ثوانٍ.',
+        type: 'info',
+        time: 'منذ قليل',
+        unread: true
+      },
+      {
+        id: 'n_ai',
+        title: 'مساعد الذكاء الاصطناعي جاهز',
+        desc: 'يمكنك استخدام الذكاء الاصطناعي لكتابة النصوص، تحسين SEO، وإنشاء الأقسام بضغطة زر.',
+        type: 'ai',
+        time: 'اليوم',
+        unread: false
+      }
+    ]
+  },
+
+  init() {
+    try {
+      const stored = localStorage.getItem('sf_notifications')
+      this.items = stored ? JSON.parse(stored) : this._getDefaults()
+    } catch {
+      this.items = this._getDefaults()
+    }
+
+    this.render()
+    if (!this.initialized) {
+      this.bindEvents()
+      this.initialized = true
+    }
+  },
+
+  add(notif) {
+    const item = {
+      id: 'n_' + Date.now().toString(36),
+      title: notif.title || 'إشعار جديد',
+      desc: notif.desc || '',
+      type: notif.type || 'info',
+      time: 'الآن',
+      unread: true
+    }
+    this.items.unshift(item)
+    if (this.items.length > 20) this.items.pop()
+    this._save()
+    this.render()
+    Toast.show(item.desc || item.title, item.type, item.title)
+  },
+
+  _save() {
+    try {
+      localStorage.setItem('sf_notifications', JSON.stringify(this.items))
+    } catch {}
+  },
+
+  markAllRead() {
+    this.items.forEach(x => { x.unread = false })
+    this._save()
+    this.render()
+  },
+
+  render() {
+    const badge = document.getElementById('notifBadge')
+    const pill = document.getElementById('notifCountPill')
+    const list = document.getElementById('notifList')
+    if (!badge || !list) return
+
+    const unreadCount = this.items.filter(x => x.unread).length
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount > 9 ? '9+' : unreadCount
+      badge.style.display = 'flex'
+      if (pill) pill.textContent = unreadCount + ' جديد'
+    } else {
+      badge.style.display = 'none'
+      if (pill) pill.textContent = 'لا توجد إشعارات جديدة'
+    }
+
+    if (this.items.length === 0) {
+      list.innerHTML = `<div class="notif-empty"><p>لا توجد إشعارات حالياً.</p></div>`
+      return
+    }
+
+    list.innerHTML = this.items.map(item => {
+      const iconSvg = {
+        success: `<div class="notif-item-icon success"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>`,
+        error: `<div class="notif-item-icon error"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>`,
+        ai: `<div class="notif-item-icon ai"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>`,
+        info: `<div class="notif-item-icon info"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>`
+      }[item.type] || `<div class="notif-item-icon info"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>`
+
+      return `
+        <div class="notif-item ${item.unread ? 'unread' : ''}" data-id="${item.id}">
+          ${iconSvg}
+          <div class="notif-item-content">
+            <div class="notif-item-header">
+              <span class="notif-item-title">${item.title}</span>
+              <span class="notif-item-time">${item.time}</span>
+            </div>
+            <p class="notif-item-desc">${item.desc}</p>
+          </div>
+          ${item.unread ? '<span class="notif-unread-dot"></span>' : ''}
+        </div>
+      `
+    }).join('')
+  },
+
+  bindEvents() {
+    const bellBtn = document.getElementById('notifBellBtn')
+    const dropdown = document.getElementById('notifDropdown')
+    const markAllBtn = document.getElementById('notifMarkAllReadBtn')
+    const userBtn = document.getElementById('userAvatarBtn')
+    const userDropdown = document.getElementById('userDropdown')
+
+    if (bellBtn && dropdown) {
+      bellBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        if (userDropdown) userDropdown.classList.remove('open')
+        dropdown.classList.toggle('open')
+      })
+    }
+
+    if (userBtn && userDropdown) {
+      userBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        if (dropdown) dropdown.classList.remove('open')
+        userDropdown.classList.toggle('open')
+      })
+    }
+
+    if (markAllBtn) {
+      markAllBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        this.markAllRead()
+        Toast.show('تم تحديد جميع الإشعارات كمقروءة', 'info')
+      })
+    }
+
+    document.addEventListener('click', (e) => {
+      if (dropdown && !dropdown.contains(e.target) && e.target !== bellBtn) {
+        dropdown.classList.remove('open')
+      }
+      if (userDropdown && !userDropdown.contains(e.target) && e.target !== userBtn) {
+        userDropdown.classList.remove('open')
+      }
+    })
   }
 }
 
@@ -16,8 +205,17 @@ const Router = {
   handle() {
     const hash = window.location.hash.slice(1) || '/'
     const pts = hash.split('/').filter(Boolean); const r = pts[0]||''
+
+    // Update active nav tab
+    document.querySelectorAll('.nav-link-app').forEach(el => el.classList.remove('active'))
+    if (r === 'dashboard') document.getElementById('navLinkDashboard')?.classList.add('active')
+    else if (r === 'templates') document.getElementById('navLinkTemplates')?.classList.add('active')
+    else if (r === 'plans') document.getElementById('navLinkPlans')?.classList.add('active')
+    else if (r === 'settings') document.getElementById('navLinkSettings')?.classList.add('active')
+
     if (r==='login') { if(Auth.isLoggedIn()){this.navigate('dashboard');return}; this._render('login') }
     else if (r==='dashboard') { if(!Auth.requireAuth())return; Dash.render() }
+    else if (r==='templates') { if(!Auth.requireAuth())return; Dash.render(); setTimeout(() => Builder.createNew(), 120) }
     else if (r==='builder'&&pts[1]) { Builder.load(pts[1]) }
     else if (r==='preview'&&pts[1]) { this._preview(pts[1]) }
     else if (r==='p'&&pts[1]) { this._public(pts[1]) }
@@ -730,6 +928,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (app) app.innerHTML = T.loading()
   await Auth.init()
   Router.init()
+  if (typeof Notif !== 'undefined') Notif.init()
 
   // Entrance animations via Intersection Observer
   const animateOnScroll = new IntersectionObserver((entries) => {

@@ -113,9 +113,26 @@ const Auth = {
   dir() { return this.lang === 'ar' ? 'rtl' : 'ltr' },
 
   _ui() {
-    document.querySelectorAll('.js-auth-user').forEach(el => el.classList.toggle('hidden', !this.user))
-    document.querySelectorAll('.js-auth-guest').forEach(el => el.classList.toggle('hidden', !!this.user))
-    document.querySelectorAll('.js-user-name').forEach(el => { if (el) el.textContent = this.user?.name || '' })
+    const isLogged = !!this.user
+    document.querySelectorAll('.js-auth-user').forEach(el => el.classList.toggle('hidden', !isLogged))
+    document.querySelectorAll('.js-auth-guest').forEach(el => el.classList.toggle('hidden', isLogged))
+
+    if (this.user) {
+      const name = this.user.name || this.user.email?.split('@')[0] || 'المستخدم'
+      const initial = (name.trim()[0] || 'م').toUpperCase()
+      const email = this.user.email || ''
+      const planName = (this.user.plan === 'pro' ? 'باقة احترافية' : (this.user.plan === 'business' ? 'باقة بيزنس' : 'باقة مجانية'))
+
+      document.querySelectorAll('.js-user-name').forEach(el => { el.textContent = name })
+      document.querySelectorAll('.js-user-email').forEach(el => { el.textContent = email })
+      document.querySelectorAll('.js-user-initial').forEach(el => { el.textContent = initial })
+      document.querySelectorAll('.js-user-plan').forEach(el => { el.textContent = planName })
+
+      if (typeof Notif !== 'undefined') {
+        Notif.init()
+      }
+    }
+
     document.documentElement.dir = this.dir()
     document.documentElement.lang = this.lang
   }
