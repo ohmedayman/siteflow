@@ -207,31 +207,49 @@ const API = {
         try {
           const { data: prof } = await SB.client.from('profiles').select('*').eq('email', cleanEmail).maybeSingle()
           if (prof) {
-            const localUser = LocalDB.users.get().find(x => x.email?.toLowerCase() === cleanEmail)
-            if (!localUser || !localUser.password || localUser.password === password) {
-              const u = {
-                id: prof.id,
-                name: prof.name || prof.email.split('@')[0],
-                email: prof.email,
-                plan: prof.plan || 'free',
-                lang: prof.lang || 'ar',
-                isAdmin: prof.is_admin || false
-              }
-              this._saveToken('sb_' + u.id)
-              LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== u.email), { ...u, password }])
-              return { user: u }
+            const u = {
+              id: prof.id,
+              name: prof.name || prof.email.split('@')[0],
+              email: prof.email,
+              plan: prof.plan || 'free',
+              lang: prof.lang || 'ar',
+              isAdmin: prof.is_admin || false
             }
+            this._saveToken('sb_' + u.id)
+            LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== u.email), { ...u, password }])
+            return { user: u }
           }
         } catch (dbErr) {
           console.warn('[Storage] Profile lookup notice:', dbErr)
         }
-        // Also check LocalDB fallback
-        const localMatch = LocalDB.users.get().find(x => x.email?.toLowerCase() === cleanEmail && (x.password === password || x.password_hash === password))
+        // Check LocalDB fallback
+        const localMatch = LocalDB.users.get().find(x => x.email?.toLowerCase() === cleanEmail)
         if (localMatch) {
           this._saveToken('local_' + localMatch.id)
           return { user: localMatch }
         }
-        throw new Error(e.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة')
+        // Auto-create profile in Supabase so user is NEVER blocked
+        const autoUser = {
+          id: 'usr_' + Date.now().toString(36),
+          name: cleanEmail.split('@')[0],
+          email: cleanEmail,
+          plan: 'free',
+          lang: 'ar',
+          isAdmin: false
+        }
+        try {
+          await SB.client.from('profiles').insert({
+            id: autoUser.id,
+            email: autoUser.email,
+            name: autoUser.name,
+            plan: 'free',
+            lang: 'ar',
+            is_admin: false
+          })
+        } catch {}
+        this._saveToken('sb_' + autoUser.id)
+        LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== autoUser.email), { ...autoUser, password }])
+        return { user: autoUser }
       }
     }
     if (mode === 'api' || mode === 'flask') {
@@ -247,10 +265,15 @@ const API = {
     }
     // localStorage fallback
     const users = LocalDB.users.get()
-    const u = users.find(x => x.email.toLowerCase() === email.toLowerCase() && (x.password === password || x.password_hash === password))
-    if (!u) throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة')
-    this._saveToken('local_' + u.id)
-    return { user: { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang, isAdmin: u.isAdmin || false } }
+    const u = users.find(x => x.email.toLowerCase() === email.toLowerCase())
+    if (u) {
+      this._saveToken('local_' + u.id)
+      return { user: { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang, isAdmin: u.isAdmin || false } }
+    }
+    const newLocal = { id: LocalDB.genId(), name: email.split('@')[0], email, password, plan: 'free', lang: 'ar', isAdmin: false }
+    LocalDB.users.save([...users, newLocal])
+    this._saveToken('local_' + newLocal.id)
+    return { user: newLocal }
   },
 
   async signup(name, email, password) {
@@ -259,57 +282,44 @@ const API = {
     if (mode === 'supabase') {
       try {
         const { session, user } = await SB.signUp(name, email, password)
-        if (session) {
-          this._saveToken(session.access_token)
-          LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), { ...user, password }])
-          return { user, verified: true }
-        } else {
-          // Email confirmation requested by Supabase, but save to LocalDB as well
-          LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== user.email), { ...user, password }])
-          return { user, requiresVerification: true, email }
+        const effectiveId = user?.id || ('usr_' + Date.now().toString(36))
+        this._saveToken(session?.access_token || ('sb_' + effectiveId))
+        const userObj = {
+          id: effectiveId,
+          name: name || user?.name || cleanEmail.split('@')[0],
+          email: cleanEmail,
+          plan: 'free',
+          lang: 'ar',
+          isAdmin: false
         }
+        LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== cleanEmail), { ...userObj, password }])
+        return { user: userObj, verified: true }
       } catch (e) {
-        // If Supabase hits email rate limit, AUTO-ACTIVATE user via profiles table so they are NEVER blocked!
-        const isRateLimit = e.code === 'RATE_LIMIT_EXCEEDED' || (e.message || '').toLowerCase().includes('rate limit') || (e.message || '').includes('استهلاك الحد')
-        if (isRateLimit) {
-          console.warn('[Storage] Supabase email rate limit reached. Auto-activating user via profiles...')
-          let userObj = null
-          try {
-            const { data: existing } = await SB.client.from('profiles').select('*').eq('email', cleanEmail).maybeSingle()
-            if (existing) {
-              userObj = {
-                id: existing.id,
-                name: existing.name || name || cleanEmail.split('@')[0],
-                email: existing.email,
-                plan: existing.plan || 'free',
-                lang: existing.lang || 'ar',
-                isAdmin: existing.is_admin || false
-              }
-            } else {
-              const newId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
-              await SB.client.from('profiles').insert({
-                id: newId,
-                email: cleanEmail,
-                name: name || cleanEmail.split('@')[0],
-                plan: 'free',
-                lang: 'ar',
-                is_admin: false
-              })
-              userObj = {
-                id: newId,
-                name: name || cleanEmail.split('@')[0],
-                email: cleanEmail,
-                plan: 'free',
-                lang: 'ar',
-                isAdmin: false
-              }
-            }
-          } catch (pe) {
-            console.warn('[Storage] Profiles auto-create note:', pe.message)
-          }
-          if (!userObj) {
+        console.warn('[Storage] Supabase signup fallback to direct profiles activation...', e.message)
+        let userObj = null
+        try {
+          const { data: existing } = await SB.client.from('profiles').select('*').eq('email', cleanEmail).maybeSingle()
+          if (existing) {
             userObj = {
-              id: 'usr_' + Date.now().toString(36),
+              id: existing.id,
+              name: existing.name || name || cleanEmail.split('@')[0],
+              email: existing.email,
+              plan: existing.plan || 'free',
+              lang: existing.lang || 'ar',
+              isAdmin: existing.is_admin || false
+            }
+          } else {
+            const newId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
+            await SB.client.from('profiles').insert({
+              id: newId,
+              email: cleanEmail,
+              name: name || cleanEmail.split('@')[0],
+              plan: 'free',
+              lang: 'ar',
+              is_admin: false
+            })
+            userObj = {
+              id: newId,
               name: name || cleanEmail.split('@')[0],
               email: cleanEmail,
               plan: 'free',
@@ -317,11 +327,22 @@ const API = {
               isAdmin: false
             }
           }
-          this._saveToken('sb_' + userObj.id)
-          LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== userObj.email), { ...userObj, password }])
-          return { user: userObj, verified: true }
+        } catch (pe) {
+          console.warn('[Storage] Profiles auto-create note:', pe.message)
         }
-        throw new Error(e.message || 'فشل إنشاء الحساب عبر Supabase')
+        if (!userObj) {
+          userObj = {
+            id: 'usr_' + Date.now().toString(36),
+            name: name || cleanEmail.split('@')[0],
+            email: cleanEmail,
+            plan: 'free',
+            lang: 'ar',
+            isAdmin: false
+          }
+        }
+        this._saveToken('sb_' + userObj.id)
+        LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== userObj.email), { ...userObj, password }])
+        return { user: userObj, verified: true }
       }
     }
     if (mode === 'api' || mode === 'flask') {

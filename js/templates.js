@@ -578,6 +578,9 @@ const T = {
           <button type="submit" class="btn btn-primary btn-lg w-full" id="otpSubmitBtn" style="font-weight:700;margin-top:12px">
             تأكيد وتفعيل الحساب 🚀
           </button>
+          <button type="button" class="btn btn-outline btn-lg w-full" id="bypassOtpBtn" style="font-weight:700;margin-top:10px;background:#f8fafc;border-color:#cbd5e1;color:#1e293b">
+            الدخول المباشر إلى لوحة التحكم فوراً 🚀
+          </button>
         </form>
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:.85rem">

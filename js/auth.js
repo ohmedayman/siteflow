@@ -32,11 +32,9 @@ const Auth = {
 
   async signup(name, email, password) {
     const r = await API.signup(name, email, password)
-    if (!r.requiresVerification) {
-      this.user = r.user
-      this._ui()
-      API.syncToBackend()
-    }
+    this.user = r.user
+    this._ui()
+    API.syncToBackend()
     return r
   },
 
