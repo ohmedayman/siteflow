@@ -7,12 +7,12 @@ const Auth = {
 
   async init() {
     this.lang = localStorage.getItem('sf_lang') || (navigator.language.startsWith('ar') ? 'ar' : 'en')
-    // Check URL for OAuth redirect (only if Supabase available)
+    // Check URL for OAuth redirect (if Supabase session in URL)
     const hash = window.location.hash
     if (hash.includes('access_token') || hash.includes('type=signup') || hash.includes('type=recovery')) {
-      if (IS_LOCAL && window.supabase) {
+      if (typeof SB !== 'undefined') {
         await SB.init()
-        setTimeout(() => { window.location.hash = '#/dashboard'; window.location.reload() }, 1500)
+        setTimeout(() => { window.location.hash = '#/dashboard'; window.location.reload() }, 1000)
       }
       return
     }

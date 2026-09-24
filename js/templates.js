@@ -537,6 +537,7 @@ const T = {
     </div>
     <div class="header-actions">
       ${Auth.isAdmin()?'<a href="#/admin" class="btn btn-ghost btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d">لوحة المشرف</a>':''}
+      <a href="#/settings" class="btn btn-outline btn-sm" title="إعدادات قاعدة البيانات">${ICONS.wrap(ICONS.settings,14)} قاعدة البيانات (Supabase)</a>
       <a href="#/plans" class="btn btn-outline btn-sm" id="upgradeBtn">${ICONS.wrap(ICONS.trendingUp,14)} ترقية الخطة</a>
       <button class="btn btn-primary btn-sm" id="createSiteBtn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -897,14 +898,69 @@ const T = {
   pubStats(d,t) { const items=d.items||[]; return `<div class="editable-section" style="padding:60px 40px;text-align:center;background:${t.color}11"><h2 style="color:${t.color}">${d.heading||'Statistics'}</h2><div class="counters-grid">${items.map(item=>`<div class="counter-card"><div class="counter-number" style="color:${t.color}">${item.number}</div><div class="counter-label">${item.label}</div></div>`).join('')}</div></div>` },
   pubCta(d,t) { return `<div class="editable-section" style="text-align:center;padding:60px 40px;background:${t.color};color:#fff"><h2>${d.heading||'Call to Action'}</h2>${d.subheading?`<p style="opacity:.9;margin-top:8px">${d.subheading}</p>`:''}${d.buttonText?`<a href="${d.buttonUrl||'#'}" class="btn" style="background:#fff;color:${t.color};margin-top:16px">${d.buttonText}</a>`:''}</div></div>` },
 
-  settings(user) { return `
-<div style="max-width:600px;margin:0 auto;padding:40px 24px">
-  <h1 style="font-size:1.8rem;margin-bottom:24px">Settings</h1>
+  settings(user) {
+    const sbConfig = typeof SB !== 'undefined' ? SB.getConfig() : { url: '', key: '', isReady: false };
+    return `
+<div style="max-width:700px;margin:0 auto;padding:40px 24px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+    <h1 style="font-size:1.8rem;margin:0">إعدادات الحساب وقاعدة البيانات</h1>
+    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">← العودة للوحة التحكم</button>
+  </div>
+
+  <div class="card mb-24">
+    <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:8px">
+      ${ICONS.wrap(ICONS.sparkles, 18)} البيانات الشخصية
+    </h3>
+    <div class="input-group"><label>الاسم</label><input class="input" id="settingsName" value="${user?.name||''}"></div>
+    <div class="input-group"><label>اللغة</label><select class="input" id="settingsLang"><option value="ar" ${(user?.lang||'ar')==='ar'?'selected':''}>العربية</option><option value="en" ${(user?.lang||'ar')==='en'?'selected':''}>English</option></select></div>
+    <div class="input-group"><label>كلمة المرور الجديدة (اختياري)</label><input class="input" id="settingsPassword" type="password" placeholder="اترك الحقل فارغاً للاحتفاظ بكلمة المرور الحالية"></div>
+    <button class="btn btn-primary" id="saveSettingsBtn">حفظ التغييرات الشخصية</button>
+  </div>
+
+  <!-- Real Cloud Database (Supabase) Card -->
   <div class="card">
-    <div class="input-group"><label>Name</label><input class="input" id="settingsName" value="${user?.name||''}"></div>
-    <div class="input-group"><label>Language</label><select class="input" id="settingsLang"><option value="en">English</option><option value="ar" ${(user?.lang||'en')==='ar'?'selected':''}>العربية</option></select></div>
-    <div class="input-group"><label>New Password (optional)</label><input class="input" id="settingsPassword" type="password" placeholder="Leave blank to keep current"></div>
-    <button class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h3 style="margin:0 0 6px 0;display:flex;align-items:center;gap:8px">
+          ${ICONS.wrap(ICONS.settings, 18)} قاعدة البيانات السحابية الحقيقية (Supabase PostgreSQL)
+        </h3>
+        <p style="margin:0;font-size:0.85rem;color:var(--gray-500)">
+          ربط المنصة مباشرة مع قاعدة بيانات PostgreSQL سحابية لتخزين المواقع والمستخدمين بشكل حقيقي ودائم.
+        </p>
+      </div>
+      <div>
+        ${sbConfig.isReady
+          ? '<span class="badge" style="background:#dcfce7;color:#166534;padding:4px 10px;border-radius:20px;font-size:0.82rem;font-weight:600">🟢 متصل بنجاح مع Supabase</span>'
+          : '<span class="badge" style="background:#fee2e2;color:#991b1b;padding:4px 10px;border-radius:20px;font-size:0.82rem;font-weight:600">⚠️ غير متصل (تحقق من الرابط أو تفعيل المشروع)</span>'
+        }
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>رابط مشروع Supabase (Project URL)</label>
+      <input class="input" id="sbProjectUrl" value="${sbConfig.url||''}" placeholder="https://xyzcompany.supabase.co" dir="ltr" style="font-family:monospace;font-size:0.88rem">
+    </div>
+
+    <div class="input-group">
+      <label>المفتاح العام (Supabase Anon Key)</label>
+      <input class="input" id="sbAnonKey" type="password" value="${sbConfig.key||''}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." dir="ltr" style="font-family:monospace;font-size:0.88rem">
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+      <button class="btn btn-primary" id="saveSbConfigBtn">
+        ${ICONS.wrap(ICONS.check, 16)} حفظ واختبار الاتصال
+      </button>
+      <button class="btn btn-outline" id="copySqlSchemaBtn">
+        ${ICONS.wrap(ICONS.code, 16)} نسخ كود إنشاء الجداول (SQL Schema)
+      </button>
+      <button class="btn btn-ghost" id="syncToSbBtn">
+        ${ICONS.wrap(ICONS.refresh, 16)} مزامنة المواقع الحالية إلى Supabase
+      </button>
+    </div>
+
+    <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:12px 16px;margin-top:16px;font-size:0.82rem;color:var(--gray-600);line-height:1.6">
+      💡 <strong>ملاحظة هامة:</strong> إذا كان مشروعك على Supabase في الخطة المجانية ولم يتم استخدامه لمدة 7 أيام، تقوم Supabase بإيقافه مؤقتاً (Paused). يمكنك فتح لوحة تحكم Supabase والضغط على <strong>Restore Project</strong> لإعادة تشغيله فوراً، أو إدخال بيانات مشروع جديد أعلاه.
+    </div>
   </div>
 </div>` },
 

@@ -143,25 +143,41 @@ if (LocalDB.users.get().length === 0) {
 // ── API Client (mode: Vercel Serverless API → LocalStorage) ──
 const API = {
   token: localStorage.getItem('sf_token') || '',
-  mode: null, // null | 'api' | 'flask' | 'supabase' | 'local'
+  mode: null, // null | 'supabase' | 'api' | 'flask' | 'local'
   _saveToken(t) { this.token=t||''; if(t) localStorage.setItem('sf_token',t); else localStorage.removeItem('sf_token') },
 
-  // Try backends in order: Vercel Serverless /api → LocalStorage
+  // Try backends in order: Supabase (Real Postgres) → Vercel Serverless /api → LocalStorage
   async _init() {
-    if (this.mode) return this.mode
-    // 1. Try local/production relative /api/health
+    if (this.mode) return this.mode;
+
+    // 1. Try Supabase as PRIMARY Real Cloud Database
     try {
-      const r = await fetch('/api/health', { signal: AbortSignal.timeout(2000) })
-      if (r.ok) { this.mode = 'api'; return 'api' }
+      if (typeof SB !== 'undefined') {
+        const sbReady = await SB.init();
+        if (sbReady && SB.isReady()) {
+          this.mode = 'supabase';
+          console.log('[Storage] Active Mode: Supabase (Cloud PostgreSQL)');
+          return 'supabase';
+        }
+      }
+    } catch (e) {
+      console.warn('[Storage] Supabase check notice:', e?.message);
+    }
+
+    // 2. Try Vercel Serverless /api
+    try {
+      const r = await fetch('/api/health', { signal: AbortSignal.timeout(2000) });
+      if (r.ok) {
+        this.mode = 'api';
+        console.log('[Storage] Active Mode: Vercel Serverless API');
+        return 'api';
+      }
     } catch {}
 
-    // 2. Try Supabase if configured
-    try {
-      await SB.init()
-      if (SB.isReady()) { this.mode = 'supabase'; return 'supabase' }
-    } catch {}
-
-    this.mode = 'local'; return 'local'
+    // 3. Fallback: LocalStorage
+    this.mode = 'local';
+    console.log('[Storage] Active Mode: LocalStorage Fallback');
+    return 'local';
   },
 
   async _fetch(path, opts={}) {
@@ -179,6 +195,16 @@ const API = {
   // ── Auth ──
   async login(email, password) {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      try {
+        const { session, user } = await SB.signIn(email, password)
+        this._saveToken(session?.access_token || ('sb_' + user.id))
+        LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), user])
+        return { user }
+      } catch (e) {
+        throw new Error(e.message || 'فشل تسجيل الدخول عبر Supabase')
+      }
+    }
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/auth/login', {method:'POST', body:JSON.stringify({email, password})})
       if (r.ok) {
@@ -200,6 +226,17 @@ const API = {
 
   async signup(name, email, password) {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      try {
+        const { session, user } = await SB.signUp(name, email, password)
+        if (session) this._saveToken(session.access_token)
+        else this._saveToken('sb_' + user.id)
+        LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), user])
+        return { user }
+      } catch (e) {
+        throw new Error(e.message || 'فشل إنشاء الحساب عبر Supabase')
+      }
+    }
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/auth/signup', {method:'POST', body:JSON.stringify({name, email, password})})
       if (r.ok) {
@@ -223,16 +260,23 @@ const API = {
   },
 
   async googleLogin() {
+    if (SB.isReady()) {
+      return SB.signInWithGoogle()
+    }
     Toast.show('يرجى التسجيل المباشر بالبريد الإلكتروني وكلمة المرور لتأمين حسابك', 'info')
   },
 
   async getMe() {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      const u = await SB.getCurrentUser()
+      if (u) return u
+    }
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/auth/me')
       if (r.ok) return await r.json()
     }
-    const uid = (this.token || '').replace('local_', '')
+    const uid = (this.token || '').replace('local_', '').replace('sb_', '')
     const u = LocalDB.users.get().find(x => x.id === uid)
     if (!u) throw new Error('Not logged in')
     return { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang, isAdmin: u.isAdmin || false }
@@ -250,7 +294,7 @@ const API = {
       const r = await this._fetch('/auth/update', {method:'PUT', body:JSON.stringify(data)})
       if (r.ok) return await r.json()
     }
-    const uid = (this.token || '').replace('local_', '')
+    const uid = (this.token || '').replace('local_', '').replace('sb_', '')
     const users = LocalDB.users.get()
     const u = users.find(x => x.id === uid)
     if (!u) throw new Error('Not found')
@@ -264,6 +308,14 @@ const API = {
   // ── Sites ──
   async getSites() {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      const current = await SB.getCurrentUser()
+      const sbSites = await SB.getSites(current?.id)
+      if (Array.isArray(sbSites)) {
+        LocalDB.pages.save(sbSites)
+        return sbSites
+      }
+    }
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/sites')
       if (r.ok) {
@@ -271,12 +323,19 @@ const API = {
         if (Array.isArray(sites)) return sites
       }
     }
-    const uid = (this.token || '').replace('local_', '')
+    const uid = (this.token || '').replace('local_', '').replace('sb_', '')
     return LocalDB.getUserPages(uid)
   },
 
   async getSite(id) {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      const s = await SB.getSite(id)
+      if (s) {
+        LocalDB.updatePage(id, s)
+        return s
+      }
+    }
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/sites/' + id)
       if (r.ok) return await r.json()
@@ -289,6 +348,26 @@ const API = {
     const allPresets = typeof ALL_PRESETS !== 'undefined' ? ALL_PRESETS : PRESETS
     const template = allPresets.find(p => p.id === templateId) || PRESETS[0]
     const mode = await this._init()
+    const uid = (this.token || '').replace('local_', '').replace('sb_', '')
+
+    if (mode === 'supabase') {
+      const current = await SB.getCurrentUser()
+      const sitePayload = {
+        title: data.title || template.name,
+        slug: data.slug,
+        template_type: templateId,
+        user_id: current?.id || uid || 'usr_guest',
+        theme: template.theme || { color: '#6366f1', font: 'Cairo' },
+        seo: template.seo || { title: data.title || template.name, description: '' },
+        sections: template.sections || []
+      }
+      const s = await SB.createSite(sitePayload)
+      if (s) {
+        LocalDB.addPage(s)
+        return s
+      }
+    }
+
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/sites', {
         method: 'POST',
@@ -307,7 +386,7 @@ const API = {
         return s
       }
     }
-    const uid = (this.token || '').replace('local_', '')
+
     const pageData = LocalDB.defaultPage(data.title || template.name, template)
     pageData.userId = uid
     return LocalDB.addPage(pageData)
@@ -315,6 +394,13 @@ const API = {
 
   async updateSite(id, data) {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      const s = await SB.updateSite(id, data)
+      if (s) {
+        LocalDB.updatePage(id, s)
+        return s
+      }
+    }
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/sites/' + id, {method:'PUT', body:JSON.stringify(data)})
       if (r.ok) {
@@ -328,6 +414,9 @@ const API = {
 
   async deleteSite(id) {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      await SB.deleteSite(id)
+    }
     if (mode === 'api' || mode === 'flask') {
       await this._fetch('/sites/' + id, {method:'DELETE'})
     }
@@ -336,6 +425,13 @@ const API = {
 
   async publishSite(id) {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      const s = await SB.publishSite(id)
+      if (s) {
+        LocalDB.updatePage(id, {published:true})
+        return s
+      }
+    }
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/sites/' + id + '/publish', {method:'POST'})
       if (r.ok) {
@@ -349,14 +445,17 @@ const API = {
 
   async getPublicPage(slug) {
     const mode = await this._init()
+    if (mode === 'supabase') {
+      try {
+        const s = await SB.getPublicPage(slug)
+        if (s) return s
+      } catch {}
+    }
     if (mode === 'api' || mode === 'flask') {
       try {
         const r = await this._fetch('/p/' + encodeURIComponent(slug))
         if (r.ok) return await r.json()
       } catch {}
-    }
-    if (mode === 'supabase') {
-      try { const s = await SB.getPublicPage(slug); if (s) return s } catch {}
     }
     return LocalDB.getPageBySlug(slug)
   },
