@@ -499,12 +499,18 @@ const SB = {
     }
   },
 
-  async confirmPayment(id, plan, userId) {
+  async confirmPayment(id, plan, userId, userEmail) {
     if (!this.isReady()) return null;
     try {
       await this.client.from('payments').update({ status: 'completed' }).eq('id', id);
-      if (userId && plan) {
-        await this.client.from('profiles').update({ plan: plan }).eq('id', userId);
+      if (plan) {
+        if (userEmail) {
+          try { await this.client.from('profiles').update({ plan: plan }).eq('email', userEmail); } catch {}
+        }
+        if (userId && !String(userId).startsWith('usr_guest')) {
+          const cleanId = String(userId).replace('usr_', '');
+          try { await this.client.from('profiles').update({ plan: plan }).eq('id', cleanId); } catch {}
+        }
       }
       return { ok: true };
     } catch (e) {

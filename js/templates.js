@@ -300,7 +300,7 @@ const T = {
             <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'محرر مرئي سريع' : 'Drag-and-drop editor'}</li>
             <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'استضافة سحابية فائقة' : 'Fast cloud hosting'}</li>
           </ul>
-          <a href="#/login" class="btn btn-outline btn-lg w-full">${isAr ? 'ابدأ مجاناً' : 'Start Free'}</a>
+          <a href="#/plans" class="btn btn-outline btn-lg w-full">${isAr ? 'ابدأ مجاناً' : 'Start Free'}</a>
         </div>
 
         <div class="lp-p-card lp-p-popular">
@@ -315,7 +315,7 @@ const T = {
             <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'مساعد الذكاء الاصطناعي وتحسين SEO' : 'AI Assistant & SEO suite'}</li>
             <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'دعم فني فوري وأولوية' : 'Priority support'}</li>
           </ul>
-          <a href="#/login" class="btn btn-primary btn-lg w-full">${isAr ? 'اشترك في الاحترافي' : 'Choose Pro'}</a>
+          <button class="btn btn-primary btn-lg w-full plan-btn" data-plan="pro">${isAr ? 'اشترك في الاحترافي 🔥' : 'Choose Pro 🔥'}</button>
         </div>
 
         <div class="lp-p-card">
@@ -328,7 +328,7 @@ const T = {
             <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'مدير حساب مخصص 24/7' : 'Dedicated account manager'}</li>
             <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'بدون أي علامة تجارية نهائياً' : 'Zero platform branding'}</li>
           </ul>
-          <a href="#/login" class="btn btn-outline btn-lg w-full">${isAr ? 'اشترك في بيزنس' : 'Choose Business'}</a>
+          <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="business">${isAr ? 'اشترك في بيزنس 🚀' : 'Choose Business 🚀'}</button>
         </div>
       </div>
 
@@ -1756,8 +1756,7 @@ const T = {
         <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'إزالة علامة الموقع التجارية' : 'Remove SiteFlow branding'}</li>
         <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'نماذج استفسار وتواصل فورية' : 'Lead generation & contact forms'}</li>
       </ul>
-      <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك الآن' : 'Subscribe'}</a>
-      <button class="btn btn-outline btn-lg w-full js-auth-user hidden plan-btn" data-plan="basic" style="border-radius:12px;font-weight:700">${isAr ? 'ترقية للأساسي' : 'Upgrade'}</button>
+      <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="basic" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك في الأساسي' : 'Choose Basic'}</button>
     </div>
 
     <!-- Pro Plan (Most Popular) -->
@@ -1778,8 +1777,7 @@ const T = {
         <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'مساعد الذكاء الاصطناعي وتحسين SEO' : 'AI Content Assistant & Full SEO'}</li>
         <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'دعم فني فوري وأولوية على واتساب' : 'Priority WhatsApp support'}</li>
       </ul>
-      <a href="#/login" class="btn btn-primary btn-lg w-full js-auth-guest" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك في الاحترافي' : 'Choose Pro'}</a>
-      <button class="btn btn-primary btn-lg w-full js-auth-user hidden plan-btn" data-plan="pro" style="border-radius:12px;font-weight:700">${isAr ? 'ترقية إلى Pro' : 'Upgrade to Pro'}</button>
+      <button class="btn btn-primary btn-lg w-full plan-btn" data-plan="pro" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك في الاحترافي 🔥' : 'Choose Pro 🔥'}</button>
     </div>
 
     <!-- Business Plan -->
@@ -1796,8 +1794,7 @@ const T = {
         <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'مدير حساب ودعم فني مخصص 24/7' : 'Dedicated 24/7 account manager'}</li>
         <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'تخصيص الكود وإمكانية حقن السكربتات' : 'Custom scripts & code injection'}</li>
       </ul>
-      <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك في بيزنس' : 'Choose Business'}</a>
-      <button class="btn btn-outline btn-lg w-full js-auth-user hidden plan-btn" data-plan="business" style="border-radius:12px;font-weight:700">${isAr ? 'ترقية إلى بيزنس' : 'Upgrade to Business'}</button>
+      <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="business" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك في بيزنس 🚀' : 'Choose Business 🚀'}</button>
     </div>
   </div>
 
@@ -2273,6 +2270,18 @@ const T = {
       </div>
 
       <form id="sfPayConfirmForm">
+        <!-- Customer Name -->
+        <div class="sf-pay-input-group">
+          <label>${isAr ? 'الاسم الكامل *' : 'Full Name *'}</label>
+          <input type="text" id="sfPayUserName" class="sf-pay-input" placeholder="${isAr ? 'مثال: محمد أحمد' : 'e.g. John Doe'}" value="${(typeof Auth !== 'undefined' && Auth.user?.name) ? Auth.user.name : ''}" required>
+        </div>
+
+        <!-- Customer Email -->
+        <div class="sf-pay-input-group">
+          <label>${isAr ? 'البريد الإلكتروني لتفعيل الحساب *' : 'Account Email *'}</label>
+          <input type="email" id="sfPayUserEmail" class="sf-pay-input" placeholder="name@example.com" value="${(typeof Auth !== 'undefined' && Auth.user?.email) ? Auth.user.email : ''}" required dir="ltr" style="text-align:right">
+        </div>
+
         <!-- Sender Phone -->
         <div class="sf-pay-input-group">
           <label>${isAr ? 'رقم الهاتف الذي قمت بالتحويل منه *' : 'Sender Phone Number *'}</label>

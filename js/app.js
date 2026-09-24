@@ -228,8 +228,8 @@ const Router = {
     else if (r==='showcase') { this._showcase() }
     else if (r==='admin') { this._admin(); }
     else if (r==='admin-payments') { this._adminPayments(); }
-    else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._openPaymentModal(pts[1]) }
-    else if (r==='pay') { if(!Auth.requireAuth())return; this._openPaymentModal('pro') }
+    else if (r==='checkout'&&pts[1]) { this._openPaymentModal(pts[1]) }
+    else if (r==='pay') { this._openPaymentModal('pro') }
     else if (r==='submissions'&&pts[1]) { if(!Auth.requireAuth())return; this._submissions(pts[1]) }
     else if (r==='analytics'&&pts[1]) { if(!Auth.requireAuth())return; this._analytics(pts[1]) }
     else { this._render('landing') }
@@ -239,6 +239,14 @@ const Router = {
   _render(page) {
     document.getElementById('app').innerHTML = T[page] ? T[page]() : T.landing()
     if (page==='login') this._bindAuth()
+    document.querySelectorAll('.plan-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const planKey = btn.dataset.plan
+        if (planKey && planKey !== 'free') {
+          this._openPaymentModal(planKey)
+        }
+      })
+    })
   },
 
   async _preview(id) {
@@ -278,7 +286,6 @@ const Router = {
     }
     document.querySelectorAll('.plan-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (!Auth.requireAuth()) return
         const planKey = btn.dataset.plan
         if (planKey === 'free') {
           Toast.show('أنت بالفعل تستخدم الخطة المجانية التجريبية', 'info')
@@ -304,7 +311,6 @@ const Router = {
   },
 
   async _openPaymentModal(planKey) {
-    if (!Auth.requireAuth()) return
     let plans = {
       basic: { name: 'أساسي', name_en: 'Basic', price: 129 },
       pro: { name: 'احترافي', name_en: 'Pro', price: 299 },
@@ -434,12 +440,25 @@ const Router = {
     // Form submission
     confirmForm?.addEventListener('submit', async (e) => {
       e.preventDefault()
+      const userName = overlay.querySelector('#sfPayUserName')?.value?.trim() || (Auth.user ? Auth.user.name : '')
+      const userEmail = overlay.querySelector('#sfPayUserEmail')?.value?.trim() || (Auth.user ? Auth.user.email : '')
       const senderPhone = overlay.querySelector('#sfPaySenderPhone')?.value?.trim()
       const refCode = overlay.querySelector('#sfPayRefCode')?.value?.trim()
       const submitBtn = overlay.querySelector('#sfPaySubmitBtn')
 
+      if (!userName) {
+        Toast.show('يرجى كتابة الاسم الكامل', 'error')
+        overlay.querySelector('#sfPayUserName')?.focus()
+        return
+      }
+      if (!userEmail || !userEmail.includes('@')) {
+        Toast.show('يرجى كتابة بريد إلكتروني صحيح لتفعيل الحساب عليه', 'error')
+        overlay.querySelector('#sfPayUserEmail')?.focus()
+        return
+      }
       if (!senderPhone) {
         Toast.show('يرجى إدخال رقم الهاتف الذي قمت بالتحويل منه', 'error')
+        overlay.querySelector('#sfPaySenderPhone')?.focus()
         return
       }
 
@@ -454,7 +473,9 @@ const Router = {
           sender_phone: senderPhone,
           ref_code: refCode,
           receipt_url: receiptDataUrl,
-          amount: plan.price
+          amount: plan.price,
+          user_name: userName,
+          user_email: userEmail
         })
 
         if (step2) step2.style.display = 'none'
@@ -1228,7 +1249,7 @@ Router._admin = async function() {
     const [payments, users, sites, settings] = await Promise.all([
       API.getAllPayments(),
       API.getAllUsers(),
-      API.getSites(),
+      API.getAllSites(),
       API.getPaymentSettings()
     ])
 

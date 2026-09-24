@@ -698,16 +698,26 @@ const API = {
       p.status = 'completed'
       LocalDB.payments.save(payments)
       const users = LocalDB.users.get()
-      const u = users.find(x => x.id === p.userId || x.email === p.user_email)
+      let u = users.find(x => x.id === p.userId || (p.user_email && x.email?.toLowerCase() === p.user_email.toLowerCase()))
       if (u) {
         u.plan = p.plan
-        LocalDB.users.save(users)
+      } else if (p.user_email) {
+        u = {
+          id: p.userId || ('usr_' + Date.now().toString(36)),
+          name: p.user_name || 'عميل',
+          email: p.user_email,
+          plan: p.plan,
+          role: 'user',
+          created_at: new Date().toISOString()
+        }
+        users.unshift(u)
       }
+      LocalDB.users.save(users)
     }
 
     if (mode === 'supabase' && SB.isReady()) {
       try {
-        await SB.confirmPayment(id, p?.plan, p?.userId || p?.user_id)
+        await SB.confirmPayment(id, p?.plan, p?.userId || p?.user_id, p?.user_email)
       } catch (err) {
         console.warn('Supabase confirmPayment notice:', err)
       }
@@ -777,7 +787,19 @@ const API = {
     const local = LocalDB.payments.get()
     const map = new Map()
     local.forEach(p => map.set(p.id, p))
-    list.forEach(p => map.set(p.id, p))
+    list.forEach(p => {
+      const existing = map.get(p.id) || {}
+      map.set(p.id, {
+        ...existing,
+        ...p,
+        sender_phone: p.sender_phone || existing.sender_phone || '',
+        receipt_url: p.receipt_url || existing.receipt_url || '',
+        ref_code: p.ref_code || existing.ref_code || '',
+        user_name: p.user_name || existing.user_name || '',
+        user_email: p.user_email || existing.user_email || '',
+        status: p.status || existing.status || 'pending'
+      })
+    })
     return Array.from(map.values()).sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
   },
 
@@ -804,6 +826,26 @@ const API = {
     localUsers.forEach(u => map.set(u.id, u))
     users.forEach(u => map.set(u.id, u))
     return Array.from(map.values())
+  },
+
+  async getAllSites() {
+    const mode = await this._init()
+    let sites = []
+    if (mode === 'supabase' && SB.isReady()) {
+      try {
+        const { data } = await SB.client.from('sites').select('*').order('created_at', { ascending: false })
+        if (data && data.length) {
+          sites = data.map(s => SB._formatSite ? SB._formatSite(s) : s)
+        }
+      } catch (err) {
+        console.warn('getAllSites SB notice:', err)
+      }
+    }
+    const local = LocalDB.pages.get()
+    const map = new Map()
+    local.forEach(s => map.set(s.id, s))
+    sites.forEach(s => map.set(s.id, s))
+    return Array.from(map.values()).sort((a,b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0))
   },
 
   async updateUserPlan(userId, plan) {
