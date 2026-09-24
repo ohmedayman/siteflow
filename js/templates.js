@@ -2355,13 +2355,16 @@ const T = {
       <h1><span>لوحة التحكم الإدارية الشاملة 👑</span></h1>
       <p>مراجعة وتفعيل اشتراكات فودافون كاش وانستاباي، وإدارة مستخدمي ومواقع منصة SiteFlow</p>
     </div>
-    <div style="display:flex;gap:10px;align-items:center">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span style="background:#fef3c7;color:#92400e;padding:6px 14px;border-radius:12px;font-size:.82rem;font-weight:800;border:1px solid #fde68a;display:inline-flex;align-items:center;gap:6px">
+        👑 المدير العام
+      </span>
       <button class="btn btn-outline btn-sm" id="adminRefreshBtn" style="border-radius:10px">
         <span>🔄</span> <span>تحديث البيانات</span>
       </button>
-      <a href="#/dashboard" class="btn btn-ghost btn-sm" style="border-radius:10px">
-        العودة للوحة العادية
-      </a>
+      <button class="btn btn-ghost btn-sm" id="adminLogoutBtn" style="border-radius:10px;color:#dc2626;border:1px solid #fee2e2">
+        <span>🚪 خروج الأدمن</span>
+      </button>
     </div>
   </div>
 
@@ -2633,6 +2636,31 @@ const T = {
         </button>
       </form>
     </div>
+
+    <!-- Admin Login Credentials Setting Card -->
+    <div class="sf-admin-table-card" style="max-width:650px;margin-top:24px;border:1px solid #f59e0b;background:#fffdfa">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:1.3rem">🔐</span>
+        <h3 style="font-size:1.2rem;font-weight:800;color:#92400e;margin:0">بيانات دخول لوحة الأدمن (الاسم وكلمة السر)</h3>
+      </div>
+      <p style="font-size:.86rem;color:#78350f;margin-bottom:24px">يمكنك هنا تخصيص اسم المستخدم وكلمة المرور الخاصة بالدخول للوحة التحكم الإدارية المستقلة.</p>
+
+      <form id="adminCredsForm">
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.88rem">اسم المستخدم الإداري</label>
+          <input type="text" id="adminNewUsername" class="sf-pay-input" value="${(typeof API !== 'undefined' && API.getAdminCreds) ? API.getAdminCreds().username : 'admin'}" required dir="ltr" style="background:#fff;color:#0f172a;border-color:#cbd5e1;text-align:right">
+        </div>
+
+        <div style="margin-bottom:24px">
+          <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.88rem">كلمة المرور الإدارية الجديدة</label>
+          <input type="text" id="adminNewPassword" class="sf-pay-input" value="${(typeof API !== 'undefined' && API.getAdminCreds) ? API.getAdminCreds().password : 'admin123'}" required dir="ltr" style="background:#fff;color:#0f172a;border-color:#cbd5e1;text-align:right">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="border-radius:12px;padding:12px 24px;font-weight:800;background:#0f172a;border-color:#0f172a">
+          💾 حفظ وتحديث بيانات الأدمن
+        </button>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -2641,6 +2669,56 @@ const T = {
   <div class="sf-lightbox-content">
     <button id="sfReceiptLightboxClose" class="sf-lightbox-close">✕</button>
     <img id="sfReceiptLightboxImg" class="sf-lightbox-img" src="" alt="Receipt Fullscreen">
+  </div>
+</div>`
+  },
+
+  adminLogin() {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    return `
+<div class="sf-admin-login-overlay" dir="${isAr ? 'rtl' : 'ltr'}">
+  <div class="sf-admin-login-card">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:2.2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 10px 25px rgba(245,158,11,0.3)">
+        👑
+      </div>
+      <h2 style="font-size:1.6rem;font-weight:900;color:#0f172a;margin-bottom:6px">
+        ${isAr ? 'بوابة الإدارة المركزية 👑' : 'SiteFlow Admin Gateway'}
+      </h2>
+      <p style="font-size:.88rem;color:#64748b;margin:0">
+        ${isAr ? 'منطقة دخول محمية ومخصصة لمدير المنصة فقط' : 'Protected area restricted to platform administrator.'}
+      </p>
+    </div>
+
+    <form id="adminLoginForm">
+      <div style="margin-bottom:18px">
+        <label style="display:block;font-size:.85rem;font-weight:700;color:#334155;margin-bottom:6px">
+          ${isAr ? 'اسم المستخدم أو رقم الهاتف الإداري' : 'Admin Username or Phone'}
+        </label>
+        <input type="text" id="adminLoginUser" class="sf-pay-input" placeholder="admin أو 01028707543" required dir="ltr" style="background:#f8fafc;color:#0f172a;border-color:#cbd5e1;text-align:right" autofocus>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:.85rem;font-weight:700;color:#334155;margin-bottom:6px">
+          ${isAr ? 'كلمة المرور الإدارية' : 'Admin Password'}
+        </label>
+        <input type="password" id="adminLoginPass" class="sf-pay-input" placeholder="••••••••" required dir="ltr" style="background:#f8fafc;color:#0f172a;border-color:#cbd5e1;text-align:right">
+      </div>
+
+      <div id="adminLoginError" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;padding:10px 14px;border-radius:10px;font-size:.82rem;margin-bottom:18px;text-align:right">
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg w-full" id="adminLoginSubmitBtn" style="border-radius:12px;padding:14px;font-weight:800;background:#0f172a;border-color:#0f172a;margin-bottom:18px">
+        ${isAr ? 'تسجيل الدخول للوحة التحكم 🚀' : 'Sign in to Admin Dashboard 🚀'}
+      </button>
+    </form>
+
+    <div style="border-top:1px solid #f1f5f9;padding-top:16px;text-align:center;display:flex;justify-content:space-between;font-size:.82rem">
+      <span style="color:#94a3b8">SiteFlow Admin Secure Gateway</span>
+      <a href="#/" style="color:#4f46e5;font-weight:700;text-decoration:none">
+        ${isAr ? 'العودة للمنصة الرئيسية ↗' : 'Back to Main Site ↗'}
+      </a>
+    </div>
   </div>
 </div>`
   }

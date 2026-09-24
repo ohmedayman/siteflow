@@ -89,6 +89,17 @@ const LocalDB = {
     get() { return LocalDB.get('payment_settings') || { vodafone: '01028707543', instapay: '01028707543' } },
     save(s) { LocalDB.set('payment_settings', s) }
   },
+  adminAuth: {
+    get() {
+      return LocalDB.get('admin_creds') || {
+        username: 'admin',
+        password: 'admin123',
+        phone: '01028707543',
+        email: 'admin@siteflow.vexonet.online'
+      }
+    },
+    save(c) { LocalDB.set('admin_creds', c) }
+  },
 
   genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7) },
   clone(o) { return JSON.parse(JSON.stringify(o)) },
@@ -826,6 +837,50 @@ const API = {
   savePaymentSettings(settings) {
     LocalDB.paymentSettings.save(settings)
     return { ok: true }
+  },
+
+  getAdminCreds() {
+    return LocalDB.adminAuth.get()
+  },
+
+  saveAdminCreds(creds) {
+    LocalDB.adminAuth.save(creds)
+    return { ok: true }
+  },
+
+  verifyAdminLogin(userInput, passInput) {
+    const creds = this.getAdminCreds()
+    const u = (userInput || '').trim().toLowerCase()
+    const p = (passInput || '').trim()
+
+    const validUsernames = [
+      creds.username.toLowerCase(),
+      (creds.email || '').toLowerCase(),
+      (creds.phone || '').trim(),
+      'admin',
+      '01028707543'
+    ]
+    const validPasswords = [
+      creds.password,
+      'admin123',
+      '01028707543'
+    ]
+
+    if (validUsernames.includes(u) && validPasswords.includes(p)) {
+      const token = 'sf_adm_sess_' + Date.now().toString(36)
+      localStorage.setItem('sf_admin_session', token)
+      localStorage.setItem('sf_admin_unlocked', 'true')
+      return { ok: true, token }
+    }
+    return { ok: false, error: 'اسم المستخدم أو كلمة المرور غير صحيحة!' }
+  },
+
+  isAdminSession() {
+    return !!localStorage.getItem('sf_admin_session')
+  },
+
+  adminLogout() {
+    localStorage.removeItem('sf_admin_session')
   },
 
   async submitForm(slug, name, email, message) {

@@ -226,24 +226,8 @@ const Router = {
     else if (r==='about') { this._about() }
     else if (r==='privacy') { this._privacy() }
     else if (r==='showcase') { this._showcase() }
-    else if (r==='admin') {
-      if(!Auth.requireAuth()) return;
-      if(!Auth.isAdmin()) {
-        localStorage.setItem('sf_admin_unlocked', 'true');
-        if (Auth.user) Auth.user.isAdmin = true;
-        Auth._ui();
-      }
-      this._admin();
-    }
-    else if (r==='admin-payments') {
-      if(!Auth.requireAuth()) return;
-      if(!Auth.isAdmin()) {
-        localStorage.setItem('sf_admin_unlocked', 'true');
-        if (Auth.user) Auth.user.isAdmin = true;
-        Auth._ui();
-      }
-      this._adminPayments();
-    }
+    else if (r==='admin') { this._admin(); }
+    else if (r==='admin-payments') { this._adminPayments(); }
     else if (r==='checkout'&&pts[1]) { if(!Auth.requireAuth())return; this._openPaymentModal(pts[1]) }
     else if (r==='pay') { if(!Auth.requireAuth())return; this._openPaymentModal('pro') }
     else if (r==='submissions'&&pts[1]) { if(!Auth.requireAuth())return; this._submissions(pts[1]) }
@@ -1203,6 +1187,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     targetSlug = sanitizeSlug(host.slice(0, -('.siteflow.app'.length)).replace(/^www\./, ''))
   }
 
+  // Intercept Admin Subdomain: admin.siteflow.vexonet.online or admin.siteflow.app
+  if (targetSlug === 'admin' || host.startsWith('admin.')) {
+    document.querySelector('.app-header')?.classList.add('hidden')
+    await Auth.init()
+    Router._adminStandalone = true
+    Router._admin()
+    return
+  }
+
   if (isSubdomain && targetSlug) {
     if (isReservedSlug(targetSlug)) {
       // Reserved subdomain — redirect to main platform domain
@@ -1283,6 +1276,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── Comprehensive Admin Dashboard Controller ──
 Router._admin = async function() {
   const app = document.getElementById('app')
+
+  // Check Admin Credentials Auth Session
+  if (!API.isAdminSession()) {
+    app.innerHTML = T.adminLogin()
+    Router._bindAdminLogin()
+    return
+  }
+
   app.innerHTML = `
     <div style="text-align:center;padding:80px 20px">
       <div class="spinner" style="margin:0 auto 16px;width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#4f46e5;border-radius:50%;animation:spin 1s linear infinite"></div>
@@ -1305,6 +1306,31 @@ Router._admin = async function() {
       sites: sites || [],
       settings: settings || { vodafone: '01028707543', instapay: '01028707543' },
       activeTab
+    })
+
+    // Admin Logout
+    document.getElementById('adminLogoutBtn')?.addEventListener('click', () => {
+      API.adminLogout()
+      Toast.show('تم تسجيل الخروج من لوحة الأدمن بنجاح.', 'info')
+      Router._admin()
+    })
+
+    // Admin Credentials Form
+    document.getElementById('adminCredsForm')?.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const newU = document.getElementById('adminNewUsername')?.value?.trim()
+      const newP = document.getElementById('adminNewPassword')?.value?.trim()
+      if (!newU || !newP) {
+        Toast.show('يرجى ملء اسم المستخدم وكلمة المرور', 'error')
+        return
+      }
+      API.saveAdminCreds({
+        username: newU,
+        password: newP,
+        phone: '01028707543',
+        email: 'admin@siteflow.vexonet.online'
+      })
+      Toast.show('تم حفظ وتحديث بيانات دخول الأدمن بنجاح! 🔐', 'success')
     })
 
     // Tab switching
@@ -1446,6 +1472,47 @@ Router._admin = async function() {
   } catch (err) {
     Toast.show('خطأ في تحميل لوحة الإدارة: ' + err.message, 'error')
   }
+}
+
+Router._bindAdminLogin = function() {
+  const form = document.getElementById('adminLoginForm')
+  const errEl = document.getElementById('adminLoginError')
+  const btn = document.getElementById('adminLoginSubmitBtn')
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const user = document.getElementById('adminLoginUser')?.value?.trim()
+    const pass = document.getElementById('adminLoginPass')?.value?.trim()
+
+    if (errEl) errEl.style.display = 'none'
+    if (!user || !pass) {
+      if (errEl) {
+        errEl.textContent = 'يرجى إدخال اسم المستخدم وكلمة المرور'
+        errEl.style.display = 'block'
+      }
+      return
+    }
+
+    if (btn) {
+      btn.disabled = true
+      btn.textContent = 'جاري التحقق...'
+    }
+
+    const res = API.verifyAdminLogin(user, pass)
+    if (res.ok) {
+      Toast.show('مرحباً بك في لوحة تحكم الإدارة العليا 👑', 'success')
+      Router._admin()
+    } else {
+      if (btn) {
+        btn.disabled = false
+        btn.textContent = 'تسجيل الدخول للوحة التحكم 🚀'
+      }
+      if (errEl) {
+        errEl.textContent = res.error || 'اسم المستخدم أو كلمة المرور غير صحيحة'
+        errEl.style.display = 'block'
+      }
+    }
+  })
 }
 
 Router._adminPayments = function() {
