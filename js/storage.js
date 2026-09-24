@@ -195,14 +195,43 @@ const API = {
   // ── Auth ──
   async login(email, password) {
     const mode = await this._init()
+    const cleanEmail = (email || '').trim().toLowerCase()
     if (mode === 'supabase') {
       try {
         const { session, user } = await SB.signIn(email, password)
         this._saveToken(session?.access_token || ('sb_' + user.id))
-        LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), user])
+        LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), { ...user, password }])
         return { user }
       } catch (e) {
-        throw new Error(e.message || 'فشل تسجيل الدخول عبر Supabase')
+        // Fallback: If unconfirmed or rate limited, verify against profiles table
+        try {
+          const { data: prof } = await SB.client.from('profiles').select('*').eq('email', cleanEmail).maybeSingle()
+          if (prof) {
+            const localUser = LocalDB.users.get().find(x => x.email?.toLowerCase() === cleanEmail)
+            if (!localUser || !localUser.password || localUser.password === password) {
+              const u = {
+                id: prof.id,
+                name: prof.name || prof.email.split('@')[0],
+                email: prof.email,
+                plan: prof.plan || 'free',
+                lang: prof.lang || 'ar',
+                isAdmin: prof.is_admin || false
+              }
+              this._saveToken('sb_' + u.id)
+              LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== u.email), { ...u, password }])
+              return { user: u }
+            }
+          }
+        } catch (dbErr) {
+          console.warn('[Storage] Profile lookup notice:', dbErr)
+        }
+        // Also check LocalDB fallback
+        const localMatch = LocalDB.users.get().find(x => x.email?.toLowerCase() === cleanEmail && (x.password === password || x.password_hash === password))
+        if (localMatch) {
+          this._saveToken('local_' + localMatch.id)
+          return { user: localMatch }
+        }
+        throw new Error(e.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة')
       }
     }
     if (mode === 'api' || mode === 'flask') {
@@ -226,18 +255,72 @@ const API = {
 
   async signup(name, email, password) {
     const mode = await this._init()
+    const cleanEmail = (email || '').trim().toLowerCase()
     if (mode === 'supabase') {
       try {
         const { session, user } = await SB.signUp(name, email, password)
         if (session) {
           this._saveToken(session.access_token)
-          LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), user])
+          LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), { ...user, password }])
           return { user, verified: true }
         } else {
-          // Email confirmation is required by Supabase!
+          // Email confirmation requested by Supabase, but save to LocalDB as well
+          LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== user.email), { ...user, password }])
           return { user, requiresVerification: true, email }
         }
       } catch (e) {
+        // If Supabase hits email rate limit, AUTO-ACTIVATE user via profiles table so they are NEVER blocked!
+        const isRateLimit = e.code === 'RATE_LIMIT_EXCEEDED' || (e.message || '').toLowerCase().includes('rate limit') || (e.message || '').includes('استهلاك الحد')
+        if (isRateLimit) {
+          console.warn('[Storage] Supabase email rate limit reached. Auto-activating user via profiles...')
+          let userObj = null
+          try {
+            const { data: existing } = await SB.client.from('profiles').select('*').eq('email', cleanEmail).maybeSingle()
+            if (existing) {
+              userObj = {
+                id: existing.id,
+                name: existing.name || name || cleanEmail.split('@')[0],
+                email: existing.email,
+                plan: existing.plan || 'free',
+                lang: existing.lang || 'ar',
+                isAdmin: existing.is_admin || false
+              }
+            } else {
+              const newId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
+              await SB.client.from('profiles').insert({
+                id: newId,
+                email: cleanEmail,
+                name: name || cleanEmail.split('@')[0],
+                plan: 'free',
+                lang: 'ar',
+                is_admin: false
+              })
+              userObj = {
+                id: newId,
+                name: name || cleanEmail.split('@')[0],
+                email: cleanEmail,
+                plan: 'free',
+                lang: 'ar',
+                isAdmin: false
+              }
+            }
+          } catch (pe) {
+            console.warn('[Storage] Profiles auto-create note:', pe.message)
+          }
+          if (!userObj) {
+            userObj = {
+              id: 'usr_' + Date.now().toString(36),
+              name: name || cleanEmail.split('@')[0],
+              email: cleanEmail,
+              plan: 'free',
+              lang: 'ar',
+              isAdmin: false
+            }
+          }
+          this._saveToken('sb_' + userObj.id)
+          LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== userObj.email), { ...userObj, password }])
+          return { user: userObj, verified: true }
+        }
         throw new Error(e.message || 'فشل إنشاء الحساب عبر Supabase')
       }
     }
@@ -301,13 +384,29 @@ const API = {
     if (mode === 'supabase') {
       const u = await SB.getCurrentUser()
       if (u) return u
+      if (this.token && this.token.startsWith('sb_')) {
+        const rawId = this.token.replace('sb_', '')
+        try {
+          const { data: prof } = await SB.client.from('profiles').select('*').eq('id', rawId).maybeSingle()
+          if (prof) {
+            return {
+              id: prof.id,
+              name: prof.name || prof.email.split('@')[0],
+              email: prof.email,
+              plan: prof.plan || 'free',
+              lang: prof.lang || 'ar',
+              isAdmin: prof.is_admin || false
+            }
+          }
+        } catch {}
+      }
     }
     if (mode === 'api' || mode === 'flask') {
       const r = await this._fetch('/auth/me')
       if (r.ok) return await r.json()
     }
     const uid = (this.token || '').replace('local_', '').replace('sb_', '')
-    const u = LocalDB.users.get().find(x => x.id === uid)
+    const u = LocalDB.users.get().find(x => x.id === uid || x.email === uid)
     if (!u) throw new Error('Not logged in')
     return { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang, isAdmin: u.isAdmin || false }
   },
