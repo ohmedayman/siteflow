@@ -3,7 +3,7 @@
  * Project: https://zazmvhcdcuaetakoedgt.supabase.co
  */
 const SUPABASE_DEFAULT_URL = 'https://zazmvhcdcuaetakoedgt.supabase.co';
-const SUPABASE_DEFAULT_ANON_KEY = '';
+const SUPABASE_DEFAULT_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphem12aGNkY3VhZXRha29lZGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMjAzODcsImV4cCI6MjEwNTc5NjM4N30.3eXKBNQNZ1Y1zEo8x1xt9QuCbVr7C3eVcqT8W2zyJ24';
 
 const SB = {
   client: null,

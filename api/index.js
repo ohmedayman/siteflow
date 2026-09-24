@@ -6,6 +6,8 @@
 const crypto = require('crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'siteflow-jwt-super-secret-key-2026';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://zazmvhcdcuaetakoedgt.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphem12aGNkY3VhZXRha29lZGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMjAzODcsImV4cCI6MjEwNTc5NjM4N30.3eXKBNQNZ1Y1zEo8x1xt9QuCbVr7C3eVcqT8W2zyJ24';
 
 // ── In-Memory / Global Cache (Persists across hot serverless invocations) ──
 if (!global._sf_db) {
