@@ -239,11 +239,162 @@ const Router = {
   _render(page) {
     document.getElementById('app').innerHTML = T[page] ? T[page]() : T.landing()
     if (page==='login') this._bindAuth()
+    if (page==='landing' || !page) this._bindLandingAi()
     document.querySelectorAll('.plan-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const planKey = btn.dataset.plan
         if (planKey && planKey !== 'free') {
           this._openPaymentModal(planKey)
+        }
+      })
+    })
+  },
+
+  _bindLandingAi() {
+    const input = document.getElementById('landingAiInput')
+    const submitBtn = document.getElementById('landingAiSubmitBtn')
+    const voiceBtn = document.getElementById('landingAiVoiceBtn')
+    const statusText = document.getElementById('sfAiVoiceStatusText')
+    const resBox = document.getElementById('landingAiResult')
+    if (!input || !submitBtn) return
+
+    let isListening = false
+    let recognitionInstance = null
+
+    if (voiceBtn) {
+      voiceBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        if (typeof SiteFlowAI === 'undefined' || !SiteFlowAI.isVoiceSupported()) {
+          Toast.show('التعرف الصوتي غير مدعوم في متصفحك الحالي، يمكنك كتابة فكرتك بالمربع مباشرة.', 'info')
+          return
+        }
+
+        if (isListening && recognitionInstance) {
+          recognitionInstance.stop()
+          return
+        }
+
+        recognitionInstance = SiteFlowAI.startVoiceRecognition(
+          (text, isFinal) => {
+            input.value = text
+            if (isFinal) {
+              setTimeout(() => triggerAi(), 300)
+            }
+          },
+          (status) => {
+            if (status === 'listening') {
+              isListening = true
+              voiceBtn.classList.add('listening')
+              if (statusText) statusText.innerHTML = '<span style="color:#ef4444;font-weight:800">🎙️ جاري الاستماع إلى صوتك الآن... تحدث بفكرتك بحرية</span>'
+            } else if (status === 'idle') {
+              isListening = false
+              voiceBtn.classList.remove('listening')
+              if (statusText) statusText.textContent = 'تحدث بالمايك أو اكتب ما تريده وسيقوم الذكاء الاصطناعي ببناء موقعك فوراً'
+            } else if (status === 'error') {
+              isListening = false
+              voiceBtn.classList.remove('listening')
+              if (statusText) statusText.textContent = 'تعذر تشغيل المايك، يرجى كتابة فكرة الموقع في المربع'
+              Toast.show('تعذر تشغيل المايك أو تم رفض الإذن من المتصفح', 'error')
+            }
+          }
+        )
+      })
+    }
+
+    const triggerAi = () => {
+      const q = input.value.trim()
+      if (!q) {
+        Toast.show('يرجى كتابة وصف لنشاطك أو التحدث في المايك أولاً', 'info')
+        input.focus()
+        return
+      }
+
+      submitBtn.disabled = true
+      const origHtml = submitBtn.innerHTML
+      submitBtn.innerHTML = `<span>⏳</span> <span>جاري التحليل والبناء...</span>`
+
+      setTimeout(() => {
+        const response = typeof SiteFlowAI !== 'undefined' ? SiteFlowAI.chatCopilot(q) : null
+        submitBtn.disabled = false
+        submitBtn.innerHTML = origHtml
+
+        if (!response || !resBox) return
+
+        const site = response.preview || response.actionData
+        resBox.style.display = 'block'
+        resBox.innerHTML = `
+          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px">
+            <span style="font-size:2rem;background:#4f46e515;width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center">🤖</span>
+            <div style="flex:1">
+              <h4 style="font-size:1.15rem;font-weight:900;color:#0f172a;margin:0 0 6px">مقترح الذكاء الاصطناعي لموقعك:</h4>
+              <p style="font-size:.92rem;color:#334155;line-height:1.7;margin:0;white-space:pre-line">${response.message}</p>
+            </div>
+          </div>
+
+          ${site && site.sections ? `
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+              <div>
+                <strong style="font-size:1.05rem;color:#0f172a">${site.title}</strong>
+                <div style="font-size:.82rem;color:#64748b;margin-top:2px">القطاع: <strong>${site.industry || 'عام'}</strong> • يتضمن ${site.sections.length} أقسام احترافية</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:.78rem;color:#64748b;font-weight:700">اللون الأساسي:</span>
+                <span style="width:22px;height:22px;border-radius:50%;background:${site.theme?.color || '#4f46e5'};display:inline-block;box-shadow:0 2px 6px rgba(0,0,0,0.15)"></span>
+              </div>
+            </div>
+          ` : ''}
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end">
+            <button id="sfAiCreateNowBtn" class="btn btn-primary" style="padding:12px 24px;border-radius:12px;font-weight:800;box-shadow:0 8px 20px rgba(79,70,229,0.35)">
+              ${response.actionLabel || '🚀 إنشاء هذا الموقع والدخول للمحرر'}
+            </button>
+            <button id="sfAiDismissBtn" class="btn btn-ghost" style="padding:12px 18px;border-radius:12px;color:#64748b">
+              إغلاق المعاينة
+            </button>
+          </div>
+        `
+
+        document.getElementById('sfAiDismissBtn')?.addEventListener('click', () => {
+          resBox.style.display = 'none'
+        })
+
+        document.getElementById('sfAiCreateNowBtn')?.addEventListener('click', async () => {
+          if (!site) return
+          try {
+            if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+              const newPage = await API.createPage(site)
+              Toast.show('تم إنشاء موقعك الذكي بنجاح! جاري فتح المحرر...', 'success')
+              Router.navigate('builder/' + newPage.id)
+            } else {
+              sessionStorage.setItem('sf_pending_ai_site', JSON.stringify(site))
+              Toast.show('سجل دخولك أو أنشئ حسابك لحفظ الموقع فوراً 🚀', 'info')
+              Router.navigate('login')
+            }
+          } catch (e) {
+            Toast.show(e.message || 'حدث خطأ أثناء إنشاء الموقع', 'error')
+          }
+        })
+      }, 500)
+    }
+
+    submitBtn.addEventListener('click', (e) => {
+      e.preventDefault()
+      triggerAi()
+    })
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        triggerAi()
+      }
+    })
+
+    document.querySelectorAll('.sf-ai-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const p = chip.dataset.prompt
+        if (p) {
+          input.value = p
+          triggerAi()
         }
       })
     })
@@ -729,6 +880,24 @@ const Router = {
 
     let currentVerificationEmail = ''
 
+    function redirectAfterAuth() {
+      const pendingAi = sessionStorage.getItem('sf_pending_ai_site')
+      if (pendingAi) {
+        try {
+          const site = JSON.parse(pendingAi)
+          sessionStorage.removeItem('sf_pending_ai_site')
+          API.createPage(site).then(newPage => {
+            Toast.show('تم حفظ موقعك بالذكاء الاصطناعي بنجاح! جاري فتح المحرر...', 'success')
+            Router.navigate('builder/' + newPage.id)
+          }).catch(() => Router.navigate('dashboard'))
+          return
+        } catch {
+          sessionStorage.removeItem('sf_pending_ai_site')
+        }
+      }
+      Router.navigate('dashboard')
+    }
+
     function showOtp(email) {
       currentVerificationEmail = email
       if (authTabsWrap) authTabsWrap.classList.add('hidden')
@@ -815,7 +984,7 @@ const Router = {
       API._saveToken('sb_' + userObj.id)
       Auth._ui()
       Toast.show('تم تفعيل الحساب بنجاح! مرحباً بك 🚀', 'success')
-      Router.navigate('dashboard')
+      redirectAfterAuth()
     })
 
     document.getElementById('bypassOtpBtn')?.addEventListener('click', () => {
@@ -836,7 +1005,7 @@ const Router = {
       API._saveToken('sb_' + userObj.id)
       Auth._ui()
       Toast.show('مرحباً بك في لوحة التحكم 🚀', 'success')
-      Router.navigate('dashboard')
+      redirectAfterAuth()
     })
 
     lf?.addEventListener('submit', async e => {
@@ -850,7 +1019,7 @@ const Router = {
       try {
         await Auth.login(email, password)
         Toast.show('مرحباً بك! تم تسجيل الدخول بنجاح 🚀', 'success')
-        Router.navigate('dashboard')
+        redirectAfterAuth()
       } catch (e) {
         if (err) {
           err.innerHTML = `<div style="line-height:1.5">${e.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'}</div>`
@@ -883,12 +1052,12 @@ const Router = {
       try {
         await Auth.signup(name, email, password)
         Toast.show('تم إنشاء حسابك بنجاح! مرحباً بك في SiteFlow 🎉', 'success')
-        Router.navigate('dashboard')
+        redirectAfterAuth()
       } catch (e) {
         try {
           await Auth.login(email, password)
           Toast.show('مرحباً بك! تم تسجيل الدخول بنجاح 🚀', 'success')
-          Router.navigate('dashboard')
+          redirectAfterAuth()
           return
         } catch {}
         if (err) {
@@ -1116,7 +1285,99 @@ const Dash = {
           })
         })
       })
+      this._bindDashAi()
     } catch(e) { Toast.show(e.message,'error') }
+  },
+
+  _bindDashAi() {
+    const input = document.getElementById('dashAiInput')
+    const submitBtn = document.getElementById('dashAiSubmitBtn')
+    const voiceBtn = document.getElementById('dashAiVoiceBtn')
+    const statusText = document.getElementById('sfDashAiStatusText')
+    if (!input || !submitBtn) return
+
+    let isListening = false
+    let recognitionInstance = null
+
+    if (voiceBtn) {
+      voiceBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        if (typeof SiteFlowAI === 'undefined' || !SiteFlowAI.isVoiceSupported()) {
+          Toast.show('خاصية التعرف الصوتي غير مدعومة في هذا المتصفح', 'info')
+          return
+        }
+
+        if (isListening && recognitionInstance) {
+          recognitionInstance.stop()
+          return
+        }
+
+        recognitionInstance = SiteFlowAI.startVoiceRecognition(
+          (text, isFinal) => {
+            input.value = text
+            if (isFinal) setTimeout(() => triggerAi(), 300)
+          },
+          (status) => {
+            if (status === 'listening') {
+              isListening = true
+              voiceBtn.classList.add('listening')
+              if (statusText) statusText.innerHTML = '<span style="color:#ef4444;font-weight:800">🎙️ جاري الاستماع إلى صوتك الآن... تحدث بفكرتك</span>'
+            } else if (status === 'idle') {
+              isListening = false
+              voiceBtn.classList.remove('listening')
+              if (statusText) statusText.textContent = 'تحدث بالمايك أو اكتب فكرة موقع جديد وسنقوم بإنشائه فوراً في حسابك'
+            } else if (status === 'error') {
+              isListening = false
+              voiceBtn.classList.remove('listening')
+              Toast.show('تعذر تشغيل المايك أو تم رفض الإذن', 'error')
+            }
+          }
+        )
+      })
+    }
+
+    const triggerAi = async () => {
+      const q = input.value.trim()
+      if (!q) {
+        Toast.show('اكتب فكرة الموقع أو تحدث بالمايك أولاً', 'info')
+        input.focus()
+        return
+      }
+
+      submitBtn.disabled = true
+      const origHtml = submitBtn.innerHTML
+      submitBtn.innerHTML = `<span>⏳</span> <span>جاري البناء...</span>`
+
+      setTimeout(async () => {
+        const response = typeof SiteFlowAI !== 'undefined' ? SiteFlowAI.chatCopilot(q) : null
+        submitBtn.disabled = false
+        submitBtn.innerHTML = origHtml
+
+        if (!response) return
+        const site = response.preview || response.actionData
+        if (!site) return
+
+        try {
+          const newPage = await API.createPage(site)
+          Toast.show('تم إنشاء موقعك الذكي بنجاح! جاري فتح المحرر...', 'success')
+          Router.navigate('builder/' + newPage.id)
+        } catch (e) {
+          Toast.show(e.message || 'حدث خطأ أثناء إنشاء الموقع', 'error')
+        }
+      }, 500)
+    }
+
+    submitBtn.addEventListener('click', (e) => {
+      e.preventDefault()
+      triggerAi()
+    })
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        triggerAi()
+      }
+    })
   },
 
   async remove(id) {

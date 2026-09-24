@@ -1132,8 +1132,237 @@ img{max-width:100%;height:auto;display:block}
 @media(max-width:600px){
   .lp-hero-clean{padding:50px 16px 40px}
   .lp-hero-title{font-size:2rem}
-  .lp-stats-grid-clean{grid-template-columns:1fr}
-  .lp-footer-top{grid-template-columns:1fr}
+/* ============================================================
+   🌟 SITEFLOW AI COPILOT & OFFICIAL PARTNERS
+   ============================================================ */
+.sf-ai-copilot-card {
+  max-width: 820px;
+  margin: 0 auto 36px;
+  background: #ffffff;
+  border: 1.5px solid rgba(99, 102, 241, 0.25);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 50px -10px rgba(99, 102, 241, 0.15), 0 8px 20px rgba(0, 0, 0, 0.04);
+  position: relative;
+  text-align: right;
+  transition: all .25s ease;
+}
+.sf-ai-copilot-card:hover {
+  border-color: rgba(99, 102, 241, 0.45);
+  box-shadow: 0 24px 60px -10px rgba(99, 102, 241, 0.22);
+}
+.sf-ai-copilot-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.sf-ai-avatar {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+}
+.sf-ai-status-dot {
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #fff;
+}
+.sf-ai-header-text {
+  display: flex;
+  flex-direction: column;
+}
+.sf-ai-header-text strong {
+  font-size: 1rem;
+  color: #0f172a;
+}
+.sf-ai-header-text span {
+  font-size: .8rem;
+  color: #64748b;
+}
+
+.sf-ai-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 6px 8px;
+  transition: border-color .2s;
+}
+.sf-ai-input-wrap:focus-within {
+  border-color: #4f46e5;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+.sf-ai-input-wrap input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 14px;
+  font-size: .95rem;
+  font-family: inherit;
+  color: #0f172a;
+  outline: none;
+}
+.sf-ai-voice-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.sf-ai-voice-btn:hover {
+  background: #f1f5f9;
+  color: #4f46e5;
+  border-color: #cbd5e1;
+}
+.sf-ai-voice-btn.listening {
+  background: #ef4444;
+  color: #fff;
+  border-color: #dc2626;
+  animation: sfPulseRed 1.2s infinite;
+}
+@keyframes sfPulseRed {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.sf-ai-submit-btn {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: .92rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+  transition: all .2s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sf-ai-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+}
+
+.sf-ai-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.sf-ai-chips-lbl {
+  font-size: .78rem;
+  font-weight: 700;
+  color: #64748b;
+}
+.sf-ai-chip {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  border-radius: 18px;
+  padding: 5px 14px;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+}
+.sf-ai-chip:hover {
+  background: #e0e7ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
+}
+
+/* AI Result Card */
+.sf-ai-result-box {
+  margin-top: 20px;
+  background: #f8fafc;
+  border: 1.5px solid #c7d2fe;
+  border-radius: 18px;
+  padding: 22px;
+  animation: sfFadeDown .25s ease-out;
+}
+@keyframes sfFadeDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Official Partners Strip */
+.lp-partners-strip {
+  padding: 42px 0;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+}
+.lp-partners-title {
+  font-size: .88rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 24px;
+}
+.lp-partners-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.lp-partner-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 10px 18px;
+  border-radius: 14px;
+  font-size: .92rem;
+  font-weight: 800;
+  color: #334155;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: all .2s ease;
+}
+.lp-partner-item:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+@media(max-width:768px){
+  .sf-ai-copilot-card{padding:18px}
+  .sf-ai-input-wrap{flex-wrap:wrap}
+  .sf-ai-submit-btn{width:100%;justify-content:center}
+  .lp-partners-grid{gap:14px}
+  .lp-partner-item{padding:8px 14px;font-size:.85rem}
 }
 
 /* ============================================================

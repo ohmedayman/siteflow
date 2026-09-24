@@ -224,7 +224,141 @@ const SiteFlowAI = {
   ${renderedContent}
 </body>
 </html>`;
+  },
+
+  // التعرف الصوتي (Voice Recognition) عبر المايك
+  isVoiceSupported() {
+    return typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  },
+
+  startVoiceRecognition(onResult, onStatus) {
+    if (typeof window === 'undefined') return null;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      if (onStatus) onStatus('unsupported');
+      return null;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'ar-EG';
+      recognition.continuous = false;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        if (onStatus) onStatus('listening');
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        let isFinal = false;
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+          if (event.results[i].isFinal) isFinal = true;
+        }
+        if (onResult) onResult(transcript, isFinal);
+      };
+
+      recognition.onerror = (event) => {
+        console.warn('Speech recognition error:', event.error);
+        if (onStatus) onStatus('error', event.error);
+      };
+
+      recognition.onend = () => {
+        if (onStatus) onStatus('idle');
+      };
+
+      recognition.start();
+      return recognition;
+    } catch (e) {
+      console.warn('Speech recognition start failed:', e);
+      if (onStatus) onStatus('error', e.message);
+      return null;
+    }
+  },
+
+  // معالجة أسئلة وأوامر المساعد الذكي التفاعلي (SiteFlow AI Copilot)
+  chatCopilot(query, currentContext = null) {
+    const q = (query || '').trim();
+    if (!q) {
+      return {
+        intent: 'welcome',
+        message: 'أهلاً بك! أنا مساعد SiteFlow الذكي 🤖. كيف يمكنني مساعدتك اليوم؟ يمكنك أن تطلب مني تصميم موقع كامل، تغيير الألوان، أو إضافة وتعديل الأقسام.',
+        suggestions: ['صمم موقع لمطعم برجر مع منيو وواتساب', 'أنشئ متجر إلكتروني لبيع العطور', 'صمم موقع لشركة استشارات تقنية']
+      };
+    }
+
+    const qLower = q.toLowerCase();
+
+    // 1. تغيير الألوان / التصميم
+    if (/غير اللون|بدل اللون|اللون|كحلي|أزرق|أخضر|أحمر|بنفسجي|برتقالي|دارك مود|ليلي/i.test(qLower)) {
+      let color = '#4f46e5';
+      let colorName = 'الأزرق النيلي';
+      if (/أخضر|اخضر/i.test(qLower)) { color = '#059669'; colorName = 'الأخضر الزمردي'; }
+      else if (/أزرق|ازرق|سماوي/i.test(qLower)) { color = '#0284c7'; colorName = 'الأزرق السماوي'; }
+      else if (/كحلي|غامق|داكن|ليلي|أسود|اسود/i.test(qLower)) { color = '#0f172a'; colorName = 'الداكن الفاخر'; }
+      else if (/أحمر|احمر/i.test(qLower)) { color = '#dc2626'; colorName = 'الأحمر القوي'; }
+      else if (/برتقالي/i.test(qLower)) { color = '#ea580c'; colorName = 'البرتقالي الحيوي'; }
+      else if (/بنفسجي/i.test(qLower)) { color = '#7c3aed'; colorName = 'البنفسجي الإبداعي'; }
+
+      return {
+        intent: 'theme',
+        message: `تم اختيار تدرج ${colorName} المتناسق. اضغط على زر التطبيق ليتم تحديث موقعك فوراً! 🎨`,
+        actionLabel: 'تطبيق اللون الجديد 🎨',
+        actionData: { color },
+        suggestions: ['أضف قسم أسئلة شائعة', 'اكتب عنوان جذاب للهيرو', 'اجعل التصميم ليلي فخم']
+      };
+    }
+
+    // 2. إضافة أقسام محددة
+    if (/أضف|اضف|حط قسم|اضافة قسم|قسم/i.test(qLower)) {
+      let secType = 'features';
+      let secName = 'المميزات';
+      if (/سعر|اسعار|أسعار|باقات/i.test(qLower)) { secType = 'pricing'; secName = 'خطط الأسعار'; }
+      else if (/سؤال|اسئلة|أسئلة|faq/i.test(qLower)) { secType = 'faq'; secName = 'الأسئلة الشائعة'; }
+      else if (/آراء|اراء|عملاء|تقييم/i.test(qLower)) { secType = 'testimonials'; secName = 'آراء العملاء'; }
+      else if (/تواصل|اتصل|فورم|نموذج/i.test(qLower)) { secType = 'contact'; secName = 'تواصل معنا'; }
+      else if (/منيو|طعام|وجبات|قائمة/i.test(qLower)) { secType = 'menu'; secName = 'قائمة الطعام والمنتجات'; }
+      else if (/صور|معرض/i.test(qLower)) { secType = 'gallery'; secName = 'معرض الصور'; }
+      else if (/فريق|موظفين/i.test(qLower)) { secType = 'team'; secName = 'فريق العمل'; }
+
+      return {
+        intent: 'section',
+        message: `جهزت لك قسم **${secName}** بمحتوى احترافي وتصميم متجاوب مع الهواتف 📱`,
+        actionLabel: `إضافة قسم ${secName} الآن 🚀`,
+        actionData: { type: secType },
+        suggestions: ['غير لون الموقع', 'اكتب لي محتوى تسويقي', 'أضف قسم آخر']
+      };
+    }
+
+    // 3. كتابة نصوص / عناوين
+    if (/اكتب|عنوان|نص|صيغ|كتابة/i.test(qLower)) {
+      const copy = this.generateCopy('hero', q);
+      return {
+        intent: 'copy',
+        message: `اقترحت لك هذا النص التسويقي القوي:\n\n**العنوان:** ${copy.heading}\n**الوصف:** ${copy.description}`,
+        actionLabel: 'تطبيق هذا المحتوى في الهيرو ✨',
+        actionData: copy,
+        suggestions: ['اكتب نص لـ من نحن', 'أضف قسم أسئلة شائعة']
+      };
+    }
+
+    // 4. توليد موقع كامل (السيناريو الأساسي)
+    const site = this.generateSite(q);
+    const indName = site.industry || 'عام';
+    return {
+      intent: 'create',
+      message: `رائع جداً! لقد قمت بتحليل فكرتك وتصميم موقع متكامل بنمط **${indName}** جاهز بالكامل مع:
+• ${site.sections.length} أقسام احترافية (الواجهة الرئيسية، المميزات، الخدمات، آراء العملاء، نموذج التواصل).
+• ألوان وخطوط عربية عصرية متناسقة.
+• تهيئة تلقائية لمحركات البحث SEO وسرعة التحميل.`,
+      preview: site,
+      actionLabel: '🚀 إنشاء هذا الموقع والدخول للمحرر',
+      actionData: site,
+      suggestions: ['غير الألوان إلى كحلي', 'أضف قسم باقات الأسعار', 'اجعل العنوان أكثر تشويقاً']
+    };
   }
 };
 
 window.SiteFlowAI = SiteFlowAI;
+

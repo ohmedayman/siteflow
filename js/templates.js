@@ -19,20 +19,56 @@ const T = {
     <div class="lp-hero-container">
       <div class="lp-pill-badge">
         <span class="lp-pill-dot"></span>
-        <span>${isAr ? 'الجيل الجديد لصناع المواقع والمتاجر 2.0' : 'Next-Generation Visual Website Builder 2.0'}</span>
+        <span>${isAr ? 'الجيل الجديد لصناع المواقع والمتاجر الذكية 2.0 ⚡' : 'Next-Generation Visual Website Builder & AI Copilot 2.0'}</span>
       </div>
 
       <h1 class="lp-hero-title">
         ${isAr
-          ? 'ابنِ موقعك الإلكتروني باحترافية<br><span class="lp-title-highlight">بدون كتابة سطر كود واحد</span>'
-          : 'Build Stunning Modern Websites<br><span class="lp-title-highlight">Without Writing Any Code</span>'}
+          ? 'ابنِ موقعك الإلكتروني باحترافية<br><span class="lp-title-highlight">بالذكاء الاصطناعي وبدون كتابة كود</span>'
+          : 'Build Stunning Modern Websites<br><span class="lp-title-highlight">With AI Copilot — Zero Code</span>'}
       </h1>
 
       <p class="lp-hero-subtitle">
         ${isAr
-          ? 'أسهل وأسرع محرر مرئي بالسحب والإفلات. اختر قالباً عصرياً، عدل النصوص والصور في دقائق، وانشر موقعك فوراً مع استضافة سحابية فائقة ودعم الدفع المحلي.'
-          : 'The fastest visual drag-and-drop website platform. Choose a modern template, customize in minutes, and publish with cloud hosting and local payments.'}
+          ? 'تحدث بصوتك أو اكتب فكرتك، وسيقوم المساعد الذكي ببناء وتنسيق موقعك فوراً. محرر مرئي متكامل، قوالب عصرية، استضافة فائقة السرعة، ودعم الدفع المحلي.'
+          : 'Speak with your voice or type your idea, and our AI Copilot will build your complete site in seconds with hosting, payments, and custom domains.'}
       </p>
+
+      <!-- 🌟 SiteFlow AI Copilot Search & Voice Bar -->
+      <div class="sf-ai-copilot-card">
+        <div class="sf-ai-copilot-header">
+          <div class="sf-ai-avatar">
+            ${ICONS.bot}
+            <span class="sf-ai-status-dot"></span>
+          </div>
+          <div class="sf-ai-header-text">
+            <strong>${isAr ? 'مساعد SiteFlow الذكي 2.0 (AI Copilot)' : 'SiteFlow AI Site Architect 2.0'}</strong>
+            <span id="sfAiVoiceStatusText">${isAr ? 'تحدث بالمايك أو اكتب ما تريده وسيقوم الذكاء الاصطناعي ببناء موقعك فوراً' : 'Speak or type what you need and watch it generate live'}</span>
+          </div>
+        </div>
+
+        <div class="sf-ai-input-wrap">
+          <input type="text" id="landingAiInput" placeholder="${isAr ? 'اكتب فكرتك أو اضغط المايك... مثلاً: صمم موقع لمطعم برجر مع منيو وواتساب، أو متجر عطور...' : 'Describe your site or use mic... e.g. Burger restaurant with menu and WhatsApp ordering...'}" />
+          <button id="landingAiVoiceBtn" class="sf-ai-voice-btn" type="button" title="${isAr ? 'تحدث بصوتك عبر المايك' : 'Speak with microphone'}">
+            ${ICONS.mic}
+          </button>
+          <button id="landingAiSubmitBtn" class="sf-ai-submit-btn" type="button">
+            ${ICONS.sparkles} <span>${isAr ? 'توليد بالذكاء الاصطناعي' : 'Generate with AI'}</span>
+          </button>
+        </div>
+
+        <div class="sf-ai-chips">
+          <span class="sf-ai-chips-lbl">${isAr ? '💡 أفكار سريعة:' : '💡 Quick ideas:'}</span>
+          <button class="sf-ai-chip" type="button" data-prompt="موقع لمطعم برجر عصري مع منيو كامل وزر طلب واتساب">🍔 مطعم وبرجر</button>
+          <button class="sf-ai-chip" type="button" data-prompt="متجر إلكتروني لبيع العطور ومستحضرات التجميل مع دفع فوري">🛍️ متجر عطور وتجميل</button>
+          <button class="sf-ai-chip" type="button" data-prompt="عيادة طبية متخصصة في طب الأسنان مع حجز مواعيد أونلاين">🏥 عيادة أسنان</button>
+          <button class="sf-ai-chip" type="button" data-prompt="شركة خدمات برمجية واستشارات تقنية مع باقات أسعار">🏢 شركة تقنية</button>
+          <button class="sf-ai-chip" type="button" data-prompt="معرض أعمال شخصي لمصمم ومطور مواقع مستقل">🎨 بورتفوليو مستقل</button>
+        </div>
+
+        <!-- Dynamic AI Interactive Result Box -->
+        <div id="landingAiResult" class="sf-ai-result-box" style="display:none"></div>
+      </div>
 
       <div class="lp-hero-actions">
         <a href="#/login" class="btn btn-primary btn-lg js-auth-guest lp-btn-hero">
@@ -108,6 +144,39 @@ const T = {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🌟 Official Partners & Payment Gateways Strip -->
+  <section class="lp-partners-strip">
+    <div class="lp-container">
+      <p class="lp-partners-title">${isAr ? 'تكامل رسمي وسلس مع كبرى المنصات وبوابات الدفع العالمية والمحلية' : 'Seamless official integration with leading global & local platforms'}</p>
+      <div class="lp-partners-grid">
+        <div class="lp-partner-item" title="Google Search & SEO">
+          ${ICONS.wrap(ICONS.google, 26)} <span>Google</span>
+        </div>
+        <div class="lp-partner-item" title="Meta (Facebook & Instagram Ads)">
+          ${ICONS.wrap(ICONS.meta, 26)} <span>Meta</span>
+        </div>
+        <div class="lp-partner-item" title="WhatsApp Business API">
+          ${ICONS.wrap(ICONS.whatsapp, 26)} <span>WhatsApp</span>
+        </div>
+        <div class="lp-partner-item" title="InstaPay Egypt">
+          ${ICONS.wrap(ICONS.instapay, 26)} <span>InstaPay</span>
+        </div>
+        <div class="lp-partner-item" title="Vodafone Cash">
+          ${ICONS.wrap(ICONS.vodafone, 26)} <span>Vodafone Cash</span>
+        </div>
+        <div class="lp-partner-item" title="Stripe Payments">
+          ${ICONS.wrap(ICONS.stripe, 26)} <span>Stripe</span>
+        </div>
+        <div class="lp-partner-item" title="Apple Pay">
+          ${ICONS.wrap(ICONS.apple, 26)} <span>Apple Pay</span>
+        </div>
+        <div class="lp-partner-item" title="Shopify Integration">
+          ${ICONS.wrap(ICONS.shopify, 26)} <span>Shopify</span>
         </div>
       </div>
     </div>
@@ -666,6 +735,31 @@ const T = {
     </div>
   </div>
   <div id="dashStats"></div>
+
+  <!-- 🌟 Dashboard AI Copilot Card -->
+  <div class="sf-ai-copilot-card" style="margin-top:24px;margin-bottom:24px">
+    <div class="sf-ai-copilot-header">
+      <div class="sf-ai-avatar">
+        ${ICONS.bot}
+        <span class="sf-ai-status-dot"></span>
+      </div>
+      <div class="sf-ai-header-text">
+        <strong>${isAr ? 'مساعد SiteFlow الذكي 2.0 (AI Copilot)' : 'SiteFlow AI Site Architect 2.0'}</strong>
+        <span id="sfDashAiStatusText">${isAr ? 'تحدث بالمايك أو اكتب فكرة موقع جديد وسنقوم بإنشائه فوراً في حسابك' : 'Speak or describe a new site idea to generate and open in builder'}</span>
+      </div>
+    </div>
+    <div class="sf-ai-input-wrap">
+      <input type="text" id="dashAiInput" placeholder="${isAr ? 'مثال: صمم موقع لشركة شحن وتوصيل، أو عيادة أسنان...' : 'e.g. Courier & delivery company website...'}" />
+      <button id="dashAiVoiceBtn" class="sf-ai-voice-btn" type="button" title="${isAr ? 'تحدث بالمايك' : 'Voice Input'}">
+        ${ICONS.mic}
+      </button>
+      <button id="dashAiSubmitBtn" class="sf-ai-submit-btn" type="button">
+        ${ICONS.sparkles} <span>${isAr ? 'توليد الموقع فوراً ⚡' : 'Generate Site ⚡'}</span>
+      </button>
+    </div>
+    <div id="dashAiResult" class="sf-ai-result-box" style="display:none"></div>
+  </div>
+
   <div id="sitesContainer"></div>
 </div>` },
 
@@ -1102,7 +1196,13 @@ const T = {
             <p style="font-size:.78rem;color:var(--gray-600);line-height:1.5;margin:0">صف نشاطك التجاري أو فكرتك وسيقوم الذكاء الاصطناعي ببناء الهيكل والمحتوى واقتراح الألوان فوراً.</p>
           </div>
           <div class="settings-group">
-            <label style="font-weight:700">وصف النشاط أو فكرة الموقع</label>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <label style="font-weight:700;margin:0">وصف النشاط أو فكرة الموقع</label>
+              <button type="button" id="builderAiVoiceBtn" title="تحدث بالصوت" style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:20px;padding:3px 10px;font-size:.76rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;color:var(--gray-700)">
+                <span>🎤</span>
+                <span id="builderAiVoiceText">تحدث بالصوت</span>
+              </button>
+            </div>
             <textarea class="input textarea" id="aiPromptInput" rows="3" placeholder="مثال: عيادة أسنان في القاهرة، متجر أزياء وإكسسوارات، مطعم برجر..."></textarea>
           </div>
           <button class="btn btn-primary w-full" id="aiGenerateBtn" style="font-weight:700;padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#8b5cf6)">

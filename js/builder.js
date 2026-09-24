@@ -863,6 +863,55 @@ const Builder = {
 
   _bindAi() {
     let generatedData = null
+
+    // Voice Speech Recognition
+    const voiceBtn = document.getElementById('builderAiVoiceBtn')
+    const voiceText = document.getElementById('builderAiVoiceText')
+    const promptInput = document.getElementById('aiPromptInput')
+    let isListening = false
+    let currentRec = null
+
+    if (voiceBtn) {
+      if (typeof SiteFlowAI !== 'undefined' && !SiteFlowAI.isVoiceSupported()) {
+        voiceBtn.style.display = 'none'
+      } else {
+        voiceBtn.addEventListener('click', () => {
+          if (isListening && currentRec) {
+            try { currentRec.stop() } catch {}
+            return
+          }
+          currentRec = SiteFlowAI.startVoiceRecognition(
+            (text, isFinal) => {
+              if (promptInput) {
+                promptInput.value = text
+              }
+              if (isFinal) {
+                Toast.show('تم التقاط صوتك بنجاح!', 'info')
+              }
+            },
+            (status, err) => {
+              if (status === 'listening') {
+                isListening = true
+                if (voiceText) voiceText.textContent = 'أستمع لك...'
+                voiceBtn.style.background = '#fee2e2'
+                voiceBtn.style.borderColor = '#f87171'
+                voiceBtn.style.color = '#dc2626'
+              } else {
+                isListening = false
+                if (voiceText) voiceText.textContent = 'تحدث بالصوت'
+                voiceBtn.style.background = '#f1f5f9'
+                voiceBtn.style.borderColor = '#cbd5e1'
+                voiceBtn.style.color = 'var(--gray-700)'
+                if (err && err !== 'no-speech') {
+                  Toast.show('تعذر تشغيل المايك: ' + err, 'error')
+                }
+              }
+            }
+          )
+        })
+      }
+    }
+
     document.getElementById('aiGenerateBtn')?.addEventListener('click', () => {
       const prompt = document.getElementById('aiPromptInput')?.value.trim()
       if (!prompt) { Toast.show('يرجى كتابة وصف لنشاطك التجاري أو فكرة الموقع أولاً', 'error'); return }
