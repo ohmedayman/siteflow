@@ -587,7 +587,44 @@ const API = {
     return LocalDB.updatePage(id, data)
   },
 
+  async checkSlugAvailability(rawSlug, currentSiteId) {
+    const slug = (rawSlug || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '')
+    if (!slug || slug.length < 3) {
+      return { available: false, slug, error: 'الرابط قصير جداً (3 أحرف على الأقل باللغة الإنجليزية والأرقام بدون مسافات)' }
+    }
+    const reserved = ['admin', 'api', 'app', 'dashboard', 'login', 'signup', 'billing', 'settings', 'auth', 'help', 'plans', 'builder', 'preview', 'www', 'mail', 'ftp', 'pay', 'checkout', 'showcase']
+    if (reserved.includes(slug)) {
+      return { available: false, slug, error: 'هذا الاسم محجوز للنظام ولا يمكن استخدامه' }
+    }
+
+    // Check LocalDB
+    const localSites = LocalDB.pages.get()
+    const localConflict = localSites.find(s => s.slug?.toLowerCase() === slug && s.id !== currentSiteId)
+    if (localConflict) {
+      return { available: false, slug, error: 'هذا الدومين محجوز مسبقاً لموقع آخر! يرجى تجربة اسم مختلف' }
+    }
+
+    // Check Supabase
+    if (SB.isReady()) {
+      try {
+        const { data } = await SB.client.from('sites').select('id, slug').eq('slug', slug)
+        if (data && data.length > 0) {
+          const remoteConflict = data.find(s => s.id !== currentSiteId)
+          if (remoteConflict) {
+            return { available: false, slug, error: 'هذا الدومين محجوز مسبقاً لموقع آخر! يرجى تجربة اسم مختلف' }
+          }
+        }
+      } catch {}
+    }
+
+    const mainDomain = window.MAIN_DOMAIN || 'siteflow.vexonet.online'
+    return { available: true, slug, message: `✓ الدومين (${slug}.${mainDomain}) متاح للحجز الآن!` }
+  },
+
   async deleteSite(id) {
+    if (!this.isAdminSession()) {
+      throw new Error('موقعك محمي ودائم ولا يمكن حذفه للحفاظ على استقرار روابطك وعملائك في محركات البحث.')
+    }
     const mode = await this._init()
     if (mode === 'supabase') {
       await SB.deleteSite(id)

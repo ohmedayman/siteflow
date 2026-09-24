@@ -1097,7 +1097,7 @@ const Dash = {
               ${p.published?`<a href="${siteUrl}" target="_blank" class="btn btn-outline btn-sm">${ICONS.wrap(ICONS.external,14)} ${isAr ? 'معاينة' : 'View'}</a>`:''}
               <a href="#/submissions/${p.id}" class="btn btn-ghost btn-sm" title="${isAr ? 'الرسائل' : 'Submissions'}">${ICONS.wrap(ICONS.message,15)}</a>
               <a href="#/analytics/${p.id}" class="btn btn-ghost btn-sm" title="${isAr ? 'الإحصائيات' : 'Analytics'}">${ICONS.wrap(ICONS.chart,15)}</a>
-              <button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="${isAr ? 'حذف' : 'Delete'}">${ICONS.wrap(ICONS.trash,15)}</button>
+              ${Auth.user?.isAdmin ? `<button class="btn btn-ghost btn-sm" onclick="Dash.remove('${p.id}')" style="color:#dc2626" title="${isAr ? 'حذف (إداري)' : 'Delete'}">${ICONS.wrap(ICONS.trash,15)}</button>` : `<span class="btn btn-ghost btn-sm" style="color:var(--gray-400);cursor:help" title="${isAr ? 'الموقع محمي ومحصن ضد الحذف' : 'Site is protected against deletion'}">🛡️</span>`}
             </div>
           </div>`
         }).join('')}</div>`
@@ -1120,6 +1120,10 @@ const Dash = {
   },
 
   async remove(id) {
+    if (!Auth.user?.isAdmin) {
+      Toast.show('حذف المواقع غير متاح للحفاظ على استقرار الروابط ونتائج البحث.', 'warning')
+      return
+    }
     if (!confirm('Delete this site forever?')) return
     try { await API.deleteSite(id); Toast.show('Deleted','info'); Dash.render() }
     catch(e) { Toast.show(e.message,'error') }

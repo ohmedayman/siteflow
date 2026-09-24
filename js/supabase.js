@@ -389,7 +389,11 @@ const SB = {
     if (data.views !== undefined) updates.views = data.views;
     if (data.theme !== undefined) updates.theme = data.theme;
     if (data.seo !== undefined) updates.seo = data.seo;
-    if (data.sections !== undefined) updates.sections = data.sections;
+    if (data.slug_locked !== undefined) updates.slug_locked = data.slug_locked;
+    if (data.apps !== undefined) {
+      updates.apps = data.apps;
+      if (updates.seo && typeof updates.seo === 'object') updates.seo.apps = data.apps;
+    }
 
     try {
       const { data: updated, error } = await this.client.from('sites').update(updates).eq('id', id).select().maybeSingle();
@@ -402,6 +406,10 @@ const SB = {
     if (data.slug !== undefined) minimalUpdates.slug = data.slug;
     if (data.published !== undefined) minimalUpdates.published = data.published;
     if (data.custom_domain !== undefined) minimalUpdates.custom_domain = data.custom_domain;
+    if (data.seo) {
+      if (data.apps && typeof data.seo === 'object') data.seo.apps = data.apps;
+      minimalUpdates.seo = data.seo;
+    }
 
     if (Object.keys(minimalUpdates).length > 0) {
       await this.client.from('sites').update(minimalUpdates).eq('id', id);
@@ -551,8 +559,9 @@ const SB = {
     }
 
     let seo = { title: data.title || '', description: '' };
-    if (data.seo) {
-      seo = typeof data.seo === 'string' ? JSON.parse(data.seo) : data.seo;
+    let apps = data.apps || data.seo?.apps || {};
+    if (typeof apps === 'string') {
+      try { apps = JSON.parse(apps); } catch {}
     }
 
     return {
@@ -560,6 +569,8 @@ const SB = {
       userId: data.user_id || data.userId || 'usr_guest',
       title: data.title || 'موقعي الجديد',
       slug: data.slug || '',
+      slug_locked: !!(data.slug_locked || data.slugLocked),
+      apps: apps,
       published: !!data.published,
       views: data.views || 0,
       custom_domain: data.custom_domain || '',

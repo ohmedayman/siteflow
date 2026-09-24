@@ -30,6 +30,7 @@ const Builder = {
       if (!this.page) throw new Error('Site not found')
       if (!this.page.theme) this.page.theme = { color: '#6366f1', font: 'Inter', bgColor: '#ffffff', textColor: '#111827' }
       if (!this.page.seo) this.page.seo = { title: '', description: '', keywords: '' }
+      if (!this.page.apps) this.page.apps = (this.page.seo?.apps || {})
       this.editingIdx = 0; this.mobileMode = false; this.undoStack = []; this.redoStack = []
       this.render()
     } catch (e) { Toast.show(e.message, 'error'); Router.navigate('dashboard') }
@@ -275,6 +276,7 @@ const Builder = {
     this._bindEditing()
     this._bindTheme()
     this._bindSeo()
+    this._bindApps()
     this._bindSettings()
     this._bindAi()
   },
@@ -601,26 +603,159 @@ const Builder = {
     Toast.show('تم تصدير كود HTML الكامل للموقع بنجاح! 📦', 'success')
   },
 
-  _bindSettings() {
-    document.getElementById('pageTitleInput')?.addEventListener('input', e => { this.page.title = e.target.value; this._saveLater(); const tb = document.querySelector('.builder-toolbar .truncate'); if (tb) tb.textContent = e.target.value })
-    document.getElementById('pageSlugInput')?.addEventListener('input', e => {
-      const clean = sanitizeSlug(e.target.value)
-      const p = document.getElementById('slugPreview')
-      const warn = document.getElementById('slugWarning')
+  _bindApps() {
+    if (!this.page.apps) this.page.apps = (this.page.seo?.apps || {})
 
-      if (isReservedSlug(clean)) {
-        if (warn) { warn.textContent = '⚠️ هذا الاسم محجوز للنظام ولا يمكن استخدامه'; warn.style.display = 'block' }
-      } else if (clean.length > 0 && !isValidSlug(clean)) {
-        if (warn) { warn.textContent = '⚠️ اسم الرابط يجب ألا يبدأ أو ينتهي بشرطة وبدون علامات خاصة'; warn.style.display = 'block' }
-      } else {
-        if (warn) warn.style.display = 'none'
-        this.page.slug = clean
-        this._saveLater()
+    // Toggle switch listeners to show/hide app configuration bodies
+    const toggles = [
+      { switchId: 'appGscEnabled', bodyId: 'appGscBody' },
+      { switchId: 'appMetaPixelEnabled', bodyId: 'appMetaPixelBody' },
+      { switchId: 'appGaEnabled', bodyId: 'appGaBody' },
+      { switchId: 'appGtmEnabled', bodyId: 'appGtmBody' },
+      { switchId: 'appTiktokEnabled', bodyId: 'appTiktokBody' },
+      { switchId: 'appWaEnabled', bodyId: 'appWaBody' }
+    ]
+
+    toggles.forEach(({ switchId, bodyId }) => {
+      const sw = document.getElementById(switchId)
+      const bd = document.getElementById(bodyId)
+      if (sw && bd) {
+        sw.addEventListener('change', () => {
+          bd.style.display = sw.checked ? '' : 'none'
+        })
       }
-      if (p) p.textContent = (clean || 'my-site') + '.' + (window.MAIN_DOMAIN || 'siteflow.vexonet.online')
     })
-    document.getElementById('customDomainInput')?.addEventListener('input', e => { this.page.customDomain = e.target.value; this._saveLater() })
-    document.getElementById('deleteSiteBtn')?.addEventListener('click', () => this._deleteSite())
+
+    // Save Apps button handler
+    document.getElementById('saveAppsBtn')?.addEventListener('click', async () => {
+      const saveBtn = document.getElementById('saveAppsBtn')
+      if (saveBtn) {
+        saveBtn.disabled = true
+        saveBtn.innerHTML = '<span>⏳</span> جاري الحفظ والتفعيل...'
+      }
+
+      this.page.apps = {
+        google_search_console_enabled: !!document.getElementById('appGscEnabled')?.checked,
+        google_search_console_code: document.getElementById('appGscCode')?.value?.trim() || '',
+        meta_pixel_enabled: !!document.getElementById('appMetaPixelEnabled')?.checked,
+        meta_pixel_id: document.getElementById('appMetaPixelId')?.value?.trim() || '',
+        google_analytics_enabled: !!document.getElementById('appGaEnabled')?.checked,
+        google_analytics_id: document.getElementById('appGaId')?.value?.trim() || '',
+        gtm_enabled: !!document.getElementById('appGtmEnabled')?.checked,
+        gtm_id: document.getElementById('appGtmId')?.value?.trim() || '',
+        tiktok_pixel_enabled: !!document.getElementById('appTiktokEnabled')?.checked,
+        tiktok_pixel_id: document.getElementById('appTiktokId')?.value?.trim() || '',
+        whatsapp_enabled: !!document.getElementById('appWaEnabled')?.checked,
+        whatsapp_number: document.getElementById('appWaNumber')?.value?.trim() || '',
+        whatsapp_message: document.getElementById('appWaMessage')?.value?.trim() || '',
+        custom_head_code: document.getElementById('appCustomHead')?.value || '',
+        custom_body_code: document.getElementById('appCustomBody')?.value || ''
+      }
+
+      // Synchronize to seo.apps for resilient persistence across storage engines
+      if (!this.page.seo) this.page.seo = {}
+      this.page.seo.apps = this.page.apps
+
+      await this._saveNow()
+      if (saveBtn) {
+        saveBtn.disabled = false
+        saveBtn.innerHTML = '<span>💾</span> حفظ وتفعيل التطبيقات'
+      }
+      Toast.show('تم حفظ وتفعيل إعدادات التطبيقات والربط بنجاح! 🚀', 'success')
+    })
+  },
+
+  _bindSettings() {
+    document.getElementById('pageTitleInput')?.addEventListener('input', e => {
+      this.page.title = e.target.value
+      this._saveLater()
+      const tb = document.querySelector('.builder-toolbar .truncate')
+      if (tb) tb.textContent = e.target.value
+    })
+
+    document.getElementById('customDomainInput')?.addEventListener('input', e => {
+      this.page.customDomain = e.target.value
+      this._saveLater()
+    })
+
+    // Subdomain Availability Search & Claim Handler
+    const searchInput = document.getElementById('domainSearchInput')
+    const checkBtn = document.getElementById('domainCheckBtn')
+    const resultBox = document.getElementById('domainCheckResult')
+    const mainDomain = window.MAIN_DOMAIN || 'siteflow.vexonet.online'
+
+    const runDomainCheck = async () => {
+      if (!searchInput || !resultBox) return
+      const raw = searchInput.value.trim()
+      if (!raw) {
+        resultBox.style.display = 'block'
+        resultBox.innerHTML = `
+          <div style="background:#fef2f2;border:1px solid #fecaca;padding:10px 12px;border-radius:10px;color:#991b1b;font-size:.8rem;font-weight:600">
+            ⚠️ يرجى كتابة اسم الدومين المراد فحصه
+          </div>`
+        return
+      }
+
+      resultBox.style.display = 'block'
+      resultBox.innerHTML = `
+        <div style="background:#f0f9ff;border:1px solid #bae6fd;padding:10px 12px;border-radius:10px;color:#0369a1;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:8px">
+          <span>⏳</span> جاري فحص توفر الدومين في قاعدة البيانات السحابية...
+        </div>`
+
+      try {
+        const res = await API.checkSlugAvailability(raw, this.page.id)
+        if (res.available) {
+          resultBox.innerHTML = `
+            <div style="background:#ecfdf5;border:1px solid #a7f3d0;padding:12px;border-radius:10px;color:#065f46">
+              <div style="font-weight:800;font-size:.85rem;display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                <span>✅</span>
+                <span>تهانينا! الدومين متاح للحجز:</span>
+              </div>
+              <div style="font-family:monospace;direction:ltr;text-align:right;font-weight:800;color:#047857;margin-bottom:8px">
+                https://${res.slug}.${mainDomain}
+              </div>
+              <button id="claimDomainBtn" data-slug="${res.slug}" class="btn btn-primary btn-sm w-full" style="background:#059669;border-color:#059669;font-weight:800;border-radius:8px;padding:8px">
+                🔒 حجز وتثبيت الدومين نهائياً لموقعك
+              </button>
+            </div>`
+
+          document.getElementById('claimDomainBtn')?.addEventListener('click', async (e) => {
+            const chosenSlug = e.currentTarget.dataset.slug
+            if (!confirm(`هل أنت متأكد من حجز وتثبيت الدومين (${chosenSlug}.${mainDomain})؟\n\nتنبيه: سيتم قفل الدومين نهائياً لضمان استقرار روابط موقعك وفهرسة Google.`)) return
+
+            this.page.slug = chosenSlug
+            this.page.slug_locked = true
+            await this._saveNow()
+            Toast.show('تم حجز وتثبيت الدومين بنجاح! 🔒', 'success')
+            this.render()
+          })
+        } else {
+          resultBox.innerHTML = `
+            <div style="background:#fef2f2;border:1px solid #fecaca;padding:12px;border-radius:10px;color:#991b1b">
+              <div style="font-weight:800;font-size:.85rem;margin-bottom:4px;display:flex;align-items:center;gap:6px">
+                <span>❌</span>
+                <span>${res.error || res.message || 'الدومين غير متاح أو محجوز مسبقاً'}</span>
+              </div>
+              <div style="font-size:.76rem;color:#7f1d1d">
+                جرب اسماً آخر أو أضف كلمة تميز نشاطك (مثل: brand-shop).
+              </div>
+            </div>`
+        }
+      } catch (err) {
+        resultBox.innerHTML = `
+          <div style="background:#fef2f2;border:1px solid #fecaca;padding:10px 12px;border-radius:10px;color:#991b1b;font-size:.8rem">
+            ⚠️ حدث خطأ أثناء الفحص: ${err.message}
+          </div>`
+      }
+    }
+
+    checkBtn?.addEventListener('click', runDomainCheck)
+    searchInput?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        runDomainCheck()
+      }
+    })
   },
 
   _bindAi() {
@@ -686,8 +821,14 @@ const Builder = {
     const ind = document.getElementById('saveStatusIndicator')
     try {
       this.page = await API.updateSite(this.page.id, {
-        title: this.page.title, slug: this.page.slug, sections: this.page.sections,
-        seo: this.page.seo, theme: this.page.theme, customDomain: this.page.customDomain
+        title: this.page.title,
+        slug: this.page.slug,
+        slug_locked: !!this.page.slug_locked,
+        sections: this.page.sections,
+        seo: this.page.seo,
+        apps: this.page.apps,
+        theme: this.page.theme,
+        customDomain: this.page.customDomain
       })
       if (ind) { ind.textContent = '✓ محفوظة'; ind.style.color = 'var(--gray-400)' }
     } catch (e) {
@@ -809,8 +950,6 @@ const Builder = {
   },
 
   async _deleteSite() {
-    if (!confirm('Delete this site forever? This cannot be undone.')) return
-    try { await API.deleteSite(this.page.id); Toast.show('Site deleted', 'info'); Router.navigate('dashboard') }
-    catch (e) { Toast.show(e.message, 'error') }
+    Toast.show('حذف المواقع غير متاح للحفاظ على استقرار الروابط ونتائج البحث.', 'warning')
   }
 }

@@ -798,6 +798,10 @@ const T = {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             SEO
           </button>
+          <button class="sidebar-tab" data-stab="apps" style="color:#0284c7;font-weight:700">
+            <span style="font-size:1.05rem;margin-left:2px">🧩</span>
+            التطبيقات
+          </button>
           <button class="sidebar-tab" data-stab="settings">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
             Settings
@@ -865,31 +869,228 @@ const T = {
             <div class="seo-counter" id="seoDescCounter">${(page.seo?.description||'').length} / 160</div>
           </div>
         </div>
+
+        <!-- 🧩 Apps & Marketing Integrations Tab -->
+        <div class="sidebar-content hidden" id="sidebarApps">
+          <div style="background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1px solid #bae6fd;padding:14px;border-radius:12px;margin-bottom:16px">
+            <div style="font-weight:800;color:#0369a1;margin-bottom:4px;display:flex;align-items:center;gap:6px">
+              <span>🧩</span>
+              <span>التطبيقات والتكاملات التسويقية</span>
+            </div>
+            <p style="font-size:.78rem;color:#0c4a6e;line-height:1.5;margin:0">
+              اربط موقعك بأقوى منصات التحليلات والتسويق (Google Search, Meta Pixel, Google Analytics, WhatsApp) لزيادة المبيعات والظهور في بحث Google فوراً.
+            </p>
+          </div>
+
+          <!-- 1. Google Search Console -->
+          <div class="app-card" style="background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:14px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:1.3rem">🔍</span>
+                <div>
+                  <h4 style="font-size:.88rem;font-weight:800;margin:0;color:var(--gray-900)">Google Search Console</h4>
+                  <span style="font-size:.72rem;color:var(--gray-500)">إثبات الملكية وتصدّر نتائج بحث Google</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="appGscEnabled" ${(page.apps?.google_search_console_enabled || page.seo?.apps?.google_search_console_enabled) ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div id="appGscBody" style="${(page.apps?.google_search_console_enabled || page.seo?.apps?.google_search_console_enabled) ? '' : 'display:none'}">
+              <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">كود التحقق (HTML Meta Tag / Verification Code)</label>
+              <input type="text" class="input" id="appGscCode" placeholder="google-site-verification=abc..." value="${page.apps?.google_search_console_code || page.seo?.apps?.google_search_console_code || ''}" style="direction:ltr;font-size:.8rem">
+            </div>
+          </div>
+
+          <!-- 2. Meta / Facebook Pixel -->
+          <div class="app-card" style="background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:14px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:1.3rem">🔷</span>
+                <div>
+                  <h4 style="font-size:.88rem;font-weight:800;margin:0;color:var(--gray-900)">Meta / Facebook Pixel</h4>
+                  <span style="font-size:.72rem;color:var(--gray-500)">تتبع زوار ومبيعات إعلانات Facebook & IG</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="appMetaPixelEnabled" ${(page.apps?.meta_pixel_enabled || page.seo?.apps?.meta_pixel_enabled) ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div id="appMetaPixelBody" style="${(page.apps?.meta_pixel_enabled || page.seo?.apps?.meta_pixel_enabled) ? '' : 'display:none'}">
+              <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">معرّف البيكسل (Pixel ID)</label>
+              <input type="text" class="input" id="appMetaPixelId" placeholder="123456789012345" value="${page.apps?.meta_pixel_id || page.seo?.apps?.meta_pixel_id || ''}" style="direction:ltr;font-size:.8rem">
+            </div>
+          </div>
+
+          <!-- 3. Google Analytics (GA4) -->
+          <div class="app-card" style="background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:14px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:1.3rem">📊</span>
+                <div>
+                  <h4 style="font-size:.88rem;font-weight:800;margin:0;color:var(--gray-900)">Google Analytics 4</h4>
+                  <span style="font-size:.72rem;color:var(--gray-500)">تحليلات مباشرة لعدد الزوار ومصادر الترافيك</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="appGaEnabled" ${(page.apps?.google_analytics_enabled || page.seo?.apps?.google_analytics_enabled) ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div id="appGaBody" style="${(page.apps?.google_analytics_enabled || page.seo?.apps?.google_analytics_enabled) ? '' : 'display:none'}">
+              <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">معرّف القياس (Measurement ID)</label>
+              <input type="text" class="input" id="appGaId" placeholder="G-XXXXXXXXXX" value="${page.apps?.google_analytics_id || page.seo?.apps?.google_analytics_id || ''}" style="direction:ltr;font-size:.8rem">
+            </div>
+          </div>
+
+          <!-- 4. Google Tag Manager -->
+          <div class="app-card" style="background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:14px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:1.3rem">🏷️</span>
+                <div>
+                  <h4 style="font-size:.88rem;font-weight:800;margin:0;color:var(--gray-900)">Google Tag Manager</h4>
+                  <span style="font-size:.72rem;color:var(--gray-500)">إدارة جميع وسوم التتبع بحاوية واحدة</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="appGtmEnabled" ${(page.apps?.gtm_enabled || page.seo?.apps?.gtm_enabled) ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div id="appGtmBody" style="${(page.apps?.gtm_enabled || page.seo?.apps?.gtm_enabled) ? '' : 'display:none'}">
+              <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">معرّف الحاوية (Container ID)</label>
+              <input type="text" class="input" id="appGtmId" placeholder="GTM-XXXXXXX" value="${page.apps?.gtm_id || page.seo?.apps?.gtm_id || ''}" style="direction:ltr;font-size:.8rem">
+            </div>
+          </div>
+
+          <!-- 5. TikTok Pixel -->
+          <div class="app-card" style="background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:14px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:1.3rem">🎵</span>
+                <div>
+                  <h4 style="font-size:.88rem;font-weight:800;margin:0;color:var(--gray-900)">TikTok Pixel</h4>
+                  <span style="font-size:.72rem;color:var(--gray-500)">تتبع إعلانات ومبيعات TikTok Ads</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="appTiktokEnabled" ${(page.apps?.tiktok_pixel_enabled || page.seo?.apps?.tiktok_pixel_enabled) ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div id="appTiktokBody" style="${(page.apps?.tiktok_pixel_enabled || page.seo?.apps?.tiktok_pixel_enabled) ? '' : 'display:none'}">
+              <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">TikTok Pixel ID</label>
+              <input type="text" class="input" id="appTiktokId" placeholder="C1234567890" value="${page.apps?.tiktok_pixel_id || page.seo?.apps?.tiktok_pixel_id || ''}" style="direction:ltr;font-size:.8rem">
+            </div>
+          </div>
+
+          <!-- 6. WhatsApp Floating Chat -->
+          <div class="app-card" style="background:#fff;border:1px solid #bbf7d0;border-radius:12px;padding:14px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:1.3rem">💬</span>
+                <div>
+                  <h4 style="font-size:.88rem;font-weight:800;margin:0;color:#166534">زر واتساب العائم (WhatsApp Chat)</h4>
+                  <span style="font-size:.72rem;color:#15803d">زر محادثة مباشر يظهر لزوار موقعك في الزاوية</span>
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="appWaEnabled" ${(page.apps?.whatsapp_enabled || page.seo?.apps?.whatsapp_enabled) ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div id="appWaBody" style="${(page.apps?.whatsapp_enabled || page.seo?.apps?.whatsapp_enabled) ? '' : 'display:none'}">
+              <div style="margin-bottom:8px">
+                <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">رقم واتساب (مع كود الدولة مثل 201028707543)</label>
+                <input type="tel" class="input" id="appWaNumber" placeholder="201028707543" value="${page.apps?.whatsapp_number || page.seo?.apps?.whatsapp_number || '201028707543'}" style="direction:ltr;font-size:.8rem">
+              </div>
+              <div>
+                <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">الرسالة الترحيبية الافتراضية</label>
+                <input type="text" class="input" id="appWaMessage" placeholder="مرحباً، أود الاستفسار بخصوص خدماتكم..." value="${page.apps?.whatsapp_message || page.seo?.apps?.whatsapp_message || 'مرحباً، أود الاستفسار عن خدماتكم المعروضة'}">
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Custom Scripts Injection -->
+          <div class="app-card" style="background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:14px;margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <span style="font-size:1.3rem">💻</span>
+              <div>
+                <h4 style="font-size:.88rem;font-weight:800;margin:0;color:var(--gray-900)">الأكواد المخصصة (Custom Scripts)</h4>
+                <span style="font-size:.72rem;color:var(--gray-500)">إضافة سكربتات في &lt;head&gt; أو قبل إغلاق &lt;body&gt;</span>
+              </div>
+            </div>
+            <div style="margin-bottom:8px">
+              <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">كود الهيدر (&lt;head&gt; Code)</label>
+              <textarea class="input textarea" id="appCustomHead" rows="2" placeholder="<script>...</script>" style="direction:ltr;font-family:monospace;font-size:.75rem">${page.apps?.custom_head_code || page.seo?.apps?.custom_head_code || ''}</textarea>
+            </div>
+            <div>
+              <label style="font-size:.76rem;font-weight:700;color:var(--gray-700);display:block;margin-bottom:4px">كود الفوتر (&lt;body&gt; Code)</label>
+              <textarea class="input textarea" id="appCustomBody" rows="2" placeholder="<script>...</script>" style="direction:ltr;font-family:monospace;font-size:.75rem">${page.apps?.custom_body_code || page.seo?.apps?.custom_body_code || ''}</textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-full" id="saveAppsBtn" style="padding:10px;border-radius:10px;font-weight:700">
+            <span>💾</span> حفظ وتفعيل التطبيقات
+          </button>
+        </div>
+
         <div class="sidebar-content hidden" id="sidebarSettings">
           <div class="settings-group">
-            <label>Site Title</label>
+            <label>اسم الموقع (Site Title)</label>
             <input class="input" id="pageTitleInput" value="${page.title}">
           </div>
+
+          <!-- Subdomain & Domain Availability Search -->
           <div class="settings-group">
-            <label>رابط الدومين الفرعي (Subdomain)</label>
-            <div style="display:flex;align-items:center;direction:ltr;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;padding:0 8px">
-              <span style="color:var(--gray-400);font-size:.85rem;user-select:none">https://</span>
-              <input class="input" id="pageSlugInput" value="${page.slug||''}" style="border:none;background:transparent;padding:8px 4px;font-weight:600;color:var(--primary)" placeholder="my-brand">
-              <span style="color:var(--gray-500);font-size:.85rem;user-select:none">.${MAIN_DOMAIN}</span>
-            </div>
-            <div id="slugWarning" style="color:#dc2626;font-size:0.8rem;margin-top:4px;display:none;font-weight:600"></div>
-            <div class="hint" style="margin-top:6px">الرابط المباشر: <a id="slugPreview" href="${subdomainUrl(page.slug||'site')}" target="_blank" style="color:var(--primary);direction:ltr;display:inline-block">${page.slug||'my-site'}.${MAIN_DOMAIN}</a> 🔒 SSL مفعل</div>
+            <label style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <span>رابط الدومين الفرعي (Subdomain)</span>
+              ${page.slug_locked ? `<span style="background:#ecfdf5;color:#047857;font-size:.72rem;font-weight:800;padding:2px 8px;border-radius:10px;border:1px solid #a7f3d0">🔒 محجوز ومثبت</span>` : `<span style="background:#fef3c7;color:#b45309;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:10px">بانتظار التثبيت</span>`}
+            </label>
+            
+            ${page.slug_locked ? `
+              <div style="display:flex;align-items:center;direction:ltr;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:10px;padding:10px 12px;font-weight:700;color:var(--primary);margin-top:4px">
+                <span style="user-select:none;color:var(--gray-400)">https://</span>
+                <span style="user-select:all;flex:1">${page.slug}</span>
+                <span style="user-select:none;color:var(--gray-500)">.${MAIN_DOMAIN}</span>
+                <a href="${subdomainUrl(page.slug)}" target="_blank" style="margin-left:8px;font-size:.8rem;color:var(--primary)" title="فتح الموقع">↗</a>
+              </div>
+              <p style="font-size:.75rem;color:var(--gray-500);margin:6px 0 0;line-height:1.5">
+                🔒 تم حجز وتثبيت هذا الدومين نهائياً لضمان استقرار فهرسة Google وروابط عملائك (لا يمكن تغييره).
+              </p>
+            ` : `
+              <p style="font-size:.75rem;color:var(--gray-500);margin:2px 0 8px">
+                ابحث عن اسم علامتك وتأكد من توفره. بمجرد الحجز والتثبيت سيتم ربط موقعك به نهائياً.
+              </p>
+              <div style="display:flex;gap:6px;direction:ltr">
+                <div style="display:flex;align-items:center;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:0 8px;flex:1">
+                  <span style="color:var(--gray-400);font-size:.82rem;user-select:none">https://</span>
+                  <input class="input" id="domainSearchInput" value="${page.slug || ''}" placeholder="اسم-علامتك" style="border:none;background:transparent;padding:8px 4px;font-weight:700;color:var(--primary);flex:1">
+                  <span style="color:var(--gray-500);font-size:.82rem;user-select:none">.${MAIN_DOMAIN}</span>
+                </div>
+                <button class="btn btn-primary btn-sm" id="domainCheckBtn" type="button" style="padding:0 14px;font-weight:700;border-radius:8px;white-space:nowrap">
+                  🔍 فحص
+                </button>
+              </div>
+              <div id="domainCheckResult" style="display:none;margin-top:10px"></div>
+            `}
           </div>
+
           <div class="settings-group">
-            <label>Custom Domain</label>
-            <input class="input" id="customDomainInput" value="${page.customDomain||page.custom_domain||''}" placeholder="yourdomain.com">
-            <div class="hint">Connect your own domain (Pro+)</div>
+            <label>الدومين الخاص (Custom Domain .com)</label>
+            <input class="input" id="customDomainInput" value="${page.customDomain||page.custom_domain||''}" placeholder="yourbrand.com" style="direction:ltr">
+            <div class="hint">لأصحاب باقات Pro و Business لربط نطاق خاص بدون اسم المنصة</div>
           </div>
-          <div class="settings-danger">
-            <button class="btn btn-danger btn-sm w-full" id="deleteSiteBtn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-              Delete This Site
-            </button>
+
+          <!-- Safe site indicator instead of deletion -->
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:14px;text-align:center;margin-top:20px">
+            <div style="color:#166534;font-weight:800;font-size:.85rem;margin-bottom:4px">🛡️ موقعك محمي ودائم</div>
+            <p style="color:#15803d;font-size:.76rem;margin:0;line-height:1.5">
+              موقعك نشط ومحصن ضد الحذف للحفاظ على استقرار الفهرسة في محركات البحث وروابط عملائك.
+            </p>
           </div>
         </div>
         <div class="sidebar-content hidden" id="sidebarAi">
@@ -1551,7 +1752,7 @@ const T = {
   pubCta(d, t) { return this.renderSection({ type: 'cta', data: d }, false, t) },
 
   publicPage(page) {
-    const userPlan = page.userPlan || Auth.user?.plan || 'free'
+    const userPlan = page.userPlan || (typeof Auth !== 'undefined' ? Auth.user?.plan : null) || 'free'
     if (isExpired(page, userPlan)) {
       return `
       <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:#f8fafc;font-family:'Cairo','Tajawal',sans-serif" dir="rtl">
@@ -1566,6 +1767,64 @@ const T = {
 
     const t = page.theme || { color: '#6366f1', font: 'Cairo' }
     const siteUrl = subdomainUrl(page.slug || 'site')
+    const apps = page.apps || page.seo?.apps || {}
+    let injectedHead = ''
+    let injectedBody = ''
+
+    // 1. Google Search Console Verification
+    if (apps.google_search_console_enabled && apps.google_search_console_code) {
+      let code = apps.google_search_console_code.trim()
+      if (code.includes('content=')) {
+        const m = code.match(/content=["']([^"']+)["']/)
+        if (m) code = m[1]
+      }
+      injectedHead += `\n<meta name="google-site-verification" content="${code}">\n`
+    }
+
+    // 2. Meta Pixel
+    if (apps.meta_pixel_enabled && apps.meta_pixel_id) {
+      const pid = apps.meta_pixel_id.trim()
+      injectedHead += `\n<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '${pid}');fbq('track', 'PageView');</script><noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pid}&ev=PageView&noscript=1"/></noscript>\n`
+    }
+
+    // 3. Google Analytics 4 (Google Tag)
+    if (apps.google_analytics_enabled && apps.google_analytics_id) {
+      const gaId = apps.google_analytics_id.trim()
+      injectedHead += `\n<script async src="https://www.googletagmanager.com/gtag/js?id=${gaId}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');</script>\n`
+    }
+
+    // 4. Google Tag Manager
+    if (apps.gtm_enabled && apps.gtm_id) {
+      const gtmId = apps.gtm_id.trim()
+      injectedHead += `\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');</script>\n`
+    }
+
+    // 5. TikTok Pixel
+    if (apps.tiktok_pixel_enabled && apps.tiktok_pixel_id) {
+      const ttId = apps.tiktok_pixel_id.trim()
+      injectedHead += `\n<script>!function (w, d, t) { w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)}; ttq.load('${ttId}'); ttq.page(); }(window, document, 'ttq');</script>\n`
+    }
+
+    // 6. Custom Head Code
+    if (apps.custom_head_code) {
+      injectedHead += `\n${apps.custom_head_code}\n`
+    }
+
+    // 7. WhatsApp Floating Chat Widget
+    if (apps.whatsapp_enabled && apps.whatsapp_number) {
+      const cleanPhone = String(apps.whatsapp_number).replace(/[^0-9]/g, '')
+      const waMsg = encodeURIComponent(apps.whatsapp_message || 'مرحباً، أود الاستفسار بخصوص خدماتكم')
+      injectedBody += `
+      <a href="https://wa.me/${cleanPhone}?text=${waMsg}" target="_blank" rel="noopener noreferrer" class="sf-wa-float-btn" title="تواصل معنا عبر واتساب" style="position:fixed;bottom:24px;right:24px;z-index:9998;width:58px;height:58px;background:#25D366;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 25px rgba(37,211,102,0.45);text-decoration:none;transition:transform .2s;cursor:pointer" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.044c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.086s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824z"/></svg>
+      </a>`
+    }
+
+    // 8. Custom Body Code
+    if (apps.custom_body_code) {
+      injectedBody += `\n${apps.custom_body_code}\n`
+    }
+
     const jsonLd = {
       "@context": "https://schema.org",
       "@type": "WebSite",
@@ -1580,10 +1839,12 @@ const T = {
       }
     }
 
-    return `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    return `${injectedHead}
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
     <div class="public-page" style="--p-color:${t.color};--p-font:${t.font};font-family:${t.font},sans-serif">
       <div class="public-nav"><span class="brand" style="color:${t.color}">${page.title}</span><span style="font-size:.75rem;color:var(--gray-400)">مطور بواسطة SiteFlow</span></div>
       <div class="public-content">${page.sections.map(s => this.renderSection(s, false, t)).join('')}</div>
+      ${injectedBody}
       
       <!-- Floating AI Chatbot Widget for Visitors -->
       <div id="sfAiChatWidget" style="position:fixed;bottom:24px;left:24px;z-index:9999;font-family:inherit" dir="rtl">
