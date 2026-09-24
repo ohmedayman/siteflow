@@ -1133,17 +1133,124 @@ const T = {
 
     switch (type) {
       case 'hero': {
+        const layout = d.layout || 'centered'
         const heading = d.heading || 'أهلاً بكم في موقعنا المميز'
         const desc = d.description || 'نقدم لكم أرقى الخدمات وأفضل العروض بأعلى معايير الجودة والاحترافية والابتكار المستمر.'
         const btnText = d.buttonText || d.ctaText || 'تواصل معنا الآن'
         const btnUrl = d.buttonUrl || '#contact'
         const hasImg = !!d.image
+
+        if (layout === 'split') {
+          return `
+          <section class="sf-section sf-hero hero-section sf-hero-split editable-section ${a ? 'editing' : ''}" data-section="hero" style="--p-color:${pColor};padding:80px 24px;background:linear-gradient(135deg, ${pColor}0a 0%, #ffffff 100%);position:relative">
+            ${a ? '<div class="section-label">Hero / البانر المنقسم (عصري)</div>' : ''}
+            <div style="max-width:1160px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:48px;align-items:center">
+              <div>
+                <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:${pColor}15;color:${pColor};font-weight:800;font-size:.82rem;margin-bottom:20px">
+                  <span>⭐</span>
+                  <span>الخيار الأول المعتمد • جودة استثنائية</span>
+                </div>
+                <h1 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:clamp(2.1rem, 4.5vw, 3.2rem);font-weight:900;color:#0f172a;line-height:1.25;margin-bottom:18px;letter-spacing:-0.02em">
+                  ${heading}
+                </h1>
+                <p ${a ? 'contenteditable="true" data-field="description"' : ''} style="font-size:1.15rem;color:#475569;line-height:1.8;margin-bottom:32px">
+                  ${desc}
+                </p>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+                  <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn sf-btn-primary" style="background:${pColor};color:#fff;padding:14px 34px;font-size:1.05rem;font-weight:800;border-radius:14px;box-shadow:0 10px 25px ${pColor}40;text-decoration:none;display:inline-flex;align-items:center;gap:8px">
+                    ${btnText} 🚀
+                  </a>
+                  <a href="#about" class="btn" style="background:#f1f5f9;color:#334155;padding:14px 24px;font-size:1rem;font-weight:700;border-radius:14px;text-decoration:none">
+                    تعرف علينا أكثر ↓
+                  </a>
+                </div>
+              </div>
+              <div style="position:relative">
+                ${hasImg ? `
+                  <div class="sf-hero-img-wrap" style="position:relative;width:100%;height:380px;border-radius:28px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.18);border:1px solid #e2e8f0">
+                    <img src="${d.image}" alt="Hero Image" style="width:100%;height:100%;object-fit:cover;display:block">
+                    ${a ? '<button class="remove-img" style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(255,255,255,0.9);border-radius:50%;width:32px;height:32px;border:none;cursor:pointer;font-size:14px;box-shadow:0 4px 10px rgba(0,0,0,0.15)" data-hero-remove title="حذف الصورة">✕</button>' : ''}
+                  </div>
+                ` : a ? `
+                  <div class="sf-hero-img-wrap" id="heroImagePlaceholder" style="width:100%;height:260px;border-radius:24px;border:2px dashed #cbd5e1;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:#64748b;box-shadow:0 10px 30px rgba(0,0,0,0.04)">
+                    <span style="font-size:2rem;background:#f8fafc;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.06)">📸</span>
+                    <span style="font-size:.88rem;font-weight:700">انقر هنا لرفع صورة القسم الجانبية</span>
+                  </div>
+                ` : `
+                  <div style="background:linear-gradient(135deg, ${pColor}20, ${pColor}05);border-radius:28px;height:340px;display:flex;align-items:center;justify-content:center;border:1px solid ${pColor}30;font-size:4rem">
+                    ✨
+                  </div>
+                `}
+                <input type="file" accept="image/*" id="heroImageInput" style="display:none">
+              </div>
+            </div>
+          </section>`
+        }
+
+        if (layout === 'dark-luxury') {
+          return `
+          <section class="sf-section sf-hero hero-section sf-hero-dark editable-section ${a ? 'editing' : ''}" data-section="hero" style="--p-color:${pColor};padding:100px 24px;background:radial-gradient(circle at 50% 10%, #1e293b 0%, #090d16 100%);color:#fff;text-align:center;position:relative">
+            ${a ? '<div class="section-label">Hero / البانر الفاخر (Dark Luxury)</div>' : ''}
+            <div style="max-width:880px;margin:0 auto">
+              <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:30px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#38bdf8;font-weight:800;font-size:.82rem;margin-bottom:24px">
+                <span>✨</span>
+                <span>تجربة رقمية فريدة واستثنائية</span>
+              </div>
+              <h1 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:clamp(2.2rem, 5vw, 3.6rem);font-weight:900;color:#ffffff;line-height:1.2;margin-bottom:20px;letter-spacing:-0.02em;text-shadow:0 4px 20px rgba(0,0,0,0.4)">
+                ${heading}
+              </h1>
+              <p ${a ? 'contenteditable="true" data-field="description"' : ''} style="font-size:1.2rem;color:#94a3b8;line-height:1.8;max-width:680px;margin:0 auto 36px">
+                ${desc}
+              </p>
+              <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+                <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn sf-btn-primary" style="background:linear-gradient(135deg, ${pColor}, #818cf8);color:#fff;padding:15px 40px;font-size:1.1rem;font-weight:800;border-radius:14px;box-shadow:0 12px 30px ${pColor}55;text-decoration:none;display:inline-block">
+                  ${btnText}
+                </a>
+              </div>
+              ${hasImg ? `
+                <div class="sf-hero-img-wrap" style="position:relative;width:100%;max-width:760px;height:340px;border-radius:24px;overflow:hidden;margin:40px auto 0;box-shadow:0 30px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.12)">
+                  <img src="${d.image}" alt="Hero Image" style="width:100%;height:100%;object-fit:cover;display:block">
+                  ${a ? '<button class="remove-img" style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(255,255,255,0.9);border-radius:50%;width:32px;height:32px;border:none;cursor:pointer;font-size:14px;color:#000" data-hero-remove title="حذف الصورة">✕</button>' : ''}
+                </div>
+              ` : a ? `
+                <div class="sf-hero-img-wrap" id="heroImagePlaceholder" style="width:100%;max-width:760px;height:160px;border-radius:24px;border:2px dashed rgba(255,255,255,0.25);background:rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin:32px auto 0;color:#94a3b8">
+                  <span style="font-size:1.8rem">+</span>
+                  <span style="font-size:.85rem">اضغط لرفع صورة العرض الفاخرة</span>
+                </div>
+              ` : ''}
+              <input type="file" accept="image/*" id="heroImageInput" style="display:none">
+            </div>
+          </section>`
+        }
+
+        if (layout === 'minimal') {
+          return `
+          <section class="sf-section sf-hero hero-section sf-hero-minimal editable-section ${a ? 'editing' : ''}" data-section="hero" style="--p-color:${pColor};padding:90px 24px;background:#ffffff;border-bottom:1px solid #f1f5f9;text-align:right">
+            ${a ? '<div class="section-label">Hero / البسيط العصري (Minimalist)</div>' : ''}
+            <div style="max-width:1000px;margin:0 auto">
+              <span style="color:${pColor};font-size:.9rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:12px">● مرحباً بكم</span>
+              <h1 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:clamp(2.4rem, 5.5vw, 3.8rem);font-weight:900;color:#0f172a;line-height:1.2;margin-bottom:20px;max-width:850px">
+                ${heading}
+              </h1>
+              <p ${a ? 'contenteditable="true" data-field="description"' : ''} style="font-size:1.2rem;color:#475569;line-height:1.8;max-width:680px;margin-bottom:32px">
+                ${desc}
+              </p>
+              <div style="display:flex;gap:14px;flex-wrap:wrap">
+                <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn sf-btn-primary" style="background:${pColor};color:#fff;padding:14px 36px;font-size:1.05rem;font-weight:800;border-radius:10px;text-decoration:none;display:inline-block">
+                  ${btnText}
+                </a>
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default Centered
         return `
-        <section class="sf-section sf-hero hero-section editable-section ${a ? 'editing' : ''}" data-section="hero" style="--p-color:${pColor};padding:80px 24px;background:linear-gradient(135deg, ${pColor}0d 0%, #ffffff 100%);text-align:center;position:relative">
-          ${a ? '<div class="section-label">Hero / البانر الرئيسي</div>' : ''}
+        <section class="sf-section sf-hero hero-section editable-section ${a ? 'editing' : ''}" data-section="hero" style="--p-color:${pColor};padding:85px 24px;background:linear-gradient(135deg, ${pColor}0d 0%, #ffffff 100%);text-align:center;position:relative">
+          ${a ? '<div class="section-label">Hero / البانر المتمركز (الكلاسيكي)</div>' : ''}
           <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center">
             ${hasImg ? `
-              <div class="sf-hero-img-wrap" style="position:relative;width:100%;max-width:680px;height:320px;border-radius:20px;overflow:hidden;margin-bottom:28px;box-shadow:0 20px 40px rgba(0,0,0,0.08);border:1px solid #e2e8f0">
+              <div class="sf-hero-img-wrap" style="position:relative;width:100%;max-width:700px;height:320px;border-radius:24px;overflow:hidden;margin-bottom:32px;box-shadow:0 20px 40px rgba(0,0,0,0.08);border:1px solid #e2e8f0">
                 <img src="${d.image}" alt="Hero Image" style="width:100%;height:100%;object-fit:cover;display:block">
                 ${a ? '<button class="remove-img" style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(255,255,255,0.9);border-radius:50%;width:32px;height:32px;border:none;cursor:pointer;font-size:14px;box-shadow:0 4px 10px rgba(0,0,0,0.15)" data-hero-remove title="حذف الصورة">✕</button>' : ''}
               </div>
@@ -1161,7 +1268,7 @@ const T = {
               ${desc}
             </p>
             <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
-              <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn sf-btn-primary" style="background:${pColor};color:#fff;padding:14px 32px;font-size:1.05rem;font-weight:700;border-radius:14px;box-shadow:0 8px 20px ${pColor}40;text-decoration:none;display:inline-flex;align-items:center;gap:8px">
+              <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn sf-btn-primary" style="background:${pColor};color:#fff;padding:14px 34px;font-size:1.05rem;font-weight:800;border-radius:14px;box-shadow:0 8px 20px ${pColor}40;text-decoration:none;display:inline-flex;align-items:center;gap:8px">
                 ${btnText}
               </a>
             </div>
@@ -1170,11 +1277,84 @@ const T = {
       }
 
       case 'about': {
+        const layout = d.layout || 'classic'
         const heading = d.heading || 'من نحن'
         const content = d.content || d.description || 'نحن فريق شغوف نسعى لتقديم حلول مبتكرة وخدمات متكاملة ترتقي بتجربة عملائنا وتلبي تطلعاتهم بأعلى معايير الدقة والإتقان.'
+
+        if (layout === 'split') {
+          return `
+          <section class="sf-section sf-about about-section editable-section ${a ? 'editing' : ''}" data-section="about" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+            ${a ? '<div class="section-label">About / من نحن (منقسم مع الركائز)</div>' : ''}
+            <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:40px;align-items:center">
+              <div>
+                <span style="color:${pColor};font-weight:800;font-size:.85rem;display:block;margin-bottom:8px">نبذة تعريفية</span>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;line-height:1.3;margin-bottom:16px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin-bottom:24px"></div>
+                <p ${a ? 'contenteditable="true" data-field="content"' : ''} style="font-size:1.1rem;line-height:1.9;color:#475569;white-space:pre-line">
+                  ${content}
+                </p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:22px 24px;display:flex;align-items:flex-start;gap:16px">
+                  <div style="width:44px;height:44px;border-radius:12px;background:${pColor}15;color:${pColor};font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">🎯</div>
+                  <div>
+                    <h4 style="font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:4px">رؤيتنا المستقبلية</h4>
+                    <p style="font-size:.9rem;color:#64748b;margin:0;line-height:1.6">الريادة والتميز وتقديم تجارب مبتكرة تفوق توقعات عملائنا في كل مرحلة.</p>
+                  </div>
+                </div>
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:22px 24px;display:flex;align-items:flex-start;gap:16px">
+                  <div style="width:44px;height:44px;border-radius:12px;background:${pColor}15;color:${pColor};font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">💎</div>
+                  <div>
+                    <h4 style="font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:4px">قيمنا الراسخة</h4>
+                    <p style="font-size:.9rem;color:#64748b;margin:0;line-height:1.6">الالتزام الصارم بالشفافية والمصداقية والاحترافية العالية في جميع التفاصيل.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>`
+        }
+
+        if (layout === 'cards') {
+          return `
+          <section class="sf-section sf-about about-section editable-section ${a ? 'editing' : ''}" data-section="about" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+            ${a ? '<div class="section-label">About / من نحن (بطاقات الركائز)</div>' : ''}
+            <div style="max-width:1100px;margin:0 auto">
+              <div style="text-align:center;margin-bottom:48px">
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto 20px"></div>
+                <p ${a ? 'contenteditable="true" data-field="content"' : ''} style="font-size:1.15rem;color:#475569;max-width:700px;margin:0 auto;line-height:1.8">
+                  ${content}
+                </p>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+                <div style="background:#fff;border-radius:18px;padding:32px 24px;border:1px solid #e2e8f0;border-top:4px solid ${pColor};box-shadow:0 4px 15px rgba(0,0,0,0.03)">
+                  <div style="font-size:2rem;margin-bottom:12px">🚀</div>
+                  <h3 style="font-size:1.2rem;font-weight:800;color:#0f172a;margin-bottom:8px">انطلاقتنا</h3>
+                  <p style="font-size:.92rem;color:#64748b;line-height:1.7;margin:0">بدأنا برؤية طموحة تهدف إلى إحداث نقلة نوعية في جودة الخدمات والحلول المقدمة.</p>
+                </div>
+                <div style="background:#fff;border-radius:18px;padding:32px 24px;border:1px solid #e2e8f0;border-top:4px solid ${pColor};box-shadow:0 4px 15px rgba(0,0,0,0.03)">
+                  <div style="font-size:2rem;margin-bottom:12px">🎯</div>
+                  <h3 style="font-size:1.2rem;font-weight:800;color:#0f172a;margin-bottom:8px">أهدافنا</h3>
+                  <p style="font-size:.92rem;color:#64748b;line-height:1.7;margin:0">الوصول إلى أقصى درجات رضا العملاء وبناء علاقات استراتيجية متينة ومستدامة.</p>
+                </div>
+                <div style="background:#fff;border-radius:18px;padding:32px 24px;border:1px solid #e2e8f0;border-top:4px solid ${pColor};box-shadow:0 4px 15px rgba(0,0,0,0.03)">
+                  <div style="font-size:2rem;margin-bottom:12px">⭐</div>
+                  <h3 style="font-size:1.2rem;font-weight:800;color:#0f172a;margin-bottom:8px">تميزنا</h3>
+                  <p style="font-size:.92rem;color:#64748b;line-height:1.7;margin:0">فريق عمل خبير ومؤهل يسخر أحدث المعايير لتحقيق أفضل النتائج العملية.</p>
+                </div>
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default Classic
         return `
         <section class="sf-section sf-about about-section editable-section ${a ? 'editing' : ''}" data-section="about" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
-          ${a ? '<div class="section-label">About / من نحن</div>' : ''}
+          ${a ? '<div class="section-label">About / من نحن (كلاسيكي)</div>' : ''}
           <div style="max-width:800px;margin:0 auto;text-align:center">
             <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:20px">
               ${heading}
@@ -1189,16 +1369,88 @@ const T = {
 
       case 'services':
       case 'features': {
+        const layout = d.layout || 'grid'
         const isFeat = type === 'features'
         const heading = d.heading || (isFeat ? 'مميزاتنا الاستثنائية' : 'خدماتنا المتميزة')
         const items = Array.isArray(d.items) && d.items.length ? d.items : [
-          { title: 'جودة فائقة', desc: 'نلتزم بأعلى معايير الجودة في جميع خدماتنا ومنتجاتنا.' },
-          { title: 'دعم فني مستمر', desc: 'فريق عمل متواجد دائماً لتقديم المساعدة والاستشارات.' },
-          { title: 'سرعة ودقة', desc: 'إنجاز فوري ودقة متناهية تلبي كافة احتياجاتكم.' }
+          { title: 'جودة فائقة', desc: 'نلتزم بأعلى معايير الجودة في جميع خدماتنا ومنتجاتنا لضمان رضاكم التام.' },
+          { title: 'دعم فني مستمر', desc: 'فريق عمل متواجد دائماً لتقديم المساعدة والاستشارات على مدار الساعة.' },
+          { title: 'سرعة ودقة', desc: 'إنجاز فوري ودقة متناهية تلبي كافة احتياجاتكم باحترافية كاملة.' }
         ]
+
+        if (layout === 'bento') {
+          return `
+          <section class="sf-section sf-services services-section editable-section ${a ? 'editing' : ''}" data-section="${type}" style="--p-color:${pColor};padding:85px 24px;background:#ffffff">
+            ${a ? `<div class="section-label">${isFeat ? 'Features / نمط بينتو (Bento)' : 'Services / نمط بينتو (Bento)'}</div>` : ''}
+            <div style="max-width:1120px;margin:0 auto">
+              <div style="text-align:center;margin-bottom:52px">
+                <span style="color:${pColor};font-weight:800;font-size:.85rem;background:${pColor}12;padding:6px 14px;border-radius:20px;display:inline-block;margin-bottom:12px">💎 مميزات راقية</span>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+              </div>
+              <div class="bento-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px">
+                ${items.map((it, i) => `
+                  <div class="bento-card" style="background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%);border:1px solid #e2e8f0;border-radius:22px;padding:34px 28px;box-shadow:0 8px 30px rgba(0,0,0,0.04);position:relative;overflow:hidden;transition:all .3s">
+                    <div style="width:52px;height:52px;border-radius:16px;background:${pColor}15;color:${pColor};display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;margin-bottom:20px;border:1px solid ${pColor}30">
+                      ${['✨', '⚡', '🛡️', '🎯', '🚀', '💎'][i % 6]}
+                    </div>
+                    <h3 ${a ? `contenteditable="true" data-field="items.${i}.title"` : ''} style="font-size:1.3rem;font-weight:800;color:#0f172a;margin-bottom:10px">
+                      ${it.title || 'عنوان مميز'}
+                    </h3>
+                    <p ${a ? `contenteditable="true" data-field="items.${i}.desc"` : ''} style="font-size:.96rem;color:#64748b;line-height:1.75;margin:0">
+                      ${it.desc || 'وصف شامل للخدمة يوضح المميزات والنتائج الإيجابية للعملاء.'}
+                    </p>
+                    <div style="height:3px;background:linear-gradient(90deg, ${pColor}, transparent);width:60%;margin-top:24px;border-radius:2px"></div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </section>`
+        }
+
+        if (layout === 'list') {
+          return `
+          <section class="sf-section sf-services services-section editable-section ${a ? 'editing' : ''}" data-section="${type}" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+            ${a ? `<div class="section-label">${isFeat ? 'Features / قائمة أفقية' : 'Services / قائمة أفقية'}</div>` : ''}
+            <div style="max-width:960px;margin:0 auto">
+              <div style="text-align:center;margin-bottom:48px">
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                ${items.map((it, i) => `
+                  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;box-shadow:0 4px 15px rgba(0,0,0,0.02)">
+                    <div style="display:flex;align-items:center;gap:18px;flex:1;min-width:240px">
+                      <div style="width:40px;height:40px;border-radius:10px;background:#ecfdf5;color:#059669;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;flex-shrink:0">
+                        ✓
+                      </div>
+                      <div>
+                        <h3 ${a ? `contenteditable="true" data-field="items.${i}.title"` : ''} style="font-size:1.2rem;font-weight:800;color:#0f172a;margin-bottom:4px">
+                          ${it.title || 'عنوان الخدمة'}
+                        </h3>
+                        <p ${a ? `contenteditable="true" data-field="items.${i}.desc"` : ''} style="font-size:.92rem;color:#64748b;margin:0;line-height:1.6">
+                          ${it.desc || ''}
+                        </p>
+                      </div>
+                    </div>
+                    <span style="font-size:.82rem;font-weight:800;color:${pColor};background:${pColor}12;padding:6px 14px;border-radius:20px">
+                      خدمة معتمدة ★
+                    </span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default Grid
         return `
         <section class="sf-section sf-services services-section editable-section ${a ? 'editing' : ''}" data-section="${type}" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
-          ${a ? `<div class="section-label">${isFeat ? 'Features / المميزات' : 'Services / الخدمات'}</div>` : ''}
+          ${a ? `<div class="section-label">${isFeat ? 'Features / شبكة بطاقات (كلاسيكي)' : 'Services / شبكة بطاقات (كلاسيكي)'}</div>` : ''}
           <div style="max-width:1100px;margin:0 auto">
             <div style="text-align:center;margin-bottom:50px">
               <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
@@ -1226,6 +1478,7 @@ const T = {
       }
 
       case 'menu': {
+        const layout = d.layout || 'list'
         const heading = d.heading || 'قائمة الطعام والأسعار'
         const items = Array.isArray(d.items) && d.items.length ? d.items : [
           { title: 'وجبة مميزة 1', desc: 'مكونات طازجة مع لمستنا الخاصة اللذيذة', price: '75 ج.م', category: 'الأطباق الرئيسية' },
@@ -1233,9 +1486,55 @@ const T = {
           { title: 'مشروب منعش', desc: 'عصير طبيعي مثلج وطازج', price: '30 ج.م', category: 'المشروبات' }
         ]
         const cats = [...new Set(items.map(it => it.category || 'عام'))]
+
+        if (layout === 'cards') {
+          return `
+          <section class="sf-section sf-menu menu-section editable-section ${a ? 'editing' : ''}" data-section="menu" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+            ${a ? '<div class="section-label">Menu / بطاقات المنتجات المصورة</div>' : ''}
+            <div style="max-width:1120px;margin:0 auto">
+              <div style="text-align:center;margin-bottom:48px">
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+                ${items.map((item, gi) => {
+                  const waText = encodeURIComponent(`مرحباً، أود طلب: ${item.title}${item.price ? ' بسعر ' + item.price : ''}`)
+                  return `
+                  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:20px;overflow:hidden;box-shadow:0 6px 25px rgba(0,0,0,0.04);display:flex;flex-direction:column;justify-content:space-between">
+                    <div style="background:linear-gradient(135deg, ${pColor}15, #f1f5f9);height:140px;display:flex;align-items:center;justify-content:center;font-size:3rem">
+                      🍽️
+                    </div>
+                    <div style="padding:22px;flex:1;display:flex;flex-direction:column;justify-content:space-between">
+                      <div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                          <h4 ${a ? `contenteditable="true" data-field="items.${gi}.title"` : ''} style="font-size:1.15rem;font-weight:800;color:#0f172a;margin:0">
+                            ${item.title}
+                          </h4>
+                          <span ${a ? `contenteditable="true" data-field="items.${gi}.price"` : ''} style="font-size:1.1rem;font-weight:900;color:${pColor};background:${pColor}12;padding:4px 10px;border-radius:8px">
+                            ${item.price || ''}
+                          </span>
+                        </div>
+                        <p ${a ? `contenteditable="true" data-field="items.${gi}.desc"` : ''} style="font-size:.88rem;color:#64748b;margin:0 0 18px;line-height:1.6">
+                          ${item.desc || ''}
+                        </p>
+                      </div>
+                      <a href="https://wa.me/?text=${waText}" target="_blank" style="background:#25d366;color:#fff;border-radius:10px;padding:10px;font-size:.88rem;font-weight:800;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(37,211,102,0.25)">
+                        طلب مباشر عبر واتساب 💬
+                      </a>
+                    </div>
+                  </div>`
+                }).join('')}
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default List
         return `
         <section class="sf-section sf-menu menu-section editable-section ${a ? 'editing' : ''}" data-section="menu" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
-          ${a ? '<div class="section-label">Menu / قائمة الطعام والمنتجات</div>' : ''}
+          ${a ? '<div class="section-label">Menu / قائمة الأسعار المصنفة (كلاسيكي)</div>' : ''}
           <div style="max-width:960px;margin:0 auto">
             <div style="text-align:center;margin-bottom:40px">
               <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
@@ -1278,14 +1577,88 @@ const T = {
       }
 
       case 'testimonials': {
+        const layout = d.layout || 'grid'
         const heading = d.heading || 'آراء وتجارب عملائنا'
         const items = Array.isArray(d.items) && d.items.length ? d.items : [
           { name: 'أحمد محمود', role: 'عميل مميز', text: 'تجربة رائعة وتعامل راقي جداً، أنصح الجميع بالتعامل معهم دون تردد!' },
           { name: 'سارة علي', role: 'مديرة تسويق', text: 'خدمة سريعة واحترافية فائقة، فاقوا كل توقعاتي في الجودة والمواعيد.' }
         ]
+
+        if (layout === 'stars') {
+          return `
+          <section class="sf-section sf-testimonials testimonials-section editable-section ${a ? 'editing' : ''}" data-section="testimonials" style="--p-color:${pColor};padding:85px 24px;background:#ffffff">
+            ${a ? '<div class="section-label">Testimonials / تقييمات 5 نجوم (عصري)</div>' : ''}
+            <div style="max-width:1100px;margin:0 auto">
+              <div style="text-align:center;margin-bottom:48px">
+                <div style="color:#f59e0b;font-size:1.3rem;letter-spacing:3px;margin-bottom:8px">★★★★★</div>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+              </div>
+              <div class="testimonials-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px">
+                ${items.map((it, i) => `
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:20px;padding:30px;box-shadow:0 8px 25px rgba(0,0,0,0.03);display:flex;flex-direction:column;justify-content:space-between">
+                    <div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                        <span style="color:#f59e0b;font-size:1.15rem;letter-spacing:2px">★★★★★</span>
+                        <span style="background:#ecfdf5;color:#047857;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:12px">✓ عميل موثق</span>
+                      </div>
+                      <p ${a ? `contenteditable="true" data-field="items.${i}.text"` : ''} style="font-size:1.05rem;line-height:1.8;color:#334155;margin-bottom:24px">
+                        "${it.text}"
+                      </p>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;border-top:1px solid #e2e8f0;padding-top:16px">
+                      <div style="width:44px;height:44px;border-radius:50%;background:${pColor};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem">
+                        ${it.name ? it.name.charAt(0) : '👤'}
+                      </div>
+                      <div>
+                        <strong ${a ? `contenteditable="true" data-field="items.${i}.name"` : ''} style="display:block;color:#0f172a;font-size:1rem;font-weight:800">
+                          ${it.name}
+                        </strong>
+                        <span ${a ? `contenteditable="true" data-field="items.${i}.role"` : ''} style="font-size:.82rem;color:#64748b">
+                          ${it.role || ''}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </section>`
+        }
+
+        if (layout === 'spotlight') {
+          const featured = items[0] || { name: 'عميل سعيد', role: 'شريك نجاح', text: 'أفضل تجربة عمل إلكترونية احترافية على الإطلاق.' }
+          return `
+          <section class="sf-section sf-testimonials testimonials-section editable-section ${a ? 'editing' : ''}" data-section="testimonials" style="--p-color:${pColor};padding:90px 24px;background:linear-gradient(135deg, ${pColor}10 0%, #ffffff 100%);text-align:center">
+            ${a ? '<div class="section-label">Testimonials / الاقتباس البارز (Spotlight)</div>' : ''}
+            <div style="max-width:860px;margin:0 auto">
+              <div style="font-size:4rem;color:${pColor};opacity:.3;line-height:1;margin-bottom:8px">❝</div>
+              <p ${a ? 'contenteditable="true" data-field="items.0.text"' : ''} style="font-size:clamp(1.2rem, 3vw, 1.8rem);font-weight:700;color:#0f172a;line-height:1.7;margin-bottom:28px;font-style:italic">
+                "${featured.text}"
+              </p>
+              <div style="display:inline-flex;align-items:center;gap:14px;background:#fff;border:1px solid #e2e8f0;padding:10px 24px;border-radius:30px;box-shadow:0 8px 25px rgba(0,0,0,0.05)">
+                <div style="width:40px;height:40px;border-radius:50%;background:${pColor};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900">
+                  ${featured.name ? featured.name.charAt(0) : '👤'}
+                </div>
+                <div style="text-align:right">
+                  <strong ${a ? 'contenteditable="true" data-field="items.0.name"' : ''} style="display:block;color:#0f172a;font-size:.95rem">
+                    ${featured.name}
+                  </strong>
+                  <span ${a ? 'contenteditable="true" data-field="items.0.role"' : ''} style="font-size:.8rem;color:#64748b">
+                    ${featured.role || ''}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default Grid
         return `
         <section class="sf-section sf-testimonials testimonials-section editable-section ${a ? 'editing' : ''}" data-section="testimonials" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
-          ${a ? '<div class="section-label">Testimonials / آراء العملاء</div>' : ''}
+          ${a ? '<div class="section-label">Testimonials / آراء العملاء (كلاسيكي)</div>' : ''}
           <div style="max-width:1000px;margin:0 auto">
             <div style="text-align:center;margin-bottom:48px">
               <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
@@ -1320,14 +1693,60 @@ const T = {
       }
 
       case 'pricing': {
+        const layout = d.layout || 'cards'
         const heading = d.heading || 'باقات الأسعار والاشتراكات'
         const plans = Array.isArray(d.plans) && d.plans.length ? d.plans : [
           { name: 'الباقة الأساسية', price: '199 ج.م', features: ['ميزة رقم 1', 'ميزة رقم 2', 'دعم فني قياسي'] },
           { name: 'الباقة الاحترافية', price: '399 ج.م', features: ['كافة ميزات الأساسية', 'ميزة إضافية حصرية', 'أولوية في الدعم'] }
         ]
+
+        if (layout === 'featured') {
+          return `
+          <section class="sf-section sf-pricing pricing-section editable-section ${a ? 'editing' : ''}" data-section="pricing" style="--p-color:${pColor};padding:85px 24px;background:#f8fafc">
+            ${a ? '<div class="section-label">Pricing / تمييز الباقة الأكثر طلباً (Featured)</div>' : ''}
+            <div style="max-width:1100px;margin:0 auto">
+              <div style="text-align:center;margin-bottom:52px">
+                <span style="color:${pColor};font-weight:800;font-size:.85rem;background:${pColor}12;padding:6px 14px;border-radius:20px;display:inline-block;margin-bottom:12px">خطط مرنة وواضحة</span>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+              </div>
+              <div class="pricing-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;align-items:center">
+                ${plans.map((p, i) => {
+                  const isPop = i === 1 || (plans.length === 1)
+                  return `
+                  <div class="pricing-card" style="background:#fff;border:${isPop ? `3px solid ${pColor}` : '1px solid #e2e8f0'};border-radius:24px;padding:38px 28px;text-align:center;box-shadow:${isPop ? `0 20px 45px ${pColor}20` : '0 6px 20px rgba(0,0,0,0.03)'};display:flex;flex-direction:column;justify-content:space-between;position:relative;transform:${isPop ? 'scale(1.03)' : 'scale(1)'}">
+                    ${isPop ? `<div style="position:absolute;top:-14px;right:50%;transform:translateX(50%);background:${pColor};color:#fff;font-size:.78rem;font-weight:900;padding:4px 16px;border-radius:20px;box-shadow:0 4px 12px ${pColor}40">🔥 الأكثر طلباً ويوصى به</div>` : ''}
+                    <div>
+                      <h3 ${a ? `contenteditable="true" data-field="plans.${i}.name"` : ''} style="font-size:1.4rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                        ${p.name}
+                      </h3>
+                      <div ${a ? `contenteditable="true" data-field="plans.${i}.price"` : ''} class="price" style="font-size:2.5rem;font-weight:900;color:${pColor};margin-bottom:24px">
+                        ${p.price}
+                      </div>
+                      <ul style="list-style:none;padding:0;margin:0 0 28px;display:flex;flex-direction:column;gap:12px;text-align:right">
+                        ${(p.features || []).map((f, fi) => `
+                          <li ${a ? `contenteditable="true" data-field="plans.${i}.features.${fi}"` : ''} style="font-size:.95rem;color:#475569;display:flex;align-items:center;gap:8px">
+                            <span style="color:#10b981;font-weight:900">✓</span> ${f}
+                          </li>
+                        `).join('')}
+                      </ul>
+                    </div>
+                    <a href="#contact" class="btn" style="background:${isPop ? pColor : '#f1f5f9'};color:${isPop ? '#fff' : '#0f172a'};padding:14px;border-radius:12px;font-weight:800;text-decoration:none;display:block;box-shadow:${isPop ? `0 6px 20px ${pColor}35` : 'none'}">
+                      اختيار هذه الخطة 🚀
+                    </a>
+                  </div>`
+                }).join('')}
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default Cards
         return `
         <section class="sf-section sf-pricing pricing-section editable-section ${a ? 'editing' : ''}" data-section="pricing" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
-          ${a ? '<div class="section-label">Pricing / باقات الأسعار</div>' : ''}
+          ${a ? '<div class="section-label">Pricing / باقات الأسعار (كلاسيكي)</div>' : ''}
           <div style="max-width:1000px;margin:0 auto">
             <div style="text-align:center;margin-bottom:48px">
               <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
@@ -1399,27 +1818,97 @@ const T = {
 
       case 'faq': {
         const heading = d.heading || 'الأسئلة الشائعة والأجوبة'
+        const layout = d.layout || 'cards'
         const items = Array.isArray(d.items) && d.items.length ? d.items : [
           { q: 'كيف يمكنني التواصل والطلب؟', a: 'يمكنك التواصل معنا مباشرة عبر زر الواتساب أو ملء نموذج التواصل أسفل الصفحة.' },
-          { q: 'ما هي مواعيد العمل لديكم؟', a: 'نعمل يومياً من الساعة 9 صباحاً حتى الساعة 10 مساءً لخدمتكم بأفضل صورة.' }
+          { q: 'ما هي مواعيد العمل لديكم؟', a: 'نعمل يومياً من الساعة 9 صباحاً حتى الساعة 10 مساءً لخدمتكم بأفضل صورة.' },
+          { q: 'هل تقدمون ضماناً أو سياسة استبدال واسترجاع؟', a: 'نعم بكل تأكيد، رضاكم هو أولويتنا ونوفر الدعم الكامل لجميع عملائنا.' }
         ]
+
+        if (layout === 'accordion') {
+          return `
+          <section class="sf-section sf-faq faq-section editable-section ${a ? 'editing' : ''}" data-section="faq" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+            ${a ? '<div class="section-label">FAQ / أكورديون تفاعلي (Accordion)</div>' : ''}
+            <div style="max-width:820px;margin:0 auto">
+              <div style="text-align:center;margin-bottom:48px">
+                <span style="color:${pColor};font-weight:800;font-size:.85rem;background:${pColor}12;padding:6px 14px;border-radius:20px;display:inline-block;margin-bottom:12px">إجابات سريعة وواضحة</span>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+              </div>
+              <div class="faq-accordion-list" style="display:flex;flex-direction:column;gap:12px">
+                ${items.map((it, i) => `
+                  <details ${i === 0 ? 'open' : ''} style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px 22px;transition:all .2s;cursor:pointer">
+                    <summary style="font-size:1.15rem;font-weight:800;color:#0f172a;list-style:none;display:flex;justify-content:space-between;align-items:center;user-select:none">
+                      <span ${a ? `contenteditable="true" data-field="items.${i}.q"` : ''}>${it.q}</span>
+                      <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${pColor}15;color:${pColor};font-size:1.1rem;font-weight:900">▾</span>
+                    </summary>
+                    <p ${a ? `contenteditable="true" data-field="items.${i}.a"` : ''} style="font-size:.98rem;color:#475569;line-height:1.75;margin:14px 0 0;padding-top:14px;border-top:1px dashed #e2e8f0">
+                      ${it.a}
+                    </p>
+                  </details>
+                `).join('')}
+              </div>
+            </div>
+          </section>`
+        }
+
+        if (layout === 'split') {
+          return `
+          <section class="sf-section sf-faq faq-section editable-section ${a ? 'editing' : ''}" data-section="faq" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+            ${a ? '<div class="section-label">FAQ / عمودين مع مساعدة فورية (Split)</div>' : ''}
+            <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:48px;align-items:start">
+              <div>
+                <span style="color:${pColor};font-weight:800;font-size:.85rem;background:${pColor}15;padding:6px 14px;border-radius:20px;display:inline-block;margin-bottom:12px">مركز المساعدة</span>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;margin-bottom:16px;line-height:1.3">
+                  ${heading}
+                </h2>
+                <p style="font-size:1.05rem;color:#64748b;line-height:1.7;margin-bottom:24px">
+                  جمعنا لكم أكثر الاستفسارات تكراراً لتوفير وقتكم، وإذا كان لديكم أي سؤال إضافي فريقنا في خدمتكم فوراً.
+                </p>
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:24px;box-shadow:0 6px 20px rgba(0,0,0,0.03)">
+                  <h4 style="font-size:1.1rem;font-weight:800;color:#0f172a;margin:0 0 8px">هل تحتاج لمساعدة مخصصة؟ 💬</h4>
+                  <p style="font-size:.9rem;color:#64748b;margin:0 0 16px">فريق الدعم الفني متواجد ومستعد لمساعدتك والإجابة على استفساراتك.</p>
+                  <a href="#contact" class="btn" style="background:${pColor};color:#fff;padding:10px 20px;border-radius:10px;font-weight:700;text-decoration:none;display:inline-block;font-size:.9rem">
+                    تواصل معنا مباشرة 🚀
+                  </a>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                ${items.map((it, i) => `
+                  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px 24px;box-shadow:0 4px 15px rgba(0,0,0,0.02)">
+                    <h3 ${a ? `contenteditable="true" data-field="items.${i}.q"` : ''} style="font-size:1.15rem;font-weight:800;color:#0f172a;margin:0 0 8px">
+                      ${it.q}
+                    </h3>
+                    <p ${a ? `contenteditable="true" data-field="items.${i}.a"` : ''} style="font-size:.95rem;color:#475569;line-height:1.7;margin:0">
+                      ${it.a}
+                    </p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default cards layout
         return `
         <section class="sf-section sf-faq faq-section editable-section ${a ? 'editing' : ''}" data-section="faq" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
-          ${a ? '<div class="section-label">FAQ / الأسئلة الشائعة</div>' : ''}
-          <div style="max-width:800px;margin:0 auto">
+          ${a ? '<div class="section-label">FAQ / شبكة البطاقات (Cards)</div>' : ''}
+          <div style="max-width:860px;margin:0 auto">
             <div style="text-align:center;margin-bottom:48px">
-              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:900;color:#0f172a;margin-bottom:12px">
                 ${heading}
               </h2>
               <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
             </div>
             <div class="faq-list" style="display:flex;flex-direction:column;gap:16px">
               ${items.map((it, i) => `
-                <div class="faq-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px 24px">
-                  <h3 ${a ? `contenteditable="true" data-field="items.${i}.q"` : ''} style="font-size:1.15rem;font-weight:700;color:#0f172a;margin-bottom:8px">
-                    ${it.q}
+                <div class="faq-item" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:22px 24px;box-shadow:0 4px 15px rgba(0,0,0,0.02)">
+                  <h3 ${a ? `contenteditable="true" data-field="items.${i}.q"` : ''} style="font-size:1.15rem;font-weight:800;color:#0f172a;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+                    <span style="color:${pColor}">❓</span> ${it.q}
                   </h3>
-                  <p ${a ? `contenteditable="true" data-field="items.${i}.a"` : ''} style="font-size:.95rem;color:#475569;line-height:1.7;margin:0">
+                  <p ${a ? `contenteditable="true" data-field="items.${i}.a"` : ''} style="font-size:.96rem;color:#475569;line-height:1.75;margin:0">
                     ${it.a}
                   </p>
                 </div>
@@ -1634,9 +2123,112 @@ const T = {
 
       case 'contact': {
         const heading = d.heading || 'تواصل معنا'
+        const layout = d.layout || 'form'
+        const email = d.email || ''
+        const phone = d.phone || ''
+        const address = d.address || ''
+
+        if (layout === 'split') {
+          return `
+          <section class="sf-section sf-contact contact-section editable-section ${a ? 'editing' : ''}" data-section="contact" id="contact" style="--p-color:${pColor};padding:85px 24px;background:#f8fafc">
+            ${a ? '<div class="section-label">Contact / عمودين تفاعلي (Split)</div>' : ''}
+            <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:40px;align-items:start">
+              <div>
+                <span style="color:${pColor};font-weight:800;font-size:.85rem;background:${pColor}15;padding:6px 14px;border-radius:20px;display:inline-block;margin-bottom:12px">ابدأ محادثتك</span>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;margin-bottom:14px">
+                  ${heading}
+                </h2>
+                <p style="font-size:1.05rem;color:#64748b;line-height:1.7;margin-bottom:28px">
+                  يسعدنا استقبال استفساراتكم واقتراحاتكم في أي وقت. فريقنا جاهز للتواصل معكم والرد السريع.
+                </p>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px">
+                    <span style="font-size:1.8rem;background:${pColor}15;width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center">📞</span>
+                    <div>
+                      <div style="font-size:.8rem;color:#94a3b8;font-weight:700">الهاتف والواتساب</div>
+                      <div ${a ? 'contenteditable="true" data-field="phone"' : ''} style="font-size:1.05rem;font-weight:800;color:#0f172a">${phone || '+20 102 870 7543'}</div>
+                    </div>
+                  </div>
+                  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px">
+                    <span style="font-size:1.8rem;background:${pColor}15;width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center">✉️</span>
+                    <div>
+                      <div style="font-size:.8rem;color:#94a3b8;font-weight:700">البريد الإلكتروني</div>
+                      <div ${a ? 'contenteditable="true" data-field="email"' : ''} style="font-size:1.05rem;font-weight:800;color:#0f172a">${email || 'contact@example.com'}</div>
+                    </div>
+                  </div>
+                  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px">
+                    <span style="font-size:1.8rem;background:${pColor}15;width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center">📍</span>
+                    <div>
+                      <div style="font-size:.8rem;color:#94a3b8;font-weight:700">العنوان والمقر</div>
+                      <div ${a ? 'contenteditable="true" data-field="address"' : ''} style="font-size:1.05rem;font-weight:800;color:#0f172a">${address || 'القاهرة، مصر'}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="contact-form" id="pubContactForm" style="background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:36px 32px;box-shadow:0 10px 35px rgba(0,0,0,0.04)">
+                <h3 style="font-size:1.3rem;font-weight:800;color:#0f172a;margin-bottom:20px">أرسل لنا رسالة مباشرة</h3>
+                <div class="input-group" style="margin-bottom:18px">
+                  <label style="display:block;font-size:.9rem;font-weight:700;color:#334155;margin-bottom:6px">الاسم بالكامل</label>
+                  <input class="input" id="cfName" placeholder="اكتب اسمك..." style="width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font-size:.95rem" ${a ? 'disabled' : 'required'}>
+                </div>
+                <div class="input-group" style="margin-bottom:18px">
+                  <label style="display:block;font-size:.9rem;font-weight:700;color:#334155;margin-bottom:6px">البريد الإلكتروني أو الهاتف</label>
+                  <input class="input" id="cfEmail" placeholder="your@email.com / 01xxxxxxxxx" style="width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font-size:.95rem" ${a ? 'disabled' : 'required'}>
+                </div>
+                <div class="input-group" style="margin-bottom:24px">
+                  <label style="display:block;font-size:.9rem;font-weight:700;color:#334155;margin-bottom:6px">رسالتك أو استفسارك</label>
+                  <textarea class="input textarea" id="cfMessage" rows="4" placeholder="كيف يمكننا مساعدتك؟" style="width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font-size:.95rem" ${a ? 'disabled' : 'required'}></textarea>
+                </div>
+                <button class="btn sf-btn-primary" id="cfSubmitBtn" style="background:${pColor};color:#fff;width:100%;padding:14px;border-radius:12px;font-size:1.05rem;font-weight:800;border:none;cursor:pointer;box-shadow:0 6px 18px ${pColor}33" ${a ? 'disabled' : ''}>
+                  إرسال الرسالة الآن 🚀
+                </button>
+                <p id="cfMsg" style="font-size:.9rem;margin-top:12px;text-align:center;display:none;font-weight:700"></p>
+              </div>
+            </div>
+          </section>`
+        }
+
+        if (layout === 'direct') {
+          return `
+          <section class="sf-section sf-contact contact-section editable-section ${a ? 'editing' : ''}" data-section="contact" id="contact" style="--p-color:${pColor};padding:80px 24px;background:#ffffff">
+            ${a ? '<div class="section-label">Contact / أزرار التواصل السريع (Direct)</div>' : ''}
+            <div style="max-width:960px;margin:0 auto;text-align:center">
+              <div style="margin-bottom:44px">
+                <span style="color:${pColor};font-weight:800;font-size:.85rem;background:${pColor}15;padding:6px 14px;border-radius:20px;display:inline-block;margin-bottom:12px">تواصل مباشر وفوري</span>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.3rem;font-weight:900;color:#0f172a;margin-bottom:12px">
+                  ${heading}
+                </h2>
+                <div style="width:48px;height:4px;background:${pColor};border-radius:2px;margin:0 auto"></div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px">
+                <a href="https://wa.me/${(phone || '201028707543').replace(/\D/g, '')}" target="_blank" style="background:#25d36612;border:2px solid #25d366;border-radius:20px;padding:32px 24px;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:12px;transition:transform .2s">
+                  <span style="font-size:2.8rem">💬</span>
+                  <h4 style="font-size:1.3rem;font-weight:900;color:#128c7e;margin:0">واتساب مباشر</h4>
+                  <p style="font-size:.95rem;color:#475569;margin:0">تحدث معنا على الواتساب فوراً</p>
+                  <span style="margin-top:8px;background:#25d366;color:#fff;padding:8px 20px;border-radius:20px;font-weight:800;font-size:.9rem">فتح المحادثة 🚀</span>
+                </a>
+                <a href="tel:${(phone || '+201028707543').replace(/\s+/g, '')}" style="background:${pColor}10;border:2px solid ${pColor};border-radius:20px;padding:32px 24px;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:12px;transition:transform .2s">
+                  <span style="font-size:2.8rem">📞</span>
+                  <h4 style="font-size:1.3rem;font-weight:900;color:${pColor};margin:0">اتصال هاتفي</h4>
+                  <p ${a ? 'contenteditable="true" data-field="phone"' : ''} style="font-size:.95rem;color:#475569;margin:0">${phone || '+20 102 870 7543'}</p>
+                  <span style="margin-top:8px;background:${pColor};color:#fff;padding:8px 20px;border-radius:20px;font-weight:800;font-size:.9rem">اتصل الآن</span>
+                </a>
+                <a href="mailto:${email || 'contact@example.com'}" style="background:#f8fafc;border:2px solid #cbd5e1;border-radius:20px;padding:32px 24px;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:12px;transition:transform .2s">
+                  <span style="font-size:2.8rem">✉️</span>
+                  <h4 style="font-size:1.3rem;font-weight:900;color:#0f172a;margin:0">البريد الإلكتروني</h4>
+                  <p ${a ? 'contenteditable="true" data-field="email"' : ''} style="font-size:.95rem;color:#475569;margin:0">${email || 'contact@example.com'}</p>
+                  <span style="margin-top:8px;background:#0f172a;color:#fff;padding:8px 20px;border-radius:20px;font-weight:800;font-size:.9rem">إرسال إيميل</span>
+                </a>
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default form layout
         return `
         <section class="sf-section sf-contact contact-section editable-section ${a ? 'editing' : ''}" data-section="contact" id="contact" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
-          ${a ? '<div class="section-label">Contact / نموذج التواصل</div>' : ''}
+          ${a ? '<div class="section-label">Contact / نموذج التواصل (Form)</div>' : ''}
           <div style="max-width:680px;margin:0 auto">
             <div style="text-align:center;margin-bottom:40px">
               <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:800;color:#0f172a;margin-bottom:12px">
@@ -1671,9 +2263,54 @@ const T = {
         const subheading = d.subheading || d.description || 'انضم إلى نخبة عملائنا المميزين اليوم واستفد من عروضنا الحصرية.'
         const btnText = d.buttonText || 'تواصل معنا الآن'
         const btnUrl = d.buttonUrl || '#contact'
+        const layout = d.layout || 'solid'
+
+        if (layout === 'dark-glow') {
+          return `
+          <section class="sf-section sf-cta cta-section editable-section ${a ? 'editing' : ''}" data-section="cta" style="--p-color:${pColor};padding:90px 24px;background:#090d16;color:#ffffff;text-align:center;position:relative;overflow:hidden">
+            ${a ? '<div class="section-label">CTA / تصميم داكن فخم (Dark Glow)</div>' : ''}
+            <div style="position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle, ${pColor}40 0%, transparent 70%);border-radius:50%;pointer-events:none"></div>
+            <div style="max-width:850px;margin:0 auto;position:relative;z-index:2">
+              <span style="color:#fff;background:${pColor}40;border:1px solid ${pColor}80;padding:6px 18px;border-radius:20px;font-size:.85rem;font-weight:800;display:inline-block;margin-bottom:18px">⚡ ابدأ اليوم مجاناً</span>
+              <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:clamp(1.9rem, 4.5vw, 3rem);font-weight:900;color:#fff;margin-bottom:16px;line-height:1.3">
+                ${heading}
+              </h2>
+              <p ${a ? 'contenteditable="true" data-field="subheading"' : ''} style="font-size:1.15rem;color:#94a3b8;line-height:1.75;max-width:640px;margin:0 auto 32px">
+                ${subheading}
+              </p>
+              <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn" style="background:${pColor};color:#ffffff;padding:16px 42px;font-size:1.1rem;font-weight:800;border-radius:14px;text-decoration:none;display:inline-block;box-shadow:0 10px 30px ${pColor}60">
+                ${btnText}
+              </a>
+            </div>
+          </section>`
+        }
+
+        if (layout === 'boxed') {
+          return `
+          <section class="sf-section sf-cta cta-section editable-section ${a ? 'editing' : ''}" data-section="cta" style="--p-color:${pColor};padding:80px 24px;background:#f8fafc">
+            ${a ? '<div class="section-label">CTA / كارت صندوقي عائم (Boxed)</div>' : ''}
+            <div style="max-width:1050px;margin:0 auto;background:#ffffff;border:2px solid ${pColor}25;border-radius:28px;padding:50px 40px;box-shadow:0 20px 50px rgba(0,0,0,0.06);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px;align-items:center">
+              <div>
+                <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:2.2rem;font-weight:900;color:#0f172a;margin-bottom:12px;line-height:1.3">
+                  ${heading}
+                </h2>
+                <p ${a ? 'contenteditable="true" data-field="subheading"' : ''} style="font-size:1.05rem;color:#64748b;line-height:1.7;margin:0">
+                  ${subheading}
+                </p>
+              </div>
+              <div style="text-align:left">
+                <a href="${btnUrl}" ${a ? 'contenteditable="true" data-field="buttonText"' : ''} class="btn" style="background:${pColor};color:#ffffff;padding:16px 36px;font-size:1.1rem;font-weight:800;border-radius:14px;text-decoration:none;display:inline-block;box-shadow:0 10px 25px ${pColor}40">
+                  ${btnText} 🚀
+                </a>
+              </div>
+            </div>
+          </section>`
+        }
+
+        // Default Solid
         return `
         <section class="sf-section sf-cta cta-section editable-section ${a ? 'editing' : ''}" data-section="cta" style="--p-color:${pColor};padding:80px 24px;background:${pColor};color:#ffffff;text-align:center">
-          ${a ? '<div class="section-label">CTA / تحفيز التواصل</div>' : ''}
+          ${a ? '<div class="section-label">CTA / خلفية ملونة كاملة (Solid)</div>' : ''}
           <div style="max-width:800px;margin:0 auto">
             <h2 ${a ? 'contenteditable="true" data-field="heading"' : ''} style="font-size:clamp(1.8rem, 4vw, 2.8rem);font-weight:900;color:#fff;margin-bottom:14px;line-height:1.3">
               ${heading}
@@ -1690,17 +2327,68 @@ const T = {
 
       case 'footer': {
         const copyright = d.copyright || `© ${new Date().getFullYear()} جميع الحقوق محفوظة.`
-        const text = d.text || 'مدعوم بواسطة SiteFlow Platform'
+        const text = d.text || ''
+        const layout = d.layout || 'classic'
+
+        if (layout === 'columns') {
+          return `
+          <footer class="sf-section sf-footer footer-section editable-section ${a ? 'editing' : ''}" data-section="footer" style="padding:60px 24px 32px;background:#0b0f19;color:#94a3b8">
+            ${a ? '<div class="section-label">Footer / متعدد الأعمدة (Columns)</div>' : ''}
+            <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;margin-bottom:40px;text-align:right">
+              <div>
+                <h4 style="color:#ffffff;font-size:1.2rem;font-weight:800;margin-bottom:12px">عن الموقع</h4>
+                <p ${a ? 'contenteditable="true" data-field="text"' : ''} style="font-size:.9rem;line-height:1.7;color:#94a3b8;margin:0">
+                  ${text || 'نقدم أفضل الخدمات والحلول لعملائنا بأعلى معايير الجودة والاحترافية.'}
+                </p>
+              </div>
+              <div>
+                <h4 style="color:#ffffff;font-size:1.2rem;font-weight:800;margin-bottom:12px">روابط سريعة</h4>
+                <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:.9rem">
+                  <li><a href="#hero" style="color:#cbd5e1;text-decoration:none">الرئيسية</a></li>
+                  <li><a href="#about" style="color:#cbd5e1;text-decoration:none">من نحن</a></li>
+                  <li><a href="#services" style="color:#cbd5e1;text-decoration:none">الخدمات</a></li>
+                  <li><a href="#contact" style="color:#cbd5e1;text-decoration:none">تواصل معنا</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 style="color:#ffffff;font-size:1.2rem;font-weight:800;margin-bottom:12px">ساعات العمل</h4>
+                <p style="font-size:.9rem;line-height:1.7;color:#cbd5e1;margin:0">
+                  السبت - الخميس: 9:00 ص - 10:00 م<br>
+                  الجمعة: 2:00 م - 10:00 م
+                </p>
+              </div>
+            </div>
+            <div style="max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid #1e293b;text-align:center">
+              <p ${a ? 'contenteditable="true" data-field="copyright"' : ''} style="font-size:.9rem;margin:0;color:#64748b">
+                ${copyright}
+              </p>
+            </div>
+          </footer>`
+        }
+
+        if (layout === 'minimal') {
+          return `
+          <footer class="sf-section sf-footer footer-section editable-section ${a ? 'editing' : ''}" data-section="footer" style="padding:28px 24px;background:#0f172a;color:#94a3b8">
+            ${a ? '<div class="section-label">Footer / شريط بسيط (Minimal)</div>' : ''}
+            <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px">
+              <p ${a ? 'contenteditable="true" data-field="copyright"' : ''} style="font-size:.9rem;margin:0;color:#cbd5e1">
+                ${copyright}
+              </p>
+              ${text ? `<p ${a ? 'contenteditable="true" data-field="text"' : ''} style="font-size:.85rem;margin:0;color:#64748b">${text}</p>` : ''}
+              <a href="#" style="color:#94a3b8;font-size:.85rem;text-decoration:none">↑ العودة للأعلى</a>
+            </div>
+          </footer>`
+        }
+
+        // Default Classic
         return `
         <footer class="sf-section sf-footer footer-section editable-section ${a ? 'editing' : ''}" data-section="footer" style="padding:48px 24px;background:#0f172a;color:#94a3b8;text-align:center">
-          ${a ? '<div class="section-label">Footer / التذييل</div>' : ''}
+          ${a ? '<div class="section-label">Footer / كلاسيكي (Classic)</div>' : ''}
           <div style="max-width:800px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px">
             <p ${a ? 'contenteditable="true" data-field="copyright"' : ''} style="font-size:.95rem;margin:0;color:#cbd5e1">
               ${copyright}
             </p>
-            <p ${a ? 'contenteditable="true" data-field="text"' : ''} style="font-size:.85rem;margin:0;color:#64748b">
-              ${text}
-            </p>
+            ${text ? `<p ${a ? 'contenteditable="true" data-field="text"' : ''} style="font-size:.85rem;margin:0;color:#64748b">${text}</p>` : ''}
           </div>
         </footer>`
       }
@@ -1842,38 +2530,8 @@ const T = {
     return `${injectedHead}
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
     <div class="public-page" style="--p-color:${t.color};--p-font:${t.font};font-family:${t.font},sans-serif">
-      <div class="public-nav"><span class="brand" style="color:${t.color}">${page.title}</span><span style="font-size:.75rem;color:var(--gray-400)">مطور بواسطة SiteFlow</span></div>
       <div class="public-content">${page.sections.map(s => this.renderSection(s, false, t)).join('')}</div>
       ${injectedBody}
-      
-      <!-- Floating AI Chatbot Widget for Visitors -->
-      <div id="sfAiChatWidget" style="position:fixed;bottom:24px;left:24px;z-index:9999;font-family:inherit" dir="rtl">
-        <button id="sfAiChatToggle" style="background:${t.color};color:#fff;border:none;border-radius:50px;padding:12px 20px;font-weight:700;box-shadow:0 8px 25px rgba(0,0,0,0.18);cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.9rem">
-          <span>🤖</span>
-          <span>مساعد ${page.title} الذكي</span>
-        </button>
-        <div id="sfAiChatBox" style="display:none;position:absolute;bottom:60px;left:0;width:340px;height:450px;background:#fff;border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,0.18);border:1px solid #e2e8f0;flex-direction:column;overflow:hidden">
-          <div style="background:${t.color};color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center">
-            <div style="display:flex;align-items:center;gap:8px">
-              <span style="font-size:1.2rem">🤖</span>
-              <div>
-                <div style="font-weight:700;font-size:.9rem">${page.title}</div>
-                <div style="font-size:.72rem;opacity:.9">مساعد ذكي مباشر للرد على الاستفسارات</div>
-              </div>
-            </div>
-            <button id="sfAiChatClose" style="background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer">✕</button>
-          </div>
-          <div id="sfAiChatMessages" style="flex:1;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;font-size:.85rem;background:#f8fafc">
-            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px 12px 12px 0;padding:10px 14px;max-width:85%;align-self:flex-start">
-              مرحباً بك في <strong>${page.title}</strong>! كيف يمكنني مساعدتك اليوم؟ يمكنك سؤالي عن الأسعار، الخدمات، أو كيفية التواصل. 😊
-            </div>
-          </div>
-          <div style="padding:10px 14px;border-top:1px solid #e2e8f0;display:flex;gap:8px;background:#fff">
-            <input type="text" id="sfAiChatInput" placeholder="اكتب سؤالك هنا..." style="flex:1;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:.85rem;outline:none">
-            <button id="sfAiChatSend" style="background:${t.color};color:#fff;border:none;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer">إرسال</button>
-          </div>
-        </div>
-      </div>
     </div>`
   },
 

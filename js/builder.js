@@ -65,6 +65,11 @@ const Builder = {
         <div class="section-item-info">
           <h4>${names[s.type] || s.type}</h4>
           <p>${descs[s.type] || 'قسم مخصص'}</p>
+          <div style="margin-top:5px">
+            <button class="sec-layout-pill" data-layout-idx="${i}" title="انقر لتغيير شكل وتصميم القسم" style="background:var(--primary-light, #eef2ff);color:var(--primary, #4f46e5);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:2px 8px;font-size:.72rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px">
+              🎨 ${this._getLayoutName(s.type, s.data?.layout)}
+            </button>
+          </div>
         </div>
         <div class="section-item-actions">
           <button class="move-up-btn" data-up="${i}" title="تحريك لأعلى" ${i === 0 ? 'disabled' : ''}>
@@ -83,6 +88,94 @@ const Builder = {
       </div>`).join('')
   },
 
+  _getLayoutsForType(type) {
+    const layoutMap = {
+      hero: [
+        { id: 'centered', name: 'متمركز كلاسيكي' },
+        { id: 'split', name: 'عمودين تفاعلي' },
+        { id: 'dark-luxury', name: 'ليلي فخم ومضيء' },
+        { id: 'minimal', name: 'هادئ وبسيط' }
+      ],
+      about: [
+        { id: 'classic', name: 'كلاسيكي' },
+        { id: 'split', name: 'قصتنا والرؤية' },
+        { id: 'cards', name: 'أعمدة وبطاقات تفاعلية' }
+      ],
+      services: [
+        { id: 'grid', name: 'شبكة بطاقات' },
+        { id: 'bento', name: 'بينتو جريد حديث' },
+        { id: 'list', name: 'قوائم أفقية' }
+      ],
+      features: [
+        { id: 'grid', name: 'شبكة بطاقات' },
+        { id: 'bento', name: 'بينتو جريد حديث' },
+        { id: 'list', name: 'قوائم أفقية' }
+      ],
+      menu: [
+        { id: 'list', name: 'قائمة طعام تفصيلية' },
+        { id: 'cards', name: 'بطاقات الأطباق المصورة' }
+      ],
+      testimonials: [
+        { id: 'grid', name: 'شبكة كلاسيكية' },
+        { id: 'stars', name: 'تقييمات خمس نجوم' },
+        { id: 'spotlight', name: 'رأي بارز ومميز' }
+      ],
+      pricing: [
+        { id: 'cards', name: 'باقات متساوية' },
+        { id: 'featured', name: 'تمييز الباقة الأكثر طلباً' }
+      ],
+      faq: [
+        { id: 'cards', name: 'بطاقات أسئلة' },
+        { id: 'accordion', name: 'أكورديون تفاعلي' },
+        { id: 'split', name: 'عمودين مع مساعدة فورية' }
+      ],
+      contact: [
+        { id: 'form', name: 'نموذج مباشر' },
+        { id: 'split', name: 'عمودين (بيانات ونموذج)' },
+        { id: 'direct', name: 'أزرار واتصال سريع' }
+      ],
+      cta: [
+        { id: 'solid', name: 'خلفية ملونة كاملة' },
+        { id: 'dark-glow', name: 'ليلي فخم ومضيء' },
+        { id: 'boxed', name: 'كارت عائم منفصل' }
+      ],
+      footer: [
+        { id: 'classic', name: 'كلاسيكي متمركز' },
+        { id: 'columns', name: 'أعمدة وروابط متعددة' },
+        { id: 'minimal', name: 'شريط سفلي بسيط' }
+      ]
+    }
+    return layoutMap[type] || [{ id: 'default', name: 'افتراضي' }]
+  },
+
+  _getLayoutName(type, currentId) {
+    const list = this._getLayoutsForType(type)
+    const match = list.find(l => l.id === currentId)
+    return match ? match.name : list[0].name
+  },
+
+  _cycleLayout(idx) {
+    const s = this.page.sections[idx]
+    if (!s) return
+    const layouts = this._getLayoutsForType(s.type)
+    if (layouts.length <= 1) {
+      Toast.show('هذا القسم متوفر بنمط موحد حالياً', 'info')
+      return
+    }
+    if (!s.data) s.data = {}
+    const curId = s.data.layout || layouts[0].id
+    let curIdx = layouts.findIndex(l => l.id === curId)
+    if (curIdx === -1) curIdx = 0
+    const nextIdx = (curIdx + 1) % layouts.length
+    const nextLayout = layouts[nextIdx]
+    this._pushUndo()
+    s.data.layout = nextLayout.id
+    this.editingIdx = idx
+    this._saveNow()
+    this._render()
+    Toast.show(`تم تبديل شكل وتصميم القسم إلى: "${nextLayout.name}" 🎨✨`, 'success')
+  },
+
   _renderCanvas() {
     const frame = document.getElementById('canvasFrame')
     if (!frame) return
@@ -90,6 +183,9 @@ const Builder = {
       const isActive = i === this.editingIdx
       const wrapper = `<div class="canvas-section-wrapper ${isActive ? 'editing' : ''}" data-cidx="${i}">
         <div class="sec-quick-bar">
+          <button class="sqb-btn sqb-layout" data-sqb="layout" data-idx="${i}" title="تغيير شكل ونمط القسم" style="font-size:.78rem;padding:4px 10px;font-weight:800;color:var(--primary,#4f46e5);background:#ffffff;border:1px solid #c7d2fe;border-radius:6px;margin-left:4px;display:flex;align-items:center;gap:4px">
+            🎨 الشكل: ${this._getLayoutName(s.type, s.data?.layout)}
+          </button>
           <button class="sqb-btn" data-sqb="up" data-idx="${i}" title="تحريك لأعلى" ${i === 0 ? 'disabled' : ''}>↑</button>
           <button class="sqb-btn" data-sqb="down" data-idx="${i}" title="تحريك لأسفل" ${i === this.page.sections.length - 1 ? 'disabled' : ''}>↓</button>
           <button class="sqb-btn" data-sqb="dup" data-idx="${i}" title="مضاعفة القسم">📋</button>
@@ -112,7 +208,8 @@ const Builder = {
         e.stopPropagation()
         const idx = parseInt(btn.dataset.idx)
         const act = btn.dataset.sqb
-        if (act === 'up') this._moveSection(idx, -1)
+        if (act === 'layout') this._cycleLayout(idx)
+        else if (act === 'up') this._moveSection(idx, -1)
         else if (act === 'down') this._moveSection(idx, 1)
         else if (act === 'dup') this._duplicateSection(idx)
         else if (act === 'del') this._deleteSection(idx)
@@ -324,8 +421,14 @@ const Builder = {
       const dup = e.target.closest('.dup-section')
       const upBtn = e.target.closest('.move-up-btn')
       const downBtn = e.target.closest('.move-down-btn')
+      const layoutBtn = e.target.closest('.sec-layout-pill')
       const item = e.target.closest('.section-item')
 
+      if (layoutBtn) {
+        const idx = parseInt(layoutBtn.dataset.layoutIdx)
+        this._cycleLayout(idx)
+        return
+      }
       if (del) {
         const idx = parseInt(del.dataset.del)
         if (this.page.sections.length <= 1) { Toast.show('Cannot delete the last section', 'error'); return }
