@@ -1,6 +1,9 @@
 -- ========================================================
 -- SiteFlow — Full Supabase PostgreSQL Schema & Migrations
--- Run this script in your Supabase SQL Editor (supabase.com/dashboard)
+-- Project: https://supabase.com/dashboard/project/zazmvhcdcuaetakoedgt
+-- Open SQL Editor directly at:
+-- https://supabase.com/dashboard/project/zazmvhcdcuaetakoedgt/sql/new
+-- Paste the code below and click "Run" (أو تشغيل)
 -- ========================================================
 
 -- 1. Enable UUID Extension (if not already enabled)

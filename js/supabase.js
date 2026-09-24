@@ -1,9 +1,9 @@
 /**
  * Site Flow — Supabase Client & Real PostgreSQL Integration
- * https://yrcdrdxdhcmeraqxcevo.supabase.co
+ * Project: https://zazmvhcdcuaetakoedgt.supabase.co
  */
-const SUPABASE_DEFAULT_URL = 'https://yrcdrdxdhcmeraqxcevo.supabase.co';
-const SUPABASE_DEFAULT_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyY2RyZHhkaGNtZXJhcXhjZXZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxODcyMzUsImV4cCI6MjA5ODc2MzIzNX0.SJEYXFdMvvGWJyH3hWvxQw2Kgk9XzzR8UJ4sweCyLn0';
+const SUPABASE_DEFAULT_URL = 'https://zazmvhcdcuaetakoedgt.supabase.co';
+const SUPABASE_DEFAULT_ANON_KEY = '';
 
 const SB = {
   client: null,
