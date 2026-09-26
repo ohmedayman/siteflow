@@ -1157,6 +1157,9 @@ img{max-width:100%;height:auto;display:block}
   gap: 12px;
   margin-bottom: 16px;
 }
+.sf-ai-copilot-card svg {
+  max-width: 100%;
+}
 .sf-ai-avatar {
   position: relative;
   width: 44px;
@@ -1169,6 +1172,12 @@ img{max-width:100%;height:auto;display:block}
   justify-content: center;
   flex-shrink: 0;
   box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+}
+.sf-ai-avatar svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
 }
 .sf-ai-status-dot {
   position: absolute;
@@ -1232,6 +1241,12 @@ img{max-width:100%;height:auto;display:block}
   transition: all .2s;
   flex-shrink: 0;
 }
+.sf-ai-voice-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
 .sf-ai-voice-btn:hover {
   background: #f1f5f9;
   color: #4f46e5;
@@ -1265,6 +1280,12 @@ img{max-width:100%;height:auto;display:block}
   transition: all .2s;
   flex-shrink: 0;
   white-space: nowrap;
+}
+.sf-ai-submit-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: block;
 }
 .sf-ai-submit-btn:hover {
   transform: translateY(-1px);

@@ -184,21 +184,21 @@ const Auth = {
       sites: 'مواقعي',
       templates: 'القوالب الجاهزة',
       plans: 'الباقات والترقية',
-      db: 'قاعدة البيانات',
+      settings: 'الإعدادات',
       newSite: 'موقع جديد',
       badge: 'لوحة التحكم'
     } : {
       sites: 'My Sites',
       templates: 'Templates',
       plans: 'Plans & Pricing',
-      db: 'Cloud DB',
+      settings: 'Settings',
       newSite: 'New Site',
       badge: 'Dashboard'
     }
     document.querySelectorAll('#navLinkDashboard span').forEach(el => el.textContent = appLabels.sites)
     document.querySelectorAll('#navLinkTemplates span').forEach(el => el.textContent = appLabels.templates)
     document.querySelectorAll('#navLinkPlans span').forEach(el => el.textContent = appLabels.plans)
-    document.querySelectorAll('#navLinkSettings span').forEach(el => el.textContent = appLabels.db)
+    document.querySelectorAll('#navLinkSettings span').forEach(el => el.textContent = appLabels.settings)
     document.querySelectorAll('.header-action-btn span').forEach(el => el.textContent = appLabels.newSite)
     document.querySelectorAll('.header-badge').forEach(el => el.textContent = appLabels.badge)
 
