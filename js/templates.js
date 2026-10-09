@@ -807,48 +807,53 @@ const T = {
 
   templatePicker() { return `
 <div class="modal-overlay open" id="templateModal">
-  <div class="modal" style="max-width:1000px;padding:32px;max-height:90vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h2 style="font-size:1.5rem;font-weight:800">Choose a Template</h2>
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('templateModal').classList.remove('open')" style="font-size:1.2rem">✕</button>
+  <div class="modal template-picker-modal" style="max-width:1180px;width:95%;padding:28px 32px;max-height:92vh;overflow-y:auto;border-radius:24px" dir="rtl">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;border-bottom:1px solid #f1f5f9;padding-bottom:16px">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,0.08);color:var(--primary);padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:800;margin-bottom:6px">
+          <span>✨ معرض قوالب 2026 المحدثة</span>
+        </div>
+        <h2 style="font-size:1.6rem;font-weight:900;color:var(--gray-900);margin:0">اختر قالباً لبدء موقعك الإلكتروني 🚀</h2>
+        <p style="color:var(--gray-500);margin:4px 0 0;font-size:0.88rem">اختر من بين تشكيلة القوالب الاحترافية المصممة بعناية مع صور حقيقية ونصوص جاهزة أو ابدأ بصفحة فارغة</p>
+      </div>
+      <button class="btn btn-ghost btn-sm modal-close-btn" onclick="document.getElementById('templateModal')?.closest('.modal-overlay')?.remove()" style="font-size:1.3rem;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f8fafc">✕</button>
     </div>
-    <p style="color:var(--gray-500);margin-bottom:20px">Start with a pre-built template or a blank canvas</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="templateFilters">
-      <button class="btn btn-sm filter-btn active" data-filter="all">All</button>
-      <button class="btn btn-sm filter-btn" data-filter="business">Business</button>
-      <button class="btn btn-sm filter-btn" data-filter="food">Food & Drink</button>
-      <button class="btn btn-sm filter-btn" data-filter="ar">عربي</button>
-      <button class="btn btn-sm filter-btn" data-filter="health">Health</button>
-      <button class="btn btn-sm filter-btn" data-filter="fitness">Fitness</button>
-      <button class="btn btn-sm filter-btn" data-filter="beauty">Beauty</button>
-      <button class="btn btn-sm filter-btn" data-filter="realestate">Real Estate</button>
-      <button class="btn btn-sm filter-btn" data-filter="tech">Technology</button>
-      <button class="btn btn-sm filter-btn" data-filter="education">Education</button>
-      <button class="btn btn-sm filter-btn" data-filter="travel">Travel</button>
-      <button class="btn btn-sm filter-btn" data-filter="creative">Creative</button>
-      <button class="btn btn-sm filter-btn" data-filter="legal">Legal & Finance</button>
-      <button class="btn btn-sm filter-btn" data-filter="automotive">Automotive</button>
-      <button class="btn btn-sm filter-btn" data-filter="home">Home</button>
-      <button class="btn btn-sm filter-btn" data-filter="events">Events</button>
-      <button class="btn btn-sm filter-btn" data-filter="retail">Retail</button>
-      <button class="btn btn-sm filter-btn" data-filter="media">Media</button>
-      <button class="btn btn-sm filter-btn" data-filter="nonprofit">Nonprofit</button>
-      <button class="btn btn-sm filter-btn" data-filter="luxury">Luxury</button>
-      <button class="btn btn-sm filter-btn" data-filter="kids">Kids</button>
-      <button class="btn btn-sm filter-btn" data-filter="pet">Pet</button>
-      <button class="btn btn-sm filter-btn" data-filter="music">Music</button>
-      <button class="btn btn-sm filter-btn" data-filter="photography">Photo</button>
-      <button class="btn btn-sm filter-btn" data-filter="agriculture">Agriculture</button>
+
+    <!-- Search and Fast Filter Row -->
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+      <div style="position:relative;flex:1;min-width:260px">
+        <input type="text" id="tplSearchInput" placeholder="ابحث بالاسم أو المجال (مثال: متجر، مطعم، عيادة، محاماة، عقارات، جيم...)" style="width:100%;padding:11px 42px 11px 16px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:.88rem;font-family:inherit;background:#f8fafc;transition:all .2s ease">
+        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#94a3b8;display:flex;align-items:center">
+          ${ICONS.wrap(ICONS.search, 18)}
+        </span>
+      </div>
+      <span id="tplCount" style="font-size:.85rem;font-weight:700;color:var(--gray-600);background:#f1f5f9;padding:8px 16px;border-radius:10px;white-space:nowrap"></span>
     </div>
-    <div style="position:relative;margin-bottom:16px">
-      <input type="text" id="tplSearchInput" placeholder="Search templates..." style="width:100%;padding:10px 14px 10px 36px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:.85rem;font-family:inherit;transition:var(--transition)">
-      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400)">${ICONS.wrap(ICONS.search,16)}</span>
+
+    <!-- Arabic Category Filter Pills -->
+    <div class="template-filter-pills" id="templateFilters">
+      <button class="filter-pill-btn active" data-filter="all">🌟 الكل</button>
+      <button class="filter-pill-btn" data-filter="retail">🛍️ متاجر وتجارة</button>
+      <button class="filter-pill-btn" data-filter="business">🏢 شركات ومؤسسات</button>
+      <button class="filter-pill-btn" data-filter="food">🍽️ مطاعم وكافيهات</button>
+      <button class="filter-pill-btn" data-filter="tech">⚡ برمجيات وSaaS</button>
+      <button class="filter-pill-btn" data-filter="health">🩺 طب وتجميل</button>
+      <button class="filter-pill-btn" data-filter="realestate">🏠 عقارات وتطوير</button>
+      <button class="filter-pill-btn" data-filter="creative">🎨 تصميم وإبداع</button>
+      <button class="filter-pill-btn" data-filter="fitness">🏋️ لياقة وجيم</button>
+      <button class="filter-pill-btn" data-filter="education">🎓 تعليم ودورات</button>
+      <button class="filter-pill-btn" data-filter="legal">⚖️ محاماة واستشارات</button>
+      <button class="filter-pill-btn" data-filter="travel">✈️ سياحة وفنادق</button>
+      <button class="filter-pill-btn" data-filter="events">🎉 مناسبات واحتفالات</button>
+      <button class="filter-pill-btn" data-filter="automotive">🚗 سيارات وصيانة</button>
+      <button class="filter-pill-btn" data-filter="home">🛋️ ديكور ومفروشات</button>
+      <button class="filter-pill-btn" data-filter="luxury">👑 فاخر وVIP</button>
+      <button class="filter-pill-btn" data-filter="photography">📷 تصوير واستوديو</button>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <span id="tplCount" style="font-size:.82rem;color:var(--gray-500)"></span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px" id="templateGrid"></div>
-    <div style="display:flex;justify-content:center;gap:8px;margin-top:20px" id="tplPagination"></div>
+
+    <!-- Templates Responsive Grid -->
+    <div class="templates-preview-grid" id="templateGrid"></div>
+    <div class="templates-pagination-row" id="tplPagination"></div>
   </div>
 </div>` },
 
@@ -1022,44 +1027,44 @@ const T = {
         <div class="sidebar-tabs">
           <button class="sidebar-tab active" data-stab="sections">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            Sections
+            <span>الأقسام 📑</span>
           </button>
           <button class="sidebar-tab" data-stab="theme">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            Theme
+            <span>المظهر 🎨</span>
           </button>
           <button class="sidebar-tab" data-stab="seo">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            SEO
+            <span>السيو 🔍</span>
           </button>
-          <button class="sidebar-tab" data-stab="apps" style="color:#0284c7;font-weight:700">
+          <button class="sidebar-tab" data-stab="apps">
             <span style="font-size:1.05rem;margin-left:2px">🧩</span>
-            التطبيقات
+            <span>التطبيقات</span>
           </button>
           <button class="sidebar-tab" data-stab="settings">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-            Settings
+            <span>الإعدادات ⚙️</span>
           </button>
-          <button class="sidebar-tab" data-stab="ai" style="color:var(--primary);font-weight:700">
+          <button class="sidebar-tab" data-stab="ai">
             <span style="font-size:1rem;margin-left:2px">🤖</span>
-            SiteFlow AI
+            <span>SiteFlow AI ⚡</span>
           </button>
         </div>
         <div class="sidebar-content" id="sidebarSections">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span style="font-size:.78rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em">Sections</span>
-            <span style="font-size:.72rem;color:var(--gray-400)">${page.sections.length} items</span>
+            <span style="font-size:.78rem;font-weight:700;color:var(--gray-600)">أقسام الصفحة الحالية</span>
+            <span style="font-size:.72rem;color:var(--gray-400);background:#f1f5f9;padding:2px 8px;border-radius:10px">${page.sections.length} قسم</span>
           </div>
           <div class="section-list" id="sectionList"></div>
           <button class="btn btn-primary btn-sm w-full" id="addSectionBtn" style="margin-top:14px;padding:10px;border-radius:10px;font-weight:700">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Section
+            إضافة قسم جديد للموقع
           </button>
-          <div class="sidebar-hint">Click a section to edit • Drag to reorder</div>
+          <div class="sidebar-hint">انقر على أي قسم لتعديله • اسحب لإعادة الترتيب</div>
         </div>
         <div class="sidebar-content hidden" id="sidebarTheme">
           <div class="theme-option">
-            <label>Primary Color</label>
+            <label>اللون الأساسي (Primary Color)</label>
             <div class="color-picker" id="colorPresets">
               ${['#6366f1','#3b82f6','#06b6d4','#059669','#d97706','#dc2626','#8b5cf6','#ec4899','#f97316','#14b8a6'].map(c=>`<div class="color-swatch ${t.color===c?'active':''}" style="background:${c}" data-color="${c}"></div>`).join('')}
             </div>
@@ -1069,13 +1074,13 @@ const T = {
             </div>
           </div>
           <div class="theme-option">
-            <label>Font</label>
+            <label>نوع الخط العام (Font Family)</label>
             <select class="font-select" id="fontSelect">
               ${['Inter','Arial','Georgia','Helvetica','Merriweather','Verdana','Roboto','Open Sans','Cairo','Tajawal'].map(f=>`<option value="${f}" ${t.font===f?'selected':''}>${f}</option>`).join('')}
             </select>
           </div>
           <div class="theme-option">
-            <label>Background Color</label>
+            <label>لون خلفية الصفحة (Background Color)</label>
             <div class="color-input-wrap">
               <input type="color" id="bgColorInput" value="${t.bgColor||'#ffffff'}">
             </div>
@@ -1274,7 +1279,7 @@ const T = {
 
         <div class="sidebar-content hidden" id="sidebarSettings">
           <div class="settings-group">
-            <label>اسم الموقع (Site Title)</label>
+            <label>اسم الموقع وعلامتك التجارية</label>
             <input class="input" id="pageTitleInput" value="${page.title}">
           </div>
 

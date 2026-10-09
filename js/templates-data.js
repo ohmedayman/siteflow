@@ -59,10 +59,44 @@ const TEMPLATE_DATA = (() => {
 
   function S(sections) { return sections.flat(); }
 
+  const CAT_META = {
+    business: { name_ar: 'شركات ومؤسسات', badge: 'شركات ومؤسسات 🏢', thumbnail: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80' },
+    food: { name_ar: 'مطاعم وكافيهات', badge: 'طعام ومشروبات 🍽️', thumbnail: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80' },
+    health: { name_ar: 'طب ورعاية صحية', badge: 'طبي ورعاية 🩺', thumbnail: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80' },
+    fitness: { name_ar: 'لياقة وجيم', badge: 'رياضة ولياقة 🏋️', thumbnail: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80' },
+    beauty: { name_ar: 'صالونات وتجميل', badge: 'تجميل وعناية ✨', thumbnail: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80' },
+    realestate: { name_ar: 'عقارات وتطوير', badge: 'عقارات فاخرة 🏠', thumbnail: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80' },
+    tech: { name_ar: 'تقنية وسحابية SaaS', badge: 'تقنية حديثة ⚡', thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80' },
+    education: { name_ar: 'تعليم وأكاديميات', badge: 'تعليم وتدريب 🎓', thumbnail: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80' },
+    travel: { name_ar: 'سياحة وفنادق', badge: 'سياحة وسفر ✈️', thumbnail: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80' },
+    creative: { name_ar: 'تصميم وإبداع', badge: 'شخصي وإبداعي 🎨', thumbnail: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80' },
+    legal: { name_ar: 'محاماة واستشارات', badge: 'استشارات وقانون ⚖️', thumbnail: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80' },
+    automotive: { name_ar: 'سيارات وصيانة', badge: 'سيارات ومركبات 🚗', thumbnail: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80' },
+    home: { name_ar: 'ديكور ومفروشات', badge: 'أثاث وديكور 🛋️', thumbnail: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80' },
+    events: { name_ar: 'مناسبات واحتفالات', badge: 'تنظيم مناسبات 🎉', thumbnail: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80' },
+    agriculture: { name_ar: 'زراعة ومنتجات', badge: 'منتجات طبيعية 🌿', thumbnail: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80' },
+    retail: { name_ar: 'متاجر وتجارة إلكترونية', badge: 'الأكثر طلباً 🔥', thumbnail: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80' },
+    media: { name_ar: 'إعلام وإنتاج فني', badge: 'إعلام وميديا 🎙️', thumbnail: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80' },
+    nonprofit: { name_ar: 'جمعيات ومؤسسات خيرية', badge: 'مبادرات وعطاء 💚', thumbnail: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80' },
+    science: { name_ar: 'علوم ومختبرات', badge: 'أبحاث وعلوم 🔬', thumbnail: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80' },
+    manufacturing: { name_ar: 'مصانع وصناعة', badge: 'صناعة وإنتاج 🏭', thumbnail: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80' },
+    logistics: { name_ar: 'شحن ونقل ولوجستيات', badge: 'شحن وتوصيل 🚚', thumbnail: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80' },
+    sports: { name_ar: 'رياضة وتدريب', badge: 'بطولات ورياضة 🏆', thumbnail: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80' },
+    arts: { name_ar: 'فنون ومعارض', badge: 'فنون بصرية 🎨', thumbnail: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80' },
+    coaching: { name_ar: 'استشارات وتطوير ذات', badge: 'تطوير وتدريب 🎯', thumbnail: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80' },
+    luxury: { name_ar: 'خدمات ومنتجات فاخرة', badge: 'فخامة وتميز 👑', thumbnail: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80' },
+    eco: { name_ar: 'بيئة وطاقة نظيفة', badge: 'طاقة خضراء 🍃', thumbnail: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80' },
+    kids: { name_ar: 'أطفال وتربية', badge: 'أنشطة وتربية 🧸', thumbnail: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=800&q=80' },
+    pet: { name_ar: 'بيطرة ورعاية حيوانات', badge: 'رعاية بيطرية 🐾', thumbnail: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80' },
+    music: { name_ar: 'موسيقى وإنتاج صوتي', badge: 'استوديو وصوتيات 🎵', thumbnail: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80' },
+    photography: { name_ar: 'تصوير فوتوغرافي', badge: 'استوديو تصوير 📷', thumbnail: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=800&q=80' }
+  };
+
   const templates = [];
 
   function add(cat, sub, name, desc, sections) {
     const c = C[cat] || C.business;
+    const meta = CAT_META[cat] || CAT_META.business;
     const iconSvg = ICONS[c.icon] || ICONS.globe;
     templates.push({
       id: cat + '-' + sub,
@@ -70,6 +104,9 @@ const TEMPLATE_DATA = (() => {
       desc: desc,
       icon: iconSvg,
       category: cat,
+      category_ar: meta.name_ar,
+      badge: meta.badge,
+      thumbnail: meta.thumbnail,
       theme: { color: c.color, font: c.font, icon: c.icon },
       sections: sections
     });
@@ -1313,5 +1350,8 @@ const TEMPLATE_DATA = (() => {
 /* Merge with original presets */
 const ALL_PRESETS = [...PRESETS, ...TEMPLATE_DATA.map(t => ({
   ...t,
+  badge: t.badge || 'تصميم مميز ✨',
+  category_ar: t.category_ar || 'عام',
+  thumbnail: t.thumbnail || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
   icon: t.icon
 }))];

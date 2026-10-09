@@ -1,13 +1,35 @@
 /** Site Flow — Main Application */
 
 const Toast = {
+  _recentMsgs: new Map(),
+
   show(msg, type='info', title='') {
+    if (!msg) return
+    const now = Date.now()
+    const cleanMsg = String(msg).trim()
+
+    // Deduplicate identical messages in last 2.5s
+    const lastTime = this._recentMsgs.get(cleanMsg) || 0
+    if (now - lastTime < 2500) {
+      return
+    }
+    this._recentMsgs.set(cleanMsg, now)
+
     let c = document.querySelector('.toast-container')
     if (!c) {
       c = document.createElement('div')
       c.className = 'toast-container'
       document.body.appendChild(c)
     }
+
+    // Limit active toasts to max 3 (remove oldest)
+    const existing = c.querySelectorAll('.toast')
+    if (existing.length >= 3) {
+      for (let i = 0; i <= existing.length - 3; i++) {
+        existing[i].remove()
+      }
+    }
+
     const t = document.createElement('div')
     t.className = 'toast ' + type
 
@@ -22,16 +44,17 @@ const Toast = {
       <div class="toast-icon">${iconSvg}</div>
       <div class="toast-content">
         ${title ? `<strong class="toast-title">${title}</strong>` : ''}
-        <div class="toast-text">${msg}</div>
+        <div class="toast-text">${cleanMsg}</div>
       </div>
       <button class="toast-close" onclick="this.parentElement.remove()" title="إغلاق">✕</button>
     `
     c.appendChild(t)
+
     setTimeout(() => {
       t.style.opacity = '0'
       t.style.transform = 'translateY(16px) scale(0.96)'
       setTimeout(() => t.remove(), 300)
-    }, 4200)
+    }, 4000)
   }
 }
 

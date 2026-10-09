@@ -379,8 +379,12 @@ const Builder = {
   },
 
   _bindToolbar() {
-    document.getElementById('undoBtn')?.addEventListener('click', () => this._undo())
-    document.getElementById('redoBtn')?.addEventListener('click', () => this._redo())
+    const undoBtn = document.getElementById('undoBtn')
+    if (undoBtn) undoBtn.onclick = () => this._undo()
+
+    const redoBtn = document.getElementById('redoBtn')
+    if (redoBtn) redoBtn.onclick = () => this._redo()
+
     if (this.toolbarKeyHandler) document.removeEventListener('keydown', this.toolbarKeyHandler)
     this.toolbarKeyHandler = async e => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) this._redo(); else this._undo() }
@@ -392,43 +396,60 @@ const Builder = {
       }
     }
     document.addEventListener('keydown', this.toolbarKeyHandler)
-    document.getElementById('previewBtn')?.addEventListener('click', async () => {
-      const previewUrl = new URL(window.location.href)
-      previewUrl.hash = '#/preview/' + this.page.id
-      const previewWindow = window.open('about:blank', '_blank')
-      if (!previewWindow) {
-        Toast.show('يرجى السماح بفتح النوافذ المنبثقة لمعاينة موقعك.', 'warning')
-        return
+
+    const previewBtn = document.getElementById('previewBtn')
+    if (previewBtn) {
+      previewBtn.onclick = async () => {
+        const previewUrl = new URL(window.location.href)
+        previewUrl.hash = '#/preview/' + this.page.id
+        const previewWindow = window.open('about:blank', '_blank')
+        if (!previewWindow) {
+          Toast.show('يرجى السماح بفتح النوافذ المنبثقة لمعاينة موقعك.', 'warning')
+          return
+        }
+        const saved = await this._saveNow()
+        if (saved) previewWindow.location.href = previewUrl.href
+        else {
+          previewWindow.close()
+          Toast.show('تعذر حفظ التغييرات قبل المعاينة. حاول مرة أخرى.', 'error')
+        }
       }
-      const saved = await this._saveNow()
-      if (saved) previewWindow.location.href = previewUrl.href
-      else {
-        previewWindow.close()
-        Toast.show('تعذر حفظ التغييرات قبل المعاينة. حاول مرة أخرى.', 'error')
+    }
+
+    const exportBtn = document.getElementById('exportBtn')
+    if (exportBtn) exportBtn.onclick = () => this._exportHtml()
+
+    const publishBtn = document.getElementById('publishBtn')
+    if (publishBtn) publishBtn.onclick = () => this._publish()
+
+    const saveBtn = document.getElementById('saveBtn')
+    if (saveBtn) {
+      saveBtn.onclick = async () => {
+        const saved = await this._saveNow()
+        Toast.show(saved ? 'تم حفظ التغييرات بنجاح.' : 'تعذر حفظ التغييرات. حاول مرة أخرى.', saved ? 'success' : 'error')
       }
-    })
-    document.getElementById('exportBtn')?.addEventListener('click', () => this._exportHtml())
-    document.getElementById('publishBtn')?.addEventListener('click', () => this._publish())
-    document.getElementById('saveBtn')?.addEventListener('click', async () => {
-      const saved = await this._saveNow()
-      Toast.show(saved ? 'تم حفظ التغييرات بنجاح.' : 'تعذر حفظ التغييرات. حاول مرة أخرى.', saved ? 'success' : 'error')
-    })
-    document.getElementById('deviceToggle')?.addEventListener('click', e => {
-      const btn = e.target.closest('.device-btn'); if (!btn || !e.currentTarget.contains(btn)) return
-      document.querySelectorAll('.device-btn').forEach(b => {
-        b.classList.remove('active')
-        b.setAttribute('aria-pressed', 'false')
-      })
-      btn.classList.add('active')
-      btn.setAttribute('aria-pressed', 'true')
-      const dev = btn.dataset.device
-      const frame = document.getElementById('canvasFrame')
-      if (frame) {
-        frame.classList.remove('tablet', 'mobile')
-        if (dev === 'tablet') frame.classList.add('tablet')
-        else if (dev === 'mobile') frame.classList.add('mobile')
+    }
+
+    const devToggle = document.getElementById('deviceToggle')
+    if (devToggle) {
+      devToggle.onclick = e => {
+        const btn = e.target.closest('.device-btn')
+        if (!btn || !devToggle.contains(btn)) return
+        document.querySelectorAll('.device-btn').forEach(b => {
+          b.classList.remove('active')
+          b.setAttribute('aria-pressed', 'false')
+        })
+        btn.classList.add('active')
+        btn.setAttribute('aria-pressed', 'true')
+        const dev = btn.dataset.device
+        const frame = document.getElementById('canvasFrame')
+        if (frame) {
+          frame.classList.remove('tablet', 'mobile')
+          if (dev === 'tablet') frame.classList.add('tablet')
+          else if (dev === 'mobile') frame.classList.add('mobile')
+        }
       }
-    })
+    }
   },
 
   _bindTabs() {
@@ -1061,15 +1082,37 @@ const Builder = {
     document.body.appendChild(div)
 
     const allTemplates = typeof ALL_PRESETS !== 'undefined' ? ALL_PRESETS : PRESETS
-    const ITEMS_PER_PAGE = 24
+    const ITEMS_PER_PAGE = 12
     let currentPage = 1
     let currentFilter = 'all'
     let searchQuery = ''
 
     function getFiltered() {
       return allTemplates.filter(t => {
-        const matchFilter = currentFilter === 'all' || t.category === currentFilter || (currentFilter === 'ar' && t.arabic)
-        const matchSearch = !searchQuery || t.name.toLowerCase().includes(searchQuery) || t.desc.toLowerCase().includes(searchQuery)
+        let matchFilter = false
+        if (currentFilter === 'all') {
+          matchFilter = true
+        } else if (currentFilter === 'health') {
+          matchFilter = t.category === 'health' || t.category === 'beauty' || t.category === 'pet'
+        } else if (currentFilter === 'creative') {
+          matchFilter = t.category === 'creative' || t.category === 'arts' || t.category === 'photography' || t.category === 'media'
+        } else if (currentFilter === 'realestate') {
+          matchFilter = t.category === 'realestate' || t.category === 'home' || t.category === 'manufacturing' || t.category === 'logistics'
+        } else if (currentFilter === 'fitness') {
+          matchFilter = t.category === 'fitness' || t.category === 'sports'
+        } else if (currentFilter === 'education') {
+          matchFilter = t.category === 'education' || t.category === 'coaching'
+        } else {
+          matchFilter = t.category === currentFilter
+        }
+
+        const q = searchQuery.toLowerCase().trim()
+        const matchSearch = !q ||
+          (t.name && t.name.toLowerCase().includes(q)) ||
+          (t.desc && t.desc.toLowerCase().includes(q)) ||
+          (t.category_ar && t.category_ar.toLowerCase().includes(q)) ||
+          (t.category && t.category.toLowerCase().includes(q))
+
         return matchFilter && matchSearch
       })
     }
@@ -1085,50 +1128,94 @@ const Builder = {
       const gridEl = document.getElementById('templateGrid')
       const pagEl = document.getElementById('tplPagination')
 
-      countEl.textContent = `تم العثور على ${filtered.length} قالب جاهز`
+      if (countEl) countEl.textContent = `تم العثور على ${filtered.length} قالب جاهز`
 
-      gridEl.innerHTML = items.map(t => {
-        const iconSvg = t.icon && t.icon.includes('<svg') ? t.icon : (ICONS[t.theme?.icon] || ICONS.globe)
-        const color = t.theme?.color || 'var(--primary)'
-        return `
-        <div class="card card-hover template-card" data-template="${t.id}" data-category="${t.category || 'other'}" style="padding:20px;cursor:pointer;text-align:center;transition:all .2s">
-          <div style="font-size:2rem;margin-bottom:10px;color:${color}">${ICONS.wrap(iconSvg, 32)}</div>
-          <h4 style="font-size:.88rem;margin-bottom:4px;font-weight:700">${t.name}</h4>
-          <p style="font-size:.75rem;color:var(--gray-500);line-height:1.4">${t.desc}</p>
-        </div>`
-      }).join('')
-
-      if (totalPages > 1) {
-        let pag = ''
-        if (currentPage > 1) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage - 1}">السابق</button>`
-        for (let i = 1; i <= totalPages; i++) {
-          if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
-            pag += `<button class="btn btn-sm tpl-page ${i === currentPage ? 'btn-primary' : 'btn-ghost'}" data-page="${i}">${i}</button>`
-          } else if (Math.abs(i - currentPage) === 3) {
-            pag += `<span style="color:var(--gray-400)">...</span>`
-          }
+      if (gridEl) {
+        if (items.length === 0) {
+          gridEl.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;background:#f8fafc;border-radius:16px;border:1px dashed #cbd5e1">
+              <span style="font-size:2.5rem;display:block;margin-bottom:10px">🔍</span>
+              <h3 style="font-size:1.1rem;font-weight:800;color:var(--gray-800);margin-bottom:6px">لم نجد قوالب مطابقة لبحثك</h3>
+              <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:16px">جرب البحث بكلمة أخرى أو تصفح كل القوالب</p>
+              <button class="btn btn-outline btn-sm" id="resetTplSearchBtn" style="font-weight:700">عرض كافة القوالب</button>
+            </div>`
+          document.getElementById('resetTplSearchBtn')?.addEventListener('click', () => {
+            currentFilter = 'all'
+            searchQuery = ''
+            const sInp = document.getElementById('tplSearchInput')
+            if (sInp) sInp.value = ''
+            document.querySelectorAll('#templateFilters .filter-pill-btn, #templateFilters .filter-btn').forEach(b => {
+              b.classList.toggle('active', b.dataset.filter === 'all')
+            })
+            currentPage = 1
+            renderTemplates()
+          })
+        } else {
+          gridEl.innerHTML = items.map(t => {
+            const thumbImg = t.thumbnail || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'
+            const badgeText = t.badge || 'جاهز للاستخدام ⚡'
+            const catName = t.category_ar || 'عام'
+            const secCount = (t.sections && t.sections.length) ? t.sections.length : 5
+            return `
+            <div class="template-card-preview" data-template="${t.id}" data-category="${t.category || 'other'}">
+              <div class="tpl-thumb-container">
+                <img class="tpl-thumb-img" src="${thumbImg}" alt="${t.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'" />
+                <div class="tpl-badge">${badgeText}</div>
+                <div class="tpl-overlay">
+                  <button class="tpl-use-btn" type="button">
+                    <span>استخدام هذا القالب</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="tpl-info-wrap">
+                <div class="tpl-meta-row">
+                  <span class="tpl-cat-tag">${catName}</span>
+                  <span class="tpl-sections-count">${secCount} أقسام</span>
+                </div>
+                <h4 class="tpl-title">${t.name}</h4>
+                <p class="tpl-desc">${t.desc}</p>
+              </div>
+            </div>`
+          }).join('')
         }
-        if (currentPage < totalPages) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage + 1}">التالي</button>`
-        pagEl.innerHTML = pag
-        pagEl.querySelectorAll('.tpl-page').forEach(b => b.addEventListener('click', () => { currentPage = parseInt(b.dataset.page); renderTemplates() }))
-      } else {
-        pagEl.innerHTML = ''
       }
 
-      gridEl.querySelectorAll('.template-card').forEach(card => {
+      if (pagEl) {
+        if (totalPages > 1) {
+          let pag = ''
+          if (currentPage > 1) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage - 1}">السابق</button>`
+          for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+              pag += `<button class="btn btn-sm tpl-page ${i === currentPage ? 'btn-primary' : 'btn-ghost'}" data-page="${i}">${i}</button>`
+            } else if (Math.abs(i - currentPage) === 3) {
+              pag += `<span style="color:var(--gray-400)">...</span>`
+            }
+          }
+          if (currentPage < totalPages) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage + 1}">التالي</button>`
+          pagEl.innerHTML = pag
+          pagEl.querySelectorAll('.tpl-page').forEach(b => b.addEventListener('click', () => { currentPage = parseInt(b.dataset.page); renderTemplates() }))
+        } else {
+          pagEl.innerHTML = ''
+        }
+      }
+
+      gridEl?.querySelectorAll('.template-card-preview').forEach(card => {
         card.addEventListener('click', async () => {
           try {
             div.remove()
-            const site = await API.createSite({ title: card.querySelector('h4')?.textContent || 'موقعي الجديد', template_type: card.dataset.template })
-            Toast.show('تم إنشاء الموقع بنجاح!', 'success'); Router.navigate('builder/' + site.id)
+            const siteTitle = card.querySelector('.tpl-title')?.textContent || 'موقعي الجديد'
+            const site = await API.createSite({ title: siteTitle, template_type: card.dataset.template })
+            Toast.show('تم إنشاء الموقع بنجاح! جاري فتح المحرر...', 'success')
+            Router.navigate('builder/' + site.id)
           } catch (e) { Toast.show(e.message, 'error') }
         })
       })
     }
 
-    document.querySelectorAll('#templateFilters .filter-btn').forEach(btn => {
+    document.querySelectorAll('#templateFilters .filter-pill-btn, #templateFilters .filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('#templateFilters .filter-btn').forEach(b => b.classList.remove('active'))
+        document.querySelectorAll('#templateFilters .filter-pill-btn, #templateFilters .filter-btn').forEach(b => b.classList.remove('active'))
         btn.classList.add('active')
         currentFilter = btn.dataset.filter
         currentPage = 1
@@ -1148,7 +1235,7 @@ const Builder = {
     renderTemplates()
     div.querySelector('.modal-overlay')?.addEventListener('click', e => { if (e.target.classList.contains('modal-overlay')) div.remove() })
   },
-
+  
   async _deleteSite() {
     Toast.show('حذف المواقع غير متاح للحفاظ على استقرار الروابط ونتائج البحث.', 'warning')
   }
