@@ -13,23 +13,31 @@ const T = {
   landing() {
     return `
 <div class="lp-clean" dir="rtl">
-  <!-- 1. Hero Section -->
+  <!-- 1. Vibrant Mesh Hero Section -->
   <section class="lp-hero-clean">
+    <div class="lp-hero-glow-1"></div>
+    <div class="lp-hero-glow-2"></div>
+    <div class="lp-hero-glow-3"></div>
+
     <div class="lp-hero-container">
+      <!-- Animated Floating Pill -->
       <div class="lp-pill-badge">
         <span class="lp-pill-dot"></span>
-        <span>الجيل الجديد لصناع المواقع والمتاجر الذكية 2.0 ⚡</span>
+        <span>الجيل القادم لصناع المواقع والمتاجر الذكية 2.0 • مدعوم بالذكاء الاصطناعي ⚡</span>
       </div>
 
+      <!-- High-Impact Gradient Headline -->
       <h1 class="lp-hero-title">
-        ابنِ موقعك الإلكتروني باحترافية<br><span class="lp-title-highlight">بالذكاء الاصطناعي وبدون كتابة كود</span>
+        ابنِ، أطلق، واستقبل أرباحك في دقائق<br>
+        <span class="lp-title-highlight">بالذكاء الاصطناعي وبدون كتابة كود</span>
       </h1>
 
+      <!-- Engaging Subtitle -->
       <p class="lp-hero-subtitle">
-        تحدث بصوتك أو اكتب فكرتك، وسيقوم المساعد الذكي ببناء وتنسيق موقعك فوراً. محرر مرئي متكامل، قوالب عصرية، استضافة فائقة السرعة، ودعم الدفع المحلي.
+        حوّل فكرتك إلى موقع أو متجر إلكتروني متكامل فائق السرعة في 30 ثانية. تحدث بصوتك أو اكتب فكرتك وسيقوم المساعد الذكي ببناء الهيكل، صياغة النصوص التسويقية، وربط بوابات الدفع (إنستاباي وفودافون كاش) فوراً.
       </p>
 
-      <!-- 🌟 SiteFlow AI Copilot Search & Voice Bar -->
+      <!-- 🌟 SiteFlow AI Copilot Search & Voice Bar Studio -->
       <div class="sf-ai-copilot-card">
         <div class="sf-ai-copilot-header">
           <div class="sf-ai-avatar">
@@ -39,6 +47,9 @@ const T = {
           <div class="sf-ai-header-text">
             <strong>مساعد SiteFlow الذكي 2.0 (AI Copilot)</strong>
             <span id="sfAiVoiceStatusText">تحدث بالمايك أو اكتب ما تريده وسيقوم الذكاء الاصطناعي ببناء موقعك فوراً</span>
+          </div>
+          <div class="sf-ai-header-badge">
+            <span>✨ توليد فوري 30s</span>
           </div>
         </div>
 
@@ -53,89 +64,129 @@ const T = {
         </div>
 
         <div class="sf-ai-chips">
-          <span class="sf-ai-chips-lbl">💡 أفكار سريعة:</span>
-          <button class="sf-ai-chip" type="button" data-prompt="موقع لمطعم برجر عصري مع منيو كامل وزر طلب واتساب">🍔 مطعم وبرجر</button>
+          <span class="sf-ai-chips-lbl">💡 أفكار جاهزة للتجربة:</span>
+          <button class="sf-ai-chip" type="button" data-prompt="موقع لمطعم برجر عصري مع منيو كامل وزر طلب واتساب">🍔 مطعم وبرجر وواتساب</button>
           <button class="sf-ai-chip" type="button" data-prompt="متجر إلكتروني لبيع العطور ومستحضرات التجميل مع دفع فوري">🛍️ متجر عطور وتجميل</button>
-          <button class="sf-ai-chip" type="button" data-prompt="عيادة طبية متخصصة في طب الأسنان مع حجز مواعيد أونلاين">🏥 عيادة أسنان</button>
-          <button class="sf-ai-chip" type="button" data-prompt="شركة خدمات برمجية واستشارات تقنية مع باقات أسعار">🏢 شركة تقنية</button>
-          <button class="sf-ai-chip" type="button" data-prompt="معرض أعمال شخصي لمصمم ومطور مواقع مستقل">🎨 بورتفوليو مستقل</button>
+          <button class="sf-ai-chip" type="button" data-prompt="عيادة طبية متخصصة في طب الأسنان مع حجز مواعيد أونلاين">🏥 عيادة أسنان وحجز</button>
+          <button class="sf-ai-chip" type="button" data-prompt="شركة خدمات برمجية واستشارات تقنية مع باقات أسعار">🏢 شركة برمجيات وتقنية</button>
+          <button class="sf-ai-chip" type="button" data-prompt="معرض أعمال شخصي لمصمم ومطور مواقع مستقل">🎨 بورتفوليو مستقل إبداعي</button>
         </div>
 
         <!-- Dynamic AI Interactive Result Box -->
         <div id="landingAiResult" class="sf-ai-result-box" style="display:none"></div>
       </div>
 
+      <!-- Action Buttons -->
       <div class="lp-hero-actions">
         <a href="#/login" class="btn btn-primary btn-lg js-auth-guest lp-btn-hero">
-          ابدأ مجاناً الآن — بدون بطاقة بنكية 🚀
+          <span>ابدأ مجاناً الآن — بدون بطاقة بنكية 🚀</span>
         </a>
         <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden lp-btn-hero">
-          الانتقال إلى لوحة التحكم
+          <span>الانتقال إلى لوحة التحكم ↗</span>
         </a>
         <a href="#/showcase" class="btn btn-outline btn-lg lp-btn-secondary">
-          استعرض معرض المواقع والقوالب
+          <span>استعرض معرض المواقع والقوالب (40+ قالب) ✨</span>
         </a>
       </div>
 
+      <!-- Social Proof Rating -->
       <div class="lp-hero-social">
         <div class="lp-stars-line">★★★★★</div>
-        <span>تقييم <strong>4.9/5</strong> من أكثر من <strong>12,000 مبدع ومتجر</strong> في الشرق الأوسط</span>
+        <span>تقييم <strong>4.9/5</strong> من أكثر من <strong>15,000 رائد أعمال ومتجر</strong> في مصر والشرق الأوسط</span>
       </div>
 
-      <!-- Minimalist Product Mockup Window -->
-      <div class="lp-mockup-frame">
-        <div class="lp-mockup-topbar">
-          <div class="lp-mockup-dots">
-            <span class="lp-dot-red"></span>
-            <span class="lp-dot-yellow"></span>
-            <span class="lp-dot-green"></span>
-          </div>
-          <div class="lp-mockup-address">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>mysite.siteflow.vexonet.online</span>
-          </div>
-          <div class="lp-mockup-tag">
-            <span>⚡ محرر حي ومباشر</span>
+      <!-- 🌟 Ultra-Modern Product Mockup with Floating 3D Metric Badges -->
+      <div class="lp-mockup-wrapper">
+        <!-- Floating Stat 1: Sales Growth -->
+        <div class="lp-floating-badge lp-float-top-right">
+          <div class="lp-float-icon" style="background:#dcfce7;color:#16a34a">📈</div>
+          <div class="lp-float-text">
+            <strong>+185% زيادة المبيعات</strong>
+            <span>تحويل مباشر عبر إنستاباي وواتساب</span>
           </div>
         </div>
 
-        <div class="lp-mockup-screen">
-          <div class="lp-mockup-sidebar">
-            <div class="lp-sidebar-heading">أقسام الموقع</div>
-            <div class="lp-sidebar-item active">
-              ${ICONS.wrap(ICONS.home, 14)} <span>الرئيسية (Hero)</span>
+        <!-- Floating Stat 2: Instant Payment -->
+        <div class="lp-floating-badge lp-float-bottom-left">
+          <div class="lp-float-icon" style="background:#ede9fe;color:#7c3aed">⚡</div>
+          <div class="lp-float-text">
+            <strong>تم استلام دفعة جديدة: 750 ج.م</strong>
+            <span>عبر محفظة فودافون كاش • الآن</span>
+          </div>
+        </div>
+
+        <!-- Floating Stat 3: Google Speed Score -->
+        <div class="lp-floating-badge lp-float-top-left">
+          <div class="lp-float-icon" style="background:#e0f2fe;color:#0284c7">🚀</div>
+          <div class="lp-float-text">
+            <strong>سرعة 99/100 على Google</strong>
+            <span>استضافة سحابية CDN فائقة</span>
+          </div>
+        </div>
+
+        <!-- Main Mockup Browser Window -->
+        <div class="lp-mockup-frame">
+          <div class="lp-mockup-topbar">
+            <div class="lp-mockup-dots">
+              <span class="lp-dot-red"></span>
+              <span class="lp-dot-yellow"></span>
+              <span class="lp-dot-green"></span>
             </div>
-            <div class="lp-sidebar-item">
-              ${ICONS.wrap(ICONS.briefcase, 14)} <span>الخدمات والمنتجات</span>
+            <div class="lp-mockup-address">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>https://mybrand.siteflow.vexonet.online</span>
             </div>
-            <div class="lp-sidebar-item">
-              ${ICONS.wrap(ICONS.image, 14)} <span>معرض الصور</span>
-            </div>
-            <div class="lp-sidebar-item">
-              ${ICONS.wrap(ICONS.message, 14)} <span>آراء العملاء</span>
-            </div>
-            <div class="lp-sidebar-item">
-              ${ICONS.wrap(ICONS.mail, 14)} <span>نموذج التواصل</span>
+            <div class="lp-mockup-tag">
+              <span>⚡ محرر حي ومباشر 2.0</span>
             </div>
           </div>
-          <div class="lp-mockup-content">
-            <div class="lp-mock-banner">
-              <h2>مرحباً بك في متجرنا العصري</h2>
-              <p>أفضل المنتجات عالية الجودة مع شحن سريع وتصفح فائق السلاسة</p>
-              <div class="lp-mock-btn">تسوق المنتجات الآن</div>
+
+          <div class="lp-mockup-screen">
+            <div class="lp-mockup-sidebar">
+              <div class="lp-sidebar-heading">أقسام الموقع</div>
+              <div class="lp-sidebar-item active">
+                ${ICONS.wrap(ICONS.home, 14)} <span>الرئيسية (Hero)</span>
+              </div>
+              <div class="lp-sidebar-item">
+                ${ICONS.wrap(ICONS.briefcase, 14)} <span>المنتجات والخدمات</span>
+              </div>
+              <div class="lp-sidebar-item">
+                ${ICONS.wrap(ICONS.image, 14)} <span>معرض الصور</span>
+              </div>
+              <div class="lp-sidebar-item">
+                ${ICONS.wrap(ICONS.message, 14)} <span>آراء وتقييمات</span>
+              </div>
+              <div class="lp-sidebar-item">
+                ${ICONS.wrap(ICONS.mail, 14)} <span>نموذج التواصل والدفع</span>
+              </div>
             </div>
-            <div class="lp-mock-cards">
-              <div class="lp-mock-card">
-                <div class="lp-mock-card-icon">⚡</div>
-                <strong>شحن فوري</strong>
+
+            <div class="lp-mockup-content">
+              <div class="lp-mock-banner">
+                <span class="lp-mock-badge">🔥 تشكيلة 2026 الحصرية</span>
+                <h2>عطور فاخرة بلمسة شرقية أصيلة</h2>
+                <p>توصيل فوري خلال 24 ساعة لجميع المحافظات مع دفع عند الاستلام أو عبر إنستاباي</p>
+                <div class="lp-mock-cta-row">
+                  <div class="lp-mock-btn">تسوق التشكيلة الآن ←</div>
+                  <div class="lp-mock-btn-secondary">طلب عبر واتساب 💬</div>
+                </div>
               </div>
-              <div class="lp-mock-card">
-                <div class="lp-mock-card-icon">💎</div>
-                <strong>جودة مضمونة</strong>
-              </div>
-              <div class="lp-mock-card">
-                <div class="lp-mock-card-icon">📱</div>
-                <strong>دفع ميسر</strong>
+              <div class="lp-mock-cards">
+                <div class="lp-mock-card">
+                  <div class="lp-mock-card-icon">⚡</div>
+                  <strong>توصيل فوري</strong>
+                  <span>شحن سريع لجميع المدن</span>
+                </div>
+                <div class="lp-mock-card">
+                  <div class="lp-mock-card-icon">💎</div>
+                  <strong>جودة مضمونة 100%</strong>
+                  <span>ضمان استرجاع مجاني</span>
+                </div>
+                <div class="lp-mock-card">
+                  <div class="lp-mock-card-icon">📱</div>
+                  <strong>دفع إلكتروني آمن</strong>
+                  <span>فودافون كاش وإنستاباي</span>
+                </div>
               </div>
             </div>
           </div>
@@ -144,25 +195,25 @@ const T = {
     </div>
   </section>
 
-  <!-- 🌟 Official Partners & Payment Gateways Strip -->
+  <!-- 🌟 2. Official Partners & Payment Gateways Strip (Fintech Style) -->
   <section class="lp-partners-strip">
     <div class="lp-container">
-      <p class="lp-partners-title">تكامل رسمي وسلس مع كبرى المنصات وبوابات الدفع العالمية والمحلية</p>
+      <p class="lp-partners-title">تكامل فوري ورسمي مع كبرى بوابات الدفع والمحافظ الإلكترونية ومنصات التسويق</p>
       <div class="lp-partners-grid">
-        <div class="lp-partner-item" title="Google Search & SEO">
-          ${ICONS.wrap(ICONS.google, 26)} <span>Google</span>
-        </div>
-        <div class="lp-partner-item" title="Meta (Facebook & Instagram Ads)">
-          ${ICONS.wrap(ICONS.meta, 26)} <span>Meta</span>
-        </div>
-        <div class="lp-partner-item" title="WhatsApp Business API">
-          ${ICONS.wrap(ICONS.whatsapp, 26)} <span>WhatsApp</span>
+        <div class="lp-partner-item" title="Vodafone Cash">
+          ${ICONS.wrap(ICONS.vodafone, 26)} <span>Vodafone Cash</span>
         </div>
         <div class="lp-partner-item" title="InstaPay Egypt">
           ${ICONS.wrap(ICONS.instapay, 26)} <span>InstaPay</span>
         </div>
-        <div class="lp-partner-item" title="Vodafone Cash">
-          ${ICONS.wrap(ICONS.vodafone, 26)} <span>Vodafone Cash</span>
+        <div class="lp-partner-item" title="WhatsApp Business API">
+          ${ICONS.wrap(ICONS.whatsapp, 26)} <span>WhatsApp</span>
+        </div>
+        <div class="lp-partner-item" title="Google Search & SEO">
+          ${ICONS.wrap(ICONS.google, 26)} <span>Google SEO</span>
+        </div>
+        <div class="lp-partner-item" title="Meta (Facebook & Instagram Ads)">
+          ${ICONS.wrap(ICONS.meta, 26)} <span>Meta Pixel</span>
         </div>
         <div class="lp-partner-item" title="Stripe Payments">
           ${ICONS.wrap(ICONS.stripe, 26)} <span>Stripe</span>
@@ -177,275 +228,362 @@ const T = {
     </div>
   </section>
 
-  <!-- 2. Clean Stats Row -->
+  <!-- 🌟 3. Clean High-Impact Stats Row -->
   <section class="lp-stats-clean">
     <div class="lp-container">
       <div class="lp-stats-grid-clean">
         <div class="lp-stat-box">
-          <div class="lp-stat-val">+12,000</div>
-          <div class="lp-stat-lbl">موقع ومتجر نشط</div>
+          <div class="lp-stat-icon-wrap" style="background:#e0e7ff;color:#4f46e5">🏢</div>
+          <div class="lp-stat-val">+25,000</div>
+          <div class="lp-stat-lbl">موقع ومتجر نشط تم إطلاقه</div>
         </div>
         <div class="lp-stat-box">
-          <div class="lp-stat-val">&lt; 0.3s</div>
-          <div class="lp-stat-lbl">سرعة استجابة فائقة</div>
+          <div class="lp-stat-icon-wrap" style="background:#dcfce7;color:#16a34a">⚡</div>
+          <div class="lp-stat-val">&lt; 0.2s</div>
+          <div class="lp-stat-lbl">سرعة استجابة وتحميل فائقة</div>
         </div>
         <div class="lp-stat-box">
+          <div class="lp-stat-icon-wrap" style="background:#fef3c7;color:#d97706">🛡️</div>
           <div class="lp-stat-val">99.9%</div>
-          <div class="lp-stat-lbl">استقرار سحابي دائم</div>
+          <div class="lp-stat-lbl">استقرار سحابي وضمان تشغيل</div>
         </div>
         <div class="lp-stat-box">
+          <div class="lp-stat-icon-wrap" style="background:#fce7f3;color:#ec4899">📱</div>
           <div class="lp-stat-val">100%</div>
-          <div class="lp-stat-lbl">توافق مع الجوال والتابلت</div>
+          <div class="lp-stat-lbl">توافق كامل مع الجوال والتابلت</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 3. Features Section (6 Clean Cards) -->
+  <!-- 🌟 4. Bento Grid 2.0 Features (Fintech & AI SaaS Style) -->
   <section class="lp-section-clean">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">مميزات المنصة</span>
+        <span class="lp-section-pill">منظومة متكاملة</span>
         <h2 class="lp-section-heading">
-          كل ما تحتاجه لإطلاق موقع احترافي متكامل
+          كل ما يلزمك للنجاح والبيع عبر الإنترنت
         </h2>
         <p class="lp-section-subheading">
-          أدوات قوية، واجهة مبسطة، وتكامل تام مع بوابات الدفع والسيو بدون أي تعقيد تقني.
+          أدوات متطورة، واجهة بديهية فائقة السلاسة، وتكامل شامل مع وسائل الدفع والتسويق بدون أي تعقيد برمجي.
         </p>
       </div>
 
-      <div class="lp-features-grid-clean">
-        <div class="lp-feature-card-clean">
-          <div class="lp-f-icon" style="background:#e0e7ff;color:#4f46e5">${ICONS.wrap(ICONS.edit, 22)}</div>
-          <h3>محرر مرئي بالسحب والإفلات</h3>
-          <p>تحكم كامل وبديهي في كل نص، زر، صورة ولون مع معاينة مباشرة وتعديل فوري.</p>
+      <div class="lp-bento-grid">
+        <!-- Bento 1: Large Spotlight -->
+        <div class="lp-bento-card lp-bento-large">
+          <div class="lp-bento-badge">⚡ مساعد الذكاء الاصطناعي 2.0</div>
+          <h3>توليد وصياغة فورية لموقعك بالكامل</h3>
+          <p>تحدث بصوتك أو اكتب وصفاً مختصراً، وسيقوم SiteFlow AI بتوليد الهيكل، العناوين الجذابة، الأقسام، والصور المناسبة في ثوانٍ معدودة.</p>
+          <div class="lp-bento-ai-visual">
+            <div class="lp-bento-prompt-pill">🎙️ "صمم موقع متجر عطور شرقية مع دفع إنستاباي وسلة تسوق"</div>
+            <div class="lp-bento-arrow">↓</div>
+            <div class="lp-bento-result-pill">✨ تم توليد الموقع بنجاح مع 6 أقسام جاهزة للنشر!</div>
+          </div>
         </div>
 
-        <div class="lp-feature-card-clean">
-          <div class="lp-f-icon" style="background:#dcfce7;color:#16a34a">${ICONS.wrap(ICONS.globe, 22)}</div>
-          <h3>دومين فرعي مجاني واستضافة فائقة</h3>
-          <p>احصل فوراً على رابط خاص بموقعك yourname.siteflow.vexonet.online مع شهادة SSL مجانية.</p>
+        <!-- Bento 2: Local Payments -->
+        <div class="lp-bento-card">
+          <div class="lp-f-icon" style="background:#e0f2fe;color:#0284c7">${ICONS.wrap(ICONS.dollar, 24)}</div>
+          <h3>بوابات دفع محلية وعالمية مدمجة</h3>
+          <p>استقبل أموالك ومبيعاتك عبر إنستاباي، فودافون كاش، وفوري بالإضافة للبطاقات البنكية مع مراجعة فورية.</p>
+          <div class="lp-bento-tags">
+            <span>إنستاباي</span>
+            <span>فودافون كاش</span>
+            <span>فيزا وماستركارد</span>
+          </div>
         </div>
 
-        <div class="lp-feature-card-clean">
-          <div class="lp-f-icon" style="background:#fef3c7;color:#d97706">${ICONS.wrap(ICONS.dollar, 22)}</div>
-          <h3>دعم الدفع الإلكتروني المحلي</h3>
-          <p>استقبل مدفوعات متجرك بسهولة عبر إنستاباي، فودافون كاش، وفوري بالإضافة للبطاقات البنكية.</p>
+        <!-- Bento 3: Visual Drag & Drop -->
+        <div class="lp-bento-card">
+          <div class="lp-f-icon" style="background:#e0e7ff;color:#4f46e5">${ICONS.wrap(ICONS.edit, 24)}</div>
+          <h3>محرر مرئي تفاعلي بالسحب والإفلات</h3>
+          <p>تحكم مطلق وبديهي في كل عنصر: النصوص، الصور، الأزرار، الألوان، والخطوط مع معاينة فورية لكافة الشاشات.</p>
         </div>
 
-        <div class="lp-feature-card-clean">
-          <div class="lp-f-icon" style="background:#fce7f3;color:#ec4899">${ICONS.wrap(ICONS.search, 22)}</div>
-          <h3>متوافق تلقائياً مع محركات البحث SEO</h3>
-          <p>تهيئة تلقائية لوسوم الميتا وخريطة الموقع وسرعة التحميل لمساعدتك على تصدر نتائج Google.</p>
+        <!-- Bento 4: Free Domain & SSL -->
+        <div class="lp-bento-card">
+          <div class="lp-f-icon" style="background:#dcfce7;color:#16a34a">${ICONS.wrap(ICONS.globe, 24)}</div>
+          <h3>دومين فرعي مجاني واستضافة CDN</h3>
+          <p>احصل فوراً على رابط خاص yourname.siteflow.vexonet.online مع شهادة أمان SSL سريعة ومجانية مدى الحياة.</p>
         </div>
 
-        <div class="lp-feature-card-clean">
-          <div class="lp-f-icon" style="background:#ede9fe;color:#7c3aed">${ICONS.wrap(ICONS.sparkles, 22)}</div>
-          <h3>مساعد الذكاء الاصطناعي لكتابة المحتوى</h3>
-          <p>أنشئ نصوصاً تسويقية جذابة، عناوين قوية، ووصفاً لمنتجاتك بضغطة زر واحدة.</p>
+        <!-- Bento 5: WhatsApp & Instant Ordering -->
+        <div class="lp-bento-card">
+          <div class="lp-f-icon" style="background:#dcfce7;color:#15803d">${ICONS.wrap(ICONS.whatsapp, 24)}</div>
+          <h3>سلة تسوق وزر طلب مباشر واتساب</h3>
+          <p>ضاعف مبيعاتك وأرباحك بالسماح لعملائك بالطلب المباشر بضغطة زر وتلقي تفاصيل الطلب على هاتفك.</p>
         </div>
 
-        <div class="lp-feature-card-clean">
-          <div class="lp-f-icon" style="background:#fee2e2;color:#dc2626">${ICONS.wrap(ICONS.form, 22)}</div>
-          <h3>نماذج استفسارات وإدارة الطلبات</h3>
-          <p>استقبل رسائل العملاء وطلبات المتجر فوراً في لوحة تحكمك مع إشعارات فورية.</p>
+        <!-- Bento 6: Smart SEO -->
+        <div class="lp-bento-card">
+          <div class="lp-f-icon" style="background:#fce7f3;color:#ec4899">${ICONS.wrap(ICONS.search, 24)}</div>
+          <h3>تهيئة تلقائية لمحركات البحث SEO</h3>
+          <p>توليد ذكي لوسوم الميتا وخريطة الموقع والسرعة الفائقة لضمان ظهور موقعك في الصفحة الأولى على Google.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 4. How it works (3 Steps) -->
+  <!-- 🌟 5. How It Works (3 Easy Steps) -->
   <section class="lp-section-clean lp-section-bg">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">خطوات بسيطة</span>
+        <span class="lp-section-pill">بساطة وسرعة</span>
         <h2 class="lp-section-heading">3 خطوات بسيطة لإطلاق موقعك للعالم</h2>
-        <p class="lp-section-subheading">لا تحتاج لأي خبرة برمجية أو تصميم مسبق. ابدأ الآن وانشر في دقائق.</p>
+        <p class="lp-section-subheading">لا تحتاج لأي معرفة برمجية أو استئجار مطورين. ابدأ الآن وانشر في دقائق.</p>
       </div>
 
       <div class="lp-steps-clean">
         <div class="lp-step-card-clean">
           <div class="lp-step-number">1</div>
-          <h3>اختر القالب المناسب</h3>
-          <p>انتقِ قالباً مصمماً باحترافية يناسب مجال عملك، سواء كان متجراً، شركة، مطعماً، أو بورتفوليو.</p>
+          <h3>اكتب فكرتك أو اختر قالباً</h3>
+          <p>صِف فكرة موقعك لمساعد الذكاء الاصطناعي أو اختر من بين أكثر من 40 قالباً مخصصاً لمجال عملك.</p>
         </div>
 
         <div class="lp-step-card-clean">
           <div class="lp-step-number">2</div>
           <h3>خصّص المحتوى والألوان</h3>
-          <p>غيّر النصوص والصور والألوان بنقرة واحدة عبر المحرر المرئي التفاعلي والسلس.</p>
+          <p>عدّل النصوص، الصور، وبوابات الدفع بالسحب والإفلات مع اقتراحات ذكية من محرك SiteFlow AI.</p>
         </div>
 
         <div class="lp-step-card-clean">
           <div class="lp-step-number">3</div>
-          <h3>انشر موقعك فوراً</h3>
-          <p>احصل على دومين فرعي مجاني أو اربط دومينك الخاص وانشر موقعك لعملائك بنقرة زر.</p>
+          <h3>انشر واستقبل أرباحك فوراً</h3>
+          <p>انشر موقعك على دومينك الخاص أو الفرعي بنقرة زر واحدة وابدأ في استقبال الزيارات والمبيعات.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 5. Templates Preview Section -->
+  <!-- 🌟 6. Interactive Templates Showcase -->
   <section class="lp-section-clean" id="templatesSection">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">قوالب جاهزة</span>
-        <h2 class="lp-section-heading">تصاميم حديثة تناسب كل الأنشطة التجارية</h2>
-        <p class="lp-section-subheading">أكثر من 40 قالباً مجهزاً باللغتين العربية والإنجليزية لزيادة مبيعاتك وتفاعلك.</p>
+        <span class="lp-section-pill">قوالب عصرية جاهزة</span>
+        <h2 class="lp-section-heading">تصاميم احترافية تناسب كافة الأنشطة التجارية</h2>
+        <p class="lp-section-subheading">أكثر من 40 قالباً مصمماً بعناية لزيادة تفاعل ومبيعات نشاطك التجاري.</p>
       </div>
 
       <div class="lp-templates-grid">
         <div class="lp-template-card">
-          <div class="lp-template-thumb" style="background:#f1f5f9;font-size:3.5rem">🛍️</div>
+          <div class="lp-template-thumb" style="background:linear-gradient(135deg,#e0e7ff,#fae8ff);font-size:3.5rem">🛍️</div>
           <div class="lp-template-info">
-            <span class="lp-template-badge">متجر إلكتروني</span>
-            <h4>متجر أزياء وإكسسوارات</h4>
-            <p>عرض منتجات، سلة مشتريات، ودفع محلي ميسر.</p>
-            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب</a>
+            <span class="lp-template-badge">متاجر إلكترونية</span>
+            <h4>متجر أزياء وعطور فاخر</h4>
+            <p>كتالوج منتجات تفاعلي، سلة مشتريات، ودفع فوري عبر إنستاباي.</p>
+            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب ←</a>
           </div>
         </div>
 
         <div class="lp-template-card">
-          <div class="lp-template-thumb" style="background:#f1f5f9;font-size:3.5rem">☕</div>
+          <div class="lp-template-thumb" style="background:linear-gradient(135deg,#fef3c7,#fed7aa);font-size:3.5rem">🍔</div>
           <div class="lp-template-info">
             <span class="lp-template-badge">مطاعم وكافيهات</span>
-            <h4>كافيه ومخبوزات أرتيزان</h4>
-            <p>قائمة طعام تفاعلية، حجز طاولات، وموقع على الخريطة.</p>
-            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب</a>
+            <h4>مطعم ومخبوزات أرتيزان</h4>
+            <p>منيو طعام تفاعلي بالصور، طلب عبر واتساب، وحجز طاولات سريع.</p>
+            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب ←</a>
           </div>
         </div>
 
         <div class="lp-template-card">
-          <div class="lp-template-thumb" style="background:#f1f5f9;font-size:3.5rem">🚀</div>
+          <div class="lp-template-thumb" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);font-size:3.5rem">🏢</div>
           <div class="lp-template-info">
-            <span class="lp-template-badge">شركات وتقنية</span>
-            <h4>شركة برمجيات وخدمات</h4>
-            <p>عرض المزايا، الأسعار، واستمارة طلب العروض.</p>
-            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب</a>
+            <span class="lp-template-badge">شركات وخدمات</span>
+            <h4>شركة استشارات وبرمجيات</h4>
+            <p>عرض المزايا، الأسعار، الباقات، واستمارة طلب العروض المباشرة.</p>
+            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب ←</a>
           </div>
         </div>
 
         <div class="lp-template-card">
-          <div class="lp-template-thumb" style="background:#f1f5f9;font-size:3.5rem">🎨</div>
+          <div class="lp-template-thumb" style="background:linear-gradient(135deg,#fce7f3,#ede9fe);font-size:3.5rem">🎨</div>
           <div class="lp-template-info">
-            <span class="lp-template-badge">بورتفوليو</span>
-            <h4>معرض أعمال شخصي</h4>
-            <p>عرض الأعمال الإبداعية ونموذج اتصال سريع للمستقلين.</p>
-            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب</a>
+            <span class="lp-template-badge">بورتفوليو شخصي</span>
+            <h4>معرض أعمال إبداعي مستقل</h4>
+            <p>عرض المشاريع السابقة، نبذة تعريفية، ونموذج تواصل للعمل الحر.</p>
+            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب ←</a>
           </div>
         </div>
       </div>
 
-      <div style="text-align:center;margin-top:32px">
-        <a href="#/showcase" class="btn btn-outline btn-lg" style="border-radius:12px;font-weight:700">
-          عرض كافة القوالب والمعرض (40+ قالب) ←
+      <div style="text-align:center;margin-top:36px">
+        <a href="#/showcase" class="btn btn-outline btn-lg" style="border-radius:14px;font-weight:800;padding:14px 32px">
+          استكشف كافة القوالب والمعرض (40+ قالب جاهز) ←
         </a>
       </div>
     </div>
   </section>
 
-  <!-- 6. Pricing Preview Section -->
+  <!-- 🌟 7. Comparison Section (SiteFlow vs Traditional Agencies) -->
   <section class="lp-section-clean lp-section-bg">
+    <div class="lp-container" style="max-width:960px">
+      <div class="lp-section-header">
+        <span class="lp-section-pill">لماذا SiteFlow؟</span>
+        <h2 class="lp-section-heading">مقارنة واضحة: لماذا تختار SiteFlow؟</h2>
+        <p class="lp-section-subheading">وفر آلاف الجنيهات وأسابيع الانتظار واحصل على تحكم كامل في موقعك.</p>
+      </div>
+
+      <div class="lp-comparison-card">
+        <table class="lp-comp-table">
+          <thead>
+            <tr>
+              <th>الميزة</th>
+              <th class="highlight-col">SiteFlow ⚡</th>
+              <th>شركات البرمجة التقليدية</th>
+              <th>وردبريس والقوالب الجاهزة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>وقت الإطلاق</strong></td>
+              <td class="highlight-col text-success"><strong>دقائق معدودة ⚡</strong></td>
+              <td>من 4 إلى 8 أسابيع</td>
+              <td>من 5 إلى 15 يوماً</td>
+            </tr>
+            <tr>
+              <td><strong>التكلفة الإجمالية</strong></td>
+              <td class="highlight-col text-success"><strong>رمزية وبدون عمولات خفية</strong></td>
+              <td>باهظة جداً (15,000+ ج.م)</td>
+              <td>تكاليف استضافة وإضافات مستمرة</td>
+            </tr>
+            <tr>
+              <td><strong>توليد بالذكاء الاصطناعي</strong></td>
+              <td class="highlight-col text-success"><strong>نصوص، صور، وهيكل بضغطة زر ✓</strong></td>
+              <td>غير متوفر ✕</td>
+              <td>معقد ويحتاج إضافات مدفوعة</td>
+            </tr>
+            <tr>
+              <td><strong>دعم بوابات الدفع المصرية</strong></td>
+              <td class="highlight-col text-success"><strong>فودافون كاش وإنستاباي مدمج ✓</strong></td>
+              <td>برمجة مخصصة مكلفة</td>
+              <td>بوابات دفع عالمية فقط أو إضافات</td>
+            </tr>
+            <tr>
+              <td><strong>سهولة التعديل الذاتي</strong></td>
+              <td class="highlight-col text-success"><strong>سحب وإفلات فائق السلاسة ✓</strong></td>
+              <td>تعتمد على المطور لكل تعديل</td>
+              <td>لوحة تحكم معقدة وبطيئة</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🌟 8. Pricing Plans Section with Yearly Discount -->
+  <section class="lp-section-clean" id="pricingSection">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">الأسعار والباقات</span>
-        <h2 class="lp-section-heading">خطط بسيطة ومرنة تناسب الجميع</h2>
-        <p class="lp-section-subheading">ابدأ مجاناً وجرب كل شيء. يمكنك الترقية في أي وقت.</p>
+        <span class="lp-section-pill">باقات الأسعار</span>
+        <h2 class="lp-section-heading">خطط مرنة وبسيطة تناسب كل مرحلة في مشروعك</h2>
+        <p class="lp-section-subheading">ابدأ مجاناً وجرب كافة المزايا. يمكنك الترقية أو الإلغاء في أي وقت.</p>
+
+        <div class="pricing-toggle-wrap">
+          <span style="font-weight:700;font-size:.88rem;color:#0f172a">الدفع الشهري</span>
+          <span class="discount-pill">وفر 25% مع السنوي 🎁</span>
+        </div>
       </div>
 
       <div class="lp-pricing-grid-clean">
+        <!-- Free Plan -->
         <div class="lp-p-card">
           <h3>مجاني (14 يوماً)</h3>
           <div class="lp-p-price">0 <span>ج.م / 14 يوم</span></div>
-          <p class="lp-p-desc">لتجربة المحرر وإنشاء موقعك الأول</p>
+          <p class="lp-p-desc">لتجربة المحرر وبناء موقعك الأول مجاناً</p>
           <ul class="lp-p-list">
-            <li>${ICONS.wrap(ICONS.check, 16)} دومين فرعي مجاني</li>
             <li>${ICONS.wrap(ICONS.check, 16)} موقع إلكتروني واحد</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} محرر مرئي سريع</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} استضافة سحابية فائقة</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} دومين فرعي مجاني مدى الحياة</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} محرر مرئي سريع بالسحب والإفلات</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} استضافة سحابية فائقة السرعة</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} شهادة أمان SSL مجانية</li>
           </ul>
-          <a href="#/plans" class="btn btn-outline btn-lg w-full">ابدأ مجاناً</a>
+          <a href="#/login" class="btn btn-outline btn-lg w-full">ابدأ مجاناً الآن</a>
         </div>
 
+        <!-- Pro Plan (Most Popular with glowing ring) -->
         <div class="lp-p-card lp-p-popular">
-          <div class="lp-p-badge">الأكثر اختياراً 🔥</div>
+          <div class="lp-p-badge">الأكثر طلباً واختياراً 🔥</div>
           <h3>احترافي (Pro)</h3>
           <div class="lp-p-price">299 <span>ج.م / شهرياً</span></div>
-          <p class="lp-p-desc">لأصحاب الأعمال والشركات والمتاجر</p>
+          <p class="lp-p-desc">لأصحاب الأعمال والمتاجر والشركات الناشئة</p>
           <ul class="lp-p-list">
-            <li>${ICONS.wrap(ICONS.check, 16)} مواقع وصفحات غير محدودة</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ربط دومين خاص (.com)</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} دفع إلكتروني (إنستاباي وفودافون كاش)</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} مساعد الذكاء الاصطناعي وتحسين SEO</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} دعم فني فوري وأولوية</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} <strong>مواقع وصفحات غير محدودة</strong></li>
+            <li>${ICONS.wrap(ICONS.check, 16)} <strong>ربط دومين مخصص خاص بك (.com)</strong></li>
+            <li>${ICONS.wrap(ICONS.check, 16)} <strong>دفع محلي مدمج (إنستاباي وفودافون كاش)</strong></li>
+            <li>${ICONS.wrap(ICONS.check, 16)} <strong>مساعد الذكاء الاصطناعي وتحسين SEO</strong></li>
+            <li>${ICONS.wrap(ICONS.check, 16)} سلة طلبات وربط مباشر مع واتساب</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} دعم فني سريع وأولوية 24/7</li>
           </ul>
-          <button class="btn btn-primary btn-lg w-full plan-btn" data-plan="pro">اشترك في الاحترافي 🔥</button>
+          <button class="btn btn-primary btn-lg w-full plan-btn" data-plan="pro">اشترك في باقة Pro 🔥</button>
         </div>
 
+        <!-- Business Plan -->
         <div class="lp-p-card">
           <h3>بيزنس (Business)</h3>
           <div class="lp-p-price">599 <span>ج.م / شهرياً</span></div>
-          <p class="lp-p-desc">للمؤسسات والشركات الكبيرة</p>
+          <p class="lp-p-desc">للمؤسسات الكبيرة والمتاجر الضخمة</p>
           <ul class="lp-p-list">
+            <li>${ICONS.wrap(ICONS.check, 16)} كل مميزات باقة Pro الاحترافية</li>
             <li>${ICONS.wrap(ICONS.check, 16)} متجر إلكتروني متقدم وإدارة المخزون</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} تقارير مبيعات وتحليلات زوار حية</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} مدير حساب مخصص 24/7</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} بدون أي علامة تجارية نهائياً</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} تقارير مبيعات وتحليلات زوار متقدمة</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} إزالة أي علامة تجارية نهائياً (White-label)</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} مدير حساب ومستشار تقني مخصص 24/7</li>
           </ul>
-          <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="business">اشترك في بيزنس 🚀</button>
+          <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="business">اشترك في باقة Business 🚀</button>
         </div>
       </div>
 
-      <div style="text-align:center;margin-top:24px">
-        <a href="#/plans" style="font-size:.92rem;font-weight:600;color:var(--primary)">
-          عرض مقارنة الخطط والتفاصيل الكاملة ←
+      <div style="text-align:center;margin-top:28px">
+        <a href="#/plans" style="font-size:.95rem;font-weight:700;color:#4f46e5">
+          عرض جدول مقارنة الخطط والتفاصيل الكاملة ←
         </a>
       </div>
     </div>
   </section>
 
-  <!-- 7. Testimonials -->
-  <section class="lp-section-clean">
+  <!-- 🌟 9. Customer Testimonials & Reviews -->
+  <section class="lp-section-clean lp-section-bg">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">آراء العملاء</span>
+        <span class="lp-section-pill">قصص نجاح</span>
         <h2 class="lp-section-heading">يثق بنا آلاف المبدعين وأصحاب المتاجر</h2>
-        <p class="lp-section-subheading">تجارب حقيقية لأشخاص طوروا أعمالهم ورفعوا مبيعاتهم باستخدام SiteFlow.</p>
+        <p class="lp-section-subheading">تجارب حقيقية لرواد أعمال زادت مبيعاتهم وتوسع حضورهم الرقمي عبر SiteFlow.</p>
       </div>
 
       <div class="lp-testimonials-grid-clean">
         <div class="lp-t-card">
           <div class="lp-t-stars">★★★★★</div>
-          <p>«أنشأت موقع متجري للملابس في نصف ساعة وربطت رقم إنستاباي. في أول أسبوع استقبلت أكثر من 40 طلباً بدون أي وسيط!»</p>
+          <p>«أنشأت موقع متجري للملابس في 25 دقيقة فقط وربطت رقم إنستاباي. في أول أسبوع استقبلت أكثر من 45 طلباً ومبيعات تضاعفت بدون أي وسيط!»</p>
           <div class="lp-t-author">
             <div class="lp-t-avatar" style="background:#4f46e5">أ</div>
             <div>
               <strong>أحمد الشريف</strong>
-              <span>مؤسس متجر أزياء</span>
+              <span>مؤسس متجر أزياء ستريت وير</span>
             </div>
           </div>
         </div>
 
         <div class="lp-t-card">
           <div class="lp-t-stars">★★★★★</div>
-          <p>«كنت أستخدم وردبريس وكان بطيئاً ومعقداً ويحتاج لمطور كل أسبوع. مع SiteFlow أعدل أي شيء بنفسي في ثوانٍ والسرعة خيالية.» </p>
+          <p>«كنت أستخدم وردبريس وكان بطيئاً ومعقداً ويحتاج لمطور كل أسبوع. مع SiteFlow أعدل أي شيء بنفسي في ثوانٍ والسرعة خيالية على الهاتف.»</p>
           <div class="lp-t-author">
             <div class="lp-t-avatar" style="background:#059669">س</div>
             <div>
               <strong>سارة المنشاوي</strong>
-              <span>مصممة جرافيك مستقلة</span>
+              <span>مصممة جرافيك واستشارات علامات تجارية</span>
             </div>
           </div>
         </div>
 
         <div class="lp-t-card">
           <div class="lp-t-stars">★★★★★</div>
-          <p>«الدعم الفني ممتاز وسريع جداً، وتوافق الموقع مع الهواتف الذكية بنسبة 100% ساعدنا كثيراً في حملات إعلانات تيك توك وإنستجرام.» </p>
+          <p>«الدعم الفني ممتاز وسريع جداً، وميزة توليد محتوى المنتجات بالذكاء الاصطناعي وفرت علي أياماً من كتابة المقالات والوصف.»</p>
           <div class="lp-t-author">
             <div class="lp-t-avatar" style="background:#d97706">م</div>
             <div>
               <strong>محمد عبد الله</strong>
-              <span>مدير تسويق رقمي</span>
+              <span>مدير تسويق رقمي وتجارة إلكترونية</span>
             </div>
           </div>
         </div>
@@ -453,74 +591,77 @@ const T = {
     </div>
   </section>
 
-  <!-- 8. FAQ Accordion -->
-  <section class="lp-section-clean lp-section-bg">
-    <div class="lp-container" style="max-width:800px">
+  <!-- 🌟 10. FAQ Accordion -->
+  <section class="lp-section-clean">
+    <div class="lp-container" style="max-width:840px">
       <div class="lp-section-header">
         <span class="lp-section-pill">الأسئلة الشائعة</span>
-        <h2 class="lp-section-heading">إجابات على أكثر الأسئلة تكراراً</h2>
+        <h2 class="lp-section-heading">إجابات على أهم الاستفسارات</h2>
       </div>
 
       <div class="lp-faq-list">
         <div class="lp-faq-item active" onclick="this.classList.toggle('active')">
-          <h3>هل التجربة المجانية مجانية بالفعل بدون شروط؟</h3>
-          <p>نعم، يمكنك إنشاء حسابك واستخدام المحرر ونشر موقعك على دومين فرعي مجاناً وبدون إدخال أي بطاقة دفع.</p>
+          <h3>هل التجربة المجانية مجانية بالفعل بدون إدخال فيزا؟</h3>
+          <p>نعم 100%! يمكنك إنشاء حسابك واستخدام المحرر ونشر موقعك على دومين فرعي مجاناً تماماً وبدون إدخال أي بطاقة دفع بنكية.</p>
         </div>
         <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-          <h3>هل يمكنني ربط دوميني الخاص بي مثل (myname.com)؟</h3>
-          <p>نعم، تدعم باقات Pro و Business ربط أي دومين خاص تملكه مع شهادة SSL مجانية وتوجيه تلقائي.</p>
+          <h3>هل يمكنني ربط دوميني الخاص بي مثل (mybrand.com)؟</h3>
+          <p>نعم، تدعم باقات Pro و Business ربط أي نطاق خاص تملكه مع شهادة SSL مجانية وتوجيه تلقائي فوري.</p>
         </div>
         <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-          <h3>كيف يتم استقبال المدفوعات والطلبات؟</h3>
-          <p>يمكنك ربط حسابك في إنستاباي أو فودافون كاش أو فوري، ليستقبل متجرك إشعارات التحويل والطلبات مباشرة في لوحة التحكم.</p>
+          <h3>كيف أستقبل مدفوعات العملاء من متجري؟</h3>
+          <p>يمكنك تفعيل الدفع عبر إنستاباي، فودافون كاش، أو الدفع عند الاستلام أو البطاقات البنكية، وتصلك الإشعارات والطلبات مباشرة في لوحة التحكم.</p>
         </div>
         <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-          <h3>هل أحتاج لأي خبرة سابقة في البرمجة؟</h3>
-          <p>إطلاقاً! المنصة مبنية لتكون بديهية 100% مع واجهة مرئية بنظام السحب والإفلات وتعديل النصوص مباشرة.</p>
+          <h3>هل أحتاج لأي خبرة سابقة في التصميم أو البرمجة؟</h3>
+          <p>إطلاقاً! المنصة مبنية لتكون بديهية وسلسة للغاية بنظام السحب والإفلات والمساعد الذكي الذي يقوم بالمهام الصعبة بدلاً عنك.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 9. Minimalist Bottom CTA -->
+  <!-- 🌟 11. High-Converting Radiant Bottom CTA -->
   <section class="lp-bottom-cta">
-    <div class="lp-container" style="text-align:center">
-      <h2 style="font-size:2.2rem;font-weight:900;color:#fff;margin-bottom:12px">
-        جاهز لإطلاق موقعك الإلكتروني اليوم؟
+    <div class="lp-bottom-cta-glow"></div>
+    <div class="lp-container" style="text-align:center;position:relative;z-index:2">
+      <span class="glow-pill" style="margin-bottom:20px;background:rgba(255,255,255,0.12);color:#fff;border-color:rgba(255,255,255,0.25)">
+        🚀 ابدأ اليوم مجاناً — لا يلزم بطاقة دفع
+      </span>
+      <h2 style="font-size:clamp(2rem,4.5vw,3rem);font-weight:900;color:#fff;margin-bottom:16px;line-height:1.25">
+        جاهز لإطلاق موقعك الإلكتروني والبدء في البيع؟
       </h2>
-      <p style="color:var(--gray-300);font-size:1.05rem;max-width:560px;margin:0 auto 28px;line-height:1.6">
-        انضم إلى آلاف المستخدمين الذين يثقون بمنصة SiteFlow لبناء حضورهم الرقمي وتنمية أعمالهم.
+      <p style="color:#cbd5e1;font-size:1.1rem;max-width:620px;margin:0 auto 32px;line-height:1.7">
+        انضم الآن إلى آلاف المبدعين والتجار الذين يعتمدون على SiteFlow لبناء تواجدهم الرقمي ومضاعفة مبيعاتهم.
       </p>
-      <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
-        <a href="#/login" class="btn btn-primary btn-lg js-auth-guest" style="border-radius:12px;font-weight:700;padding:16px 36px">
+      <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+        <a href="#/login" class="btn btn-primary btn-lg js-auth-guest" style="border-radius:14px;font-weight:800;padding:16px 40px;box-shadow:0 12px 30px rgba(99,102,241,0.5)">
           ابدأ مجاناً الآن 🚀
         </a>
-        <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden" style="border-radius:12px;font-weight:700;padding:16px 36px">
-          الانتقال للوحة التحكم
+        <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden" style="border-radius:14px;font-weight:800;padding:16px 40px">
+          الانتقال للوحة التحكم ↗
         </a>
-        <a href="#/plans" class="btn btn-outline btn-lg" style="border-radius:12px;border-color:var(--gray-700);color:#fff">
+        <a href="#/plans" class="btn btn-outline btn-lg" style="border-radius:14px;border-color:rgba(255,255,255,0.3);color:#fff;background:rgba(255,255,255,0.06);padding:16px 32px">
           استعراض خطط الأسعار
         </a>
       </div>
     </div>
   </section>
 
-  <!-- 10. Clean Minimalist Footer -->
+  <!-- 🌟 12. Clean Modern Arabic Footer -->
   <footer class="lp-clean-footer">
     <div class="lp-container">
       <div class="lp-footer-top">
         <div class="lp-footer-brand-col">
-          <div class="logo" style="margin-bottom:10px">
-            <img src="assets/sitflow.svg" alt="Site Flow" width="36" height="36">
+          <div class="logo" style="margin-bottom:12px">
+            <img src="assets/sitflow.svg" alt="Site Flow" width="40" height="40">
             <span>SiteFlow</span>
           </div>
-          <p style="color:var(--gray-500);font-size:.86rem;line-height:1.6;max-width:280px">
-            المنصة العربية الأولى لبناء المواقع والمتاجر السحابية بدون كود.
+          <p style="color:#64748b;font-size:.88rem;line-height:1.7;max-width:300px">
+            المنصة العربية الأولى المتكاملة لبناء المواقع والمتاجر السحابية بالذكاء الاصطناعي وبدون كود.
           </p>
-          <div style="margin-top:14px">
-            <button class="lang-switcher-btn" onclick="Auth.toggleLang()" style="font-size:.8rem">
-              🌐 Switch to English
-            </button>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
+            <span class="sf-badge" style="background:#e0e7ff;color:#4f46e5;font-weight:700">🔒 تشفير SSL 256-bit</span>
+            <span class="sf-badge" style="background:#dcfce7;color:#16a34a;font-weight:700">⚡ CDN فائقة السرعة</span>
           </div>
         </div>
 
@@ -529,28 +670,32 @@ const T = {
           <a href="#/plans">باقات الأسعار</a>
           <a href="#/showcase">معرض المواقع</a>
           <a href="#/templates">القوالب الجاهزة</a>
+          <a href="#/about">المميزات</a>
         </div>
 
         <div class="lp-footer-links-col">
           <h5>الشركة</h5>
           <a href="#/about">من نحن</a>
           <a href="#/help">المساعدة والدعم</a>
+          <a href="#/login">تسجيل الدخول</a>
         </div>
 
         <div class="lp-footer-links-col">
           <h5>القانوني</h5>
           <a href="#/privacy">سياسة الخصوصية</a>
           <a href="#/privacy">شروط الاستخدام</a>
+          <a href="#/help">الأمان والحماية</a>
         </div>
       </div>
 
       <div class="lp-footer-bottom-clean">
-        <p>&copy; ${new Date().getFullYear()} Site Flow Inc. جميع الحقوق محفوظة.</p>
-        <p style="color:var(--gray-400);font-size:.8rem">مدعوم بقاعدة بيانات Supabase PostgreSQL السحابية</p>
+        <p>&copy; ${new Date().getFullYear()} Site Flow Inc. جميع الحقوق محفوظة باللغة العربية.</p>
+        <p style="color:#94a3b8;font-size:.82rem">مدعوم بقاعدة بيانات سحابية فائقة الأمان ومحرك AI متطور</p>
       </div>
     </div>
   </footer>
-</div>` },
+</div>`;
+  },
 
   login() { return `
 <div class="auth-page" dir="rtl">
