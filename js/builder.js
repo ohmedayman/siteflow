@@ -1,6 +1,6 @@
 const Builder = {
   page: null, editingIdx: 0, mobileMode: false, siteId: null,
-  undoStack: [], redoStack: [], dragSrc: null, dragOver: null, autoSaveTimer: null,
+  undoStack: [], redoStack: [], dragSrc: null, dragOver: null, autoSaveTimer: null, toolbarKeyHandler: null,
 
   _pushUndo() {
     this.undoStack.push(JSON.parse(JSON.stringify(this.page.sections)))
@@ -12,14 +12,14 @@ const Builder = {
     this.redoStack.push(JSON.parse(JSON.stringify(this.page.sections)))
     this.page.sections = this.undoStack.pop()
     if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
-    this._render(); Toast.show('Undo','info')
+    this._render(); Toast.show('تم التراجع عن التعديل', 'info')
   },
   _redo() {
     if (!this.redoStack.length) return
     this.undoStack.push(JSON.parse(JSON.stringify(this.page.sections)))
     this.page.sections = this.redoStack.pop()
     if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
-    this._render(); Toast.show('Redo','info')
+    this._render(); Toast.show('تمت إعادة التعديل', 'info')
   },
 
   async load(id) {
@@ -27,8 +27,8 @@ const Builder = {
     this.siteId = id
     try {
       this.page = await API.getSite(id)
-      if (!this.page) throw new Error('Site not found')
-      if (!this.page.theme) this.page.theme = { color: '#6366f1', font: 'Inter', bgColor: '#ffffff', textColor: '#111827' }
+      if (!this.page) throw new Error('لم يتم العثور على الموقع المطلوب')
+      if (!this.page.theme) this.page.theme = { color: '#6366f1', font: 'Cairo', bgColor: '#ffffff', textColor: '#111827' }
       if (!this.page.seo) this.page.seo = { title: '', description: '', keywords: '' }
       if (!this.page.apps) this.page.apps = (this.page.seo?.apps || {})
       this.editingIdx = 0; this.mobileMode = false; this.undoStack = []; this.redoStack = []
@@ -381,18 +381,46 @@ const Builder = {
   _bindToolbar() {
     document.getElementById('undoBtn')?.addEventListener('click', () => this._undo())
     document.getElementById('redoBtn')?.addEventListener('click', () => this._redo())
-    document.addEventListener('keydown', e => {
+    if (this.toolbarKeyHandler) document.removeEventListener('keydown', this.toolbarKeyHandler)
+    this.toolbarKeyHandler = async e => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) this._redo(); else this._undo() }
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); this._redo() }
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this._saveNow(); Toast.show('Saved!', 'success') }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        const saved = await this._saveNow()
+        Toast.show(saved ? 'تم حفظ التغييرات بنجاح.' : 'تعذر حفظ التغييرات. حاول مرة أخرى.', saved ? 'success' : 'error')
+      }
+    }
+    document.addEventListener('keydown', this.toolbarKeyHandler)
+    document.getElementById('previewBtn')?.addEventListener('click', async () => {
+      const previewUrl = new URL(window.location.href)
+      previewUrl.hash = '#/preview/' + this.page.id
+      const previewWindow = window.open('about:blank', '_blank')
+      if (!previewWindow) {
+        Toast.show('يرجى السماح بفتح النوافذ المنبثقة لمعاينة موقعك.', 'warning')
+        return
+      }
+      const saved = await this._saveNow()
+      if (saved) previewWindow.location.href = previewUrl.href
+      else {
+        previewWindow.close()
+        Toast.show('تعذر حفظ التغييرات قبل المعاينة. حاول مرة أخرى.', 'error')
+      }
     })
-    document.getElementById('previewBtn')?.addEventListener('click', () => { this._saveNow(); window.open('#/preview/' + this.page.id, '_blank') })
     document.getElementById('exportBtn')?.addEventListener('click', () => this._exportHtml())
     document.getElementById('publishBtn')?.addEventListener('click', () => this._publish())
-    document.getElementById('saveBtn')?.addEventListener('click', () => { this._saveNow(); Toast.show('تم الحفظ بنجاح!', 'success') })
+    document.getElementById('saveBtn')?.addEventListener('click', async () => {
+      const saved = await this._saveNow()
+      Toast.show(saved ? 'تم حفظ التغييرات بنجاح.' : 'تعذر حفظ التغييرات. حاول مرة أخرى.', saved ? 'success' : 'error')
+    })
     document.getElementById('deviceToggle')?.addEventListener('click', e => {
-      const btn = e.target.closest('.device-btn'); if (!btn) return
-      document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active')
+      const btn = e.target.closest('.device-btn'); if (!btn || !e.currentTarget.contains(btn)) return
+      document.querySelectorAll('.device-btn').forEach(b => {
+        b.classList.remove('active')
+        b.setAttribute('aria-pressed', 'false')
+      })
+      btn.classList.add('active')
+      btn.setAttribute('aria-pressed', 'true')
       const dev = btn.dataset.device
       const frame = document.getElementById('canvasFrame')
       if (frame) {
@@ -431,16 +459,16 @@ const Builder = {
       }
       if (del) {
         const idx = parseInt(del.dataset.del)
-        if (this.page.sections.length <= 1) { Toast.show('Cannot delete the last section', 'error'); return }
+        if (this.page.sections.length <= 1) { Toast.show('لا يمكن حذف القسم الأخير في الموقع', 'error'); return }
         this._pushUndo(); this.page.sections.splice(idx, 1)
         if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
-        this._saveNow(); this._render(); Toast.show('Section deleted', 'info'); return
+        this._saveNow(); this._render(); Toast.show('تم حذف القسم بنجاح', 'info'); return
       }
       if (dup) {
         const idx = parseInt(dup.dataset.dup); this._pushUndo()
         const copy = JSON.parse(JSON.stringify(this.page.sections[idx]))
         this.page.sections.splice(idx + 1, 0, copy)
-        this.editingIdx = idx + 1; this._saveNow(); this._render(); Toast.show('Section duplicated', 'info'); return
+        this.editingIdx = idx + 1; this._saveNow(); this._render(); Toast.show('تم تكرار القسم بنجاح', 'info'); return
       }
       if (upBtn) {
         const idx = parseInt(upBtn.dataset.up); if (idx <= 0) return
@@ -912,26 +940,29 @@ const Builder = {
       }
     }
 
-    document.getElementById('aiGenerateBtn')?.addEventListener('click', () => {
+    document.getElementById('aiGenerateBtn')?.addEventListener('click', async () => {
       const prompt = document.getElementById('aiPromptInput')?.value.trim()
       if (!prompt) { Toast.show('يرجى كتابة وصف لنشاطك التجاري أو فكرة الموقع أولاً', 'error'); return }
 
       const btn = document.getElementById('aiGenerateBtn')
-      if (btn) { btn.disabled = true; btn.textContent = '⏳ جاري التحليل والتصميم الذكي...' }
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> جاري التحليل والتصميم بالذكاء الاصطناعي...' }
 
-      setTimeout(() => {
-        generatedData = typeof SiteFlowAI !== 'undefined' ? SiteFlowAI.generateSite(prompt) : null
+      try {
+        generatedData = typeof SiteFlowAI !== 'undefined' ? await SiteFlowAI.generateSite(prompt) : null
         if (btn) { btn.disabled = false; btn.innerHTML = '<span>🚀</span> توليد الموقع الذكي بالكامل' }
         if (!generatedData) return
 
         const resArea = document.getElementById('aiResultArea')
         const summary = document.getElementById('aiResultSummary')
         if (resArea && summary) {
-          summary.innerHTML = `تم ابتكار: <strong>${generatedData.title}</strong> (${generatedData.industry}) بـ ${generatedData.sections.length} أقسام متكاملة ومحتوى كامل!`
+          summary.innerHTML = `تم ابتكار: <strong>${generatedData.title}</strong> (${generatedData.industry || 'عام'}) بـ ${generatedData.sections?.length || 0} أقسام متكاملة ومحتوى كامل!`
           resArea.style.display = 'block'
         }
-        Toast.show('تم التوليد بنجاح! يمكنك تطبيق التصميم فوراً على موقعك.', 'success')
-      }, 600)
+        Toast.show('تم التوليد بالذكاء الاصطناعي بنجاح! يمكنك تطبيق التصميم فوراً.', 'success')
+      } catch (err) {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<span>🚀</span> توليد الموقع الذكي بالكامل' }
+        Toast.show('حدث خطأ أثناء التوليد: ' + err.message, 'error')
+      }
     })
 
     document.getElementById('aiApplyAllBtn')?.addEventListener('click', () => {
@@ -964,12 +995,14 @@ const Builder = {
 
   _saveLater() {
     const ind = document.getElementById('saveStatusIndicator')
-    if (ind) { ind.textContent = '⏳ جاري الحفظ...'; ind.style.color = 'var(--primary)' }
+    if (ind) { ind.textContent = '⏳ جاري الحفظ...'; ind.dataset.state = 'saving' }
     clearTimeout(this.autoSaveTimer)
     this.autoSaveTimer = setTimeout(() => this._saveNow(), 800)
   },
 
   async _saveNow() {
+    clearTimeout(this.autoSaveTimer)
+    this.autoSaveTimer = null
     const ind = document.getElementById('saveStatusIndicator')
     try {
       this.page = await API.updateSite(this.page.id, {
@@ -982,10 +1015,12 @@ const Builder = {
         theme: this.page.theme,
         customDomain: this.page.customDomain
       })
-      if (ind) { ind.textContent = '✓ محفوظة'; ind.style.color = 'var(--gray-400)' }
+      if (ind) { ind.textContent = '✓ محفوظة'; ind.dataset.state = 'saved' }
+      return true
     } catch (e) {
       console.error('Save failed:', e)
-      if (ind) { ind.textContent = '⚠️ فشل الحفظ'; ind.style.color = '#dc2626' }
+      if (ind) { ind.textContent = '⚠️ فشل الحفظ'; ind.dataset.state = 'error' }
+      return false
     }
   },
 
@@ -995,12 +1030,25 @@ const Builder = {
       return
     }
     try {
-      await this._saveNow()
+      const saved = await this._saveNow()
+      if (!saved) {
+        Toast.show('تعذر حفظ التغييرات، لذلك لم يتم نشر الموقع. حاول مرة أخرى.', 'error')
+        return
+      }
       this.page = await API.publishSite(this.page.id)
       const liveUrl = subdomainUrl(this.page.slug)
       Toast.show(`تم نشر موقعك بنجاح! 🚀 رابط الموقع: <a href="${liveUrl}" target="_blank" style="color:#fff;text-decoration:underline;font-weight:700">${liveUrl}</a>`, 'success')
-      const b = document.querySelector('.badge-status'); if (b) { b.textContent = 'Published'; b.style.background = '#d1fae5'; b.style.color = '#065f46' }
-      const btn = document.getElementById('publishBtn'); if (btn) btn.textContent = 'Update'
+      const badge = document.getElementById('publishStatusBadge')
+      if (badge) {
+        badge.textContent = 'منشور (Live)'
+        badge.classList.remove('is-draft')
+        badge.classList.add('is-published')
+      }
+      const btn = document.getElementById('publishBtn')
+      if (btn) {
+        const label = btn.querySelector('span')
+        if (label) label.textContent = 'تحديث النشر'
+      }
     } catch (e) { Toast.show(e.message, 'error') }
   },
 
@@ -1037,7 +1085,7 @@ const Builder = {
       const gridEl = document.getElementById('templateGrid')
       const pagEl = document.getElementById('tplPagination')
 
-      countEl.textContent = `${filtered.length} template${filtered.length !== 1 ? 's' : ''} found`
+      countEl.textContent = `تم العثور على ${filtered.length} قالب جاهز`
 
       gridEl.innerHTML = items.map(t => {
         const iconSvg = t.icon && t.icon.includes('<svg') ? t.icon : (ICONS[t.theme?.icon] || ICONS.globe)
@@ -1052,7 +1100,7 @@ const Builder = {
 
       if (totalPages > 1) {
         let pag = ''
-        if (currentPage > 1) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage - 1}">← Prev</button>`
+        if (currentPage > 1) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage - 1}">السابق</button>`
         for (let i = 1; i <= totalPages; i++) {
           if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
             pag += `<button class="btn btn-sm tpl-page ${i === currentPage ? 'btn-primary' : 'btn-ghost'}" data-page="${i}">${i}</button>`
@@ -1060,7 +1108,7 @@ const Builder = {
             pag += `<span style="color:var(--gray-400)">...</span>`
           }
         }
-        if (currentPage < totalPages) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage + 1}">Next →</button>`
+        if (currentPage < totalPages) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage + 1}">التالي</button>`
         pagEl.innerHTML = pag
         pagEl.querySelectorAll('.tpl-page').forEach(b => b.addEventListener('click', () => { currentPage = parseInt(b.dataset.page); renderTemplates() }))
       } else {
@@ -1071,8 +1119,8 @@ const Builder = {
         card.addEventListener('click', async () => {
           try {
             div.remove()
-            const site = await API.createSite({ title: card.querySelector('h4')?.textContent || 'My New Site', template_type: card.dataset.template })
-            Toast.show('Site created!', 'success'); Router.navigate('builder/' + site.id)
+            const site = await API.createSite({ title: card.querySelector('h4')?.textContent || 'موقعي الجديد', template_type: card.dataset.template })
+            Toast.show('تم إنشاء الموقع بنجاح!', 'success'); Router.navigate('builder/' + site.id)
           } catch (e) { Toast.show(e.message, 'error') }
         })
       })

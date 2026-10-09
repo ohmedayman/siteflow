@@ -11,27 +11,22 @@ const T = {
 </div>` },
 
   landing() {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     return `
-<div class="lp-clean" dir="${isAr?'rtl':'ltr'}">
+<div class="lp-clean" dir="rtl">
   <!-- 1. Hero Section -->
   <section class="lp-hero-clean">
     <div class="lp-hero-container">
       <div class="lp-pill-badge">
         <span class="lp-pill-dot"></span>
-        <span>${isAr ? 'الجيل الجديد لصناع المواقع والمتاجر الذكية 2.0 ⚡' : 'Next-Generation Visual Website Builder & AI Copilot 2.0'}</span>
+        <span>الجيل الجديد لصناع المواقع والمتاجر الذكية 2.0 ⚡</span>
       </div>
 
       <h1 class="lp-hero-title">
-        ${isAr
-          ? 'ابنِ موقعك الإلكتروني باحترافية<br><span class="lp-title-highlight">بالذكاء الاصطناعي وبدون كتابة كود</span>'
-          : 'Build Stunning Modern Websites<br><span class="lp-title-highlight">With AI Copilot — Zero Code</span>'}
+        ابنِ موقعك الإلكتروني باحترافية<br><span class="lp-title-highlight">بالذكاء الاصطناعي وبدون كتابة كود</span>
       </h1>
 
       <p class="lp-hero-subtitle">
-        ${isAr
-          ? 'تحدث بصوتك أو اكتب فكرتك، وسيقوم المساعد الذكي ببناء وتنسيق موقعك فوراً. محرر مرئي متكامل، قوالب عصرية، استضافة فائقة السرعة، ودعم الدفع المحلي.'
-          : 'Speak with your voice or type your idea, and our AI Copilot will build your complete site in seconds with hosting, payments, and custom domains.'}
+        تحدث بصوتك أو اكتب فكرتك، وسيقوم المساعد الذكي ببناء وتنسيق موقعك فوراً. محرر مرئي متكامل، قوالب عصرية، استضافة فائقة السرعة، ودعم الدفع المحلي.
       </p>
 
       <!-- 🌟 SiteFlow AI Copilot Search & Voice Bar -->
@@ -42,23 +37,23 @@ const T = {
             <span class="sf-ai-status-dot"></span>
           </div>
           <div class="sf-ai-header-text">
-            <strong>${isAr ? 'مساعد SiteFlow الذكي 2.0 (AI Copilot)' : 'SiteFlow AI Site Architect 2.0'}</strong>
-            <span id="sfAiVoiceStatusText">${isAr ? 'تحدث بالمايك أو اكتب ما تريده وسيقوم الذكاء الاصطناعي ببناء موقعك فوراً' : 'Speak or type what you need and watch it generate live'}</span>
+            <strong>مساعد SiteFlow الذكي 2.0 (AI Copilot)</strong>
+            <span id="sfAiVoiceStatusText">تحدث بالمايك أو اكتب ما تريده وسيقوم الذكاء الاصطناعي ببناء موقعك فوراً</span>
           </div>
         </div>
 
         <div class="sf-ai-input-wrap">
-          <input type="text" id="landingAiInput" placeholder="${isAr ? 'اكتب فكرتك أو اضغط المايك... مثلاً: صمم موقع لمطعم برجر مع منيو وواتساب، أو متجر عطور...' : 'Describe your site or use mic... e.g. Burger restaurant with menu and WhatsApp ordering...'}" />
-          <button id="landingAiVoiceBtn" class="sf-ai-voice-btn" type="button" title="${isAr ? 'تحدث بصوتك عبر المايك' : 'Speak with microphone'}">
+          <input type="text" id="landingAiInput" placeholder="اكتب فكرتك أو اضغط المايك... مثلاً: صمم موقع لمطعم برجر مع منيو وواتساب، أو متجر عطور..." />
+          <button id="landingAiVoiceBtn" class="sf-ai-voice-btn" type="button" title="تحدث بصوتك عبر المايك">
             ${ICONS.mic}
           </button>
           <button id="landingAiSubmitBtn" class="sf-ai-submit-btn" type="button">
-            ${ICONS.sparkles} <span>${isAr ? 'توليد بالذكاء الاصطناعي' : 'Generate with AI'}</span>
+            ${ICONS.sparkles} <span>توليد بالذكاء الاصطناعي</span>
           </button>
         </div>
 
         <div class="sf-ai-chips">
-          <span class="sf-ai-chips-lbl">${isAr ? '💡 أفكار سريعة:' : '💡 Quick ideas:'}</span>
+          <span class="sf-ai-chips-lbl">💡 أفكار سريعة:</span>
           <button class="sf-ai-chip" type="button" data-prompt="موقع لمطعم برجر عصري مع منيو كامل وزر طلب واتساب">🍔 مطعم وبرجر</button>
           <button class="sf-ai-chip" type="button" data-prompt="متجر إلكتروني لبيع العطور ومستحضرات التجميل مع دفع فوري">🛍️ متجر عطور وتجميل</button>
           <button class="sf-ai-chip" type="button" data-prompt="عيادة طبية متخصصة في طب الأسنان مع حجز مواعيد أونلاين">🏥 عيادة أسنان</button>
@@ -72,19 +67,19 @@ const T = {
 
       <div class="lp-hero-actions">
         <a href="#/login" class="btn btn-primary btn-lg js-auth-guest lp-btn-hero">
-          ${isAr ? 'ابدأ مجاناً الآن — بدون بطاقة بنكية 🚀' : 'Start Free Today — No Credit Card 🚀'}
+          ابدأ مجاناً الآن — بدون بطاقة بنكية 🚀
         </a>
         <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden lp-btn-hero">
-          ${isAr ? 'الانتقال إلى لوحة التحكم' : 'Go to Dashboard'}
+          الانتقال إلى لوحة التحكم
         </a>
         <a href="#/showcase" class="btn btn-outline btn-lg lp-btn-secondary">
-          ${isAr ? 'استعرض معرض المواقع والقوالب' : 'Explore Showcase & Templates'}
+          استعرض معرض المواقع والقوالب
         </a>
       </div>
 
       <div class="lp-hero-social">
         <div class="lp-stars-line">★★★★★</div>
-        <span>${isAr ? 'تقييم <strong>4.9/5</strong> من أكثر من <strong>12,000 مبدع ومتجر</strong> في الشرق الأوسط' : 'Rated <strong>4.9/5</strong> by over <strong>12,000+ creators & stores</strong>'}</span>
+        <span>تقييم <strong>4.9/5</strong> من أكثر من <strong>12,000 مبدع ومتجر</strong> في الشرق الأوسط</span>
       </div>
 
       <!-- Minimalist Product Mockup Window -->
@@ -100,47 +95,47 @@ const T = {
             <span>mysite.siteflow.vexonet.online</span>
           </div>
           <div class="lp-mockup-tag">
-            <span>⚡ ${isAr ? 'محرر حي ومباشر' : 'Live Visual Editor'}</span>
+            <span>⚡ محرر حي ومباشر</span>
           </div>
         </div>
 
         <div class="lp-mockup-screen">
           <div class="lp-mockup-sidebar">
-            <div class="lp-sidebar-heading">${isAr ? 'أقسام الموقع' : 'Site Sections'}</div>
+            <div class="lp-sidebar-heading">أقسام الموقع</div>
             <div class="lp-sidebar-item active">
-              ${ICONS.wrap(ICONS.home, 14)} <span>${isAr ? 'الرئيسية (Hero)' : 'Hero Banner'}</span>
+              ${ICONS.wrap(ICONS.home, 14)} <span>الرئيسية (Hero)</span>
             </div>
             <div class="lp-sidebar-item">
-              ${ICONS.wrap(ICONS.briefcase, 14)} <span>${isAr ? 'الخدمات والمنتجات' : 'Products & Services'}</span>
+              ${ICONS.wrap(ICONS.briefcase, 14)} <span>الخدمات والمنتجات</span>
             </div>
             <div class="lp-sidebar-item">
-              ${ICONS.wrap(ICONS.image, 14)} <span>${isAr ? 'معرض الصور' : 'Photo Gallery'}</span>
+              ${ICONS.wrap(ICONS.image, 14)} <span>معرض الصور</span>
             </div>
             <div class="lp-sidebar-item">
-              ${ICONS.wrap(ICONS.message, 14)} <span>${isAr ? 'آراء العملاء' : 'Customer Reviews'}</span>
+              ${ICONS.wrap(ICONS.message, 14)} <span>آراء العملاء</span>
             </div>
             <div class="lp-sidebar-item">
-              ${ICONS.wrap(ICONS.mail, 14)} <span>${isAr ? 'نموذج التواصل' : 'Contact Form'}</span>
+              ${ICONS.wrap(ICONS.mail, 14)} <span>نموذج التواصل</span>
             </div>
           </div>
           <div class="lp-mockup-content">
             <div class="lp-mock-banner">
-              <h2>${isAr ? 'مرحباً بك في متجرنا العصري' : 'Welcome to Our Modern Store'}</h2>
-              <p>${isAr ? 'أفضل المنتجات عالية الجودة مع شحن سريع وتصفح فائق السلاسة' : 'Premium curated products with fast delivery and seamless checkout.'}</p>
-              <div class="lp-mock-btn">${isAr ? 'تسوق المنتجات الآن' : 'Shop Now'}</div>
+              <h2>مرحباً بك في متجرنا العصري</h2>
+              <p>أفضل المنتجات عالية الجودة مع شحن سريع وتصفح فائق السلاسة</p>
+              <div class="lp-mock-btn">تسوق المنتجات الآن</div>
             </div>
             <div class="lp-mock-cards">
               <div class="lp-mock-card">
                 <div class="lp-mock-card-icon">⚡</div>
-                <strong>${isAr ? 'شحن فوري' : 'Fast Shipping'}</strong>
+                <strong>شحن فوري</strong>
               </div>
               <div class="lp-mock-card">
                 <div class="lp-mock-card-icon">💎</div>
-                <strong>${isAr ? 'جودة مضمونة' : 'Top Quality'}</strong>
+                <strong>جودة مضمونة</strong>
               </div>
               <div class="lp-mock-card">
                 <div class="lp-mock-card-icon">📱</div>
-                <strong>${isAr ? 'دفع ميسر' : 'Easy Payment'}</strong>
+                <strong>دفع ميسر</strong>
               </div>
             </div>
           </div>
@@ -152,7 +147,7 @@ const T = {
   <!-- 🌟 Official Partners & Payment Gateways Strip -->
   <section class="lp-partners-strip">
     <div class="lp-container">
-      <p class="lp-partners-title">${isAr ? 'تكامل رسمي وسلس مع كبرى المنصات وبوابات الدفع العالمية والمحلية' : 'Seamless official integration with leading global & local platforms'}</p>
+      <p class="lp-partners-title">تكامل رسمي وسلس مع كبرى المنصات وبوابات الدفع العالمية والمحلية</p>
       <div class="lp-partners-grid">
         <div class="lp-partner-item" title="Google Search & SEO">
           ${ICONS.wrap(ICONS.google, 26)} <span>Google</span>
@@ -188,19 +183,19 @@ const T = {
       <div class="lp-stats-grid-clean">
         <div class="lp-stat-box">
           <div class="lp-stat-val">+12,000</div>
-          <div class="lp-stat-lbl">${isAr ? 'موقع ومتجر نشط' : 'Active Websites'}</div>
+          <div class="lp-stat-lbl">موقع ومتجر نشط</div>
         </div>
         <div class="lp-stat-box">
           <div class="lp-stat-val">&lt; 0.3s</div>
-          <div class="lp-stat-lbl">${isAr ? 'سرعة استجابة فائقة' : 'Page Load Speed'}</div>
+          <div class="lp-stat-lbl">سرعة استجابة فائقة</div>
         </div>
         <div class="lp-stat-box">
           <div class="lp-stat-val">99.9%</div>
-          <div class="lp-stat-lbl">${isAr ? 'استقرار سحابي دائم' : 'Uptime Guarantee'}</div>
+          <div class="lp-stat-lbl">استقرار سحابي دائم</div>
         </div>
         <div class="lp-stat-box">
           <div class="lp-stat-val">100%</div>
-          <div class="lp-stat-lbl">${isAr ? 'توافق مع الجوال والتابلت' : 'Mobile Responsive'}</div>
+          <div class="lp-stat-lbl">توافق مع الجوال والتابلت</div>
         </div>
       </div>
     </div>
@@ -210,50 +205,50 @@ const T = {
   <section class="lp-section-clean">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">${isAr ? 'مميزات المنصة' : 'Core Features'}</span>
+        <span class="lp-section-pill">مميزات المنصة</span>
         <h2 class="lp-section-heading">
-          ${isAr ? 'كل ما تحتاجه لإطلاق موقع احترافي متكامل' : 'Everything You Need to Succeed Online'}
+          كل ما تحتاجه لإطلاق موقع احترافي متكامل
         </h2>
         <p class="lp-section-subheading">
-          ${isAr ? 'أدوات قوية، واجهة مبسطة، وتكامل تام مع بوابات الدفع والسيو بدون أي تعقيد تقني.' : 'Powerful tools, intuitive interface, and seamless payments without technical headaches.'}
+          أدوات قوية، واجهة مبسطة، وتكامل تام مع بوابات الدفع والسيو بدون أي تعقيد تقني.
         </p>
       </div>
 
       <div class="lp-features-grid-clean">
         <div class="lp-feature-card-clean">
           <div class="lp-f-icon" style="background:#e0e7ff;color:#4f46e5">${ICONS.wrap(ICONS.edit, 22)}</div>
-          <h3>${isAr ? 'محرر مرئي بالسحب والإفلات' : 'Visual Drag & Drop Builder'}</h3>
-          <p>${isAr ? 'تحكم كامل وبديهي في كل نص، زر، صورة ولون مع معاينة مباشرة وتعديل فوري.' : 'Intuitive visual controls for every text, button, image, and color with real-time editing.'}</p>
+          <h3>محرر مرئي بالسحب والإفلات</h3>
+          <p>تحكم كامل وبديهي في كل نص، زر، صورة ولون مع معاينة مباشرة وتعديل فوري.</p>
         </div>
 
         <div class="lp-feature-card-clean">
           <div class="lp-f-icon" style="background:#dcfce7;color:#16a34a">${ICONS.wrap(ICONS.globe, 22)}</div>
-          <h3>${isAr ? 'دومين فرعي مجاني واستضافة فائقة' : 'Free Subdomain & Cloud CDN'}</h3>
-          <p>${isAr ? 'احصل فوراً على رابط خاص بموقعك yourname.siteflow.vexonet.online مع شهادة SSL مجانية.' : 'Get an instant live subdomain with free SSL and worldwide fast CDN hosting.'}</p>
+          <h3>دومين فرعي مجاني واستضافة فائقة</h3>
+          <p>احصل فوراً على رابط خاص بموقعك yourname.siteflow.vexonet.online مع شهادة SSL مجانية.</p>
         </div>
 
         <div class="lp-feature-card-clean">
           <div class="lp-f-icon" style="background:#fef3c7;color:#d97706">${ICONS.wrap(ICONS.dollar, 22)}</div>
-          <h3>${isAr ? 'دعم الدفع الإلكتروني المحلي' : 'Local Payments Integration'}</h3>
-          <p>${isAr ? 'استقبل مدفوعات متجرك بسهولة عبر إنستاباي، فودافون كاش، وفوري بالإضافة للبطاقات البنكية.' : 'Accept customer payments smoothly via InstaPay, mobile wallets, Fawry, and cards.'}</p>
+          <h3>دعم الدفع الإلكتروني المحلي</h3>
+          <p>استقبل مدفوعات متجرك بسهولة عبر إنستاباي، فودافون كاش، وفوري بالإضافة للبطاقات البنكية.</p>
         </div>
 
         <div class="lp-feature-card-clean">
           <div class="lp-f-icon" style="background:#fce7f3;color:#ec4899">${ICONS.wrap(ICONS.search, 22)}</div>
-          <h3>${isAr ? 'متوافق تلقائياً مع محركات البحث SEO' : 'Built-in SEO & Rich Meta'}</h3>
-          <p>${isAr ? 'تهيئة تلقائية لوسوم الميتا وخريطة الموقع وسرعة التحميل لمساعدتك على تصدر نتائج Google.' : 'Automatic meta tags, sitemaps, and fast speeds to help your site rank higher on Google.'}</p>
+          <h3>متوافق تلقائياً مع محركات البحث SEO</h3>
+          <p>تهيئة تلقائية لوسوم الميتا وخريطة الموقع وسرعة التحميل لمساعدتك على تصدر نتائج Google.</p>
         </div>
 
         <div class="lp-feature-card-clean">
           <div class="lp-f-icon" style="background:#ede9fe;color:#7c3aed">${ICONS.wrap(ICONS.sparkles, 22)}</div>
-          <h3>${isAr ? 'مساعد الذكاء الاصطناعي لكتابة المحتوى' : 'AI Content Assistant'}</h3>
-          <p>${isAr ? 'أنشئ نصوصاً تسويقية جذابة، عناوين قوية، ووصفاً لمنتجاتك بضغطة زر واحدة.' : 'Generate compelling copy, catchy headlines, and product descriptions with AI.'}</p>
+          <h3>مساعد الذكاء الاصطناعي لكتابة المحتوى</h3>
+          <p>أنشئ نصوصاً تسويقية جذابة، عناوين قوية، ووصفاً لمنتجاتك بضغطة زر واحدة.</p>
         </div>
 
         <div class="lp-feature-card-clean">
           <div class="lp-f-icon" style="background:#fee2e2;color:#dc2626">${ICONS.wrap(ICONS.form, 22)}</div>
-          <h3>${isAr ? 'نماذج استفسارات وإدارة الطلبات' : 'Lead Forms & Order Management'}</h3>
-          <p>${isAr ? 'استقبل رسائل العملاء وطلبات المتجر فوراً في لوحة تحكمك مع إشعارات فورية.' : 'Capture customer leads and store orders instantly with real-time dashboard notifications.'}</p>
+          <h3>نماذج استفسارات وإدارة الطلبات</h3>
+          <p>استقبل رسائل العملاء وطلبات المتجر فوراً في لوحة تحكمك مع إشعارات فورية.</p>
         </div>
       </div>
     </div>
@@ -263,28 +258,28 @@ const T = {
   <section class="lp-section-clean lp-section-bg">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">${isAr ? 'خطوات بسيطة' : 'How It Works'}</span>
-        <h2 class="lp-section-heading">${isAr ? '3 خطوات بسيطة لإطلاق موقعك للعالم' : '3 Simple Steps to Launch Your Site'}</h2>
-        <p class="lp-section-subheading">${isAr ? 'لا تحتاج لأي خبرة برمجية أو تصميم مسبق. ابدأ الآن وانشر في دقائق.' : 'No coding or design skills needed. Start now and go live in minutes.'}</p>
+        <span class="lp-section-pill">خطوات بسيطة</span>
+        <h2 class="lp-section-heading">3 خطوات بسيطة لإطلاق موقعك للعالم</h2>
+        <p class="lp-section-subheading">لا تحتاج لأي خبرة برمجية أو تصميم مسبق. ابدأ الآن وانشر في دقائق.</p>
       </div>
 
       <div class="lp-steps-clean">
         <div class="lp-step-card-clean">
           <div class="lp-step-number">1</div>
-          <h3>${isAr ? 'اختر القالب المناسب' : 'Pick a Template'}</h3>
-          <p>${isAr ? 'انتقِ قالباً مصمماً باحترافية يناسب مجال عملك، سواء كان متجراً، شركة، مطعماً، أو بورتفوليو.' : 'Select a sleek, industry-tailored template designed for high conversion.'}</p>
+          <h3>اختر القالب المناسب</h3>
+          <p>انتقِ قالباً مصمماً باحترافية يناسب مجال عملك، سواء كان متجراً، شركة، مطعماً، أو بورتفوليو.</p>
         </div>
 
         <div class="lp-step-card-clean">
           <div class="lp-step-number">2</div>
-          <h3>${isAr ? 'خصّص المحتوى والألوان' : 'Customize Content'}</h3>
-          <p>${isAr ? 'غيّر النصوص والصور والألوان بنقرة واحدة عبر المحرر المرئي التفاعلي والسلس.' : 'Edit text, swap images, and adjust colors with zero friction.'}</p>
+          <h3>خصّص المحتوى والألوان</h3>
+          <p>غيّر النصوص والصور والألوان بنقرة واحدة عبر المحرر المرئي التفاعلي والسلس.</p>
         </div>
 
         <div class="lp-step-card-clean">
           <div class="lp-step-number">3</div>
-          <h3>${isAr ? 'انشر موقعك فوراً' : 'Publish Instantly'}</h3>
-          <p>${isAr ? 'احصل على دومين فرعي مجاني أو اربط دومينك الخاص وانشر موقعك لعملائك بنقرة زر.' : 'Go live with a free subdomain or connect your custom domain with one click.'}</p>
+          <h3>انشر موقعك فوراً</h3>
+          <p>احصل على دومين فرعي مجاني أو اربط دومينك الخاص وانشر موقعك لعملائك بنقرة زر.</p>
         </div>
       </div>
     </div>
@@ -294,56 +289,56 @@ const T = {
   <section class="lp-section-clean" id="templatesSection">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">${isAr ? 'قوالب جاهزة' : 'Featured Templates'}</span>
-        <h2 class="lp-section-heading">${isAr ? 'تصاميم حديثة تناسب كل الأنشطة التجارية' : 'Modern Templates for Every Business'}</h2>
-        <p class="lp-section-subheading">${isAr ? 'أكثر من 40 قالباً مجهزاً باللغتين العربية والإنجليزية لزيادة مبيعاتك وتفاعلك.' : 'Over 40 responsive templates in Arabic and English ready to customize.'}</p>
+        <span class="lp-section-pill">قوالب جاهزة</span>
+        <h2 class="lp-section-heading">تصاميم حديثة تناسب كل الأنشطة التجارية</h2>
+        <p class="lp-section-subheading">أكثر من 40 قالباً مجهزاً باللغتين العربية والإنجليزية لزيادة مبيعاتك وتفاعلك.</p>
       </div>
 
       <div class="lp-templates-grid">
         <div class="lp-template-card">
           <div class="lp-template-thumb" style="background:#f1f5f9;font-size:3.5rem">🛍️</div>
           <div class="lp-template-info">
-            <span class="lp-template-badge">${isAr ? 'متجر إلكتروني' : 'E-Commerce'}</span>
-            <h4>${isAr ? 'متجر أزياء وإكسسوارات' : 'Fashion Store'}</h4>
-            <p>${isAr ? 'عرض منتجات، سلة مشتريات، ودفع محلي ميسر.' : 'Product catalog, shopping cart, and local checkout.'}</p>
-            <a href="#/login" class="btn btn-outline btn-sm w-full">${isAr ? 'استخدم هذا القالب' : 'Use Template'}</a>
+            <span class="lp-template-badge">متجر إلكتروني</span>
+            <h4>متجر أزياء وإكسسوارات</h4>
+            <p>عرض منتجات، سلة مشتريات، ودفع محلي ميسر.</p>
+            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب</a>
           </div>
         </div>
 
         <div class="lp-template-card">
           <div class="lp-template-thumb" style="background:#f1f5f9;font-size:3.5rem">☕</div>
           <div class="lp-template-info">
-            <span class="lp-template-badge">${isAr ? 'مطاعم وكافيهات' : 'Food & Cafe'}</span>
-            <h4>${isAr ? 'كافيه ومخبوزات أرتيزان' : 'Artisan Cafe'}</h4>
-            <p>${isAr ? 'قائمة طعام تفاعلية، حجز طاولات، وموقع على الخريطة.' : 'Interactive digital menu and table reservations.'}</p>
-            <a href="#/login" class="btn btn-outline btn-sm w-full">${isAr ? 'استخدم هذا القالب' : 'Use Template'}</a>
+            <span class="lp-template-badge">مطاعم وكافيهات</span>
+            <h4>كافيه ومخبوزات أرتيزان</h4>
+            <p>قائمة طعام تفاعلية، حجز طاولات، وموقع على الخريطة.</p>
+            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب</a>
           </div>
         </div>
 
         <div class="lp-template-card">
           <div class="lp-template-thumb" style="background:#f1f5f9;font-size:3.5rem">🚀</div>
           <div class="lp-template-info">
-            <span class="lp-template-badge">${isAr ? 'شركات وتقنية' : 'Tech & SaaS'}</span>
-            <h4>${isAr ? 'شركة برمجيات وخدمات' : 'Software Agency'}</h4>
-            <p>${isAr ? 'عرض المزايا، الأسعار، واستمارة طلب العروض.' : 'Feature highlights, pricing tiers, and lead form.'}</p>
-            <a href="#/login" class="btn btn-outline btn-sm w-full">${isAr ? 'استخدم هذا القالب' : 'Use Template'}</a>
+            <span class="lp-template-badge">شركات وتقنية</span>
+            <h4>شركة برمجيات وخدمات</h4>
+            <p>عرض المزايا، الأسعار، واستمارة طلب العروض.</p>
+            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب</a>
           </div>
         </div>
 
         <div class="lp-template-card">
           <div class="lp-template-thumb" style="background:#f1f5f9;font-size:3.5rem">🎨</div>
           <div class="lp-template-info">
-            <span class="lp-template-badge">${isAr ? 'بورتفوليو' : 'Portfolio'}</span>
-            <h4>${isAr ? 'معرض أعمال شخصي' : 'Creative Portfolio'}</h4>
-            <p>${isAr ? 'عرض الأعمال الإبداعية ونموذج اتصال سريع للمستقلين.' : 'Portfolio showcase and instant contact for creators.'}</p>
-            <a href="#/login" class="btn btn-outline btn-sm w-full">${isAr ? 'استخدم هذا القالب' : 'Use Template'}</a>
+            <span class="lp-template-badge">بورتفوليو</span>
+            <h4>معرض أعمال شخصي</h4>
+            <p>عرض الأعمال الإبداعية ونموذج اتصال سريع للمستقلين.</p>
+            <a href="#/login" class="btn btn-outline btn-sm w-full">استخدم هذا القالب</a>
           </div>
         </div>
       </div>
 
       <div style="text-align:center;margin-top:32px">
         <a href="#/showcase" class="btn btn-outline btn-lg" style="border-radius:12px;font-weight:700">
-          ${isAr ? 'عرض كافة القوالب والمعرض (40+ قالب) ←' : 'Browse All Templates & Showcase (40+) →'}
+          عرض كافة القوالب والمعرض (40+ قالب) ←
         </a>
       </div>
     </div>
@@ -353,57 +348,57 @@ const T = {
   <section class="lp-section-clean lp-section-bg">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">${isAr ? 'الأسعار والباقات' : 'Transparent Pricing'}</span>
-        <h2 class="lp-section-heading">${isAr ? 'خطط بسيطة ومرنة تناسب الجميع' : 'Simple Plans That Grow With You'}</h2>
-        <p class="lp-section-subheading">${isAr ? 'ابدأ مجاناً وجرب كل شيء. يمكنك الترقية في أي وقت.' : 'Start for free and upgrade whenever you are ready.'}</p>
+        <span class="lp-section-pill">الأسعار والباقات</span>
+        <h2 class="lp-section-heading">خطط بسيطة ومرنة تناسب الجميع</h2>
+        <p class="lp-section-subheading">ابدأ مجاناً وجرب كل شيء. يمكنك الترقية في أي وقت.</p>
       </div>
 
       <div class="lp-pricing-grid-clean">
         <div class="lp-p-card">
-          <h3>${isAr ? 'مجاني (14 يوماً)' : 'Free Trial'}</h3>
-          <div class="lp-p-price">0 <span>${isAr ? 'ج.م / 14 يوم' : 'EGP / 14 days'}</span></div>
-          <p class="lp-p-desc">${isAr ? 'لتجربة المحرر وإنشاء موقعك الأول' : 'To build and launch your first website'}</p>
+          <h3>مجاني (14 يوماً)</h3>
+          <div class="lp-p-price">0 <span>ج.م / 14 يوم</span></div>
+          <p class="lp-p-desc">لتجربة المحرر وإنشاء موقعك الأول</p>
           <ul class="lp-p-list">
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'دومين فرعي مجاني' : 'Free fast subdomain'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'موقع إلكتروني واحد' : '1 complete website'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'محرر مرئي سريع' : 'Drag-and-drop editor'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'استضافة سحابية فائقة' : 'Fast cloud hosting'}</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} دومين فرعي مجاني</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} موقع إلكتروني واحد</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} محرر مرئي سريع</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} استضافة سحابية فائقة</li>
           </ul>
-          <a href="#/plans" class="btn btn-outline btn-lg w-full">${isAr ? 'ابدأ مجاناً' : 'Start Free'}</a>
+          <a href="#/plans" class="btn btn-outline btn-lg w-full">ابدأ مجاناً</a>
         </div>
 
         <div class="lp-p-card lp-p-popular">
-          <div class="lp-p-badge">${isAr ? 'الأكثر اختياراً 🔥' : 'Most Popular 🔥'}</div>
-          <h3>${isAr ? 'احترافي (Pro)' : 'Pro Plan'}</h3>
-          <div class="lp-p-price">299 <span>${isAr ? 'ج.م / شهرياً' : 'EGP / mo'}</span></div>
-          <p class="lp-p-desc">${isAr ? 'لأصحاب الأعمال والشركات والمتاجر' : 'For businesses, online stores & startups'}</p>
+          <div class="lp-p-badge">الأكثر اختياراً 🔥</div>
+          <h3>احترافي (Pro)</h3>
+          <div class="lp-p-price">299 <span>ج.م / شهرياً</span></div>
+          <p class="lp-p-desc">لأصحاب الأعمال والشركات والمتاجر</p>
           <ul class="lp-p-list">
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'مواقع وصفحات غير محدودة' : 'Unlimited sites & pages'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'ربط دومين خاص (.com)' : 'Custom domain support'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'دفع إلكتروني (إنستاباي وفودافون كاش)' : 'InstaPay & Vodafone Cash'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'مساعد الذكاء الاصطناعي وتحسين SEO' : 'AI Assistant & SEO suite'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'دعم فني فوري وأولوية' : 'Priority support'}</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} مواقع وصفحات غير محدودة</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} ربط دومين خاص (.com)</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} دفع إلكتروني (إنستاباي وفودافون كاش)</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} مساعد الذكاء الاصطناعي وتحسين SEO</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} دعم فني فوري وأولوية</li>
           </ul>
-          <button class="btn btn-primary btn-lg w-full plan-btn" data-plan="pro">${isAr ? 'اشترك في الاحترافي 🔥' : 'Choose Pro 🔥'}</button>
+          <button class="btn btn-primary btn-lg w-full plan-btn" data-plan="pro">اشترك في الاحترافي 🔥</button>
         </div>
 
         <div class="lp-p-card">
-          <h3>${isAr ? 'بيزنس (Business)' : 'Business'}</h3>
-          <div class="lp-p-price">599 <span>${isAr ? 'ج.م / شهرياً' : 'EGP / mo'}</span></div>
-          <p class="lp-p-desc">${isAr ? 'للمؤسسات والشركات الكبيرة' : 'For large enterprises & scaling stores'}</p>
+          <h3>بيزنس (Business)</h3>
+          <div class="lp-p-price">599 <span>ج.م / شهرياً</span></div>
+          <p class="lp-p-desc">للمؤسسات والشركات الكبيرة</p>
           <ul class="lp-p-list">
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'متجر إلكتروني متقدم وإدارة المخزون' : 'Advanced store & inventory'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'تقارير مبيعات وتحليلات زوار حية' : 'Sales & traffic analytics'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'مدير حساب مخصص 24/7' : 'Dedicated account manager'}</li>
-            <li>${ICONS.wrap(ICONS.check, 16)} ${isAr ? 'بدون أي علامة تجارية نهائياً' : 'Zero platform branding'}</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} متجر إلكتروني متقدم وإدارة المخزون</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} تقارير مبيعات وتحليلات زوار حية</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} مدير حساب مخصص 24/7</li>
+            <li>${ICONS.wrap(ICONS.check, 16)} بدون أي علامة تجارية نهائياً</li>
           </ul>
-          <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="business">${isAr ? 'اشترك في بيزنس 🚀' : 'Choose Business 🚀'}</button>
+          <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="business">اشترك في بيزنس 🚀</button>
         </div>
       </div>
 
       <div style="text-align:center;margin-top:24px">
         <a href="#/plans" style="font-size:.92rem;font-weight:600;color:var(--primary)">
-          ${isAr ? 'عرض مقارنة الخطط والتفاصيل الكاملة ←' : 'Compare all plans and features →'}
+          عرض مقارنة الخطط والتفاصيل الكاملة ←
         </a>
       </div>
     </div>
@@ -413,44 +408,44 @@ const T = {
   <section class="lp-section-clean">
     <div class="lp-container">
       <div class="lp-section-header">
-        <span class="lp-section-pill">${isAr ? 'آراء العملاء' : 'Testimonials'}</span>
-        <h2 class="lp-section-heading">${isAr ? 'يثق بنا آلاف المبدعين وأصحاب المتاجر' : 'Loved by Thousands of Creators'}</h2>
-        <p class="lp-section-subheading">${isAr ? 'تجارب حقيقية لأشخاص طوروا أعمالهم ورفعوا مبيعاتهم باستخدام SiteFlow.' : 'Hear how creators and businesses launch and grow with SiteFlow.'}</p>
+        <span class="lp-section-pill">آراء العملاء</span>
+        <h2 class="lp-section-heading">يثق بنا آلاف المبدعين وأصحاب المتاجر</h2>
+        <p class="lp-section-subheading">تجارب حقيقية لأشخاص طوروا أعمالهم ورفعوا مبيعاتهم باستخدام SiteFlow.</p>
       </div>
 
       <div class="lp-testimonials-grid-clean">
         <div class="lp-t-card">
           <div class="lp-t-stars">★★★★★</div>
-          <p>${isAr ? '«أنشأت موقع متجري للملابس في نصف ساعة وربطت رقم إنستاباي. في أول أسبوع استقبلت أكثر من 40 طلباً بدون أي وسيط!»' : '"Launched my fashion store in 30 minutes with InstaPay checkout. Got over 40 orders in the very first week!"'}</p>
+          <p>«أنشأت موقع متجري للملابس في نصف ساعة وربطت رقم إنستاباي. في أول أسبوع استقبلت أكثر من 40 طلباً بدون أي وسيط!»</p>
           <div class="lp-t-author">
             <div class="lp-t-avatar" style="background:#4f46e5">أ</div>
             <div>
-              <strong>${isAr ? 'أحمد الشريف' : 'Ahmed El-Sharif'}</strong>
-              <span>${isAr ? 'مؤسس متجر أزياء' : 'Founder, Apparel Store'}</span>
+              <strong>أحمد الشريف</strong>
+              <span>مؤسس متجر أزياء</span>
             </div>
           </div>
         </div>
 
         <div class="lp-t-card">
           <div class="lp-t-stars">★★★★★</div>
-          <p>${isAr ? '«كنت أستخدم وردبريس وكان بطيئاً ومعقداً ويحتاج لمطور كل أسبوع. مع SiteFlow أعدل أي شيء بنفسي في ثوانٍ والسرعة خيالية.»' : '"Switched from slow, bloated WordPress. With SiteFlow, I update my site in seconds and page speed is lightning fast."'} </p>
+          <p>«كنت أستخدم وردبريس وكان بطيئاً ومعقداً ويحتاج لمطور كل أسبوع. مع SiteFlow أعدل أي شيء بنفسي في ثوانٍ والسرعة خيالية.» </p>
           <div class="lp-t-author">
             <div class="lp-t-avatar" style="background:#059669">س</div>
             <div>
-              <strong>${isAr ? 'سارة المنشاوي' : 'Sarah Manshawi'}</strong>
-              <span>${isAr ? 'مصممة جرافيك مستقلة' : 'Freelance Designer'}</span>
+              <strong>سارة المنشاوي</strong>
+              <span>مصممة جرافيك مستقلة</span>
             </div>
           </div>
         </div>
 
         <div class="lp-t-card">
           <div class="lp-t-stars">★★★★★</div>
-          <p>${isAr ? '«الدعم الفني ممتاز وسريع جداً، وتوافق الموقع مع الهواتف الذكية بنسبة 100% ساعدنا كثيراً في حملات إعلانات تيك توك وإنستجرام.»' : '"Great support, and 100% mobile responsiveness made our TikTok & Instagram ad campaigns convert significantly higher."'} </p>
+          <p>«الدعم الفني ممتاز وسريع جداً، وتوافق الموقع مع الهواتف الذكية بنسبة 100% ساعدنا كثيراً في حملات إعلانات تيك توك وإنستجرام.» </p>
           <div class="lp-t-author">
             <div class="lp-t-avatar" style="background:#d97706">م</div>
             <div>
-              <strong>${isAr ? 'محمد عبد الله' : 'Mohamed Abdullah'}</strong>
-              <span>${isAr ? 'مدير تسويق رقمي' : 'Digital Marketing Lead'}</span>
+              <strong>محمد عبد الله</strong>
+              <span>مدير تسويق رقمي</span>
             </div>
           </div>
         </div>
@@ -462,26 +457,26 @@ const T = {
   <section class="lp-section-clean lp-section-bg">
     <div class="lp-container" style="max-width:800px">
       <div class="lp-section-header">
-        <span class="lp-section-pill">${isAr ? 'الأسئلة الشائعة' : 'FAQ'}</span>
-        <h2 class="lp-section-heading">${isAr ? 'إجابات على أكثر الأسئلة تكراراً' : 'Frequently Asked Questions'}</h2>
+        <span class="lp-section-pill">الأسئلة الشائعة</span>
+        <h2 class="lp-section-heading">إجابات على أكثر الأسئلة تكراراً</h2>
       </div>
 
       <div class="lp-faq-list">
         <div class="lp-faq-item active" onclick="this.classList.toggle('active')">
-          <h3>${isAr ? 'هل التجربة المجانية مجانية بالفعل بدون شروط؟' : 'Is the free trial really free?'}</h3>
-          <p>${isAr ? 'نعم، يمكنك إنشاء حسابك واستخدام المحرر ونشر موقعك على دومين فرعي مجاناً وبدون إدخال أي بطاقة دفع.' : 'Yes! You can design, customize, and publish your site with a free subdomain with zero credit card required.'}</p>
+          <h3>هل التجربة المجانية مجانية بالفعل بدون شروط؟</h3>
+          <p>نعم، يمكنك إنشاء حسابك واستخدام المحرر ونشر موقعك على دومين فرعي مجاناً وبدون إدخال أي بطاقة دفع.</p>
         </div>
         <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-          <h3>${isAr ? 'هل يمكنني ربط دوميني الخاص بي مثل (myname.com)؟' : 'Can I connect a custom domain (.com)?'}</h3>
-          <p>${isAr ? 'نعم، تدعم باقات Pro و Business ربط أي دومين خاص تملكه مع شهادة SSL مجانية وتوجيه تلقائي.' : 'Yes, Pro and Business plans support custom domains with free automatic SSL certificates.'}</p>
+          <h3>هل يمكنني ربط دوميني الخاص بي مثل (myname.com)؟</h3>
+          <p>نعم، تدعم باقات Pro و Business ربط أي دومين خاص تملكه مع شهادة SSL مجانية وتوجيه تلقائي.</p>
         </div>
         <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-          <h3>${isAr ? 'كيف يتم استقبال المدفوعات والطلبات؟' : 'How are payments and orders received?'}</h3>
-          <p>${isAr ? 'يمكنك ربط حسابك في إنستاباي أو فودافون كاش أو فوري، ليستقبل متجرك إشعارات التحويل والطلبات مباشرة في لوحة التحكم.' : 'Connect your InstaPay or mobile wallets to receive order notifications and payment confirmations directly in your dashboard.'}</p>
+          <h3>كيف يتم استقبال المدفوعات والطلبات؟</h3>
+          <p>يمكنك ربط حسابك في إنستاباي أو فودافون كاش أو فوري، ليستقبل متجرك إشعارات التحويل والطلبات مباشرة في لوحة التحكم.</p>
         </div>
         <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-          <h3>${isAr ? 'هل أحتاج لأي خبرة سابقة في البرمجة؟' : 'Do I need any coding knowledge?'}</h3>
-          <p>${isAr ? 'إطلاقاً! المنصة مبنية لتكون بديهية 100% مع واجهة مرئية بنظام السحب والإفلات وتعديل النصوص مباشرة.' : 'Not at all! The platform is 100% visual with drag-and-drop ease and instant text editing.'}</p>
+          <h3>هل أحتاج لأي خبرة سابقة في البرمجة؟</h3>
+          <p>إطلاقاً! المنصة مبنية لتكون بديهية 100% مع واجهة مرئية بنظام السحب والإفلات وتعديل النصوص مباشرة.</p>
         </div>
       </div>
     </div>
@@ -491,20 +486,20 @@ const T = {
   <section class="lp-bottom-cta">
     <div class="lp-container" style="text-align:center">
       <h2 style="font-size:2.2rem;font-weight:900;color:#fff;margin-bottom:12px">
-        ${isAr ? 'جاهز لإطلاق موقعك الإلكتروني اليوم؟' : 'Ready to Launch Your Website Today?'}
+        جاهز لإطلاق موقعك الإلكتروني اليوم؟
       </h2>
       <p style="color:var(--gray-300);font-size:1.05rem;max-width:560px;margin:0 auto 28px;line-height:1.6">
-        ${isAr ? 'انضم إلى آلاف المستخدمين الذين يثقون بمنصة SiteFlow لبناء حضورهم الرقمي وتنمية أعمالهم.' : 'Join thousands of creators using SiteFlow to grow their digital presence.'}
+        انضم إلى آلاف المستخدمين الذين يثقون بمنصة SiteFlow لبناء حضورهم الرقمي وتنمية أعمالهم.
       </p>
       <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
         <a href="#/login" class="btn btn-primary btn-lg js-auth-guest" style="border-radius:12px;font-weight:700;padding:16px 36px">
-          ${isAr ? 'ابدأ مجاناً الآن 🚀' : 'Start Free Now 🚀'}
+          ابدأ مجاناً الآن 🚀
         </a>
         <a href="#/dashboard" class="btn btn-primary btn-lg js-auth-user hidden" style="border-radius:12px;font-weight:700;padding:16px 36px">
-          ${isAr ? 'الانتقال للوحة التحكم' : 'Go to Dashboard'}
+          الانتقال للوحة التحكم
         </a>
         <a href="#/plans" class="btn btn-outline btn-lg" style="border-radius:12px;border-color:var(--gray-700);color:#fff">
-          ${isAr ? 'استعراض خطط الأسعار' : 'View Pricing Plans'}
+          استعراض خطط الأسعار
         </a>
       </div>
     </div>
@@ -520,38 +515,38 @@ const T = {
             <span>SiteFlow</span>
           </div>
           <p style="color:var(--gray-500);font-size:.86rem;line-height:1.6;max-width:280px">
-            ${isAr ? 'المنصة العربية الأولى لبناء المواقع والمتاجر السحابية بدون كود.' : 'The modern visual website builder for creators and businesses.'}
+            المنصة العربية الأولى لبناء المواقع والمتاجر السحابية بدون كود.
           </p>
           <div style="margin-top:14px">
             <button class="lang-switcher-btn" onclick="Auth.toggleLang()" style="font-size:.8rem">
-              🌐 ${isAr ? 'Switch to English' : 'التحويل للعربية'}
+              🌐 Switch to English
             </button>
           </div>
         </div>
 
         <div class="lp-footer-links-col">
-          <h5>${isAr ? 'المنتج' : 'Product'}</h5>
-          <a href="#/plans">${isAr ? 'باقات الأسعار' : 'Pricing'}</a>
-          <a href="#/showcase">${isAr ? 'معرض المواقع' : 'Showcase'}</a>
-          <a href="#/templates">${isAr ? 'القوالب الجاهزة' : 'Templates'}</a>
+          <h5>المنتج</h5>
+          <a href="#/plans">باقات الأسعار</a>
+          <a href="#/showcase">معرض المواقع</a>
+          <a href="#/templates">القوالب الجاهزة</a>
         </div>
 
         <div class="lp-footer-links-col">
-          <h5>${isAr ? 'الشركة' : 'Company'}</h5>
-          <a href="#/about">${isAr ? 'من نحن' : 'About Us'}</a>
-          <a href="#/help">${isAr ? 'المساعدة والدعم' : 'Help Center'}</a>
+          <h5>الشركة</h5>
+          <a href="#/about">من نحن</a>
+          <a href="#/help">المساعدة والدعم</a>
         </div>
 
         <div class="lp-footer-links-col">
-          <h5>${isAr ? 'القانوني' : 'Legal'}</h5>
-          <a href="#/privacy">${isAr ? 'سياسة الخصوصية' : 'Privacy Policy'}</a>
-          <a href="#/privacy">${isAr ? 'شروط الاستخدام' : 'Terms of Service'}</a>
+          <h5>القانوني</h5>
+          <a href="#/privacy">سياسة الخصوصية</a>
+          <a href="#/privacy">شروط الاستخدام</a>
         </div>
       </div>
 
       <div class="lp-footer-bottom-clean">
-        <p>&copy; ${new Date().getFullYear()} Site Flow Inc. ${isAr ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}</p>
-        <p style="color:var(--gray-400);font-size:.8rem">${isAr ? 'مدعوم بقاعدة بيانات Supabase PostgreSQL السحابية' : 'Powered by Supabase Cloud'}</p>
+        <p>&copy; ${new Date().getFullYear()} Site Flow Inc. جميع الحقوق محفوظة.</p>
+        <p style="color:var(--gray-400);font-size:.8rem">مدعوم بقاعدة بيانات Supabase PostgreSQL السحابية</p>
       </div>
     </div>
   </footer>
@@ -713,24 +708,24 @@ const T = {
 </div>` },
 
   dashboard() {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     return `
-<div class="dashboard-clean" dir="${isAr?'rtl':'ltr'}">
+<div class="dashboard-clean" dir="rtl">
   <!-- Minimalist Clean Dashboard Header -->
   <div class="dash-header-clean">
     <div class="dash-header-info">
+      <span class="dash-eyebrow">مساحة عملك</span>
       <div class="dash-title-row">
-        <h1>${isAr ? 'أهلاً بك،' : 'Welcome,'} <span class="js-user-name"></span></h1>
+        <h1>أهلاً بك، <span class="js-user-name"></span></h1>
       </div>
-      <p class="dash-subtitle">${isAr ? 'إدارة ومتابعة أداء وتفاعل مواقعك ومتاجرك الإلكترونية' : 'Manage and monitor your websites, stores, and analytics'}</p>
+      <p class="dash-subtitle">إدارة ومتابعة أداء وتفاعل مواقعك ومتاجرك الإلكترونية</p>
     </div>
     <div class="dash-header-actions">
       <a href="#/plans" class="btn btn-outline btn-sm dash-btn-outline" id="upgradeBtn">
-        ${ICONS.wrap(ICONS.trendingUp, 14)} <span>${isAr ? 'ترقية الخطة' : 'Upgrade Plan'}</span>
+        ${ICONS.wrap(ICONS.trendingUp, 14)} <span>ترقية الخطة</span>
       </a>
       <button class="btn btn-primary btn-sm dash-btn-primary" id="createSiteBtn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>${isAr ? 'إنشاء موقع جديد' : 'New Website'}</span>
+        <i data-lucide="plus" aria-hidden="true"></i>
+        <span>إنشاء موقع جديد</span>
       </button>
     </div>
   </div>
@@ -744,17 +739,17 @@ const T = {
         <span class="sf-ai-status-dot"></span>
       </div>
       <div class="sf-ai-header-text">
-        <strong>${isAr ? 'مساعد SiteFlow الذكي 2.0 (AI Copilot)' : 'SiteFlow AI Site Architect 2.0'}</strong>
-        <span id="sfDashAiStatusText">${isAr ? 'تحدث بالمايك أو اكتب فكرة موقع جديد وسنقوم بإنشائه فوراً في حسابك' : 'Speak or describe a new site idea to generate and open in builder'}</span>
+        <strong>مساعد SiteFlow الذكي 2.0 (AI Copilot)</strong>
+        <span id="sfDashAiStatusText">تحدث بالمايك أو اكتب فكرة موقع جديد وسنقوم بإنشائه فوراً في حسابك</span>
       </div>
     </div>
     <div class="sf-ai-input-wrap">
-      <input type="text" id="dashAiInput" placeholder="${isAr ? 'مثال: صمم موقع لشركة شحن وتوصيل، أو عيادة أسنان...' : 'e.g. Courier & delivery company website...'}" />
-      <button id="dashAiVoiceBtn" class="sf-ai-voice-btn" type="button" title="${isAr ? 'تحدث بالمايك' : 'Voice Input'}">
+      <input type="text" id="dashAiInput" placeholder="مثال: صمم موقع لشركة شحن وتوصيل، أو عيادة أسنان..." />
+      <button id="dashAiVoiceBtn" class="sf-ai-voice-btn" type="button" title="تحدث بالمايك">
         ${ICONS.mic}
       </button>
       <button id="dashAiSubmitBtn" class="sf-ai-submit-btn" type="button">
-        ${ICONS.sparkles} <span>${isAr ? 'توليد الموقع فوراً ⚡' : 'Generate Site ⚡'}</span>
+        ${ICONS.sparkles} <span>توليد الموقع فوراً ⚡</span>
       </button>
     </div>
     <div id="dashAiResult" class="sf-ai-result-box" style="display:none"></div>
@@ -835,23 +830,23 @@ const T = {
             ${page.slug || 'site'}.${MAIN_DOMAIN} ↗
           </a>
         </div>
-        <span style="font-size:.7rem;padding:3px 10px;border-radius:20px;font-weight:600;${page.published ? 'background:#dcfce7;color:#16a34a' : 'background:#fef3c7;color:#d97706'};letter-spacing:.02em">${page.published ? 'منشور (Live)' : 'مسودة (Draft)'}</span>
+        <span id="publishStatusBadge" class="builder-status-badge ${page.published ? 'is-published' : 'is-draft'}">${page.published ? 'منشور (Live)' : 'مسودة (Draft)'}</span>
       </div>
       <div class="center" style="display:flex;align-items:center;gap:8px">
         <div class="device-toggle" id="deviceToggle" style="background:#f1f5f9;padding:3px;border-radius:10px;display:flex;gap:4px">
-          <button class="device-btn active" data-device="desktop" title="شاشة الكمبيوتر (Desktop)" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
+          <button class="device-btn active" data-device="desktop" title="شاشة الكمبيوتر (Desktop)" aria-label="معاينة على شاشة الكمبيوتر" aria-pressed="true" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           </button>
-          <button class="device-btn" data-device="tablet" title="جهاز لوحي (Tablet)" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
+          <button class="device-btn" data-device="tablet" title="جهاز لوحي (Tablet)" aria-label="معاينة على جهاز لوحي" aria-pressed="false" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
           </button>
-          <button class="device-btn" data-device="mobile" title="هاتف ذكي (Mobile)" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
+          <button class="device-btn" data-device="mobile" title="هاتف ذكي (Mobile)" aria-label="معاينة على هاتف ذكي" aria-pressed="false" style="padding:6px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
           </button>
         </div>
       </div>
       <div class="right" style="display:flex;align-items:center;gap:8px">
-        <span id="saveStatusIndicator" style="font-size:0.75rem;color:var(--gray-400);margin-left:4px">✓ محفوظة</span>
+        <span id="saveStatusIndicator" class="builder-save-status" data-state="saved" role="status" aria-live="polite">✓ محفوظة</span>
         <button class="btn btn-ghost btn-sm" id="undoBtn" title="تراجع (Ctrl+Z)" style="padding:6px 8px">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
         </button>
@@ -873,7 +868,7 @@ const T = {
         </button>
         <button class="btn btn-primary btn-sm" id="publishBtn" style="padding:8px 18px;font-weight:700">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-          ${page.published ? 'تحديث النشر' : 'نشر الموقع'}
+          <span>${page.published ? 'تحديث النشر' : 'نشر الموقع'}</span>
         </button>
       </div>
     </div>
@@ -2636,68 +2631,100 @@ const T = {
   },
 
   settings(user) {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const planNames = { free: 'تجريبي مجاني', basic: 'أساسي (Basic)', pro: 'احترافي (Pro) 🔥', business: 'بيزنس (Business) 🚀' }
     const currentPlanName = planNames[user?.plan] || user?.plan || 'مجاني'
+    const aiKey = typeof SiteFlowAI !== 'undefined' ? SiteFlowAI.getApiKey() : 'sk-8e872c0d18aed5b33cf2adbe5cdbbbeccfe17c4e131436bf9459a0899ff8c3f6'
+    const aiModel = typeof SiteFlowAI !== 'undefined' ? SiteFlowAI.getModel() : 'deepseek-chat'
 
     return `
-<div style="max-width:700px;margin:0 auto;padding:40px 24px" dir="${isAr ? 'rtl' : 'ltr'}">
+<div style="max-width:760px;margin:0 auto;padding:40px 24px" dir="rtl">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
     <div>
-      <h1 style="font-size:1.8rem;font-weight:900;margin:0 0 4px">${isAr ? 'إعدادات الحساب' : 'Account Settings'}</h1>
-      <p style="color:var(--gray-500);margin:0;font-size:.9rem">${isAr ? 'إدارة بياناتك الشخصية وتفاصيل حسابك' : 'Manage your personal details and account'}</p>
+      <h1 style="font-size:1.8rem;font-weight:900;margin:0 0 4px">إعدادات الحساب والمنصة</h1>
+      <p style="color:var(--gray-500);margin:0;font-size:.9rem">إدارة بياناتك الشخصية، مفتاح الذكاء الاصطناعي، وتفاصيل اشتراكك</p>
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">${isAr ? '← العودة للوحة التحكم' : '← Back'}</button>
+    <button class="btn btn-ghost btn-sm" onclick="Router.navigate('dashboard')">← العودة للوحة التحكم</button>
+  </div>
+
+  <!-- AI Configuration Card -->
+  <div class="card mb-24" style="padding:28px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+      <h3 style="margin:0;display:flex;align-items:center;gap:8px;font-size:1.15rem;font-weight:800">
+        ${ICONS.wrap(ICONS.sparkles, 20)} إعدادات ومفتاح الذكاء الاصطناعي (SiteFlow AI)
+      </h3>
+      <span class="badge" style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;padding:4px 12px;border-radius:12px;font-size:.82rem;font-weight:700">
+        ● متصل وجاهز للتوليد ⚡
+      </span>
+    </div>
+    <p style="color:var(--gray-500);font-size:.88rem;line-height:1.6;margin-bottom:18px">
+      يدعم الموقع توليد المواقع الكاملة بضغطة زر، كتابة النصوص التسويقية، وتحسين SEO. مفتاح الـ API مهيأ تلقائياً للعمل ويمكنك تغييره أو اختباره في أي وقت.
+    </p>
+    <div class="input-group" style="margin-bottom:16px">
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">مفتاح الذكاء الاصطناعي (AI API Key)</label>
+      <div style="display:flex;gap:8px">
+        <input class="input" id="settingsAiKey" type="password" value="${aiKey}" placeholder="sk-..." style="flex:1;font-family:monospace;direction:ltr;text-align:left">
+        <button class="btn btn-ghost btn-sm" id="toggleAiKeyVisibilityBtn" type="button" title="إظهار / إخفاء المفتاح" style="font-size:1.1rem;padding:0 14px">👁️</button>
+      </div>
+    </div>
+    <div class="input-group" style="margin-bottom:20px">
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">نموذج الذكاء الاصطناعي (AI Model)</label>
+      <select class="input" id="settingsAiModel">
+        <option value="deepseek-chat" ${aiModel === 'deepseek-chat' ? 'selected' : ''}>DeepSeek-V3 (الافتراضي فائق السرعة والكفاءة)</option>
+        <option value="deepseek-reasoner" ${aiModel === 'deepseek-reasoner' ? 'selected' : ''}>DeepSeek-R1 (التفكير والاستنتاج المتطور)</option>
+        <option value="gpt-4o-mini" ${aiModel === 'gpt-4o-mini' ? 'selected' : ''}>OpenAI GPT-4o Mini</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="saveAiSettingsBtn" style="border-radius:10px;font-weight:700">
+        حفظ مفتاح الذكاء الاصطناعي 💾
+      </button>
+      <button class="btn btn-outline" id="testAiConnectionBtn" style="border-radius:10px;font-weight:700">
+        اختبار التوليد الذكي ⚡
+      </button>
+    </div>
   </div>
 
   <!-- Personal Information Card -->
   <div class="card mb-24" style="padding:28px">
     <h3 style="margin-bottom:18px;display:flex;align-items:center;gap:8px;font-size:1.15rem;font-weight:800">
-      ${ICONS.wrap(ICONS.sparkles, 18)} ${isAr ? 'البيانات الشخصية' : 'Personal Information'}
+      ${ICONS.wrap(ICONS.user, 18)} البيانات الشخصية
     </h3>
     <div class="input-group" style="margin-bottom:16px">
-      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">${isAr ? 'الاسم الكامل' : 'Full Name'}</label>
-      <input class="input" id="settingsName" value="${user?.name||''}" placeholder="${isAr ? 'اسمك' : 'Your name'}">
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">الاسم الكامل</label>
+      <input class="input" id="settingsName" value="${user?.name||''}" placeholder="اسمك الكريم">
     </div>
     <div class="input-group" style="margin-bottom:16px">
-      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">${isAr ? 'البريد الإلكتروني' : 'Email Address'}</label>
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">البريد الإلكتروني</label>
       <input class="input" value="${user?.email||''}" disabled style="background:#f1f5f9;color:#64748b;cursor:not-allowed">
     </div>
-    <div class="input-group" style="margin-bottom:16px">
-      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">${isAr ? 'لغة الواجهة المفضلة' : 'Interface Language'}</label>
-      <select class="input" id="settingsLang">
-        <option value="ar" ${(user?.lang||'ar')==='ar'?'selected':''}>العربية (Arabic)</option>
-        <option value="en" ${(user?.lang||'ar')==='en'?'selected':''}>English</option>
-      </select>
-    </div>
     <div class="input-group" style="margin-bottom:20px">
-      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">${isAr ? 'كلمة المرور الجديدة (اختياري)' : 'New Password (Optional)'}</label>
-      <input class="input" id="settingsPassword" type="password" placeholder="${isAr ? 'اترك الحقل فارغاً للاحتفاظ بكلمة المرور الحالية' : 'Leave empty to keep current password'}">
+      <label style="display:block;font-weight:700;margin-bottom:6px;font-size:.86rem">كلمة المرور الجديدة (اختياري)</label>
+      <input class="input" id="settingsPassword" type="password" placeholder="اترك الحقل فارغاً للاحتفاظ بكلمة المرور الحالية">
     </div>
     <button class="btn btn-primary" id="saveSettingsBtn" style="border-radius:10px;font-weight:700">
-      ${isAr ? 'حفظ التغييرات الشخصية' : 'Save Profile Changes'}
+      حفظ التغييرات الشخصية
     </button>
   </div>
 
   <!-- Subscription Overview Card -->
   <div class="card" style="padding:28px">
     <h3 style="margin-bottom:14px;font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:8px">
-      ${ICONS.wrap(ICONS.trendingUp, 18)} ${isAr ? 'خطة الاشتراك الحالية' : 'Current Subscription'}
+      ${ICONS.wrap(ICONS.trendingUp, 18)} خطة الاشتراك الحالية
     </h3>
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:20px">
       <div>
-        <div style="font-size:.82rem;color:#64748b;margin-bottom:4px">${isAr ? 'الخطة المفعلة لحسابك' : 'Active Plan'}</div>
+        <div style="font-size:.82rem;color:#64748b;margin-bottom:4px">الخطة المفعلة لحسابك</div>
         <div style="font-size:1.3rem;font-weight:900;color:#0f172a">${currentPlanName}</div>
       </div>
       <div>
         <a href="#/plans" class="btn btn-primary btn-sm" style="border-radius:10px;font-weight:700">
-          ${isAr ? 'ترقية / تعديل الخطة 🚀' : 'Upgrade Plan 🚀'}
+          ترقية / تعديل الخطة 🚀
         </a>
       </div>
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <a href="#/billing" class="btn btn-outline btn-sm" style="border-radius:10px">
-        ${isAr ? 'عرض سجل الفواتير والمدفوعات' : 'View Billing History'}
+        عرض سجل الفواتير والمدفوعات
       </a>
     </div>
   </div>
@@ -2719,7 +2746,6 @@ const T = {
 </div>` },
 
   plans(plansData) {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const plans = plansData || {
       free:{name:'مجاني',name_en:'Free',price:0,features:['دومين فرعي مجاني','موقع إلكتروني واحد','محرر مرئي سريع','استضافة سحابية']},
       basic:{name:'أساسي',name_en:'Basic',price:129,yearly_price:999,features:['دومين خاص بك (.com)','10 صفحات كاملة','إزالة علامة المنصة','شهادة أمان SSL مجانية']},
@@ -2728,101 +2754,101 @@ const T = {
     }
 
     return `
-<div class="plans-page" style="max-width:1160px;margin:0 auto;padding:50px 24px 80px" dir="${isAr?'rtl':'ltr'}">
+<div class="plans-page" style="max-width:1160px;margin:0 auto;padding:50px 24px 80px" dir="rtl">
   <div style="text-align:center;max-width:680px;margin:0 auto 40px">
     <span class="badge" style="background:var(--primary-light);color:var(--primary-dark);padding:6px 16px;border-radius:20px;font-size:.85rem;font-weight:700;display:inline-block;margin-bottom:12px">
-      ${isAr ? 'خطط أسعار واضحة ومرنة' : 'Simple, Transparent Pricing'}
+      خطط أسعار واضحة ومرنة
     </span>
     <h1 style="font-size:2.4rem;font-weight:800;color:var(--gray-900);line-height:1.25;margin-bottom:12px">
-      ${isAr ? 'اختر الخطة المثالية لإطلاق وتنمية موقعك' : 'Choose the Perfect Plan for Your Website'}
+      اختر الخطة المثالية لإطلاق وتنمية موقعك
     </h1>
     <p style="color:var(--gray-500);font-size:1.05rem;line-height:1.6">
-      ${isAr ? 'ابدأ مجاناً وجرب كل المزايا. يمكنك الترقية أو إلغاء الاشتراك في أي وقت بدون أي رسوم خفية.' : 'Start free and explore all features. Upgrade or cancel anytime with zero hidden fees.'}
+      ابدأ مجاناً وجرب كل المزايا. يمكنك الترقية أو إلغاء الاشتراك في أي وقت بدون أي رسوم خفية.
     </p>
   </div>
 
   <div class="plans-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px;margin-bottom:50px">
     <!-- Free Plan -->
     <div class="card" style="padding:32px 24px;border-radius:18px;display:flex;flex-direction:column;border:1px solid var(--gray-200);background:#fff;transition:transform .2s">
-      <div style="font-size:1.1rem;font-weight:700;color:var(--gray-700);margin-bottom:6px">${isAr ? 'مجاني (تجريبي)' : 'Free Trial'}</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--gray-700);margin-bottom:6px">مجاني (تجريبي)</div>
       <div style="font-size:2.4rem;font-weight:900;color:var(--gray-900);line-height:1;margin-bottom:4px">
-        0 <span style="font-size:.9rem;font-weight:600;color:var(--gray-400)">${isAr ? 'ج.م / 14 يوم' : 'EGP / 14 days'}</span>
+        0 <span style="font-size:.9rem;font-weight:600;color:var(--gray-400)">ج.م / 14 يوم</span>
       </div>
-      <p style="font-size:.84rem;color:var(--gray-500);margin-bottom:20px">${isAr ? 'لتجربة المحرر وإنشاء أول موقع ونشره فوراً' : 'Try the visual builder and publish your first site.'}</p>
+      <p style="font-size:.84rem;color:var(--gray-500);margin-bottom:20px">لتجربة المحرر وإنشاء أول موقع ونشره فوراً</p>
       <div style="height:1px;background:var(--gray-100);margin-bottom:20px"></div>
       <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;flex:1">
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'دومين فرعي مجاني سريع' : 'Free fast subdomain'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'موقع إلكتروني كامل' : '1 complete website'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'محرر سحب وإفلات مرئي' : 'Drag-and-drop editor'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'شهادة SSL واستضافة فائقة' : 'SSL certificate & cloud hosting'}</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} دومين فرعي مجاني سريع</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} موقع إلكتروني كامل</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} محرر سحب وإفلات مرئي</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} شهادة SSL واستضافة فائقة</li>
       </ul>
-      <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest" style="border-radius:12px;font-weight:700">${isAr ? 'ابدأ مجاناً' : 'Start Free'}</a>
-      <button class="btn btn-outline btn-lg w-full js-auth-user hidden plan-btn" data-plan="free" style="border-radius:12px;font-weight:700">${isAr ? 'الخطة الحالية' : 'Current Plan'}</button>
+      <a href="#/login" class="btn btn-outline btn-lg w-full js-auth-guest" style="border-radius:12px;font-weight:700">ابدأ مجاناً</a>
+      <button class="btn btn-outline btn-lg w-full js-auth-user hidden plan-btn" data-plan="free" style="border-radius:12px;font-weight:700">الخطة الحالية</button>
     </div>
 
     <!-- Basic Plan -->
     <div class="card" style="padding:32px 24px;border-radius:18px;display:flex;flex-direction:column;border:1px solid var(--gray-200);background:#fff">
-      <div style="font-size:1.1rem;font-weight:700;color:var(--gray-700);margin-bottom:6px">${isAr ? 'أساسي (Basic)' : 'Basic'}</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--gray-700);margin-bottom:6px">أساسي (Basic)</div>
       <div style="font-size:2.4rem;font-weight:900;color:var(--gray-900);line-height:1;margin-bottom:4px">
-        129 <span style="font-size:.9rem;font-weight:600;color:var(--gray-400)">${isAr ? 'ج.م / شهرياً' : 'EGP / mo'}</span>
+        129 <span style="font-size:.9rem;font-weight:600;color:var(--gray-400)">ج.م / شهرياً</span>
       </div>
-      <p style="font-size:.84rem;color:var(--gray-500);margin-bottom:20px">${isAr ? 'للأعمال المستقلة والمواقع التعريفية الاحترافية' : 'For freelancers and modern portfolio sites.'}</p>
+      <p style="font-size:.84rem;color:var(--gray-500);margin-bottom:20px">للأعمال المستقلة والمواقع التعريفية الاحترافية</p>
       <div style="height:1px;background:var(--gray-100);margin-bottom:20px"></div>
       <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;flex:1">
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'ربط دومين خاص (.com)' : 'Custom domain support (.com)'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'حتى 10 صفحات للموقع' : 'Up to 10 pages'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'إزالة علامة الموقع التجارية' : 'Remove SiteFlow branding'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'نماذج استفسار وتواصل فورية' : 'Lead generation & contact forms'}</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ربط دومين خاص (.com)</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} حتى 10 صفحات للموقع</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} إزالة علامة الموقع التجارية</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} نماذج استفسار وتواصل فورية</li>
       </ul>
-      <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="basic" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك في الأساسي' : 'Choose Basic'}</button>
+      <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="basic" style="border-radius:12px;font-weight:700">اشترك في الأساسي</button>
     </div>
 
     <!-- Pro Plan (Most Popular) -->
     <div class="card" style="padding:32px 24px;border-radius:18px;display:flex;flex-direction:column;border:2px solid var(--primary);background:#fff;position:relative;box-shadow:0 12px 30px rgba(99,102,241,0.15)">
       <div style="position:absolute;top:-12px;right:24px;background:var(--primary);color:#fff;font-size:.72rem;font-weight:800;padding:4px 12px;border-radius:20px">
-        ${isAr ? 'الأكثر اختياراً 🔥' : 'Most Popular 🔥'}
+        الأكثر اختياراً 🔥
       </div>
-      <div style="font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:6px">${isAr ? 'احترافي (Pro)' : 'Pro'}</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:6px">احترافي (Pro)</div>
       <div style="font-size:2.4rem;font-weight:900;color:var(--gray-900);line-height:1;margin-bottom:4px">
-        299 <span style="font-size:.9rem;font-weight:600;color:var(--gray-400)">${isAr ? 'ج.م / شهرياً' : 'EGP / mo'}</span>
+        299 <span style="font-size:.9rem;font-weight:600;color:var(--gray-400)">ج.م / شهرياً</span>
       </div>
-      <p style="font-size:.84rem;color:var(--gray-500);margin-bottom:20px">${isAr ? 'للتجار والشركات الناشئة والمتاجر النشطة' : 'For businesses, active e-commerce and startups.'}</p>
+      <p style="font-size:.84rem;color:var(--gray-500);margin-bottom:20px">للتجار والشركات الناشئة والمتاجر النشطة</p>
       <div style="height:1px;background:var(--gray-100);margin-bottom:20px"></div>
       <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;flex:1">
-        <li style="font-size:.88rem;color:var(--gray-900);font-weight:600;display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'مواقع وصفحات غير محدودة' : 'Unlimited sites & pages'}</li>
-        <li style="font-size:.88rem;color:var(--gray-900);font-weight:600;display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'متجر إلكتروني واستقبال طلبات' : 'Online store & order management'}</li>
-        <li style="font-size:.88rem;color:var(--gray-900);font-weight:600;display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'دفع فوري / إنستاباي / فودافون كاش' : 'InstaPay, Vodafone Cash & Fawry'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'مساعد الذكاء الاصطناعي وتحسين SEO' : 'AI Content Assistant & Full SEO'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'دعم فني فوري وأولوية على واتساب' : 'Priority WhatsApp support'}</li>
+        <li style="font-size:.88rem;color:var(--gray-900);font-weight:600;display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} مواقع وصفحات غير محدودة</li>
+        <li style="font-size:.88rem;color:var(--gray-900);font-weight:600;display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} متجر إلكتروني واستقبال طلبات</li>
+        <li style="font-size:.88rem;color:var(--gray-900);font-weight:600;display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} دفع فوري / إنستاباي / فودافون كاش</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} مساعد الذكاء الاصطناعي وتحسين SEO</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} دعم فني فوري وأولوية على واتساب</li>
       </ul>
-      <button class="btn btn-primary btn-lg w-full plan-btn" data-plan="pro" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك في الاحترافي 🔥' : 'Choose Pro 🔥'}</button>
+      <button class="btn btn-primary btn-lg w-full plan-btn" data-plan="pro" style="border-radius:12px;font-weight:700">اشترك في الاحترافي 🔥</button>
     </div>
 
     <!-- Business Plan -->
     <div class="card" style="padding:32px 24px;border-radius:18px;display:flex;flex-direction:column;border:1px solid var(--gray-200);background:#fff">
-      <div style="font-size:1.1rem;font-weight:700;color:var(--gray-700);margin-bottom:6px">${isAr ? 'بيزنس (Business)' : 'Business'}</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--gray-700);margin-bottom:6px">بيزنس (Business)</div>
       <div style="font-size:2.4rem;font-weight:900;color:var(--gray-900);line-height:1;margin-bottom:4px">
-        599 <span style="font-size:.9rem;font-weight:600;color:var(--gray-400)">${isAr ? 'ج.م / شهرياً' : 'EGP / mo'}</span>
+        599 <span style="font-size:.9rem;font-weight:600;color:var(--gray-400)">ج.م / شهرياً</span>
       </div>
-      <p style="font-size:.84rem;color:var(--gray-500);margin-bottom:20px">${isAr ? 'للمؤسسات والشركات الكبيرة مع متجر متكامل' : 'For large enterprises, chains and stores.'}</p>
+      <p style="font-size:.84rem;color:var(--gray-500);margin-bottom:20px">للمؤسسات والشركات الكبيرة مع متجر متكامل</p>
       <div style="height:1px;background:var(--gray-100);margin-bottom:20px"></div>
       <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;flex:1">
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'متجر متكامل وإدارة المخزون' : 'Advanced store & inventory'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'تقارير مبيعات وتحليلات زوار حية' : 'Live sales & analytics reports'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'مدير حساب ودعم فني مخصص 24/7' : 'Dedicated 24/7 account manager'}</li>
-        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} ${isAr ? 'تخصيص الكود وإمكانية حقن السكربتات' : 'Custom scripts & code injection'}</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} متجر متكامل وإدارة المخزون</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} تقارير مبيعات وتحليلات زوار حية</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} مدير حساب ودعم فني مخصص 24/7</li>
+        <li style="font-size:.88rem;color:var(--gray-700);display:flex;align-items:center;gap:8px">${ICONS.wrap(ICONS.check,16)} تخصيص الكود وإمكانية حقن السكربتات</li>
       </ul>
-      <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="business" style="border-radius:12px;font-weight:700">${isAr ? 'اشترك في بيزنس 🚀' : 'Choose Business 🚀'}</button>
+      <button class="btn btn-outline btn-lg w-full plan-btn" data-plan="business" style="border-radius:12px;font-weight:700">اشترك في بيزنس 🚀</button>
     </div>
   </div>
 
   <!-- Local Payment Badges -->
   <div class="card" style="padding:28px;text-align:center;border-radius:16px;background:#f8fafc;border:1px solid var(--gray-200);margin-bottom:40px">
     <h3 style="font-size:1.15rem;font-weight:700;color:var(--gray-800);margin-bottom:8px">
-      ${isAr ? '💳 طرق الدفع المحلية المدعومة 100%' : '💳 100% Local & Secure Payment Methods'}
+      💳 طرق الدفع المحلية المدعومة 100%
     </h3>
     <p style="color:var(--gray-500);font-size:.9rem;margin-bottom:16px">
-      ${isAr ? 'ادفع بسهولة وأمان عبر طرق الدفع المألوفة في مصر والشرق الأوسط بدون الحاجة لبطاقات دولية' : 'Pay easily with local payment methods across the Middle East without foreign currency hassles.'}
+      ادفع بسهولة وأمان عبر طرق الدفع المألوفة في مصر والشرق الأوسط بدون الحاجة لبطاقات دولية
     </p>
     <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-weight:700;color:var(--gray-700);font-size:.95rem">
       <span style="background:#fff;padding:8px 18px;border-radius:10px;border:1px solid var(--gray-200);box-shadow:var(--shadow-sm)">⚡ إنستاباي (InstaPay)</span>
@@ -2835,20 +2861,20 @@ const T = {
   <!-- FAQ Accordion in Plans -->
   <div style="max-width:800px;margin:0 auto">
     <h3 style="font-size:1.4rem;font-weight:800;color:var(--gray-900);text-align:center;margin-bottom:24px">
-      ${isAr ? 'الأسئلة الشائعة حول الأسعار' : 'Pricing Frequently Asked Questions'}
+      الأسئلة الشائعة حول الأسعار
     </h3>
     <div class="lp-faq-list">
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>${isAr ? 'هل التجربة المجانية تتطلب بطاقة دفع بنكية؟' : 'Does the free trial require a credit card?'}</h3>
-        <p>${isAr ? 'لا على الإطلاق! يمكنك التسجيل وبناء موقعك وتجربة كافة الميزات ونشره فوراً بدون إدخال أي بيانات بنكية.' : 'No credit card is required. You can build and publish your site completely free.'}</p>
+        <h3>هل التجربة المجانية تتطلب بطاقة دفع بنكية؟</h3>
+        <p>لا على الإطلاق! يمكنك التسجيل وبناء موقعك وتجربة كافة الميزات ونشره فوراً بدون إدخال أي بيانات بنكية.</p>
       </div>
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>${isAr ? 'هل يمكنني تغيير خطتي أو إلغاؤها في أي وقت؟' : 'Can I change or cancel my plan anytime?'}</h3>
-        <p>${isAr ? 'نعم، يمكنك الترقية إلى باقة أعلى أو التراجع عن الاشتراك في أي وقت من لوحة التحكم بنقرة واحدة.' : 'Yes, you can upgrade, downgrade, or cancel anytime directly from your dashboard.'}</p>
+        <h3>هل يمكنني تغيير خطتي أو إلغاؤها في أي وقت؟</h3>
+        <p>نعم، يمكنك الترقية إلى باقة أعلى أو التراجع عن الاشتراك في أي وقت من لوحة التحكم بنقرة واحدة.</p>
       </div>
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>${isAr ? 'هل أحتاج لشراء استضافة سحابية خارجية؟' : 'Do I need to buy separate hosting?'}</h3>
-        <p>${isAr ? 'لا. جميع الخطط تأتي مع استضافة سحابية فائقة السرعة على شبكة CDN العالمية وشهادات أمان SSL مجانية مشمولة.' : 'No. All plans include ultra-fast cloud hosting on global CDN with free SSL certificates.'}</p>
+        <h3>هل أحتاج لشراء استضافة سحابية خارجية؟</h3>
+        <p>لا. جميع الخطط تأتي مع استضافة سحابية فائقة السرعة على شبكة CDN العالمية وشهادات أمان SSL مجانية مشمولة.</p>
       </div>
     </div>
   </div>
@@ -2856,20 +2882,17 @@ const T = {
   },
 
   about() {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     return `
-<div class="about-page" style="max-width:1000px;margin:0 auto;padding:60px 24px 80px" dir="${isAr?'rtl':'ltr'}">
+<div class="about-page" style="max-width:1000px;margin:0 auto;padding:60px 24px 80px" dir="rtl">
   <div style="text-align:center;max-width:720px;margin:0 auto 50px">
     <div style="width:64px;height:64px;border-radius:20px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
       ${ICONS.wrap(ICONS.sparkles, 32)}
     </div>
     <h1 style="font-size:2.5rem;font-weight:900;color:var(--gray-900);line-height:1.2;margin-bottom:14px">
-      ${isAr ? 'نبني مستقبل الويب العربي بدون كود' : 'Empowering the Next Generation of Creators'}
+      نبني مستقبل الويب العربي بدون كود
     </h1>
     <p style="font-size:1.15rem;color:var(--gray-600);line-height:1.7">
-      ${isAr
-        ? 'منصة SiteFlow ولدت لتمنح كل صاحب عمل، متجر، أو صانع محتوى القدرة على إطلاق موقع احترافي متكامل فائق السرعة خلال دقائق وبدون كتابة كود.'
-        : 'SiteFlow empowers entrepreneurs, businesses, and creators to build high-converting, professional websites in minutes without code.'}
+      منصة SiteFlow ولدت لتمنح كل صاحب عمل، متجر، أو صانع محتوى القدرة على إطلاق موقع احترافي متكامل فائق السرعة خلال دقائق وبدون كتابة كود.
     </p>
   </div>
 
@@ -2877,19 +2900,19 @@ const T = {
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:50px">
     <div class="card" style="padding:28px;text-align:center;border-radius:16px">
       <div style="font-size:2.6rem;font-weight:900;color:var(--primary);line-height:1">+12,000</div>
-      <div style="font-size:.88rem;color:var(--gray-500);margin-top:6px">${isAr ? 'موقع تم إنشاؤه' : 'Websites Created'}</div>
+      <div style="font-size:.88rem;color:var(--gray-500);margin-top:6px">موقع تم إنشاؤه</div>
     </div>
     <div class="card" style="padding:28px;text-align:center;border-radius:16px">
       <div style="font-size:2.6rem;font-weight:900;color:var(--primary);line-height:1">&lt; 0.3s</div>
-      <div style="font-size:.88rem;color:var(--gray-500);margin-top:6px">${isAr ? 'زمن تحميل واستجابة فائق' : 'Page Load Speed'}</div>
+      <div style="font-size:.88rem;color:var(--gray-500);margin-top:6px">زمن تحميل واستجابة فائق</div>
     </div>
     <div class="card" style="padding:28px;text-align:center;border-radius:16px">
       <div style="font-size:2.6rem;font-weight:900;color:var(--primary);line-height:1">99.9%</div>
-      <div style="font-size:.88rem;color:var(--gray-500);margin-top:6px">${isAr ? 'جاهزية واستقرار سحابي' : 'Uptime Guarantee'}</div>
+      <div style="font-size:.88rem;color:var(--gray-500);margin-top:6px">جاهزية واستقرار سحابي</div>
     </div>
     <div class="card" style="padding:28px;text-align:center;border-radius:16px">
       <div style="font-size:2.6rem;font-weight:900;color:var(--primary);line-height:1">40+</div>
-      <div style="font-size:.88rem;color:var(--gray-500);margin-top:6px">${isAr ? 'قالب عربي وإنجليزي جاهز' : 'Ready Templates'}</div>
+      <div style="font-size:.88rem;color:var(--gray-500);margin-top:6px">قالب عربي وإنجليزي جاهز</div>
     </div>
   </div>
 
@@ -2899,11 +2922,9 @@ const T = {
       <div style="width:44px;height:44px;border-radius:12px;background:#e0e7ff;color:var(--primary);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
         ${ICONS.wrap(ICONS.target, 22)}
       </div>
-      <h3 style="font-size:1.3rem;font-weight:800;color:var(--gray-900);margin-bottom:10px">${isAr ? 'مهمتنا' : 'Our Mission'}</h3>
+      <h3 style="font-size:1.3rem;font-weight:800;color:var(--gray-900);margin-bottom:10px">مهمتنا</h3>
       <p style="font-size:.92rem;color:var(--gray-600);line-height:1.7">
-        ${isAr
-          ? 'إزالة الحواجز التقنية والمالية المعقدة أمام الأفراد والشركات في الشرق الأوسط، وتوفير أداة سريعة، بديهية، ومصممة خصيصاً لمتطلبات السوق المحلي من اللغة إلى بوابات الدفع.'
-          : 'Eliminating technical and financial barriers for businesses in the region by delivering a fast, intuitive visual platform tailored to local market needs and payment gateways.'}
+        إزالة الحواجز التقنية والمالية المعقدة أمام الأفراد والشركات في الشرق الأوسط، وتوفير أداة سريعة، بديهية، ومصممة خصيصاً لمتطلبات السوق المحلي من اللغة إلى بوابات الدفع.
       </p>
     </div>
 
@@ -2911,11 +2932,9 @@ const T = {
       <div style="width:44px;height:44px;border-radius:12px;background:#fce7f3;color:#ec4899;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
         ${ICONS.wrap(ICONS.eye, 22)}
       </div>
-      <h3 style="font-size:1.3rem;font-weight:800;color:var(--gray-900);margin-bottom:10px">${isAr ? 'رؤيتنا' : 'Our Vision'}</h3>
+      <h3 style="font-size:1.3rem;font-weight:800;color:var(--gray-900);margin-bottom:10px">رؤيتنا</h3>
       <p style="font-size:.92rem;color:var(--gray-600);line-height:1.7">
-        ${isAr
-          ? 'أن نكون المنصة الأولى والخيار الأسهل لكل من يرغب في تحويل فكرته أو مشروعه إلى موقع أو متجر إلكتروني ناجح عالمياً خلال دقائق معدودة.'
-          : 'To be the premier, simplest platform for anyone aiming to turn an idea or business into a thriving global online presence in minutes.'}
+        أن نكون المنصة الأولى والخيار الأسهل لكل من يرغب في تحويل فكرته أو مشروعه إلى موقع أو متجر إلكتروني ناجح عالمياً خلال دقائق معدودة.
       </p>
     </div>
 
@@ -2923,11 +2942,9 @@ const T = {
       <div style="width:44px;height:44px;border-radius:12px;background:#d1fae5;color:#059669;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
         ${ICONS.wrap(ICONS.shield, 22)}
       </div>
-      <h3 style="font-size:1.3rem;font-weight:800;color:var(--gray-900);margin-bottom:10px">${isAr ? 'قيمنا وأولوياتنا' : 'Our Core Values'}</h3>
+      <h3 style="font-size:1.3rem;font-weight:800;color:var(--gray-900);margin-bottom:10px">قيمنا وأولوياتنا</h3>
       <p style="font-size:.92rem;color:var(--gray-600);line-height:1.7">
-        ${isAr
-          ? 'البساطة القصوى بدون تعقيد، سرعة الأداء الفائقة، أمان البيانات الصارم عبر قواعد بيانات Supabase السحابية، وتقديم دعم فني إنساني حقيقي.'
-          : 'Utmost simplicity without clutter, lightning-fast performance, stringent PostgreSQL cloud security, and dedicated human support.'}
+        البساطة القصوى بدون تعقيد، سرعة الأداء الفائقة، أمان البيانات الصارم عبر قواعد بيانات Supabase السحابية، وتقديم دعم فني إنساني حقيقي.
       </p>
     </div>
   </div>
@@ -2935,33 +2952,30 @@ const T = {
   <!-- Tech Stack & Infrastructure -->
   <div class="card" style="padding:36px;border-radius:18px;background:#f8fafc;border:1px solid var(--gray-200);text-align:center">
     <h3 style="font-size:1.3rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">
-      ${isAr ? 'بنية تحتية سحابية موثوقة' : 'Built on World-Class Cloud Infrastructure'}
+      بنية تحتية سحابية موثوقة
     </h3>
     <p style="color:var(--gray-500);font-size:.9rem;max-width:600px;margin:0 auto 24px;line-height:1.6">
-      ${isAr
-        ? 'نستخدم أحدث تقنيات الويب السحابية بما في ذلك Supabase PostgreSQL لتخزين البيانات، شبكة Cloudflare CDN العالمية لتوزيع المحتوى، وتشفير تام لكافة الاتصالات.'
-        : 'Powered by Supabase PostgreSQL for cloud persistence, global edge CDN distribution, and end-to-end SSL encryption.'}
+      نستخدم أحدث تقنيات الويب السحابية بما في ذلك Supabase PostgreSQL لتخزين البيانات، شبكة Cloudflare CDN العالمية لتوزيع المحتوى، وتشفير تام لكافة الاتصالات.
     </p>
     <a href="#/login" class="btn btn-primary btn-lg" style="border-radius:12px;font-weight:700">
-      ${isAr ? 'ابدأ رحلتك الرقمية الآن مجاناً 🚀' : 'Start Your Digital Journey Free 🚀'}
+      ابدأ رحلتك الرقمية الآن مجاناً 🚀
     </a>
   </div>
 </div>`
   },
 
   help() {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     return `
-<div class="help-page" style="max-width:960px;margin:0 auto;padding:50px 24px 80px" dir="${isAr?'rtl':'ltr'}">
+<div class="help-page" style="max-width:960px;margin:0 auto;padding:50px 24px 80px" dir="rtl">
   <div style="text-align:center;max-width:640px;margin:0 auto 40px">
     <div style="width:60px;height:60px;border-radius:18px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
       ${ICONS.wrap(ICONS.helpCircle, 30)}
     </div>
     <h1 style="font-size:2.3rem;font-weight:900;color:var(--gray-900);margin-bottom:10px">
-      ${isAr ? 'مركز المساعدة والدعم الفني' : 'Help & Documentation Center'}
+      مركز المساعدة والدعم الفني
     </h1>
     <p style="font-size:1.05rem;color:var(--gray-500);line-height:1.6">
-      ${isAr ? 'كل ما تحتاج لمعرفته لإطلاق موقعك، تخصيص القوالب، وربط بوابات الدفع والدومين.' : 'Everything you need to build, customize, publish, and grow your website.'}
+      كل ما تحتاج لمعرفته لإطلاق موقعك، تخصيص القوالب، وربط بوابات الدفع والدومين.
     </p>
   </div>
 
@@ -2969,61 +2983,61 @@ const T = {
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:40px">
     <div class="card" style="padding:22px;border-radius:14px;cursor:pointer;border:1px solid var(--gray-200);transition:all .2s" onclick="document.getElementById('helpFaq').scrollIntoView({behavior:'smooth'})">
       <div style="color:var(--primary);margin-bottom:8px">${ICONS.wrap(ICONS.sparkles, 24)}</div>
-      <h4 style="font-size:1rem;font-weight:700;margin-bottom:4px">${isAr ? 'البداية السريعة' : 'Quick Start'}</h4>
-      <p style="font-size:.82rem;color:var(--gray-500)">${isAr ? 'كيف تنشئ أول موقع في 5 دقائق' : 'Build a site in under 5 minutes'}</p>
+      <h4 style="font-size:1rem;font-weight:700;margin-bottom:4px">البداية السريعة</h4>
+      <p style="font-size:.82rem;color:var(--gray-500)">كيف تنشئ أول موقع في 5 دقائق</p>
     </div>
     <div class="card" style="padding:22px;border-radius:14px;cursor:pointer;border:1px solid var(--gray-200);transition:all .2s" onclick="document.getElementById('helpFaq').scrollIntoView({behavior:'smooth'})">
       <div style="color:#059669;margin-bottom:8px">${ICONS.wrap(ICONS.globe, 24)}</div>
-      <h4 style="font-size:1rem;font-weight:700;margin-bottom:4px">${isAr ? 'الدومين والاستضافة' : 'Domains & Hosting'}</h4>
-      <p style="font-size:.82rem;color:var(--gray-500)">${isAr ? 'ربط دومينك الخاص والشهادة' : 'Custom domain setup & SSL'}</p>
+      <h4 style="font-size:1rem;font-weight:700;margin-bottom:4px">الدومين والاستضافة</h4>
+      <p style="font-size:.82rem;color:var(--gray-500)">ربط دومينك الخاص والشهادة</p>
     </div>
     <div class="card" style="padding:22px;border-radius:14px;cursor:pointer;border:1px solid var(--gray-200);transition:all .2s" onclick="document.getElementById('helpFaq').scrollIntoView({behavior:'smooth'})">
       <div style="color:#d97706;margin-bottom:8px">${ICONS.wrap(ICONS.dollar, 24)}</div>
-      <h4 style="font-size:1rem;font-weight:700;margin-bottom:4px">${isAr ? 'المتاجر والدفع' : 'Stores & Payments'}</h4>
-      <p style="font-size:.82rem;color:var(--gray-500)">${isAr ? 'إنستاباي وفودافون كاش وفوري' : 'Payment gateway integration'}</p>
+      <h4 style="font-size:1rem;font-weight:700;margin-bottom:4px">المتاجر والدفع</h4>
+      <p style="font-size:.82rem;color:var(--gray-500)">إنستاباي وفودافون كاش وفوري</p>
     </div>
     <div class="card" style="padding:22px;border-radius:14px;cursor:pointer;border:1px solid var(--gray-200);transition:all .2s" onclick="window.location.href='mailto:support@siteflow.vexonet.online'">
       <div style="color:#ec4899;margin-bottom:8px">${ICONS.wrap(ICONS.mail, 24)}</div>
-      <h4 style="font-size:1rem;font-weight:700;margin-bottom:4px">${isAr ? 'تواصل مع الدعم' : 'Contact Support'}</h4>
-      <p style="font-size:.82rem;color:var(--gray-500)">${isAr ? 'فريق الدعم الفني جاهز 24/7' : 'Support team ready 24/7'}</p>
+      <h4 style="font-size:1rem;font-weight:700;margin-bottom:4px">تواصل مع الدعم</h4>
+      <p style="font-size:.82rem;color:var(--gray-500)">فريق الدعم الفني جاهز 24/7</p>
     </div>
   </div>
 
   <!-- FAQ Accordion List -->
   <div id="helpFaq" class="card" style="padding:32px;border-radius:18px;margin-bottom:40px">
     <h3 style="font-size:1.3rem;font-weight:800;color:var(--gray-900);margin-bottom:20px">
-      ${isAr ? 'الأسئلة الشائعة والأدلة التفصيلية' : 'Frequently Asked Questions & Guides'}
+      الأسئلة الشائعة والأدلة التفصيلية
     </h3>
     <div class="lp-faq-list">
       <div class="lp-faq-item active" onclick="this.classList.toggle('active')">
-        <h3>${isAr ? 'كيف أقوم بإنشاء موقعي ونشره على الإنترنت؟' : 'How do I create and publish a website?'}</h3>
-        <p>${isAr ? '1. ادخل إلى لوحة التحكم واضغط "موقع جديد".<br>2. اختر قالباً يناسب نشاطك أو ابدأ من الصفر.<br>3. استخدم المحرر المرئي لتعديل النصوص والصور والألوان بنقرة واحدة.<br>4. اضغط على زر "نشر الموقع" في أعلى المحرر وسيكون موقعك متاحاً فوراً على الإنترنت.' : '1. Open Dashboard and click "New Site".<br>2. Select a template or start blank.<br>3. Edit text, images, and colors visually.<br>4. Click "Publish" at the top right to go live instantly.'}</p>
+        <h3>كيف أقوم بإنشاء موقعي ونشره على الإنترنت؟</h3>
+        <p>1. ادخل إلى لوحة التحكم واضغط "موقع جديد".<br>2. اختر قالباً يناسب نشاطك أو ابدأ من الصفر.<br>3. استخدم المحرر المرئي لتعديل النصوص والصور والألوان بنقرة واحدة.<br>4. اضغط على زر "نشر الموقع" في أعلى المحرر وسيكون موقعك متاحاً فوراً على الإنترنت.</p>
       </div>
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>${isAr ? 'كيف أربط دوميني الخاص بي (مثال: mycompany.com)؟' : 'How do I connect a custom domain (.com)?'}</h3>
-        <p>${isAr ? 'في باقات Pro و Business، افتح إعدادات الموقع داخل المحرر المرئي، أدخل اسم الدومين الخاص بك، ثم أضف سجل CNAME أو A Record الموضح في لوحة التحكم إلى مزود الدومين الخاص بك (مثل Namecheap أو GoDaddy أو Cloudflare).' : 'In Pro & Business plans, go to Site Settings in the editor, enter your custom domain, and point your DNS CNAME/A records as guided.'}</p>
+        <h3>كيف أربط دوميني الخاص بي (مثال: mycompany.com)؟</h3>
+        <p>في باقات Pro و Business، افتح إعدادات الموقع داخل المحرر المرئي، أدخل اسم الدومين الخاص بك، ثم أضف سجل CNAME أو A Record الموضح في لوحة التحكم إلى مزود الدومين الخاص بك (مثل Namecheap أو GoDaddy أو Cloudflare).</p>
       </div>
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>${isAr ? 'كيف أستقبل مدفوعات العملاء عبر إنستاباي وفودافون كاش؟' : 'How do I accept payments via InstaPay & Vodafone Cash?'}</h3>
-        <p>${isAr ? 'يمكنك تفعيل قسم المتجر من المحرر وإضافة رقم محفظتك أو حساب إنستاباي، ليتمكن العميل من إرسال إيصال التحويل مباشرة وتأكيد الطلب بنقرة واحدة في لوحة تحكمك.' : 'Enable store payments in the editor, add your InstaPay handle or mobile wallet number, and manage receipts in your dashboard.'}</p>
+        <h3>كيف أستقبل مدفوعات العملاء عبر إنستاباي وفودافون كاش؟</h3>
+        <p>يمكنك تفعيل قسم المتجر من المحرر وإضافة رقم محفظتك أو حساب إنستاباي، ليتمكن العميل من إرسال إيصال التحويل مباشرة وتأكيد الطلب بنقرة واحدة في لوحة تحكمك.</p>
       </div>
       <div class="lp-faq-item" onclick="this.classList.toggle('active')">
-        <h3>${isAr ? 'أين تُحفظ بياناتي ومواقعي وهل هي آمنة سحابياً؟' : 'Where is my data stored and is it secure?'}</h3>
-        <p>${isAr ? 'يتم حفظ كافة المواقع والبيانات في قاعدة بيانات Supabase PostgreSQL السحابية المؤمنة بتشفير كامل، مع نسخ احتياطي دائم لضمان عدم ضياع أي معلومة.' : 'All sites and data are securely stored in Supabase PostgreSQL cloud with automated backups and encryption.'}</p>
+        <h3>أين تُحفظ بياناتي ومواقعي وهل هي آمنة سحابياً؟</h3>
+        <p>يتم حفظ كافة المواقع والبيانات في قاعدة بيانات Supabase PostgreSQL السحابية المؤمنة بتشفير كامل، مع نسخ احتياطي دائم لضمان عدم ضياع أي معلومة.</p>
       </div>
     </div>
   </div>
 
   <!-- Direct Contact Card -->
   <div class="card" style="padding:32px;text-align:center;border-radius:18px;background:var(--gray-900);color:#fff">
-    <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:8px">${isAr ? 'لم تجد إجابة لسؤالك؟' : 'Still need assistance?'}</h3>
-    <p style="color:var(--gray-400);font-size:.92rem;margin-bottom:20px">${isAr ? 'فريق الدعم الفني جاهز لمساعدتك في أي استفسار أو مشكلة تقنية.' : 'Our support engineering team is here to assist you 24/7.'}</p>
+    <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:8px">لم تجد إجابة لسؤالك؟</h3>
+    <p style="color:var(--gray-400);font-size:.92rem;margin-bottom:20px">فريق الدعم الفني جاهز لمساعدتك في أي استفسار أو مشكلة تقنية.</p>
     <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
       <a href="mailto:support@siteflow.vexonet.online" class="btn btn-primary" style="border-radius:10px;font-weight:700">
-        ${isAr ? 'مراسلة الدعم عبر البريد الإلكتروني' : 'Email Support Team'}
+        مراسلة الدعم عبر البريد الإلكتروني
       </a>
       <a href="#/dashboard" class="btn btn-outline" style="border-radius:10px;border-color:var(--gray-700);color:#fff">
-        ${isAr ? 'العودة للوحة التحكم' : 'Back to Dashboard'}
+        العودة للوحة التحكم
       </a>
     </div>
   </div>
@@ -3031,74 +3045,63 @@ const T = {
   },
 
   privacy() {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     return `
-<div class="privacy-page" style="max-width:820px;margin:0 auto;padding:60px 24px 80px" dir="${isAr?'rtl':'ltr'}">
+<div class="privacy-page" style="max-width:820px;margin:0 auto;padding:60px 24px 80px" dir="rtl">
   <div style="margin-bottom:32px">
     <span class="badge" style="background:var(--gray-200);color:var(--gray-700);padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700">
-      ${isAr ? 'آخر تحديث: سبتمبر 2026' : 'Last updated: September 2026'}
+      آخر تحديث: سبتمبر 2026
     </span>
     <h1 style="font-size:2.2rem;font-weight:900;color:var(--gray-900);margin:12px 0 8px">
-      ${isAr ? 'سياسة الخصوصية وشروط الاستخدام' : 'Privacy Policy & Terms of Service'}
+      سياسة الخصوصية وشروط الاستخدام
     </h1>
     <p style="color:var(--gray-500);font-size:.95rem">
-      ${isAr ? 'نلتزم في منصة SiteFlow بأعلى معايير حماية وخصوصية بيانات المستخدمين والزوار.' : 'At SiteFlow, we prioritize the protection and privacy of user and visitor data.'}
+      نلتزم في منصة SiteFlow بأعلى معايير حماية وخصوصية بيانات المستخدمين والزوار.
     </p>
   </div>
 
   <div class="card" style="padding:36px;border-radius:18px;line-height:1.8;color:var(--gray-700);display:flex;flex-direction:column;gap:24px">
     <div>
       <h3 style="font-size:1.15rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">
-        ${isAr ? '1. البيانات التي نجمعها' : '1. Information We Collect'}
+        1. البيانات التي نجمعها
       </h3>
       <p style="font-size:.92rem;margin:0">
-        ${isAr
-          ? 'نقوم بجمع المعلومات الأساسية اللازمة لتقديم الخدمة: اسم المستخدم، البريد الإلكتروني، والمحتوى الذي تقوم برفعه لإنشاء صفحات موقعك (النصوص، الصور، وبيانات التواصل).'
-          : 'We collect essential information required to deliver our platform: name, email address, and site assets uploaded for your pages.'}
+        نقوم بجمع المعلومات الأساسية اللازمة لتقديم الخدمة: اسم المستخدم، البريد الإلكتروني، والمحتوى الذي تقوم برفعه لإنشاء صفحات موقعك (النصوص، الصور، وبيانات التواصل).
       </p>
     </div>
 
     <div>
       <h3 style="font-size:1.15rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">
-        ${isAr ? '2. كيف نستخدم معلوماتك' : '2. How We Use Information'}
+        2. كيف نستخدم معلوماتك
       </h3>
       <p style="font-size:.92rem;margin:0">
-        ${isAr
-          ? 'نستخدم بياناتك لتشغيل وتطوير المنصة، وتأكيد هويتك عبر رسائل التحقق (OTP)، واستضافة صفحات موقعك سحابياً. نحن لا نبيع ولا نشارك أي بيانات شخصية مع أي جهات خارجية لأغراض إعلانية.'
-          : 'We use your data to maintain the platform, authenticate via OTP, and host your pages. We never sell personal data to third parties.'}
+        نستخدم بياناتك لتشغيل وتطوير المنصة، وتأكيد هويتك عبر رسائل التحقق (OTP)، واستضافة صفحات موقعك سحابياً. نحن لا نبيع ولا نشارك أي بيانات شخصية مع أي جهات خارجية لأغراض إعلانية.
       </p>
     </div>
 
     <div>
       <h3 style="font-size:1.15rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">
-        ${isAr ? '3. الأمان وتخزين البيانات' : '3. Data Security & Storage'}
+        3. الأمان وتخزين البيانات
       </h3>
       <p style="font-size:.92rem;margin:0">
-        ${isAr
-          ? 'تُحفظ كافة البيانات في قاعدة بيانات PostgreSQL سحابية مؤمنة عبر Supabase، مع تشفير تام لكافة الاتصالات باستخدام بروتوكول SSL/HTTPS القياسي عالمياً.'
-          : 'Data is persisted in secure Supabase PostgreSQL cloud database clusters, protected with TLS/SSL encryption.'}
+        تُحفظ كافة البيانات في قاعدة بيانات PostgreSQL سحابية مؤمنة عبر Supabase، مع تشفير تام لكافة الاتصالات باستخدام بروتوكول SSL/HTTPS القياسي عالمياً.
       </p>
     </div>
 
     <div>
       <h3 style="font-size:1.15rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">
-        ${isAr ? '4. ملكية المحتوى' : '4. Content Ownership'}
+        4. ملكية المحتوى
       </h3>
       <p style="font-size:.92rem;margin:0">
-        ${isAr
-          ? 'أنت المالك الوحيد والكامل لكافة المحتويات، الصور، والنصوص التي ترفعها أو تنشرها عبر موقعك على المنصة، وتتحمل المسؤولية القانونية الكاملة عن صحتها ومشروعيتها.'
-          : 'You retain full ownership and copyright of all content, media, and text published through your SiteFlow sites.'}
+        أنت المالك الوحيد والكامل لكافة المحتويات، الصور، والنصوص التي ترفعها أو تنشرها عبر موقعك على المنصة، وتتحمل المسؤولية القانونية الكاملة عن صحتها ومشروعيتها.
       </p>
     </div>
 
     <div>
       <h3 style="font-size:1.15rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">
-        ${isAr ? '5. التواصل والاستفسارات' : '5. Inquiries'}
+        5. التواصل والاستفسارات
       </h3>
       <p style="font-size:.92rem;margin:0">
-        ${isAr
-          ? 'لأي استفسار يخص خصوصية بياناتك أو طلب حذف حسابك، تواصل معنا عبر: <a href="mailto:privacy@siteflow.vexonet.online" style="color:var(--primary);font-weight:600">privacy@siteflow.vexonet.online</a>'
-          : 'For any privacy concerns or data removal requests, contact us at: <a href="mailto:privacy@siteflow.vexonet.online" style="color:var(--primary);font-weight:600">privacy@siteflow.vexonet.online</a>'}
+        لأي استفسار يخص خصوصية بياناتك أو طلب حذف حسابك، تواصل معنا عبر: <a href="mailto:privacy@siteflow.vexonet.online" style="color:var(--primary);font-weight:600">privacy@siteflow.vexonet.online</a>
       </p>
     </div>
   </div>
@@ -3106,27 +3109,26 @@ const T = {
   },
 
   showcase() {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const samples = [
-      {title: isAr ? 'بوتيك أزياء وموضة' : 'Modern Fashion Boutique', cat: isAr ? 'متجر إلكتروني' : 'E-Commerce', desc: isAr ? 'متجر متكامل لعرض المنتجات واستقبال الطلبات عبر إنستاباي' : 'Fashion apparel store with online catalog and local checkout', icon: '🛍️'},
-      {title: isAr ? 'مقهى ومخبوزات أرتيزان' : 'Artisan Bakery & Cafe', cat: isAr ? 'مطاعم وكافيهات' : 'Food & Cafe', desc: isAr ? 'قائمة طعام تفاعلية مع حجز طاولات وتوصيل سريع' : 'Interactive digital menu, booking, and table orders', icon: '☕'},
-      {title: isAr ? 'شركة تقنية ناشئة' : 'SaaS Startup Platform', cat: isAr ? 'شركات وأعمال' : 'Business', desc: isAr ? 'صفحة هبوط تسويقية فائقة السرعة مع نموذج طلب العروض' : 'High-converting SaaS landing page with lead collection', icon: '⚡'},
-      {title: isAr ? 'معرض أعمال مصمم' : 'Creative Design Portfolio', cat: isAr ? 'بورتفوليو' : 'Portfolio', desc: isAr ? 'معرض أعمال تفاعلي جذاب لعرض المشاريع والتواصل' : 'Stunning creative showcase for designers and freelancers', icon: '🎨'},
-      {title: isAr ? 'عيادة واستشارات طبية' : 'Healthcare & Clinic', cat: isAr ? 'صحة وطب' : 'Healthcare', desc: isAr ? 'صفحة خدمات طبية مع نموذج حجز مواعيد مباشر' : 'Medical clinic website with online appointment booking', icon: '🩺'},
-      {title: isAr ? 'تسويق عقاري فاخر' : 'Prime Real Estate', cat: isAr ? 'عقارات' : 'Real Estate', desc: isAr ? 'كتالوج وحدات عقارية مع جولات افتراضية واتصال سريع' : 'Luxury property catalog with direct agent contact', icon: '🏢'}
+      {title: 'بوتيك أزياء وموضة', cat: 'متجر إلكتروني', desc: 'متجر متكامل لعرض المنتجات واستقبال الطلبات عبر إنستاباي', icon: '🛍️'},
+      {title: 'مقهى ومخبوزات أرتيزان', cat: 'مطاعم وكافيهات', desc: 'قائمة طعام تفاعلية مع حجز طاولات وتوصيل سريع', icon: '☕'},
+      {title: 'شركة تقنية ناشئة', cat: 'شركات وأعمال', desc: 'صفحة هبوط تسويقية فائقة السرعة مع نموذج طلب العروض', icon: '⚡'},
+      {title: 'معرض أعمال مصمم', cat: 'بورتفوليو', desc: 'معرض أعمال تفاعلي جذاب لعرض المشاريع والتواصل', icon: '🎨'},
+      {title: 'عيادة واستشارات طبية', cat: 'صحة وطب', desc: 'صفحة خدمات طبية مع نموذج حجز مواعيد مباشر', icon: '🩺'},
+      {title: 'تسويق عقاري فاخر', cat: 'عقارات', desc: 'كتالوج وحدات عقارية مع جولات افتراضية واتصال سريع', icon: '🏢'}
     ]
 
     return `
-<div class="showcase-page" style="max-width:1100px;margin:0 auto;padding:50px 24px 80px" dir="${isAr?'rtl':'ltr'}">
+<div class="showcase-page" style="max-width:1100px;margin:0 auto;padding:50px 24px 80px" dir="rtl">
   <div style="text-align:center;max-width:680px;margin:0 auto 40px">
     <span class="badge" style="background:var(--primary-light);color:var(--primary-dark);padding:6px 16px;border-radius:20px;font-size:.85rem;font-weight:700;display:inline-block;margin-bottom:12px">
-      ${isAr ? 'معرض إبداعات SiteFlow' : 'SiteFlow Showcase Gallery'}
+      معرض إبداعات SiteFlow
     </span>
     <h1 style="font-size:2.4rem;font-weight:900;color:var(--gray-900);line-height:1.25;margin-bottom:12px">
-      ${isAr ? 'مواقع حقيقية تم بناؤها بالكامل بدون كود' : 'Inspiring Websites Built Entirely Without Code'}
+      مواقع حقيقية تم بناؤها بالكامل بدون كود
     </h1>
     <p style="color:var(--gray-500);font-size:1.05rem;line-height:1.6">
-      ${isAr ? 'استلهم أفكاراً لموقعك القادم من بين مئات المواقع والمتاجر التي أطلقها عملاؤنا بنجاح.' : 'Get inspired by hundreds of live websites and online stores launched on SiteFlow.'}
+      استلهم أفكاراً لموقعك القادم من بين مئات المواقع والمتاجر التي أطلقها عملاؤنا بنجاح.
     </p>
   </div>
 
@@ -3142,7 +3144,7 @@ const T = {
           <p style="font-size:.86rem;color:var(--gray-500);line-height:1.5;margin-bottom:20px;flex:1">${s.desc}</p>
           <div style="display:flex;gap:8px">
             <a href="#/templates" class="btn btn-primary btn-sm w-full" style="border-radius:10px;font-weight:700">
-              ${isAr ? 'استخدم هذا التصميم' : 'Use Template'}
+              استخدم هذا التصميم
             </a>
           </div>
         </div>
@@ -3152,13 +3154,13 @@ const T = {
 
   <div class="card" style="padding:36px;border-radius:18px;text-align:center;background:#f8fafc;border:1px solid var(--gray-200)">
     <h3 style="font-size:1.35rem;font-weight:800;color:var(--gray-900);margin-bottom:8px">
-      ${isAr ? 'هل أنشأت موقعاً مميزاً عبر SiteFlow؟' : 'Built an awesome site on SiteFlow?'}
+      هل أنشأت موقعاً مميزاً عبر SiteFlow؟
     </h3>
     <p style="color:var(--gray-500);font-size:.9rem;max-width:560px;margin:0 auto 20px">
-      ${isAr ? 'يسعدنا نشر موقعك في معرض الإلهام ليحصل على زيارات واهتمام أكبر من مجتمع المبدعين.' : 'Submit your site to get featured in our showcase and reach new audiences.'}
+      يسعدنا نشر موقعك في معرض الإلهام ليحصل على زيارات واهتمام أكبر من مجتمع المبدعين.
     </p>
     <a href="mailto:showcase@siteflow.vexonet.online" class="btn btn-outline" style="border-radius:12px;font-weight:700">
-      ${isAr ? 'أرسل موقعك للنشر في المعرض' : 'Submit Your Website'}
+      أرسل موقعك للنشر في المعرض
     </a>
   </div>
 </div>`
@@ -3182,7 +3184,6 @@ const T = {
 </div>` },
 
   paymentModal(planKey, plan = {}, numbers = { vodafone: '01028707543', instapay: '01028707543' }) {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const planName = plan.name || (planKey === 'pro' ? 'احترافي' : planKey === 'business' ? 'بيزنس' : 'أساسي')
     const price = plan.price || (planKey === 'pro' ? 299 : planKey === 'business' ? 599 : 129)
     const vodafoneNum = numbers.vodafone || '01028707543'
@@ -3195,12 +3196,12 @@ const T = {
     <div class="sf-pay-header">
       <div class="sf-pay-title">
         <span style="font-size:1.3rem">🔒</span>
-        <span>${isAr ? 'اختر وسيلة الدفع' : 'Choose Payment Method'}</span>
+        <span>اختر وسيلة الدفع</span>
       </div>
-      <button class="sf-pay-close-btn" id="sfPayCloseBtn" title="${isAr ? 'إغلاق' : 'Close'}">✕</button>
+      <button class="sf-pay-close-btn" id="sfPayCloseBtn" title="إغلاق">✕</button>
     </div>
     <div class="sf-pay-sub">
-      ${isAr ? 'جميع المعاملات مشفرة وآمنة بنسبة 100% عبر بوابات الدفع الرسمية' : 'All transactions are 100% encrypted and secured.'}
+      جميع المعاملات مشفرة وآمنة بنسبة 100% عبر بوابات الدفع الرسمية
     </div>
 
     <!-- Step 1: Select Method & Transfer Instructions -->
@@ -3211,7 +3212,7 @@ const T = {
         <div class="sf-pay-tab active" data-pay-method="vodafone" id="sfPayTabVodafone">
           <div class="sf-pay-radio"></div>
           <div class="sf-pay-tab-info">
-            <span class="sf-pay-tab-name">${isAr ? 'فودافون كاش' : 'Vodafone Cash'}</span>
+            <span class="sf-pay-tab-name">فودافون كاش</span>
             <span class="sf-pay-tab-num">${vodafoneNum}</span>
           </div>
           <div class="sf-pay-tab-logo" style="background:#e60000;color:#fff;font-weight:900;font-size:1rem" title="Vodafone Cash">
@@ -3223,7 +3224,7 @@ const T = {
         <div class="sf-pay-tab" data-pay-method="instapay" id="sfPayTabInstapay">
           <div class="sf-pay-radio"></div>
           <div class="sf-pay-tab-info">
-            <span class="sf-pay-tab-name">${isAr ? 'انستاباي' : 'InstaPay'}</span>
+            <span class="sf-pay-tab-name">انستاباي</span>
             <span class="sf-pay-tab-num">${instapayNum}</span>
           </div>
           <div class="sf-pay-tab-logo" style="background:#702b84;color:#fff;font-weight:900;font-size:1rem" title="InstaPay">
@@ -3236,33 +3237,33 @@ const T = {
       <div class="sf-pay-method-banner">
         <div class="sf-pay-banner-title">
           <span id="sfPayMethodBannerIcon">📱</span>
-          <span id="sfPayMethodBannerTitle">${isAr ? 'فودافون كاش' : 'Vodafone Cash'}</span>
+          <span id="sfPayMethodBannerTitle">فودافون كاش</span>
         </div>
         <div class="sf-pay-banner-sub">
-          ${isAr ? 'حول المبلغ المطلوب إلى الرقم التالي عبر محفظتك الإلكترونية' : 'Transfer the required amount to the following number'}
+          حول المبلغ المطلوب إلى الرقم التالي عبر محفظتك الإلكترونية
         </div>
 
         <!-- Number Pill & Copy -->
         <div class="sf-pay-number-pill">
           <button class="sf-pay-copy-btn" id="sfPayCopyBtn" data-num="${vodafoneNum}" type="button">
-            <span>📋</span> <span id="sfPayCopyText">${isAr ? 'نسخ' : 'Copy'}</span>
+            <span>📋</span> <span id="sfPayCopyText">نسخ</span>
           </button>
           <span class="sf-pay-number-text" id="sfPayDisplayNum">${vodafoneNum}</span>
         </div>
 
         <!-- Amount to pay -->
-        <div class="sf-pay-amount-label">${isAr ? 'المبلغ المطلوب تحويله لتفعيل باقة' : 'Amount to transfer for'} (${planName})</div>
-        <div class="sf-pay-amount-val">${price} <span style="font-size:1.1rem;color:#94a3b8">${isAr ? 'ج.م' : 'EGP'}</span></div>
+        <div class="sf-pay-amount-label">المبلغ المطلوب تحويله لتفعيل باقة (${planName})</div>
+        <div class="sf-pay-amount-val">${price} <span style="font-size:1.1rem;color:#94a3b8">ج.م</span></div>
       </div>
 
       <!-- Instructions Box -->
       <div class="sf-pay-instructions">
-        <h6>💡 ${isAr ? 'خطوات التحويل والتفعيل السريع:' : 'Quick Transfer Instructions:'}</h6>
+        <h6>💡 خطوات التحويل والتفعيل السريع:</h6>
         <ol>
-          <li>1. ${isAr ? 'افتح تطبيق المحفظة (أو اطلب كود *9*7# لفودافون كاش أو تطبيق إنستاباي).' : 'Open your wallet app or dial the transfer code.'}</li>
-          <li>2. ${isAr ? 'اختر "تحويل أموال" وأدخل الرقم أعلاه: ' : 'Select transfer and enter number: '}<strong id="sfPayInstructNum" style="color:#22d3ee">${vodafoneNum}</strong></li>
-          <li>3. ${isAr ? 'حول المبلغ المحدد تماماً: ' : 'Transfer the exact amount: '}<strong style="color:#10b981">${price} ${isAr ? 'ج.م' : 'EGP'}</strong> ${isAr ? 'واحفظ لقطة شاشة (سكرين شوت) لإشعار التحويل.' : 'and take a screenshot of receipt.'}</li>
-          <li>4. ${isAr ? 'اضغط على الزر الأخضر أدناه لتأكيد الإرسال وإرفاق الإشعار للتفعيل الفوري.' : 'Click the green button below to attach your receipt for instant activation.'}</li>
+          <li>1. افتح تطبيق المحفظة (أو اطلب كود *9*7# لفودافون كاش أو تطبيق إنستاباي).</li>
+          <li>2. اختر "تحويل أموال" وأدخل الرقم أعلاه: <strong id="sfPayInstructNum" style="color:#22d3ee">${vodafoneNum}</strong></li>
+          <li>3. حول المبلغ المحدد تماماً: <strong style="color:#10b981">${price} ج.م</strong> واحفظ لقطة شاشة (سكرين شوت) لإشعار التحويل.</li>
+          <li>4. اضغط على الزر الأخضر أدناه لتأكيد الإرسال وإرفاق الإشعار للتفعيل الفوري.</li>
         </ol>
       </div>
 
@@ -3276,51 +3277,51 @@ const T = {
     <div id="sfPayStep2" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <h4 style="margin:0;font-size:1.1rem;color:#f8fafc;font-weight:800">
-          ${isAr ? 'تأكيد إرسال التحويل' : 'Confirm Transfer & Receipt'}
+          تأكيد إرسال التحويل
         </h4>
         <button id="sfPayBackBtn" type="button" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:.85rem;display:flex;align-items:center;gap:4px">
-          ${isAr ? '← رجوع' : '← Back'}
+          ← رجوع
         </button>
       </div>
       <div style="background:#111c2e;border:1px solid #1e293b;border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:.82rem;color:#cbd5e1;display:flex;justify-content:space-between">
-        <span>${isAr ? 'الخطة المختارة:' : 'Plan:'} <strong style="color:#22d3ee">${planName}</strong></span>
-        <span>${isAr ? 'المبلغ:' : 'Amount:'} <strong style="color:#10b981">${price} ${isAr ? 'ج.م' : 'EGP'}</strong></span>
+        <span>الخطة المختارة: <strong style="color:#22d3ee">${planName}</strong></span>
+        <span>المبلغ: <strong style="color:#10b981">${price} ج.م</strong></span>
       </div>
 
       <form id="sfPayConfirmForm">
         <!-- Customer Name -->
         <div class="sf-pay-input-group">
-          <label>${isAr ? 'الاسم الكامل *' : 'Full Name *'}</label>
-          <input type="text" id="sfPayUserName" class="sf-pay-input" placeholder="${isAr ? 'مثال: محمد أحمد' : 'e.g. John Doe'}" value="${(typeof Auth !== 'undefined' && Auth.user?.name) ? Auth.user.name : ''}" required>
+          <label>الاسم الكامل *</label>
+          <input type="text" id="sfPayUserName" class="sf-pay-input" placeholder="مثال: محمد أحمد" value="${(typeof Auth !== 'undefined' && Auth.user?.name) ? Auth.user.name : ''}" required>
         </div>
 
         <!-- Customer Email -->
         <div class="sf-pay-input-group">
-          <label>${isAr ? 'البريد الإلكتروني لتفعيل الحساب *' : 'Account Email *'}</label>
+          <label>البريد الإلكتروني لتفعيل الحساب *</label>
           <input type="email" id="sfPayUserEmail" class="sf-pay-input" placeholder="name@example.com" value="${(typeof Auth !== 'undefined' && Auth.user?.email) ? Auth.user.email : ''}" required dir="ltr" style="text-align:right">
         </div>
 
         <!-- Sender Phone -->
         <div class="sf-pay-input-group">
-          <label>${isAr ? 'رقم الهاتف الذي قمت بالتحويل منه *' : 'Sender Phone Number *'}</label>
+          <label>رقم الهاتف الذي قمت بالتحويل منه *</label>
           <input type="tel" id="sfPaySenderPhone" class="sf-pay-input" placeholder="010xxxxxxxx" required dir="ltr" style="text-align:right">
         </div>
 
         <!-- Ref / Transaction Code (Optional) -->
         <div class="sf-pay-input-group">
-          <label>${isAr ? 'رقم العملية المرجعي / كود التحويل (اختياري)' : 'Reference / Transaction Code (Optional)'}</label>
-          <input type="text" id="sfPayRefCode" class="sf-pay-input" placeholder="${isAr ? 'رقم المعاملة من رسالة التأكيد' : 'e.g. 123456789'}" dir="ltr">
+          <label>رقم العملية المرجعي / كود التحويل (اختياري)</label>
+          <input type="text" id="sfPayRefCode" class="sf-pay-input" placeholder="رقم المعاملة من رسالة التأكيد" dir="ltr">
         </div>
 
         <!-- Receipt Screenshot Upload -->
         <div class="sf-pay-input-group">
-          <label>${isAr ? 'صورة إشعار التحويل (سكرين شوت) *' : 'Screenshot Receipt *'}</label>
+          <label>صورة إشعار التحويل (سكرين شوت) *</label>
           <input type="file" id="sfPayReceiptFile" accept="image/*" style="display:none">
           <div class="sf-pay-dropzone" id="sfPayDropzone">
             <span class="sf-pay-dropzone-icon">📸</span>
             <div class="sf-pay-dropzone-text" id="sfPayDropzoneText">
-              <strong>${isAr ? 'اضغط هنا لرفع صورة الإشعار' : 'Click to upload receipt screenshot'}</strong>
-              <div style="font-size:.74rem;color:#64748b;margin-top:4px">${isAr ? 'أو اسحب الصورة وأفلتها هنا (PNG, JPG)' : 'or drag and drop here (PNG, JPG)'}</div>
+              <strong>اضغط هنا لرفع صورة الإشعار</strong>
+              <div style="font-size:.74rem;color:#64748b;margin-top:4px">أو اسحب الصورة وأفلتها هنا (PNG, JPG)</div>
             </div>
             <img id="sfPayReceiptPreview" class="sf-pay-preview-img" style="display:none" alt="Receipt Preview">
           </div>
@@ -3328,7 +3329,7 @@ const T = {
 
         <!-- Submit Button -->
         <button type="submit" class="sf-pay-btn-green" id="sfPaySubmitBtn">
-          <span>${isAr ? 'إرسال للمراجعة والتفعيل 🚀' : 'Submit for Instant Activation 🚀'}</span>
+          <span>إرسال للمراجعة والتفعيل 🚀</span>
         </button>
       </form>
     </div>
@@ -3339,27 +3340,27 @@ const T = {
         ✓
       </div>
       <h3 style="font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:8px">
-        ${isAr ? 'تم استلام طلب التحويل بنجاح! 🎉' : 'Transfer Received Successfully! 🎉'}
+        تم استلام طلب التحويل بنجاح! 🎉
       </h3>
       <p style="font-size:.88rem;color:#cbd5e1;line-height:1.6;margin-bottom:24px">
-        ${isAr ? 'تم إرسال إشعار التحويل إلى الإدارة لمراجعته. سيتم تفعيل باقتك (' + planName + ') وإطلاق كامل المزايا خلال دقائق معدودة.' : 'Your transfer receipt has been sent for verification. Your plan will be activated within minutes.'}
+        تم إرسال إشعار التحويل إلى الإدارة لمراجعته. سيتم تفعيل باقتك (${planName}) وإطلاق كامل المزايا خلال دقائق معدودة.
       </p>
       <div style="background:#111c2e;border:1px solid #1e293b;border-radius:14px;padding:16px;text-align:right;margin-bottom:24px;font-size:.82rem;color:#94a3b8">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span>${isAr ? 'الخطة:' : 'Plan:'}</span>
+          <span>الخطة:</span>
           <strong style="color:#fff">${planName}</strong>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span>${isAr ? 'المبلغ:' : 'Amount:'}</span>
-          <strong style="color:#10b981">${price} ${isAr ? 'ج.م' : 'EGP'}</strong>
+          <span>المبلغ:</span>
+          <strong style="color:#10b981">${price} ج.م</strong>
         </div>
         <div style="display:flex;justify-content:space-between">
-          <span>${isAr ? 'الحالة الحالية:' : 'Status:'}</span>
-          <span class="sf-badge sf-badge-pending">⏳ ${isAr ? 'بانتظار موافقة الإدارة' : 'Pending Approval'}</span>
+          <span>الحالة الحالية:</span>
+          <span class="sf-badge sf-badge-pending">⏳ بانتظار موافقة الإدارة</span>
         </div>
       </div>
       <button class="btn btn-primary btn-lg w-full" id="sfPayFinishBtn" type="button" style="border-radius:14px;padding:14px;font-weight:800">
-        ${isAr ? 'الذهاب إلى لوحة التحكم 🚀' : 'Go to Dashboard 🚀'}
+        الذهاب إلى لوحة التحكم 🚀
       </button>
     </div>
   </div>
@@ -3367,11 +3368,10 @@ const T = {
   },
 
   platformMaintenance(settings = {}) {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const msg = settings.message || 'نقوم حالياً ببعض أعمال الصيانة والترقيات الدورية على خوادم المنصة لتحسين الأداء وتثبيت الميزات الجديدة. سنعود للعمل بكامل طاقتنا في أقرب وقت ممكن! 🛠️'
     const est = settings.estimatedTime || 'قريباً جداً'
     return `
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at top,#0f172a,#020617);color:#f8fafc;padding:30px 20px;font-family:'Cairo','Tajawal',sans-serif" dir="${isAr ? 'rtl' : 'ltr'}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at top,#0f172a,#020617);color:#f8fafc;padding:30px 20px;font-family:'Cairo','Tajawal',sans-serif" dir="rtl">
   <div style="max-width:560px;width:100%;background:rgba(30,41,59,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:28px;padding:48px 36px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.5);backdrop-filter:blur(16px)">
     <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);padding:8px 20px;border-radius:30px;margin-bottom:28px">
       <img src="assets/sitflow.svg" alt="SiteFlow" width="28" height="28">
@@ -3409,10 +3409,9 @@ const T = {
   },
 
   siteSuspended(site = {}) {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const reason = site.suspension_reason ? `<div style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 16px;border-radius:12px;margin-bottom:20px;font-size:.85rem;font-weight:600">سبب الإيقاف: ${site.suspension_reason}</div>` : ''
     return `
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:30px 16px;font-family:'Cairo','Tajawal',sans-serif" dir="${isAr ? 'rtl' : 'ltr'}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:30px 16px;font-family:'Cairo','Tajawal',sans-serif" dir="rtl">
   <div style="max-width:520px;width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;padding:44px 32px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.06)">
     <div style="width:76px;height:76px;border-radius:50%;background:#fee2e2;color:#dc2626;font-size:2.4rem;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
       ⚠️
@@ -3445,14 +3444,13 @@ const T = {
   },
 
   adminDashboard({ payments = [], users = [], sites = [], settings = { vodafone: '01028707543', instapay: '01028707543' }, maintenance = { enabled: false }, activeTab = 'payments' }) {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     const pendingCount = payments.filter(p => p.status === 'pending').length
     const approvedRevenue = payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
     const publishedSites = sites.filter(s => s.published && !s.suspended).length
     const suspendedSites = sites.filter(s => s.suspended).length
 
     return `
-<div class="sf-admin-page" dir="${isAr ? 'rtl' : 'ltr'}">
+<div class="sf-admin-page" dir="rtl">
   <!-- Header -->
   <div class="sf-admin-header">
     <div class="sf-admin-title-box">
@@ -3888,33 +3886,32 @@ const T = {
   },
 
   adminLogin() {
-    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
     return `
-<div class="sf-admin-login-overlay" dir="${isAr ? 'rtl' : 'ltr'}">
+<div class="sf-admin-login-overlay" dir="rtl">
   <div class="sf-admin-login-card">
     <div style="text-align:center;margin-bottom:28px">
       <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:2.2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 10px 25px rgba(245,158,11,0.3)">
         👑
       </div>
       <h2 style="font-size:1.6rem;font-weight:900;color:#0f172a;margin-bottom:6px">
-        ${isAr ? 'بوابة الإدارة المركزية 👑' : 'SiteFlow Admin Gateway'}
+        بوابة الإدارة المركزية 👑
       </h2>
       <p style="font-size:.88rem;color:#64748b;margin:0">
-        ${isAr ? 'منطقة دخول محمية ومخصصة لمدير المنصة فقط' : 'Protected area restricted to platform administrator.'}
+        منطقة دخول محمية ومخصصة لمدير المنصة فقط
       </p>
     </div>
 
     <form id="adminLoginForm">
       <div style="margin-bottom:18px">
         <label style="display:block;font-size:.85rem;font-weight:700;color:#334155;margin-bottom:6px">
-          ${isAr ? 'اسم المستخدم أو رقم الهاتف الإداري' : 'Admin Username or Phone'}
+          اسم المستخدم أو رقم الهاتف الإداري
         </label>
         <input type="text" id="adminLoginUser" class="sf-pay-input" placeholder="admin أو 01028707543" required dir="ltr" style="background:#f8fafc;color:#0f172a;border-color:#cbd5e1;text-align:right" autofocus>
       </div>
 
       <div style="margin-bottom:20px">
         <label style="display:block;font-size:.85rem;font-weight:700;color:#334155;margin-bottom:6px">
-          ${isAr ? 'كلمة المرور الإدارية' : 'Admin Password'}
+          كلمة المرور الإدارية
         </label>
         <input type="password" id="adminLoginPass" class="sf-pay-input" placeholder="••••••••" required dir="ltr" style="background:#f8fafc;color:#0f172a;border-color:#cbd5e1;text-align:right">
       </div>
@@ -3923,14 +3920,14 @@ const T = {
       </div>
 
       <button type="submit" class="btn btn-primary btn-lg w-full" id="adminLoginSubmitBtn" style="border-radius:12px;padding:14px;font-weight:800;background:#0f172a;border-color:#0f172a;margin-bottom:18px">
-        ${isAr ? 'تسجيل الدخول للوحة التحكم 🚀' : 'Sign in to Admin Dashboard 🚀'}
+        تسجيل الدخول للوحة التحكم 🚀
       </button>
     </form>
 
     <div style="border-top:1px solid #f1f5f9;padding-top:16px;text-align:center;display:flex;justify-content:space-between;font-size:.82rem">
       <span style="color:#94a3b8">SiteFlow Admin Secure Gateway</span>
       <a href="#/" style="color:#4f46e5;font-weight:700;text-decoration:none">
-        ${isAr ? 'العودة للمنصة الرئيسية ↗' : 'Back to Main Site ↗'}
+        العودة للمنصة الرئيسية ↗
       </a>
     </div>
   </div>

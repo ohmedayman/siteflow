@@ -54,3 +54,9 @@ class Config:
     CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '433413431167268')
     CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET', '_HKYCJFA0ICqgaFgu9v8JPEih94')
     CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', 'cloudinary://433413431167268:_HKYCJFA0ICqgaFgu9v8JPEih94@reqe54ky')
+
+    # AI Configuration (DeepSeek / OpenAI compatible)
+    AI_API_KEY = os.environ.get('AI_API_KEY', 'sk-8e872c0d18aed5b33cf2adbe5cdbbbeccfe17c4e131436bf9459a0899ff8c3f6')
+    AI_BASE_URL = os.environ.get('AI_BASE_URL', 'https://api.deepseek.com/v1')
+    AI_MODEL = os.environ.get('AI_MODEL', 'deepseek-chat')
+

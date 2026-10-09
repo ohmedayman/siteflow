@@ -6,7 +6,10 @@ const Auth = {
   lang: 'ar',
 
   async init() {
-    this.lang = localStorage.getItem('sf_lang') || (navigator.language.startsWith('ar') ? 'ar' : 'en')
+    this.lang = 'ar'
+    localStorage.setItem('sf_lang', 'ar')
+    document.documentElement.dir = 'rtl'
+    document.documentElement.lang = 'ar'
     // Check URL for OAuth redirect (if Supabase session in URL)
     const hash = window.location.hash
     if (hash.includes('access_token') || hash.includes('type=signup') || hash.includes('type=recovery')) {
@@ -96,20 +99,14 @@ const Auth = {
     return true;
   },
 
-  setLang(code) { this.lang = code; localStorage.setItem('sf_lang', code) },
+  setLang(code) { this.lang = 'ar'; localStorage.setItem('sf_lang', 'ar') },
 
   toggleLang() {
-    const nextLang = this.lang === 'ar' ? 'en' : 'ar'
-    this.setLang(nextLang)
-    document.documentElement.dir = this.dir()
-    document.documentElement.lang = nextLang
+    this.lang = 'ar'
+    localStorage.setItem('sf_lang', 'ar')
+    document.documentElement.dir = 'rtl'
+    document.documentElement.lang = 'ar'
     this._ui()
-    if (typeof Router !== 'undefined' && Router.handle) {
-      Router.handle()
-    }
-    if (typeof Toast !== 'undefined') {
-      Toast.show(nextLang === 'ar' ? 'تم تحويل الواجهة إلى العربية 🇸🇦' : 'Switched interface to English 🌐', 'success')
-    }
   },
 
   t(key, fallback) {

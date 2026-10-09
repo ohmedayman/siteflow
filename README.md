@@ -11,6 +11,7 @@ Build stunning, professional websites without writing code.
 - **Responsive Design** — Desktop & mobile preview
 - **One-Click Publish** — Instant publishing on subdomain
 - **Custom Domains** — Connect your own domain (mock)
+- **Site Workspace** — Search, filter, and sort sites by name, activity, or visits
 - **Demo Account** — `demo@siteflow.app` / `demo123`
 
 ## Quick Start
@@ -26,6 +27,7 @@ Build stunning, professional websites without writing code.
 
 - Vanilla JavaScript (no frameworks)
 - CSS Custom Properties for theming
+- Lucide icons for consistent interface iconography
 - localStorage for data persistence
 - Hash-based SPA routing
 

@@ -1,14 +1,42 @@
 /**
- * SiteFlow AI — المساعد الذكي المدمج لمنصة SiteFlow
- * يدمج قدرات: بناء الصفحات، كتابة المحتوى، تحسين SEO، واقتراحات التصميم الذكي
+ * SiteFlow AI — المحرك والمساعد الذكي لمنصة SiteFlow
+ * يدعم الذكاء الاصطناعي (DeepSeek / OpenAI) مع محرك توليد ذكي مدمج احتياطي
+ * لتوليد المواقع الكاملة، كتابة المحتوى التسويقي، تحسين SEO، والرد الآلي
  */
 
 const SiteFlowAI = {
-  // قواعد التصميم والألوان حسب القطاع
+  DEFAULT_API_KEY: 'sk-8e872c0d18aed5b33cf2adbe5cdbbbeccfe17c4e131436bf9459a0899ff8c3f6',
+  DEFAULT_ENDPOINT: 'https://api.deepseek.com/v1/chat/completions',
+  DEFAULT_MODEL: 'deepseek-chat',
+
+  // استرجاع مفتاح الـ API الحالي
+  getApiKey() {
+    return localStorage.getItem('sf_ai_api_key') || this.DEFAULT_API_KEY;
+  },
+
+  // حفظ مفتاح الـ API
+  setApiKey(key) {
+    if (key && key.trim()) {
+      localStorage.setItem('sf_ai_api_key', key.trim());
+    } else {
+      localStorage.removeItem('sf_ai_api_key');
+    }
+  },
+
+  // استرجاع نقطة النهاية وموديل الذكاء الاصطناعي
+  getEndpoint() {
+    return localStorage.getItem('sf_ai_endpoint') || this.DEFAULT_ENDPOINT;
+  },
+
+  getModel() {
+    return localStorage.getItem('sf_ai_model') || this.DEFAULT_MODEL;
+  },
+
+  // لوحات الألوان والتصميم حسب القطاع التجاري
   INDUSTRY_PALETTES: {
     medical: { name: 'طبي / صحي', primary: '#0284c7', secondary: '#0ea5e9', bg: '#f0f9ff', font: 'Tajawal', cta: 'احجز موعدك الآن' },
     food: { name: 'مطاعم / طعام', primary: '#ea580c', secondary: '#f97316', bg: '#fff7ed', font: 'Cairo', cta: 'اطلب الآن' },
-    tech: { name: 'تقني / شركات', primary: '#2563eb', secondary: '#4f46e5', bg: '#f8fafc', font: 'Inter', cta: 'ابدأ تجربتك المجانية' },
+    tech: { name: 'تقني / شركات', primary: '#2563eb', secondary: '#4f46e5', bg: '#f8fafc', font: 'Cairo', cta: 'ابدأ تجربتك المجانية' },
     education: { name: 'تعليم / كورسات', primary: '#0d9488', secondary: '#059669', bg: '#f0fdfa', font: 'Cairo', cta: 'سجل الآن' },
     fashion: { name: 'جمال / موضة', primary: '#9333ea', secondary: '#c026d3', bg: '#faf5ff', font: 'Tajawal', cta: 'تسوق التشكيلة' },
     legal: { name: 'قانوني / مالي', primary: '#1e293b', secondary: '#334155', bg: '#f8fafc', font: 'Cairo', cta: 'احصل على استشارة' }
@@ -26,12 +54,110 @@ const SiteFlowAI = {
     return 'tech';
   },
 
-  // توليد هيكل ومحتوى موقع احترافي متكامل بناءً على وصف المستخدم
-  generateSite(userPrompt) {
-    const indKey = this.detectIndustry(userPrompt);
-    const pal = this.INDUSTRY_PALETTES[indKey];
-    const prompt = userPrompt.trim();
+  // استدعاء واجهة الذكاء الاصطناعي الخارجية بأمان
+  async callLlm(messages, maxTokens = 1500, jsonMode = false) {
+    const apiKey = this.getApiKey();
+    const endpoint = this.getEndpoint();
+    const model = this.getModel();
 
+    // محاولة إرسال الطلب إلى السيرفر الوسيط أولاً أو مباشرة
+    try {
+      if (typeof API !== 'undefined' && API.token) {
+        const res = await fetch(`${API.apiUrl}/ai/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API.token}`
+          },
+          body: JSON.stringify({ prompt: messages[messages.length - 1]?.content || '' })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.data) return data.data;
+        }
+      }
+    } catch (e) {
+      console.warn('Backend AI proxy failed, falling back to direct / local engine:', e);
+    }
+
+    // استدعاء مباشر في حال توفر اتصال مباشر
+    if (apiKey && apiKey.startsWith('sk-')) {
+      try {
+        const bodyPayload = {
+          model: model,
+          messages: messages,
+          max_tokens: maxTokens,
+          temperature: 0.7
+        };
+        if (jsonMode) {
+          bodyPayload.response_format = { type: 'json_object' };
+        }
+
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(bodyPayload)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const content = data.choices?.[0]?.message?.content;
+          if (content) {
+            if (jsonMode) {
+              const cleaned = content.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
+              return JSON.parse(cleaned);
+            }
+            return content;
+          }
+        }
+      } catch (err) {
+        console.warn('Direct LLM fetch error:', err);
+      }
+    }
+
+    return null;
+  },
+
+  // توليد هيكل ومحتوى موقع احترافي متكامل بناءً على وصف المستخدم
+  async generateSite(userPrompt) {
+    const prompt = (userPrompt || '').trim();
+    const indKey = this.detectIndustry(prompt);
+    const pal = this.INDUSTRY_PALETTES[indKey];
+
+    // 1. محاولة التوليد عبر الذكاء الاصطناعي الحقيقي
+    try {
+      const systemPrompt = `أنت خبير تصميم وتطوير المواقع في منصة SiteFlow. قم بإنشاء موقع كامل عالي الجودة باللغة العربية بناءً على طلب المستخدم.
+يجب أن ترجع النتيجة بصيغة JSON حصراً بهذا الشكل:
+{
+  "title": "اسم النشاط التجاري",
+  "industry": "التصنيف بالعربية",
+  "theme": {"color": "#HEX", "font": "Cairo"},
+  "seo": {"title": "عنوان السيو", "description": "وصف السيو لا يتجاوز 150 حرف"},
+  "sections": [
+    {"type": "hero", "data": {"heading": "عنوان جذاب", "description": "وصف مقنع", "buttonText": "زر الإجراء", "buttonUrl": "#contact", "image": "https://images.unsplash.com/..."}},
+    {"type": "features", "data": {"heading": "المميزات", "items": [{"title": "ميزة 1", "desc": "تفاصيل"}, {"title": "ميزة 2", "desc": "تفاصيل"}, {"title": "ميزة 3", "desc": "تفاصيل"}]}},
+    {"type": "services", "data": {"heading": "الخدمات", "items": [{"title": "خدمة 1", "desc": "شرح"}, {"title": "خدمة 2", "desc": "شرح"}]}},
+    {"type": "testimonials", "data": {"heading": "آراء العملاء", "items": [{"name": "اسم", "role": "صفة", "text": "رأي العميل"}]}},
+    {"type": "contact", "data": {"heading": "تواصل معنا", "email": "info@domain.com", "phone": "+20 100 000 0000", "address": "القاهرة، مصر"}},
+    {"type": "footer", "data": {"copyright": "© 2026 جميع الحقوق محفوظة", "text": "مدعوم بواسطة SiteFlow AI"}}
+  ]
+}`;
+      const llmData = await this.callLlm([
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt }
+      ], 2000, true);
+
+      if (llmData && llmData.sections && llmData.sections.length > 0) {
+        return llmData;
+      }
+    } catch (e) {
+      console.warn('AI LLM Generation fallback triggered:', e);
+    }
+
+    // 2. المحرك الذكي الاحتياطي (Smart Rule Engine)
     let siteTitle = prompt.length > 25 ? prompt.slice(0, 25) : prompt;
     let heroHeading = '';
     let heroDesc = '';
@@ -106,7 +232,7 @@ const SiteFlowAI = {
   },
 
   // توليد نصوص تسويقية مخصصة (Copywriting)
-  generateCopy(type, topic) {
+  async generateCopy(type, topic) {
     const t = (topic || 'خدماتنا').trim();
     if (type === 'hero') {
       return {
@@ -129,8 +255,6 @@ const SiteFlowAI = {
   // تحسين SEO الذكي (AI SEO Optimizer)
   generateSeo(page) {
     const title = page.title || 'موقعي';
-    const ind = this.detectIndustry(title + ' ' + (page.sections?.map(s=>s.data?.heading||'').join(' ')));
-    
     let seoTitle = `${title} | أفضل الخدمات والحلول المعتمدة`;
     if (seoTitle.length > 60) seoTitle = seoTitle.slice(0, 58) + '..';
 
@@ -140,7 +264,7 @@ const SiteFlowAI = {
     return {
       title: seoTitle,
       description: seoDesc,
-      score: 96,
+      score: 98,
       keywords: ['خدمات ' + title, 'عروض ' + title, 'حجز اونلاين', 'افضل الاسعار']
     };
   },
@@ -150,7 +274,6 @@ const SiteFlowAI = {
     const q = (query || '').toLowerCase().trim();
     if (!q) return 'مرحباً بك! كيف يمكنني مساعدتك بخصوص ' + page.title + ' اليوم؟ 😊';
 
-    // البحث في أقسام الموقع لاستخراج الإجابة الدقيقة
     const contactSec = page.sections?.find(s => s.type === 'contact' || s.type === 'location');
     const menuSec = page.sections?.find(s => s.type === 'menu' || s.type === 'pricing');
     const servSec = page.sections?.find(s => s.type === 'services' || s.type === 'features');
@@ -199,7 +322,7 @@ const SiteFlowAI = {
   <meta name="description" content="${page.seo?.description || ''}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root { --p-color: ${t.color}; --p-font: '${t.font}', sans-serif; --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0; --gray-400: #94a3b8; --gray-500: #64748b; --gray-800: #1e293b; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -226,7 +349,7 @@ const SiteFlowAI = {
 </html>`;
   },
 
-  // التعرف الصوتي (Voice Recognition) عبر المايك
+  // التعرف الصوتي (Voice Recognition) عبر المايك باللغة العربية
   isVoiceSupported() {
     return typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
   },
@@ -278,7 +401,7 @@ const SiteFlowAI = {
   },
 
   // معالجة أسئلة وأوامر المساعد الذكي التفاعلي (SiteFlow AI Copilot)
-  chatCopilot(query, currentContext = null) {
+  async chatCopilot(query, currentContext = null) {
     const q = (query || '').trim();
     if (!q) {
       return {
@@ -333,7 +456,7 @@ const SiteFlowAI = {
 
     // 3. كتابة نصوص / عناوين
     if (/اكتب|عنوان|نص|صيغ|كتابة/i.test(qLower)) {
-      const copy = this.generateCopy('hero', q);
+      const copy = await this.generateCopy('hero', q);
       return {
         intent: 'copy',
         message: `اقترحت لك هذا النص التسويقي القوي:\n\n**العنوان:** ${copy.heading}\n**الوصف:** ${copy.description}`,
@@ -344,7 +467,7 @@ const SiteFlowAI = {
     }
 
     // 4. توليد موقع كامل (السيناريو الأساسي)
-    const site = this.generateSite(q);
+    const site = await this.generateSite(q);
     const indName = site.industry || 'عام';
     return {
       intent: 'create',
@@ -361,4 +484,3 @@ const SiteFlowAI = {
 };
 
 window.SiteFlowAI = SiteFlowAI;
-

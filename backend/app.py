@@ -226,6 +226,150 @@ def health():
         db_ok = False
     return jsonify({'ok': True, 'db': db_ok})
 
+# ─────────────── AI API (DeepSeek / LLM) ───────────────
+
+def call_llm(messages, max_tokens=1500, temperature=0.7, json_mode=False):
+    import urllib.request, ssl
+    api_key = Config.AI_API_KEY
+    base_url = Config.AI_BASE_URL.rstrip('/')
+    model = Config.AI_MODEL
+    url = f"{base_url}/chat/completions"
+    
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {api_key}'
+    }
+    payload = {
+        'model': model,
+        'messages': messages,
+        'max_tokens': max_tokens,
+        'temperature': temperature
+    }
+    if json_mode:
+        payload['response_format'] = {'type': 'json_object'}
+        
+    try:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(url, data=data, headers=headers)
+        with urllib.request.urlopen(req, context=ctx, timeout=12) as resp:
+            res_json = json.loads(resp.read().decode('utf-8'))
+            return res_json['choices'][0]['message']['content']
+    except Exception as e:
+        print("LLM call failed:", e)
+        return None
+
+@app.route('/api/ai/generate', methods=['POST'])
+def ai_generate():
+    data = request.get_json() or {}
+    prompt = (data.get('prompt') or '').strip()
+    if not prompt:
+        return jsonify({'error': 'Prompt is required'}), 400
+
+    system_prompt = (
+        "أنت كبير مصممي ومطوري المواقع في منصة SiteFlow. مهمتك تحليل نشاط المستخدم وإنشاء موقع إلكتروني احترافي متكامل باللغة العربية.\n"
+        "يجب أن تكون إجابتك بصيغة JSON حصراً وتتبع الهيكل التالي:\n"
+        "{\n"
+        '  "title": "اسم النشاط التجاري أو الموقع",\n'
+        '  "industry": "تصنيف النشاط (طبي، مطاعم، تقني، متاجر، تعليم، موضة، قانوني)",\n'
+        '  "theme": {"color": "#لون_أساسي_متناسق_HEX", "font": "Cairo"},\n'
+        '  "seo": {"title": "عنوان جذاب لمحركات البحث", "description": "وصف تسويقي دقيق للموقع لا يتجاوز 150 حرف"},\n'
+        '  "sections": [\n'
+        '    {"type": "hero", "data": {"heading": "عنوان رئيسي جذاب", "description": "وصف مقنع للخدمة أو المنتج", "buttonText": "زر الإجراء الرئيسي", "buttonUrl": "#contact", "image": "رابط_صورة_unsplash"}},\n'
+        '    {"type": "features", "data": {"heading": "لماذا تختارنا؟", "items": [{"title": "ميزة 1", "desc": "تفاصيل الميزة"}, {"title": "ميزة 2", "desc": "تفاصيل الميزة"}, {"title": "ميزة 3", "desc": "تفاصيل الميزة"}]}},\n'
+        '    {"type": "services", "data": {"heading": "خدماتنا / منتجاتنا", "items": [{"title": "خدمة 1", "desc": "شرح مختصر"}, {"title": "خدمة 2", "desc": "شرح مختصر"}, {"title": "خدمة 3", "desc": "شرح مختصر"}]}},\n'
+        '    {"type": "testimonials", "data": {"heading": "آراء وتجارب العملاء", "items": [{"name": "اسم عميل", "role": "الصفة", "text": "شهادة العميل"}, {"name": "اسم عميل 2", "role": "الصفة", "text": "شهادة ثانية"}]}},\n'
+        '    {"type": "contact", "data": {"heading": "تواصل معنا أو احجز موعدك", "email": "info@example.com", "phone": "+20 100 000 0000", "address": "الموقع الجغرافي"}},\n'
+        '    {"type": "footer", "data": {"copyright": "© 2026 جميع الحقوق محفوظة", "text": "مدعوم بواسطة SiteFlow AI"}}\n'
+        "  ]\n"
+        "}\n"
+        "استخدم نصوصاً تسويقية عربية فصيحة وجذابة جداً، وصور Unsplash حقيقية ومناسبة."
+    )
+
+    llm_resp = call_llm([
+        {'role': 'system', 'content': system_prompt},
+        {'role': 'user', 'content': prompt}
+    ], max_tokens=2000, json_mode=True)
+
+    if llm_resp:
+        try:
+            # Clean markdown JSON formatting if present
+            cleaned = re.sub(r'^```json\s*', '', llm_resp.strip())
+            cleaned = re.sub(r'\s*```$', '', cleaned)
+            site_data = json.loads(cleaned)
+            return jsonify({'success': True, 'source': 'llm', 'data': site_data})
+        except Exception as e:
+            print("Failed to parse LLM JSON:", e)
+
+    # Fallback to smart rule-based Arabic generation
+    p_lower = prompt.lower()
+    ind = 'tech'
+    pal = {'name': 'شركات وتقنية', 'color': '#2563eb', 'cta': 'ابدأ الآن مجاناً'}
+    img = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80'
+
+    if any(w in p_lower for w in ['طبي', 'عيادة', 'أسنان', 'اسنان', 'طبيب', 'دكتور', 'مستشفى']):
+        ind = 'medical'
+        pal = {'name': 'طبي ورعاية صحية', 'color': '#0284c7', 'cta': 'احجز موعدك الآن'}
+        img = 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80'
+    elif any(w in p_lower for w in ['مطعم', 'كافيه', 'طعام', 'برجر', 'بيتزا', 'حلويات', 'وجبات']):
+        ind = 'food'
+        pal = {'name': 'مطاعم وأغذية', 'color': '#ea580c', 'cta': 'اطلب أونلاين الآن'}
+        img = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80'
+    elif any(w in p_lower for w in ['ملابس', 'موضة', 'أزياء', 'ازياء', 'عطور', 'تجميل', 'بوتيك']):
+        ind = 'fashion'
+        pal = {'name': 'أزياء وجمال', 'color': '#9333ea', 'cta': 'تسوق التشكيلة الجديدة'}
+        img = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80'
+
+    title = prompt[:30].strip() or 'موقعي الذكي'
+    fallback_data = {
+        'title': title,
+        'industry': pal['name'],
+        'theme': {'color': pal['color'], 'font': 'Cairo'},
+        'seo': {'title': f'{title} | الموقع الرسمي والخدمات الحصرية', 'description': f'أهلاً بكم في {title}. استكشف أحدث عروضنا وخدماتنا المتميزة بأعلى جودة.'},
+        'sections': [
+            {'type': 'hero', 'data': {'heading': f'أفضل الحلول والخدمات في {title}', 'description': 'نقدم لك تجربة استثنائية تجمع بين الاحترافية والجودة العالية لتلبية كافة متطلباتك بدقة متناهية.', 'buttonText': pal['cta'], 'buttonUrl': '#contact', 'image': img}},
+            {'type': 'features', 'data': {'heading': 'لماذا يفضلنا العملاء دائماً؟', 'items': [{'title': 'جودة فائقة ومضمونة', 'desc': 'معايير قياسية في التنفيذ لضمان رضاك التام'}, {'title': 'سرعة ودقة في المواعيد', 'desc': 'التزام صارم بجداول التسليم بأعلى كفاءة'}, {'title': 'دعم فني واستشارات دائمة', 'desc': 'فريق متكامل لمرافقتك وتقديم المساعدة في أي وقت'}]}},
+            {'type': 'services', 'data': {'heading': 'خدماتنا وباقاتنا المميزة', 'items': [{'title': 'الخدمة الأساسية', 'desc': 'حلول سريعة تلبي احتياجاتك اليومية بأفضل قيمة'}, {'title': 'الباقة الاحترافية', 'desc': 'تغطية شاملة وميزات متقدمة لنمو أعمالك'}, {'title': 'الحلول المخصصة', 'desc': 'خدمات مصممة خصيصاً وفقاً لمتطلبات مشروعك'}]}},
+            {'type': 'testimonials', 'data': {'heading': 'ماذا يقول عملاؤنا عنا؟', 'items': [{'name': 'م. أحمد خالد', 'role': 'عميل معتمد', 'text': 'تجربة ممتازة وخدمة في منتهى الاحترافية، أنصح الجميع بالتعامل معهم.'}, {'name': 'سارة إبراهيم', 'role': 'مراجعة', 'text': 'النتائج فاقت توقعاتي، سرعة في الاستجابة وجودة مبهرة.'}]}},
+            {'type': 'contact', 'data': {'heading': 'تواصل معنا أو اطلب استشارتك', 'email': 'contact@example.com', 'phone': '+20 100 123 4567', 'address': 'القاهرة، جمهورية مصر العربية'}},
+            {'type': 'footer', 'data': {'copyright': f'© 2026 {title}. جميع الحقوق محفوظة.', 'text': 'مدعوم بواسطة SiteFlow AI'}}
+        ]
+    }
+    return jsonify({'success': True, 'source': 'smart_engine', 'data': fallback_data})
+
+@app.route('/api/ai/copilot', methods=['POST'])
+def ai_copilot():
+    data = request.get_json() or {}
+    query = (data.get('query') or '').strip()
+    if not query:
+        return jsonify({
+            'intent': 'welcome',
+            'message': 'أهلاً بك! أنا مساعد SiteFlow الذكي 🤖. كيف يمكنني مساعدتك اليوم في تصميم وتطوير موقعك؟',
+            'suggestions': ['صمم موقع لمطعم برجر مع منيو كامل', 'أنشئ متجر إلكتروني لبيع العطور', 'غير اللون إلى كحلي فاخر']
+        })
+
+    # Try LLM
+    llm_resp = call_llm([
+        {'role': 'system', 'content': 'أنت مساعد ذكي داخل محرر المواقع SiteFlow. أجب باللغة العربية باختصار واحترافية مقترحاً تحسينات للموقع.'},
+        {'role': 'user', 'content': query}
+    ], max_tokens=300)
+
+    if llm_resp:
+        return jsonify({
+            'intent': 'llm_advice',
+            'message': llm_resp.strip(),
+            'suggestions': ['طبق هذا الاقتراح', 'غير لون الموقع', 'أضف قسم جديد']
+        })
+
+    return jsonify({
+        'intent': 'general',
+        'message': f'لقد تلقيت طلبك: "{query}". يمكنك استخدامه لتوليد محتوى جديد أو تعديل أقسام موقعك بسهولة.',
+        'suggestions': ['توليد موقع كامل', 'تحسين SEO', 'إضافة قسم مميزات']
+    })
+
+
 @app.route('/api/upload', methods=['POST'])
 @login_required
 def upload_file(user):
@@ -557,10 +701,10 @@ def handle_subdomain():
     if not site:
         return make_response(render_template('site_page.html',
             not_found=True,
-            title='Not Found', slug=subdomain,
-            seo_title='404 - Site Not Found', seo_desc='',
-            sections=[], theme_color='#6366f1', font='Inter',
-            font_family='Inter', lang='en', dir='ltr',
+            title='لم يتم العثور على الموقع', slug=subdomain,
+            seo_title='404 - لم يتم العثور على الموقع', seo_desc='',
+            sections=[], theme_color='#4f46e5', font='Cairo',
+            font_family='Cairo', lang='ar', dir='rtl',
             year=datetime.now().year,
             main_url=f'https://{MAIN_DOMAIN}'
         ), 404)
@@ -578,10 +722,10 @@ def handle_subdomain():
         seo_title=(seo.title if seo else site.title) or site.title,
         seo_desc=(seo.description if seo else '') or '',
         sections=[s.to_dict() for s in sections] if sections else [],
-        theme_color=(theme.color if theme else '#6366f1') or '#6366f1',
-        font=(theme.font if theme else 'Inter') or 'Inter',
-        font_family=(theme.font if theme else 'Inter') or 'Inter',
-        lang='en', dir='ltr',
+        theme_color=(theme.color if theme else '#4f46e5') or '#4f46e5',
+        font=(theme.font if theme else 'Cairo') or 'Cairo',
+        font_family=(theme.font if theme else 'Cairo') or 'Cairo',
+        lang='ar', dir='rtl',
         year=datetime.now().year,
         main_url=f'https://{MAIN_DOMAIN}'
     ))
@@ -662,10 +806,10 @@ def not_found(e):
     # If subdomain request — show nice 404 page
     if host.endswith('.' + Config.MAIN_DOMAIN) and host != Config.MAIN_DOMAIN:
         return make_response(render_template('site_page.html',
-            not_found=True, title='Not Found', slug=host.split('.')[0],
-            seo_title='404 - Not Found', seo_desc='',
-            sections=[], theme_color='#6366f1', font='Inter',
-            font_family='Inter', lang='en', dir='ltr',
+            not_found=True, title='لم يتم العثور على الصفحة', slug=host.split('.')[0],
+            seo_title='404 - لم يتم العثور على الموقع', seo_desc='',
+            sections=[], theme_color='#4f46e5', font='Cairo',
+            font_family='Cairo', lang='ar', dir='rtl',
             year=datetime.now().year,
             main_url=f'https://{Config.MAIN_DOMAIN}'
         ), 404)
@@ -673,18 +817,18 @@ def not_found(e):
     accept = request.headers.get('Accept', '')
     if 'text/html' in accept:
         return render_template('site_page.html',
-            not_found=True, title='Not Found', slug='',
-            seo_title='404 - Not Found', seo_desc='',
-            sections=[], theme_color='#6366f1', font='Inter',
-            font_family='Inter', lang='en', dir='ltr',
+            not_found=True, title='لم يتم العثور على الصفحة', slug='',
+            seo_title='404 - لم يتم العثور على الصفحة', seo_desc='',
+            sections=[], theme_color='#4f46e5', font='Cairo',
+            font_family='Cairo', lang='ar', dir='rtl',
             year=datetime.now().year,
             main_url=f'https://{Config.MAIN_DOMAIN}'
         ), 404
-    return jsonify({'error': 'Not found'}), 404
+    return jsonify({'error': 'الصفحة أو الرابط غير موجود'}), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return jsonify({'error': 'Internal server error'}), 500
+    return jsonify({'error': 'حدث خطأ في الخادم الداخلي'}), 500
 
 # ─────────────── Initialize ───────────────
 

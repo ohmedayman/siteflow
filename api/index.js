@@ -448,6 +448,66 @@ module.exports = async function handler(req, res) {
       return res.end(JSON.stringify({ ok: true, submission: sub }));
     }
 
+    // ── AI Generation & Copilot ──
+    if (path === '/ai/generate' && req.method === 'POST') {
+      const body = await parseBody(req);
+      const prompt = (body.prompt || '').trim();
+      if (!prompt) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: 'الوصف مطلوب لبدء التوليد الذكي.' }));
+      }
+
+      const pLower = prompt.toLowerCase();
+      let ind = 'tech';
+      let pal = { name: 'شركات وتقنية', color: '#2563eb', cta: 'ابدأ الآن مجاناً' };
+      let img = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80';
+
+      if (/طبي|عيادة|أسنان|اسنان|طبيب|دكتور|مستشفى/.test(pLower)) {
+        ind = 'medical';
+        pal = { name: 'طبي ورعاية صحية', color: '#0284c7', cta: 'احجز موعدك الآن' };
+        img = 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80';
+      } else if (/مطعم|كافيه|طعام|برجر|بيتزا|حلويات|وجبات/.test(pLower)) {
+        ind = 'food';
+        pal = { name: 'مطاعم وأغذية', color: '#ea580c', cta: 'اطلب أونلاين الآن' };
+        img = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80';
+      } else if (/ملابس|موضة|أزياء|ازياء|عطور|تجميل|بوتيك/.test(pLower)) {
+        ind = 'fashion';
+        pal = { name: 'أزياء وجمال', color: '#9333ea', cta: 'تسوق التشكيلة الجديدة' };
+        img = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80';
+      }
+
+      const siteTitle = prompt.length > 30 ? prompt.substring(0, 30) : prompt;
+      const siteData = {
+        title: siteTitle || 'موقعي الذكي',
+        industry: pal.name,
+        theme: { color: pal.color, font: 'Cairo' },
+        seo: { title: `${siteTitle} | الموقع الرسمي`, description: `أهلاً بكم في ${siteTitle}. نقدم أفضل الخدمات والمنتجات الاحترافية.` },
+        sections: [
+          { type: 'hero', data: { heading: `أفضل الحلول والخدمات في ${siteTitle}`, description: 'نقدم لك تجربة استثنائية تجمع بين الاحترافية والجودة العالية لتلبية كافة متطلباتك بدقة متناهية.', buttonText: pal.cta, buttonUrl: '#contact', image: img } },
+          { type: 'features', data: { heading: 'لماذا يفضلنا العملاء دائماً؟', items: [{ title: 'جودة فائقة ومضمونة', desc: 'معايير قياسية في التنفيذ لضمان رضاك التام' }, { title: 'سرعة ودقة في المواعيد', desc: 'التزام صارم بجداول التسليم بأعلى كفاءة' }, { title: 'دعم فني واستشارات دائمة', desc: 'فريق متكامل لمرافقتك وتقديم المساعدة في أي وقت' }] } },
+          { type: 'services', data: { heading: 'خدماتنا وباقاتنا المميزة', items: [{ title: 'الخدمة الأساسية', desc: 'حلول سريعة تلبي احتياجاتك اليومية بأفضل قيمة' }, { title: 'الباقة الاحترافية', desc: 'تغطية شاملة وميزات متقدمة لنمو أعمالك' }, { title: 'الحلول المخصصة', desc: 'خدمات مصممة خصيصاً وفقاً لمتطلبات مشروعك' }] } },
+          { type: 'testimonials', data: { heading: 'ماذا يقول عملاؤنا عنا؟', items: [{ name: 'م. أحمد خالد', role: 'عميل معتمد', text: 'تجربة ممتازة وخدمة في منتهى الاحترافية، أنصح الجميع بالتعامل معهم.' }, { name: 'سارة إبراهيم', role: 'مراجعة', text: 'النتائج فاقت توقعاتي، سرعة في الاستجابة وجودة مبهرة.' }] } },
+          { type: 'contact', data: { heading: 'تواصل معنا أو اطلب استشارتك', email: 'contact@example.com', phone: '+20 100 123 4567', address: 'القاهرة، جمهورية مصر العربية' } },
+          { type: 'footer', data: { copyright: `© 2026 ${siteTitle}. جميع الحقوق محفوظة.`, text: 'مدعوم بواسطة SiteFlow AI' } }
+        ]
+      };
+
+      res.statusCode = 200;
+      return res.end(JSON.stringify({ success: true, data: siteData }));
+    }
+
+    if (path === '/ai/copilot' && req.method === 'POST') {
+      const body = await parseBody(req);
+      const query = (body.query || '').trim();
+      res.statusCode = 200;
+      return res.end(JSON.stringify({
+        intent: 'general',
+        message: `تمت معالجة طلبك: "${query}". يمكنك تطبيق التعديلات واختيار الألوان المناسبة لموقعك فوراً.`,
+        suggestions: ['توليد موقع كامل', 'تحسين SEO', 'إضافة قسم جديد']
+      }));
+    }
+
+
     // ── 404 Fallback ──
     res.statusCode = 404;
     res.end(JSON.stringify({ error: 'Route not found', path }));
