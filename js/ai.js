@@ -1,13 +1,14 @@
 /**
  * SiteFlow AI — المحرك والمساعد الذكي لمنصة SiteFlow
- * يدعم الذكاء الاصطناعي (DeepSeek / OpenAI) مع محرك توليد ذكي مدمج احتياطي
+ * يدعم الذكاء الاصطناعي (Khabeer AI / OpenAI / gpt-5.2) مع محرك توليد ذكي مدمج احتياطي
  * لتوليد المواقع الكاملة، كتابة المحتوى التسويقي، تحسين SEO، والرد الآلي
  */
 
 const SiteFlowAI = {
   DEFAULT_API_KEY: 'sk-8e872c0d18aed5b33cf2adbe5cdbbbeccfe17c4e131436bf9459a0899ff8c3f6',
-  DEFAULT_ENDPOINT: 'https://api.deepseek.com/v1/chat/completions',
-  DEFAULT_MODEL: 'deepseek-chat',
+  DEFAULT_BASE_URL: 'https://api.5abeer.ai/v1',
+  DEFAULT_ENDPOINT: 'https://api.5abeer.ai/v1/chat/completions',
+  DEFAULT_MODEL: 'gpt-5.2',
 
   // استرجاع مفتاح الـ API الحالي
   getApiKey() {
@@ -36,31 +37,31 @@ const SiteFlowAI = {
   INDUSTRY_PALETTES: {
     medical: { name: 'طبي / صحي', primary: '#0284c7', secondary: '#0ea5e9', bg: '#f0f9ff', font: 'Tajawal', cta: 'احجز موعدك الآن' },
     food: { name: 'مطاعم / طعام', primary: '#ea580c', secondary: '#f97316', bg: '#fff7ed', font: 'Cairo', cta: 'اطلب الآن' },
-    tech: { name: 'تقني / شركات', primary: '#2563eb', secondary: '#4f46e5', bg: '#f8fafc', font: 'Cairo', cta: 'ابدأ تجربتك المجانية' },
+    tech: { name: 'تقني / شركات', primary: '#4f46e5', secondary: '#6366f1', bg: '#f8fafc', font: 'Cairo', cta: 'ابدأ تجربتك المجانية' },
     education: { name: 'تعليم / كورسات', primary: '#0d9488', secondary: '#059669', bg: '#f0fdfa', font: 'Cairo', cta: 'سجل الآن' },
-    fashion: { name: 'جمال / موضة', primary: '#9333ea', secondary: '#c026d3', bg: '#faf5ff', font: 'Tajawal', cta: 'تسوق التشكيلة' },
-    legal: { name: 'قانوني / مالي', primary: '#1e293b', secondary: '#334155', bg: '#f8fafc', font: 'Cairo', cta: 'احصل على استشارة' }
+    fashion: { name: 'جمال / موضة / عطور', primary: '#9333ea', secondary: '#c026d3', bg: '#faf5ff', font: 'Tajawal', cta: 'تسوق التشكيلة' },
+    legal: { name: 'قانوني / عقارات / مالي', primary: '#1e293b', secondary: '#334155', bg: '#f8fafc', font: 'Cairo', cta: 'احصل على استشارة' }
   },
 
   // الكشف التلقائي عن نوع النشاط التجاري
   detectIndustry(prompt) {
     const p = (prompt || '').toLowerCase();
     if (/طبي|عيادة|اسنان|أسنان|طبيب|صيدلية|دكتور|علاج|مستشفى|مستوصف/i.test(p)) return 'medical';
-    if (/مطعم|كافيه|أكل|طعام|وجبات|كافيه|برجر|بيتزا|حلويات|مخبز/i.test(p)) return 'food';
+    if (/مطعم|كافيه|أكل|طعام|وجبات|برجر|بيتزا|حلويات|مخبز/i.test(p)) return 'food';
     if (/برمجة|تقنية|سوفتوير|تطبيق|موقع|شرك|حلول|سحابي|ذكاء/i.test(p)) return 'tech';
     if (/تعليم|كورس|مدرسة|جامعة|تدريب|معلم|اكاديمية|أكاديمية/i.test(p)) return 'education';
-    if (/ملابس|موضة|ازياء|أزياء|جمال|ميكاب|عطور|اكسسوارات|بوتيك/i.test(p)) return 'fashion';
+    if (/ملابس|موضة|ازياء|أزياء|جمال|ميكاب|عطور|اكسسوارات|بوتيك|لافندر/i.test(p)) return 'fashion';
     if (/محام|قانون|محاسب|ضرائب|عقارات|استثمار|مالي/i.test(p)) return 'legal';
     return 'tech';
   },
 
   // استدعاء واجهة الذكاء الاصطناعي الخارجية بأمان
-  async callLlm(messages, maxTokens = 1500, jsonMode = false) {
+  async callLlm(messages, maxTokens = 1800, jsonMode = false) {
     const apiKey = this.getApiKey();
     const endpoint = this.getEndpoint();
     const model = this.getModel();
 
-    // محاولة إرسال الطلب إلى السيرفر الوسيط أولاً أو مباشرة
+    // 1. محاولة الاستدعاء عبر السيرفر الوسيط أولاً
     try {
       if (typeof API !== 'undefined' && API.token) {
         const res = await fetch(`${API.apiUrl}/ai/generate`, {
@@ -77,44 +78,47 @@ const SiteFlowAI = {
         }
       }
     } catch (e) {
-      console.warn('Backend AI proxy failed, falling back to direct / local engine:', e);
+      console.warn('Backend AI proxy failed, falling back to direct LLM:', e);
     }
 
-    // استدعاء مباشر في حال توفر اتصال مباشر
+    // 2. استدعاء مباشر لـ Khabeer AI API (gpt-5.2 / gpt-6-astra)
     if (apiKey && apiKey.startsWith('sk-')) {
-      try {
-        const bodyPayload = {
-          model: model,
-          messages: messages,
-          max_tokens: maxTokens,
-          temperature: 0.7
-        };
-        if (jsonMode) {
-          bodyPayload.response_format = { type: 'json_object' };
-        }
+      const modelsToTry = [model, 'gpt-6-astra', 'gpt-5.2'];
+      for (const m of modelsToTry) {
+        try {
+          const bodyPayload = {
+            model: m,
+            messages: messages,
+            max_tokens: maxTokens,
+            temperature: 0.7
+          };
 
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify(bodyPayload)
-        });
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(bodyPayload)
+          });
 
-        if (res.ok) {
-          const data = await res.json();
-          const content = data.choices?.[0]?.message?.content;
-          if (content) {
-            if (jsonMode) {
-              const cleaned = content.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
-              return JSON.parse(cleaned);
+          if (res.ok) {
+            const data = await res.json();
+            const content = data.choices?.[0]?.message?.content;
+            if (content) {
+              if (jsonMode) {
+                let cleaned = content.trim();
+                if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/i, '');
+                if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/i, '');
+                if (cleaned.endsWith('```')) cleaned = cleaned.replace(/\s*```$/i, '');
+                return JSON.parse(cleaned);
+              }
+              return content;
             }
-            return content;
           }
+        } catch (err) {
+          console.warn(`Direct LLM fetch error for model ${m}:`, err);
         }
-      } catch (err) {
-        console.warn('Direct LLM fetch error:', err);
       }
     }
 
@@ -127,7 +131,7 @@ const SiteFlowAI = {
     const indKey = this.detectIndustry(prompt);
     const pal = this.INDUSTRY_PALETTES[indKey];
 
-    // 1. محاولة التوليد عبر الذكاء الاصطناعي الحقيقي
+    // 1. التوليد عبر الذكاء الاصطناعي الحقيقي (Khabeer AI gpt-5.2)
     try {
       const systemPrompt = `أنت خبير تصميم وتطوير المواقع في منصة SiteFlow. قم بإنشاء موقع كامل عالي الجودة باللغة العربية بناءً على طلب المستخدم.
 يجب أن ترجع النتيجة بصيغة JSON حصراً بهذا الشكل:
@@ -137,11 +141,11 @@ const SiteFlowAI = {
   "theme": {"color": "#HEX", "font": "Cairo"},
   "seo": {"title": "عنوان السيو", "description": "وصف السيو لا يتجاوز 150 حرف"},
   "sections": [
-    {"type": "hero", "data": {"heading": "عنوان جذاب", "description": "وصف مقنع", "buttonText": "زر الإجراء", "buttonUrl": "#contact", "image": "https://images.unsplash.com/..."}},
+    {"type": "hero", "data": {"heading": "عنوان جذاب", "description": "وصف مقنع", "buttonText": "زر الإجراء", "buttonUrl": "#contact", "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80"}},
     {"type": "features", "data": {"heading": "المميزات", "items": [{"title": "ميزة 1", "desc": "تفاصيل"}, {"title": "ميزة 2", "desc": "تفاصيل"}, {"title": "ميزة 3", "desc": "تفاصيل"}]}},
-    {"type": "services", "data": {"heading": "الخدمات", "items": [{"title": "خدمة 1", "desc": "شرح"}, {"title": "خدمة 2", "desc": "شرح"}]}},
-    {"type": "testimonials", "data": {"heading": "آراء العملاء", "items": [{"name": "اسم", "role": "صفة", "text": "رأي العميل"}]}},
-    {"type": "contact", "data": {"heading": "تواصل معنا", "email": "info@domain.com", "phone": "+20 100 000 0000", "address": "القاهرة، مصر"}},
+    {"type": "services", "data": {"heading": "المنتجات أو الخدمات", "items": [{"title": "خدمة أو منتج 1", "desc": "تفاصيل المنتج", "price": "199 ج.م"}, {"title": "خدمة أو منتج 2", "desc": "تفاصيل المنتج", "price": "299 ج.م"}]}},
+    {"type": "testimonials", "data": {"heading": "آراء العملاء", "items": [{"name": "اسم عميل", "role": "صفة", "text": "رأي العميل في الخدمة"}]}},
+    {"type": "contact", "data": {"heading": "تواصل معنا والطلب الفوري", "email": "info@domain.com", "phone": "+20 100 000 0000", "address": "القاهرة، مصر"}},
     {"type": "footer", "data": {"copyright": "© 2026 جميع الحقوق محفوظة", "text": "مدعوم بواسطة SiteFlow AI"}}
   ]
 }`;
@@ -150,8 +154,14 @@ const SiteFlowAI = {
         { role: 'user', content: prompt }
       ], 2000, true);
 
-      if (llmData && llmData.sections && llmData.sections.length > 0) {
-        return llmData;
+      if (llmData && llmData.sections && Array.isArray(llmData.sections) && llmData.sections.length > 0) {
+        return {
+          title: llmData.title || prompt.substring(0, 30),
+          industry: llmData.industry || pal.name,
+          theme: llmData.theme || { color: pal.primary, font: pal.font },
+          seo: llmData.seo || { title: `${llmData.title} | الموقع الرسمي`, description: `أهلاً بكم في ${llmData.title}.` },
+          sections: llmData.sections
+        };
       }
     } catch (e) {
       console.warn('AI LLM Generation fallback triggered:', e);
@@ -193,16 +203,17 @@ const SiteFlowAI = {
         { type: 'footer', data: { copyright: `© 2026 ${siteTitle}. جميع الحقوق محفوظة.`, text: 'مدعوم بواسطة SiteFlow AI' } }
       ];
     } else if (indKey === 'fashion') {
-      siteTitle = siteTitle || 'بوتيك الأناقة العصرية';
-      heroHeading = 'تألق بأحدث صيحات الموضة والإطلالات الفاخرة';
-      heroDesc = 'تشكيلات حصرية مصممة بعناية لتمنحك الثقة والجاذبية في كل مناسبة. تسوق أونلاين مع شحن سريع وضمان استبدال.';
-      seoTitle = `${siteTitle} | أحدث صيحات الموضة والأزياء العصرية`;
-      seoDesc = `تسوق الآن من ${siteTitle}. أرقى الملابس والإكسسوارات العصرية مع شحن سريع لجميع المحافظات ودفع عند الاستلام.`;
+      siteTitle = siteTitle || 'بوتيك الأناقة والعطور الفاخرة';
+      heroHeading = 'تألق بأرقى العطور وصيحات الموضة الحصرية';
+      heroDesc = 'تشكيلات فاخرة مصممة بعناية لتمنحك الثقة والجاذبية في كل مناسبة. تسوق أونلاين مع شحن سريع وضمان استبدال.';
+      seoTitle = `${siteTitle} | أرقى العطور والأزياء العصرية`;
+      seoDesc = `تسوق الآن من ${siteTitle}. أرقى العطور والملابس العصرية مع شحن سريع لجميع المحافظات ودفع فوري عبر إنستاباي.`;
       sections = [
-        { type: 'hero', data: { heading: heroHeading, description: heroDesc, image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1200&q=80', buttonText: pal.cta, buttonUrl: '#menu' } },
-        { type: 'features', data: { heading: 'مميزات التسوق معنا', items: [{title:'خامات قطنية فائقة الجودة',desc:'أقمشة مريحة تدوم طويلاً مع ضمان ثبات الألوان'},{title:'دفع آمن عند الاستلام',desc:'عاين واستلم طلبك بكل ثقة قبل الدفع'},{title:'استرجاع مجاني خلال 14 يوم',desc:'مرونة كاملة في الاستبدال بدون أي تعقيد'}] } },
-        { type: 'menu', data: { heading: 'التشكيلة الجديدة الأكثر مبيعاً', items: [{title:'طقم كاجوال أنيق',desc:'إطلالة يومية خفيفة بتصميم عصري راقٍ',price:'550 ج.م',category:'أزياء'},{title:'حقيبة جلدية فاخرة',desc:'تصميم عملي وأنيق يناسب كافة الإطلالات',price:'390 ج.م',category:'إكسسوارات'}] } },
-        { type: 'contact', data: { heading: 'خدمة العملاء والطلبات الخاصة', email: 'fashion@boutique.com', phone: '+20 110 000 0000', address: 'سموحة، الإسكندرية' } },
+        { type: 'hero', data: { heading: heroHeading, description: heroDesc, image: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=1200&q=80', buttonText: pal.cta, buttonUrl: '#menu' } },
+        { type: 'features', data: { heading: 'مميزات التسوق معنا', items: [{title:'روائح أصلية وثبات 48 ساعة',desc:'زيوت عطرية نقية مستوردة بتركيز عالٍ'},{title:'دفع آمن وسريع عبر إنستاباي',desc:'تحويل مباشر وفوري مع تأكيد الطلب'},{title:'استرجاع مجاني خلال 14 يوم',desc:'مرونة كاملة في الاستبدال بدون أي تعقيد'}] } },
+        { type: 'services', data: { heading: 'التشكيلة الحصرية الأكثر مبيعاً', items: [{title:'عطر اللافندر الملكي',desc:'تركيبة شرقية فرنسية ساحرة للمناسبات',price:'490 ج.م'},{title:'عطر مسك الليل الفاخر',desc:'رائحة هادئة وجذابة تدوم طويلاً',price:'390 ج.م'}] } },
+        { type: 'testimonials', data: { heading: 'آراء وتقييمات العملاء', items: [{name:'سارة علي',role:'عميلة معتمدة',text:'عطر لافندر لا يوصف، الرائحة وثباتها شيء خيالي والتوصيل تم في 24 ساعة.'},{name:'محمد كريم',role:'عميل دائم',text:'تعامل راقٍ وجودة تفوق المتاجر العالمية، أنصح بشدة.'}] } },
+        { type: 'contact', data: { heading: 'خدمة العملاء والطلب الفوري', email: 'order@boutique.com', phone: '+20 110 000 0000', address: 'سموحة، الإسكندرية' } },
         { type: 'footer', data: { copyright: `© 2026 ${siteTitle}. جميع الحقوق محفوظة.`, text: 'مدعوم بواسطة SiteFlow AI' } }
       ];
     } else {
@@ -234,6 +245,18 @@ const SiteFlowAI = {
   // توليد نصوص تسويقية مخصصة (Copywriting)
   async generateCopy(type, topic) {
     const t = (topic || 'خدماتنا').trim();
+    const prompt = `اكتب عنواناً جذاباً ووصفاً تسويقياً مقنعاً لقسم ${type} عن: ${t}. أجب بصيغة JSON حصراً: {"heading": "...", "description": "..."}`;
+    
+    try {
+      const llmData = await this.callLlm([
+        { role: 'system', content: 'أنت خبير صياغة نصوص تسويقية مقنعة باللغة العربية (Copywriter).' },
+        { role: 'user', content: prompt }
+      ], 300, true);
+      if (llmData && llmData.heading) return llmData;
+    } catch (e) {
+      console.warn('Copywriting fallback:', e);
+    }
+
     if (type === 'hero') {
       return {
         heading: `الخيار الأول في ${t} مع نتائج مضمونة`,
@@ -253,8 +276,27 @@ const SiteFlowAI = {
   },
 
   // تحسين SEO الذكي (AI SEO Optimizer)
-  generateSeo(page) {
+  async generateSeo(page) {
     const title = page.title || 'موقعي';
+    const prompt = `قم بتوليد عنوان SEO لا يتجاوز 60 حرف، ووصف meta لا يتجاوز 150 حرف، و4 كلمات مفتاحية لموقع: ${title}. أجب بصيغة JSON: {"title": "...", "description": "...", "keywords": ["..."]}`;
+    
+    try {
+      const llmData = await this.callLlm([
+        { role: 'system', content: 'أنت خبير سيو SEO وتحسين محركات بحث باللغة العربية.' },
+        { role: 'user', content: prompt }
+      ], 300, true);
+      if (llmData && llmData.title) {
+        return {
+          title: llmData.title,
+          description: llmData.description,
+          score: 98,
+          keywords: llmData.keywords || ['خدمات ' + title, 'حجز اونلاين']
+        };
+      }
+    } catch (e) {
+      console.warn('SEO fallback:', e);
+    }
+
     let seoTitle = `${title} | أفضل الخدمات والحلول المعتمدة`;
     if (seoTitle.length > 60) seoTitle = seoTitle.slice(0, 58) + '..';
 
@@ -270,9 +312,20 @@ const SiteFlowAI = {
   },
 
   // الرد الذكي للـ Chatbot المدمج في الموقع للزوار
-  generateChatbotResponse(page, query) {
+  async generateChatbotResponse(page, query) {
     const q = (query || '').toLowerCase().trim();
     if (!q) return 'مرحباً بك! كيف يمكنني مساعدتك بخصوص ' + page.title + ' اليوم؟ 😊';
+
+    try {
+      const prompt = `أنت المساعد الذكي لموقع "${page.title}". أجب على استفسار الزائر بلباقة واختصار وبطريقة تزيد من المبيعات والحجوزات باللغة العربية.\nسؤال الزائر: "${q}"`;
+      const llmResp = await this.callLlm([
+        { role: 'system', content: `أنت موظف خدمة عملاء ذكي وودود لموقع ${page.title}. أجب باللغة العربية بأسلوب راقٍ وموجز.` },
+        { role: 'user', content: prompt }
+      ], 200, false);
+      if (llmResp && llmResp.trim()) return llmResp.trim();
+    } catch (e) {
+      console.warn('Chatbot LLM fallback:', e);
+    }
 
     const contactSec = page.sections?.find(s => s.type === 'contact' || s.type === 'location');
     const menuSec = page.sections?.find(s => s.type === 'menu' || s.type === 'pricing');
@@ -295,14 +348,6 @@ const SiteFlowAI = {
       const phone = contactSec?.data?.phone || '+20 100 000 0000';
       const email = contactSec?.data?.email || 'contact@mysite.com';
       return `يمكنك التواصل معنا مباشرة عبر:\n📞 هاتف: ${phone}\n✉️ بريد: ${email}\nأو ترك رسالتك في نموذج التواصل وسنرد خلال دقائق!`;
-    }
-
-    if (/خدم|منتج|بتعملوا|ايه بتعمل|تفاصيل/i.test(q)) {
-      if (servSec && servSec.data?.items?.length) {
-        const servs = servSec.data.items.slice(0, 3).map(i => `• ${i.title}: ${i.desc}`).join('\n');
-        return `نقدم في ${page.title} مجموعة من الخدمات الاحترافية، منها:\n${servs}`;
-      }
-      return `${page.title} يقدم حلولاً وخدمات متكاملة بجودة عالية تضمن لك أفضل تجربة.`;
     }
 
     return `أهلاً بك في ${page.title}! يسعدني الإجابة على استفساراتك حول خدماتنا، أوقات العمل، أو الأسعار. يمكنك أيضاً حجز موعدك أو طلبك مباشرة.`;
@@ -471,8 +516,8 @@ const SiteFlowAI = {
     const indName = site.industry || 'عام';
     return {
       intent: 'create',
-      message: `رائع جداً! لقد قمت بتحليل فكرتك وتصميم موقع متكامل بنمط **${indName}** جاهز بالكامل مع:
-• ${site.sections.length} أقسام احترافية (الواجهة الرئيسية، المميزات، الخدمات، آراء العملاء، نموذج التواصل).
+      message: `رائع جداً! لقد قمت بتحليل فكرتك بالذكاء الاصطناعي وتصميم موقع متكامل بنمط **${indName}** جاهز بالكامل مع:
+• ${site.sections.length} أقسام احترافية (الواجهة الرئيسية، المميزات، الخدمات/المنتجات، آراء العملاء، نموذج التواصل).
 • ألوان وخطوط عربية عصرية متناسقة.
 • تهيئة تلقائية لمحركات البحث SEO وسرعة التحميل.`,
       preview: site,

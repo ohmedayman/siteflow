@@ -4,6 +4,7 @@
  */
 
 const crypto = require('crypto');
+const https = require('https');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'siteflow-jwt-super-secret-key-2026';
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://zazmvhcdcuaetakoedgt.supabase.co';
@@ -457,9 +458,83 @@ module.exports = async function handler(req, res) {
         return res.end(JSON.stringify({ error: 'الوصف مطلوب لبدء التوليد الذكي.' }));
       }
 
+      const apiKey = process.env.AI_API_KEY || 'sk-8e872c0d18aed5b33cf2adbe5cdbbbeccfe17c4e131436bf9459a0899ff8c3f6';
+      const systemPrompt = `أنت خبير تصميم وتطوير المواقع في منصة SiteFlow. قم بإنشاء موقع كامل عالي الجودة باللغة العربية بناءً على طلب المستخدم.
+يجب أن ترجع النتيجة بصيغة JSON حصراً بهذا الشكل:
+{
+  "title": "اسم النشاط التجاري",
+  "industry": "التصنيف بالعربية",
+  "theme": {"color": "#HEX", "font": "Cairo"},
+  "seo": {"title": "عنوان السيو", "description": "وصف السيو لا يتجاوز 150 حرف"},
+  "sections": [
+    {"type": "hero", "data": {"heading": "عنوان جذاب", "description": "وصف مقنع", "buttonText": "زر الإجراء", "buttonUrl": "#contact", "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80"}},
+    {"type": "features", "data": {"heading": "المميزات", "items": [{"title": "ميزة 1", "desc": "تفاصيل"}, {"title": "ميزة 2", "desc": "تفاصيل"}, {"title": "ميزة 3", "desc": "تفاصيل"}]}},
+    {"type": "services", "data": {"heading": "المنتجات أو الخدمات", "items": [{"title": "منتج أو خدمة 1", "desc": "تفاصيل", "price": "199 ج.م"}, {"title": "منتج أو خدمة 2", "desc": "تفاصيل", "price": "299 ج.م"}]}},
+    {"type": "testimonials", "data": {"heading": "آراء العملاء", "items": [{"name": "اسم عميل", "role": "صفة", "text": "رأي العميل في الخدمة"}]}},
+    {"type": "contact", "data": {"heading": "تواصل معنا والطلب الفوري", "email": "info@domain.com", "phone": "+20 100 000 0000", "address": "القاهرة، مصر"}},
+    {"type": "footer", "data": {"copyright": "© 2026 جميع الحقوق محفوظة", "text": "مدعوم بواسطة SiteFlow AI"}}
+  ]
+}`;
+
+      // Call Khabeer AI LLM
+      try {
+        const payload = JSON.stringify({
+          model: 'gpt-5.2',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 1800
+        });
+
+        const llmContent = await new Promise((resolve, reject) => {
+          const apiReq = https.request({
+            hostname: 'api.5abeer.ai',
+            port: 443,
+            path: '/v1/chat/completions',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`,
+              'Content-Length': Buffer.byteLength(payload)
+            }
+          }, (apiRes) => {
+            let data = '';
+            apiRes.on('data', chunk => data += chunk);
+            apiRes.on('end', () => {
+              try {
+                const json = JSON.parse(data);
+                resolve(json.choices?.[0]?.message?.content || null);
+              } catch (err) {
+                resolve(null);
+              }
+            });
+          });
+          apiReq.on('error', () => resolve(null));
+          apiReq.write(payload);
+          apiReq.end();
+        });
+
+        if (llmContent) {
+          let cleaned = llmContent.trim();
+          if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/i, '');
+          if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/i, '');
+          if (cleaned.endsWith('```')) cleaned = cleaned.replace(/\s*```$/i, '');
+          const siteData = JSON.parse(cleaned);
+          if (siteData && siteData.sections) {
+            res.statusCode = 200;
+            return res.end(JSON.stringify({ success: true, data: siteData }));
+          }
+        }
+      } catch (err) {
+        console.warn('Vercel LLM direct call failed:', err);
+      }
+
+      // Rule Engine Fallback
       const pLower = prompt.toLowerCase();
       let ind = 'tech';
-      let pal = { name: 'شركات وتقنية', color: '#2563eb', cta: 'ابدأ الآن مجاناً' };
+      let pal = { name: 'شركات وتقنية', color: '#4f46e5', cta: 'ابدأ الآن مجاناً' };
       let img = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80';
 
       if (/طبي|عيادة|أسنان|اسنان|طبيب|دكتور|مستشفى/.test(pLower)) {
@@ -470,10 +545,10 @@ module.exports = async function handler(req, res) {
         ind = 'food';
         pal = { name: 'مطاعم وأغذية', color: '#ea580c', cta: 'اطلب أونلاين الآن' };
         img = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80';
-      } else if (/ملابس|موضة|أزياء|ازياء|عطور|تجميل|بوتيك/.test(pLower)) {
+      } else if (/ملابس|موضة|أزياء|ازياء|عطور|تجميل|بوتيك|لافندر/.test(pLower)) {
         ind = 'fashion';
-        pal = { name: 'أزياء وجمال', color: '#9333ea', cta: 'تسوق التشكيلة الجديدة' };
-        img = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80';
+        pal = { name: 'أزياء وعطور', color: '#9333ea', cta: 'تسوق التشكيلة الجديدة' };
+        img = 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=1200&q=80';
       }
 
       const siteTitle = prompt.length > 30 ? prompt.substring(0, 30) : prompt;
@@ -485,7 +560,7 @@ module.exports = async function handler(req, res) {
         sections: [
           { type: 'hero', data: { heading: `أفضل الحلول والخدمات في ${siteTitle}`, description: 'نقدم لك تجربة استثنائية تجمع بين الاحترافية والجودة العالية لتلبية كافة متطلباتك بدقة متناهية.', buttonText: pal.cta, buttonUrl: '#contact', image: img } },
           { type: 'features', data: { heading: 'لماذا يفضلنا العملاء دائماً؟', items: [{ title: 'جودة فائقة ومضمونة', desc: 'معايير قياسية في التنفيذ لضمان رضاك التام' }, { title: 'سرعة ودقة في المواعيد', desc: 'التزام صارم بجداول التسليم بأعلى كفاءة' }, { title: 'دعم فني واستشارات دائمة', desc: 'فريق متكامل لمرافقتك وتقديم المساعدة في أي وقت' }] } },
-          { type: 'services', data: { heading: 'خدماتنا وباقاتنا المميزة', items: [{ title: 'الخدمة الأساسية', desc: 'حلول سريعة تلبي احتياجاتك اليومية بأفضل قيمة' }, { title: 'الباقة الاحترافية', desc: 'تغطية شاملة وميزات متقدمة لنمو أعمالك' }, { title: 'الحلول المخصصة', desc: 'خدمات مصممة خصيصاً وفقاً لمتطلبات مشروعك' }] } },
+          { type: 'services', data: { heading: 'خدماتنا ومنتجاتنا المميزة', items: [{ title: 'الخدمة الأساسية', desc: 'حلول سريعة تلبي احتياجاتك اليومية بأفضل قيمة', price: '199 ج.م' }, { title: 'الباقة الاحترافية', desc: 'تغطية شاملة وميزات متقدمة لنمو أعمالك', price: '399 ج.م' }] } },
           { type: 'testimonials', data: { heading: 'ماذا يقول عملاؤنا عنا؟', items: [{ name: 'م. أحمد خالد', role: 'عميل معتمد', text: 'تجربة ممتازة وخدمة في منتهى الاحترافية، أنصح الجميع بالتعامل معهم.' }, { name: 'سارة إبراهيم', role: 'مراجعة', text: 'النتائج فاقت توقعاتي، سرعة في الاستجابة وجودة مبهرة.' }] } },
           { type: 'contact', data: { heading: 'تواصل معنا أو اطلب استشارتك', email: 'contact@example.com', phone: '+20 100 123 4567', address: 'القاهرة، جمهورية مصر العربية' } },
           { type: 'footer', data: { copyright: `© 2026 ${siteTitle}. جميع الحقوق محفوظة.`, text: 'مدعوم بواسطة SiteFlow AI' } }
