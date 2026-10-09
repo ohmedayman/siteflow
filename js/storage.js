@@ -22,6 +22,10 @@ var RESERVED_SLUGS = new Set([
   'null', 'undefined', 'true', 'false', 'constructor', 'prototype', '__proto__'
 ]);
 
+function isSbReady() {
+  return typeof SB !== 'undefined' && typeof SB.isReady === 'function' && SB.isReady();
+}
+
 function sanitizeSlug(slug) {
   if (!slug || typeof slug !== 'string') return '';
   return slug
@@ -46,6 +50,29 @@ function isValidSlug(slug) {
   if (s.includes('--')) return false;
   if (isReservedSlug(s)) return false;
   return true;
+}
+
+function makeUniqueSlug(baseSlug, currentSiteId) {
+  let clean = sanitizeSlug(baseSlug);
+  if (!clean || isReservedSlug(clean) || clean.length < 2) {
+    clean = 'site';
+  }
+  const allPages = LocalDB.pages.get() || [];
+  let candidate = clean;
+  let counter = 1;
+  const isTaken = (s) => {
+    if (isReservedSlug(s)) return true;
+    return allPages.some(p => p && p.id !== currentSiteId && (
+      (p.slug && p.slug.toLowerCase() === s.toLowerCase()) ||
+      (p.customDomain && p.customDomain.toLowerCase() === s.toLowerCase()) ||
+      (p.custom_domain && p.custom_domain.toLowerCase() === s.toLowerCase())
+    ));
+  };
+  while (isTaken(candidate)) {
+    counter++;
+    candidate = `${clean}-${counter}`;
+  }
+  return candidate;
 }
 
 function subdomainUrl(slug) {
@@ -123,7 +150,7 @@ const LocalDB = {
     return null;
   },
 
-  genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7) },
+  genId() { return 'sf_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7) },
   clone(o) { return JSON.parse(JSON.stringify(o)) },
 
   defaultPage(title, template) {
@@ -135,23 +162,36 @@ const LocalDB = {
       template_type: t.id || 'blank',
       sections: this.clone(t.sections || []),
       seo: this.clone(t.seo || {title:'',description:''}),
-      theme: this.clone(t.theme || {color:'#6366f1',font:'Inter'})
+      theme: this.clone(t.theme || {color:'#6366f1',font:'Cairo'})
     })
   },
 
   addPage(pg) {
     const pages = this.pages.get(); const p = this.clone(pg)
-    p.id = this.genId()
-    p.slug = (p.title||'site').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,30) || 'site'
-    p.slug += '-' + this.genId().slice(0,4)
-    p.createdAt = new Date().toISOString(); p.updatedAt = new Date().toISOString()
+    if (!p.id) p.id = this.genId()
+    const baseSlug = p.slug || p.title || 'site'
+    p.slug = makeUniqueSlug(baseSlug, p.id)
+    p.createdAt = p.createdAt || new Date().toISOString()
+    p.updatedAt = new Date().toISOString()
     pages.push(p); this.pages.save(pages); return p
   },
 
   updatePage(id, data) {
     const pages = this.pages.get(); const idx = pages.findIndex(p => p.id === id)
     if (idx === -1) return null
-    pages[idx] = { ...pages[idx], ...this.clone(data), updatedAt: new Date().toISOString() }
+    const cleanData = this.clone(data)
+    if (cleanData.slug && cleanData.slug !== pages[idx].slug) {
+      const sanitized = sanitizeSlug(cleanData.slug)
+      if (isReservedSlug(sanitized)) {
+        throw new Error('هذا الدومين محجوز للنظام ولا يمكن استخدامه.')
+      }
+      const duplicate = pages.find(p => p.id !== id && p.slug?.toLowerCase() === sanitized)
+      if (duplicate) {
+        throw new Error('عذراً، هذا الدومين الفرعي محجوز ومستخدم بالفعل لموقع آخر ولا يمكن تكراره.')
+      }
+      cleanData.slug = sanitized
+    }
+    pages[idx] = { ...pages[idx], ...cleanData, updatedAt: new Date().toISOString() }
     this.pages.save(pages); return pages[idx]
   },
 
@@ -161,7 +201,19 @@ const LocalDB = {
     const s = (slug || '').toLowerCase();
     return this.pages.get().find(p => (p.slug?.toLowerCase() === s || p.customDomain?.toLowerCase() === s || p.custom_domain?.toLowerCase() === s)) || null
   },
-  getUserPages(uid) { return this.pages.get().filter(p => p.userId === uid) },
+  getUserPages(uid, email) {
+    const rawUid = String(uid || '').replace('local_', '').replace('sb_', '').trim()
+    const cleanEmail = String(email || '').trim().toLowerCase()
+    const all = this.pages.get() || []
+    return all.filter(p => {
+      if (!p) return false
+      const pUid = String(p.userId || p.user_id || '').replace('local_', '').replace('sb_', '').trim()
+      const pEmail = String(p.userEmail || p.user_email || '').trim().toLowerCase()
+      if (rawUid && (pUid === rawUid || pUid === 'usr_' + rawUid || ('usr_' + pUid) === rawUid)) return true
+      if (cleanEmail && (pEmail === cleanEmail || pUid === cleanEmail)) return true
+      return false
+    })
+  },
   duplicatePage(id) { const o=this.getPage(id); if(!o)return null; const c=this.clone(o); c.id=''; c.title=o.title+' (Copy)'; c.published=false; c.views=0; return this.addPage(c) },
   incrementViews(slug) { const pages=this.pages.get(); const p=pages.find(x=>x.slug===slug); if(p){p.views=(p.views||0)+1;this.pages.save(pages)} }
 }
@@ -172,8 +224,7 @@ if (LocalDB.users.get().length === 0) {
     {id:'demo1',name:'Ahmed Hassan',email:'demo@siteflow.app',password:'demo123',plan:'pro',lang:'ar',isAdmin:false},
     {id:'admin1',name:'Admin',email:'admin@siteflow.app',password:'admin123',plan:'business',lang:'en',isAdmin:true}
   ])
-  var _demo = LocalDB.addPage({...LocalDB.defaultPage('My Portfolio'), userId:'demo1', published:true, views:142, theme:{color:'#059669',font:'Inter'}, seo:{title:'Ahmed Hassan',description:'Portfolio'}})
-  // Ensure known slug for demo
+  var _demo = LocalDB.addPage({...LocalDB.defaultPage('My Portfolio'), userId:'demo1', published:true, views:142, theme:{color:'#059669',font:'Cairo'}, seo:{title:'Ahmed Hassan',description:'Portfolio'}})
   var _pages = LocalDB.pages.get(); var _dp = _pages.find(p => p.id === _demo.id); if (_dp) { _dp.slug = 'demo'; LocalDB.pages.save(_pages) }
 }
 
@@ -191,7 +242,7 @@ const API = {
     try {
       if (typeof SB !== 'undefined') {
         const sbReady = await SB.init();
-        if (sbReady && SB.isReady()) {
+        if (sbReady && isSbReady()) {
           this.mode = 'supabase';
           console.log('[Storage] Active Mode: Supabase (Cloud PostgreSQL)');
           return 'supabase';
@@ -233,180 +284,127 @@ const API = {
   async login(email, password) {
     const mode = await this._init()
     const cleanEmail = (email || '').trim().toLowerCase()
-    if (mode === 'supabase') {
+    if (!cleanEmail || !password) {
+      throw new Error('يرجى إدخال البريد الإلكتروني وكلمة المرور.')
+    }
+
+    // 1. If Supabase is available
+    if (mode === 'supabase' && isSbReady()) {
       try {
-        const { session, user } = await SB.signIn(email, password)
-        this._saveToken(session?.access_token || ('sb_' + user.id))
-        LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), { ...user, password }])
-        return { user }
-      } catch (e) {
-        // Fallback: If unconfirmed or rate limited, verify against profiles table
-        try {
-          const { data: prof } = await SB.client.from('profiles').select('*').eq('email', cleanEmail).maybeSingle()
-          if (prof) {
-            const u = {
-              id: prof.id,
-              name: prof.name || prof.email.split('@')[0],
-              email: prof.email,
-              plan: prof.plan || 'free',
-              lang: prof.lang || 'ar',
-              isAdmin: prof.is_admin || false
-            }
-            this._saveToken('sb_' + u.id)
-            LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== u.email), { ...u, password }])
-            return { user: u }
-          }
-        } catch (dbErr) {
-          console.warn('[Storage] Profile lookup notice:', dbErr)
-        }
-        // Check LocalDB fallback
-        const localMatch = LocalDB.users.get().find(x => x.email?.toLowerCase() === cleanEmail)
-        if (localMatch) {
-          this._saveToken('local_' + localMatch.id)
-          return { user: localMatch }
-        }
-        // Auto-create profile in Supabase so user is NEVER blocked
-        const autoUser = {
-          id: 'usr_' + Date.now().toString(36),
-          name: cleanEmail.split('@')[0],
-          email: cleanEmail,
-          plan: 'free',
-          lang: 'ar',
-          isAdmin: false
-        }
-        try {
-          await SB.client.from('profiles').insert({
-            id: autoUser.id,
-            email: autoUser.email,
-            name: autoUser.name,
-            plan: 'free',
+        const { session, user } = await SB.signIn(cleanEmail, password)
+        if (user) {
+          const u = {
+            id: user.id,
+            name: user.name || cleanEmail.split('@')[0],
+            email: cleanEmail,
+            password: password,
+            plan: user.plan || 'free',
             lang: 'ar',
-            is_admin: false
-          })
-        } catch {}
-        this._saveToken('sb_' + autoUser.id)
-        LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== autoUser.email), { ...autoUser, password }])
-        return { user: autoUser }
+            isAdmin: !!user.isAdmin
+          }
+          this._saveToken(session?.access_token || ('sb_' + u.id))
+          LocalDB.users.save([...LocalDB.users.get().filter(x => x.email?.toLowerCase() !== cleanEmail), u])
+          return { user: u }
+        }
+      } catch (e) {
+        console.warn('[Storage] Supabase signIn notice:', e?.message)
       }
     }
+
+    // 2. If API / Flask backend is available
     if (mode === 'api' || mode === 'flask') {
-      const r = await this._fetch('/auth/login', {method:'POST', body:JSON.stringify({email, password})})
-      if (r.ok) {
-        const d = await r.json()
-        this._saveToken(d.token)
-        return { user: d.user }
-      } else {
-        const err = await r.json().catch(() => ({}))
-        throw new Error(err.error || 'البريد الإلكتروني أو كلمة المرور غير صحيحة')
-      }
+      try {
+        const r = await this._fetch('/auth/login', { method: 'POST', body: JSON.stringify({ email: cleanEmail, password }) })
+        if (r.ok) {
+          const d = await r.json()
+          this._saveToken(d.token)
+          LocalDB.users.save([...LocalDB.users.get().filter(x => x.email?.toLowerCase() !== cleanEmail), { ...d.user, password }])
+          return { user: d.user }
+        }
+      } catch {}
     }
-    // localStorage fallback
+
+    // 3. LocalDB Deterministic Auth
     const users = LocalDB.users.get()
-    const u = users.find(x => x.email.toLowerCase() === email.toLowerCase())
-    if (u) {
-      this._saveToken('local_' + u.id)
-      return { user: { id: u.id, name: u.name, email: u.email, plan: u.plan, lang: u.lang, isAdmin: u.isAdmin || false } }
+    const u = users.find(x => x.email && x.email.toLowerCase() === cleanEmail)
+    if (!u) {
+      throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات أو إنشاء حساب جديد.')
     }
-    const newLocal = { id: LocalDB.genId(), name: email.split('@')[0], email, password, plan: 'free', lang: 'ar', isAdmin: false }
-    LocalDB.users.save([...users, newLocal])
-    this._saveToken('local_' + newLocal.id)
-    return { user: newLocal }
+    if (u.password && u.password !== password) {
+      throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.')
+    }
+
+    // Update session token with existing user's permanent ID
+    this._saveToken('local_' + u.id)
+    return { user: { id: u.id, name: u.name, email: u.email, plan: u.plan || 'free', lang: u.lang || 'ar', isAdmin: u.isAdmin || false } }
   },
 
   async signup(name, email, password) {
     const mode = await this._init()
+    const cleanName = (name || '').trim()
     const cleanEmail = (email || '').trim().toLowerCase()
-    if (mode === 'supabase') {
+
+    if (!cleanName || !cleanEmail || !password) {
+      throw new Error('جميع الحقول مطلوبة (الاسم، البريد الإلكتروني، وكلمة المرور).')
+    }
+    if (password.length < 6) {
+      throw new Error('كلمة المرور يجب أن لا تقل عن 6 أحرف.')
+    }
+
+    // Check existing in LocalDB
+    const existingUsers = LocalDB.users.get()
+    const existingLocal = existingUsers.find(x => x.email && x.email.toLowerCase() === cleanEmail)
+    if (existingLocal) {
+      throw new Error('هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول بدلاً من إنشاء حساب جديد.')
+    }
+
+    const deterministicId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
+    const newUser = {
+      id: deterministicId,
+      name: cleanName,
+      email: cleanEmail,
+      password: password,
+      plan: 'free',
+      lang: 'ar',
+      isAdmin: false,
+      created_at: new Date().toISOString()
+    }
+
+    if (mode === 'supabase' && isSbReady()) {
       try {
-        const { session, user } = await SB.signUp(name, email, password)
-        const effectiveId = user?.id || ('usr_' + Date.now().toString(36))
-        this._saveToken(session?.access_token || ('sb_' + effectiveId))
-        const userObj = {
-          id: effectiveId,
-          name: name || user?.name || cleanEmail.split('@')[0],
-          email: cleanEmail,
-          plan: 'free',
-          lang: 'ar',
-          isAdmin: false
-        }
-        LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== cleanEmail), { ...userObj, password }])
-        return { user: userObj, verified: true }
+        const { session, user } = await SB.signUp(cleanName, cleanEmail, password)
+        if (user?.id) newUser.id = user.id
+        this._saveToken(session?.access_token || ('sb_' + newUser.id))
       } catch (e) {
-        console.warn('[Storage] Supabase signup fallback to direct profiles activation...', e.message)
-        let userObj = null
-        try {
-          const { data: existing } = await SB.client.from('profiles').select('*').eq('email', cleanEmail).maybeSingle()
-          if (existing) {
-            userObj = {
-              id: existing.id,
-              name: existing.name || name || cleanEmail.split('@')[0],
-              email: existing.email,
-              plan: existing.plan || 'free',
-              lang: existing.lang || 'ar',
-              isAdmin: existing.is_admin || false
-            }
-          } else {
-            const newId = 'usr_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
-            await SB.client.from('profiles').insert({
-              id: newId,
-              email: cleanEmail,
-              name: name || cleanEmail.split('@')[0],
-              plan: 'free',
-              lang: 'ar',
-              is_admin: false
-            })
-            userObj = {
-              id: newId,
-              name: name || cleanEmail.split('@')[0],
-              email: cleanEmail,
-              plan: 'free',
-              lang: 'ar',
-              isAdmin: false
-            }
-          }
-        } catch (pe) {
-          console.warn('[Storage] Profiles auto-create note:', pe.message)
-        }
-        if (!userObj) {
-          userObj = {
-            id: 'usr_' + Date.now().toString(36),
-            name: name || cleanEmail.split('@')[0],
-            email: cleanEmail,
-            plan: 'free',
-            lang: 'ar',
-            isAdmin: false
-          }
-        }
-        this._saveToken('sb_' + userObj.id)
-        LocalDB.users.save([...LocalDB.users.get().filter(x => x.email !== userObj.email), { ...userObj, password }])
-        return { user: userObj, verified: true }
+        console.warn('[Storage] Supabase signup fallback to local activation:', e.message)
+        this._saveToken('local_' + newUser.id)
       }
-    }
-    if (mode === 'api' || mode === 'flask') {
-      const r = await this._fetch('/auth/signup', {method:'POST', body:JSON.stringify({name, email, password})})
-      if (r.ok) {
-        const d = await r.json()
-        this._saveToken(d.token)
-        return { user: d.user }
-      } else {
-        const err = await r.json().catch(() => ({}))
-        throw new Error(err.error || 'فشل إنشاء الحساب')
+    } else if (mode === 'api' || mode === 'flask') {
+      try {
+        const r = await this._fetch('/auth/signup', { method: 'POST', body: JSON.stringify({ name: cleanName, email: cleanEmail, password }) })
+        if (r.ok) {
+          const d = await r.json()
+          if (d.user?.id) newUser.id = d.user.id
+          this._saveToken(d.token)
+        } else {
+          const err = await r.json().catch(() => ({}))
+          throw new Error(err.error || 'فشل إنشاء الحساب')
+        }
+      } catch (apiErr) {
+        if (!apiErr.message.includes('fetch')) throw apiErr
+        this._saveToken('local_' + newUser.id)
       }
+    } else {
+      this._saveToken('local_' + newUser.id)
     }
-    // localStorage fallback
-    const users = LocalDB.users.get()
-    if (users.find(x => x.email.toLowerCase() === email.toLowerCase())) {
-      throw new Error('هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول.')
-    }
-    const u = { id: LocalDB.genId(), name, email, password, plan: 'free', lang: 'ar', isAdmin: false }
-    LocalDB.users.save([...users, u])
-    this._saveToken('local_' + u.id)
-    return { user: { id: u.id, name: u.name, email: u.email, plan: 'free', lang: 'ar', isAdmin: false } }
+
+    LocalDB.users.save([...existingUsers, newUser])
+    return { user: newUser, verified: true }
   },
 
   async verifyOtp(email, token, type='signup') {
     const mode = await this._init()
-    if (mode === 'supabase') {
+    if (mode === 'supabase' && isSbReady()) {
       const { session, user } = await SB.verifyOtp(email, token, type)
       if (session) this._saveToken(session.access_token)
       else this._saveToken('sb_' + user.id)
@@ -418,20 +416,20 @@ const API = {
 
   async resendOtp(email, type='signup') {
     const mode = await this._init()
-    if (mode === 'supabase') {
+    if (mode === 'supabase' && isSbReady()) {
       return await SB.resendOtp(email, type)
     }
   },
 
   async loginWithOtp(email) {
     const mode = await this._init()
-    if (mode === 'supabase') {
+    if (mode === 'supabase' && isSbReady()) {
       return await SB.signInWithOtp(email)
     }
   },
 
   async googleLogin() {
-    if (SB.isReady()) {
+    if (isSbReady()) {
       return SB.signInWithGoogle()
     }
     Toast.show('يرجى التسجيل المباشر بالبريد الإلكتروني وكلمة المرور لتأمين حسابك', 'info')
@@ -439,10 +437,10 @@ const API = {
 
   async getMe() {
     const mode = await this._init()
-    const rawId = (this.token || '').replace('sb_', '').replace('local_', '')
+    const rawId = (this.token || '').replace('sb_', '').replace('local_', '').trim()
     let localU = LocalDB.users.get().find(x => x.id === rawId || x.email === rawId)
 
-    if (mode === 'supabase' || SB.isReady()) {
+    if (mode === 'supabase' && isSbReady()) {
       try {
         const u = await SB.getCurrentUser()
         if (u) {
@@ -459,7 +457,6 @@ const API = {
           return u
         }
 
-        // Query profiles by ID or by local user email to catch admin approvals immediately
         let prof = null
         if (rawId && !rawId.startsWith('usr_guest')) {
           const cleanId = rawId.replace('usr_', '')
@@ -498,29 +495,33 @@ const API = {
     }
 
     if (mode === 'api' || mode === 'flask') {
-      const r = await this._fetch('/auth/me')
-      if (r.ok) return await r.json()
+      try {
+        const r = await this._fetch('/auth/me')
+        if (r.ok) return await r.json()
+      } catch {}
     }
 
     if (!localU) throw new Error('Not logged in')
-    return { id: localU.id, name: localU.name, email: localU.email, plan: localU.plan, lang: localU.lang, isAdmin: localU.isAdmin || false }
+    return { id: localU.id, name: localU.name, email: localU.email, plan: localU.plan || 'free', lang: localU.lang || 'ar', isAdmin: localU.isAdmin || false }
   },
 
   logout() {
     this._saveToken(null)
     this.mode = null
-    if (SB.isReady()) SB.signOut()
+    if (isSbReady()) SB.signOut()
   },
 
   async updateProfile(data) {
     const mode = await this._init()
     if (mode === 'api' || mode === 'flask') {
-      const r = await this._fetch('/auth/update', {method:'PUT', body:JSON.stringify(data)})
-      if (r.ok) return await r.json()
+      try {
+        const r = await this._fetch('/auth/update', {method:'PUT', body:JSON.stringify(data)})
+        if (r.ok) return await r.json()
+      } catch {}
     }
     const uid = (this.token || '').replace('local_', '').replace('sb_', '')
     const users = LocalDB.users.get()
-    const u = users.find(x => x.id === uid)
+    const u = users.find(x => x.id === uid || x.email === uid)
     if (!u) throw new Error('Not found')
     if (data.name) u.name = data.name
     if (data.password) u.password = data.password
@@ -532,37 +533,60 @@ const API = {
   // ── Sites ──
   async getSites() {
     const mode = await this._init()
-    if (mode === 'supabase') {
-      const current = await SB.getCurrentUser()
-      const sbSites = await SB.getSites(current?.id)
-      if (Array.isArray(sbSites)) {
-        LocalDB.pages.save(sbSites)
-        return sbSites
+    const current = (typeof Auth !== 'undefined' && Auth.user) ? Auth.user : await this.getMe().catch(() => null)
+    const uid = current?.id || (this.token || '').replace('local_', '').replace('sb_', '')
+    const email = current?.email || ''
+
+    let remoteSites = []
+    if (mode === 'supabase' && isSbReady()) {
+      try {
+        const sbSites = await SB.getSites(uid)
+        if (Array.isArray(sbSites)) remoteSites = sbSites
+      } catch (err) {
+        console.warn('SB getSites notice:', err)
       }
+    } else if (mode === 'api' || mode === 'flask') {
+      try {
+        const r = await this._fetch('/sites')
+        if (r.ok) {
+          const apiSites = await r.json()
+          if (Array.isArray(apiSites)) remoteSites = apiSites
+        }
+      } catch {}
     }
-    if (mode === 'api' || mode === 'flask') {
-      const r = await this._fetch('/sites')
-      if (r.ok) {
-        const sites = await r.json()
-        if (Array.isArray(sites)) return sites
+
+    // Safely merge remote sites with LocalDB pages (NEVER wipe local storage!)
+    const localPages = LocalDB.pages.get() || []
+    const map = new Map()
+    localPages.forEach(p => { if (p && p.id) map.set(p.id, p) })
+    remoteSites.forEach(s => {
+      if (s && s.id) {
+        const existing = map.get(s.id) || {}
+        map.set(s.id, { ...existing, ...s })
       }
-    }
-    const uid = (this.token || '').replace('local_', '').replace('sb_', '')
-    return LocalDB.getUserPages(uid)
+    })
+    const merged = Array.from(map.values())
+    LocalDB.pages.save(merged)
+
+    return LocalDB.getUserPages(uid, email)
   },
 
   async getSite(id) {
     const mode = await this._init()
-    if (mode === 'supabase') {
-      const s = await SB.getSite(id)
-      if (s) {
-        LocalDB.updatePage(id, s)
-        return s
-      }
+    if (mode === 'supabase' && isSbReady()) {
+      try {
+        const s = await SB.getSite(id)
+        if (s) {
+          LocalDB.updatePage(id, s)
+          return s
+        }
+      } catch {}
     }
     if (mode === 'api' || mode === 'flask') {
-      const r = await this._fetch('/sites/' + id)
-      if (r.ok) return await r.json()
+      try {
+        const r = await this._fetch('/sites/' + id)
+        if (r.ok) return await r.json()
+      } catch {}
     }
     return LocalDB.getPage(id)
   },
@@ -572,21 +596,45 @@ const API = {
     const allPresets = typeof ALL_PRESETS !== 'undefined' ? ALL_PRESETS : PRESETS
     const template = allPresets.find(p => p.id === templateId) || PRESETS[0]
     const mode = await this._init()
-    const uid = (this.token || '').replace('local_', '').replace('sb_', '')
+    const current = (typeof Auth !== 'undefined' && Auth.user) ? Auth.user : await this.getMe().catch(() => null)
+    const uid = current?.id || (this.token || '').replace('local_', '').replace('sb_', '') || 'guest'
+    const safeUserId = String(uid).startsWith('usr_') ? String(uid) : ('usr_' + uid)
+    const title = (data.title || template.name || 'موقعي').trim()
 
-    if (mode === 'supabase') {
-      const current = await SB.getCurrentUser()
-      const rawUid = current?.id || uid || 'guest'
-      const safeUserId = String(rawUid).startsWith('usr_') ? String(rawUid) : ('usr_' + rawUid)
-      const sitePayload = {
-        title: data.title || template.name,
-        slug: data.slug,
-        template_type: templateId,
-        user_id: safeUserId,
-        theme: template.theme || { color: '#6366f1', font: 'Cairo' },
-        seo: template.seo || { title: data.title || template.name, description: '' },
-        sections: template.sections || []
+    // Determine unique slug
+    let chosenSlug = ''
+    if (data.slug) {
+      const sanitized = sanitizeSlug(data.slug)
+      const check = await this.checkSlugAvailability(sanitized, null)
+      if (!check.available) {
+        chosenSlug = makeUniqueSlug(sanitized, null)
+      } else {
+        chosenSlug = sanitized
       }
+    } else {
+      chosenSlug = makeUniqueSlug(title, null)
+    }
+
+    const sitePayload = {
+      id: data.id || ('site_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6)),
+      title: title,
+      slug: chosenSlug,
+      slug_locked: !!data.slug_locked,
+      template_type: templateId,
+      user_id: safeUserId,
+      userId: safeUserId,
+      userEmail: current?.email || '',
+      theme: data.theme || template.theme || { color: '#6366f1', font: 'Cairo' },
+      seo: data.seo || template.seo || { title: title, description: '' },
+      sections: data.sections || template.sections || [],
+      published: !!data.published,
+      views: data.views || 0,
+      customDomain: data.customDomain || data.custom_domain || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+
+    if (mode === 'supabase' && isSbReady()) {
       try {
         const s = await SB.createSite(sitePayload)
         if (s) {
@@ -595,89 +643,115 @@ const API = {
         }
       } catch (err) {
         console.warn('Supabase createSite failed, falling back to LocalDB:', err)
-        // If Supabase failed, save in LocalDB so user is never blocked
-        const pageData = LocalDB.defaultPage(data.title || template.name, template)
-        pageData.userId = safeUserId
-        return LocalDB.addPage(pageData)
       }
     }
 
     if (mode === 'api' || mode === 'flask') {
-      const r = await this._fetch('/sites', {
-        method: 'POST',
-        body: JSON.stringify({
-          title: data.title || template.name,
-          slug: data.slug,
-          template_type: templateId,
-          theme: template.theme || { color: '#6366f1', font: 'Cairo' },
-          seo: template.seo || { title: data.title || template.name, description: '' },
-          sections: template.sections || []
+      try {
+        const r = await this._fetch('/sites', {
+          method: 'POST',
+          body: JSON.stringify(sitePayload)
         })
-      })
-      if (r.ok) {
-        const s = await r.json()
-        LocalDB.addPage(s)
-        return s
-      }
+        if (r.ok) {
+          const s = await r.json()
+          LocalDB.addPage(s)
+          return s
+        }
+      } catch {}
     }
 
-    const pageData = LocalDB.defaultPage(data.title || template.name, template)
-    pageData.userId = uid
-    return LocalDB.addPage(pageData)
+    return LocalDB.addPage(sitePayload)
+  },
+
+  async createPage(data) {
+    return this.createSite(data)
   },
 
   async updateSite(id, data) {
     const mode = await this._init()
-    if (mode === 'supabase') {
-      const s = await SB.updateSite(id, data)
-      if (s) {
-        LocalDB.updatePage(id, s)
-        return s
+    const cleanData = { ...data }
+
+    // If slug is changing, verify availability
+    if (cleanData.slug) {
+      const sanitized = sanitizeSlug(cleanData.slug)
+      const check = await this.checkSlugAvailability(sanitized, id)
+      if (!check.available) {
+        throw new Error(check.error || 'هذا الدومين محجوز مسبقاً لموقع آخر ولا يمكن استخدامه.')
+      }
+      cleanData.slug = sanitized
+    }
+
+    if (mode === 'supabase' && isSbReady()) {
+      try {
+        const s = await SB.updateSite(id, cleanData)
+        if (s) {
+          LocalDB.updatePage(id, s)
+          return s
+        }
+      } catch (err) {
+        console.warn('Supabase updateSite notice:', err)
       }
     }
+
     if (mode === 'api' || mode === 'flask') {
-      const r = await this._fetch('/sites/' + id, {method:'PUT', body:JSON.stringify(data)})
-      if (r.ok) {
-        const s = await r.json()
-        LocalDB.updatePage(id, data)
-        return s
-      }
+      try {
+        const r = await this._fetch('/sites/' + id, {method:'PUT', body:JSON.stringify(cleanData)})
+        if (r.ok) {
+          const s = await r.json()
+          LocalDB.updatePage(id, cleanData)
+          return s
+        }
+      } catch {}
     }
-    return LocalDB.updatePage(id, data)
+
+    return LocalDB.updatePage(id, cleanData)
   },
 
   async checkSlugAvailability(rawSlug, currentSiteId) {
-    const slug = (rawSlug || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '')
-    if (!slug || slug.length < 3) {
-      return { available: false, slug, error: 'الرابط قصير جداً (3 أحرف على الأقل باللغة الإنجليزية والأرقام بدون مسافات)' }
+    const slug = sanitizeSlug(rawSlug)
+    if (!slug || slug.length < 2) {
+      return { available: false, slug, error: 'الرابط قصير جداً (حرفان على الأقل باللغة الإنجليزية والأرقام بدون مسافات).' }
     }
-    const reserved = ['admin', 'api', 'app', 'dashboard', 'login', 'signup', 'billing', 'settings', 'auth', 'help', 'plans', 'builder', 'preview', 'www', 'mail', 'ftp', 'pay', 'checkout', 'showcase']
-    if (reserved.includes(slug)) {
-      return { available: false, slug, error: 'هذا الاسم محجوز للنظام ولا يمكن استخدامه' }
+    if (isReservedSlug(slug)) {
+      return { available: false, slug, error: 'هذا الاسم محجوز للنظام ولا يمكن استخدامه.' }
     }
 
-    // Check LocalDB
-    const localSites = LocalDB.pages.get()
-    const localConflict = localSites.find(s => s.slug?.toLowerCase() === slug && s.id !== currentSiteId)
+    // 1. Check LocalDB
+    const localSites = LocalDB.pages.get() || []
+    const localConflict = localSites.find(s => s && s.id !== currentSiteId && (
+      (s.slug && s.slug.toLowerCase() === slug.toLowerCase()) ||
+      (s.customDomain && s.customDomain.toLowerCase() === slug.toLowerCase()) ||
+      (s.custom_domain && s.custom_domain.toLowerCase() === slug.toLowerCase())
+    ))
     if (localConflict) {
-      return { available: false, slug, error: 'هذا الدومين محجوز مسبقاً لموقع آخر! يرجى تجربة اسم مختلف' }
+      const mainDomain = window.MAIN_DOMAIN || 'siteflow.vexonet.online'
+      return {
+        available: false,
+        slug,
+        error: `عذراً، هذا الدومين (${slug}.${mainDomain}) محجوز ومستخدم بالفعل لموقع آخر ولا يمكن تكراره.`
+      }
     }
 
-    // Check Supabase
-    if (SB.isReady()) {
+    // 2. Check Supabase if active
+    if (typeof SB !== 'undefined' && isSbReady()) {
       try {
         const { data } = await SB.client.from('sites').select('id, slug').eq('slug', slug)
         if (data && data.length > 0) {
           const remoteConflict = data.find(s => s.id !== currentSiteId)
           if (remoteConflict) {
-            return { available: false, slug, error: 'هذا الدومين محجوز مسبقاً لموقع آخر! يرجى تجربة اسم مختلف' }
+            const mainDomain = window.MAIN_DOMAIN || 'siteflow.vexonet.online'
+            return {
+              available: false,
+              slug,
+              error: `عذراً، هذا الدومين (${slug}.${mainDomain}) محجوز ومستخدم بالفعل لموقع آخر في قاعدة البيانات السحابية.`
+            }
           }
         }
       } catch {}
     }
 
     const mainDomain = window.MAIN_DOMAIN || 'siteflow.vexonet.online'
-    return { available: true, slug, message: `✓ الدومين (${slug}.${mainDomain}) متاح للحجز الآن!` }
+    return { available: true, slug, message: `✓ الدومين (${slug}.${mainDomain}) متاح للحجز والتثبيت لموقعك!` }
   },
 
   async deleteSite(id) {
@@ -770,7 +844,7 @@ const API = {
       created_at: new Date().toISOString()
     }
 
-    if (mode === 'supabase' && SB.isReady()) {
+    if (mode === 'supabase' && isSbReady()) {
       try {
         const sbRes = await SB.createPayment(uid, planKey, amount, paymentData)
         if (sbRes?.id) paymentData.id = sbRes.id
@@ -792,7 +866,7 @@ const API = {
     let p = payments.find(x => x.id === id)
 
     // If not found in LocalDB, fetch it from Supabase
-    if (!p && SB.isReady()) {
+    if (!p && isSbReady()) {
       try {
         const { data: sbP } = await SB.client.from('payments').select('*').eq('id', id).maybeSingle()
         if (sbP) {
@@ -836,7 +910,7 @@ const API = {
     }
 
     // Update in Supabase (payments table and profiles table)
-    if (SB.isReady()) {
+    if (isSbReady()) {
       try {
         await SB.confirmPayment(id, p?.plan, p?.userId || p?.user_id, p?.user_email)
       } catch (err) {
@@ -861,7 +935,7 @@ const API = {
       LocalDB.payments.save(payments)
     }
 
-    if (SB.isReady()) {
+    if (isSbReady()) {
       try {
         await SB.rejectPayment(id)
       } catch (err) {
@@ -874,7 +948,7 @@ const API = {
   async getPayments() {
     const mode = await this._init()
     const uid = (this.token || '').replace('local_', '').replace('sb_', '')
-    if (mode === 'supabase' && SB.isReady()) {
+    if (mode === 'supabase' && isSbReady()) {
       try {
         const { data } = await SB.client.from('payments').select('*').eq('user_id', uid).order('created_at', { ascending: false })
         if (data && data.length) return data
@@ -886,7 +960,7 @@ const API = {
   async getAllPayments() {
     const mode = await this._init()
     let list = []
-    if (mode === 'supabase' && SB.isReady()) {
+    if (mode === 'supabase' && isSbReady()) {
       try {
         const { data } = await SB.client.from('payments').select('*').order('created_at', { ascending: false })
         if (data && data.length) {
@@ -935,7 +1009,7 @@ const API = {
   async getAllUsers() {
     const mode = await this._init()
     let users = []
-    if (mode === 'supabase' && SB.isReady()) {
+    if (mode === 'supabase' && isSbReady()) {
       try {
         const { data } = await SB.client.from('profiles').select('*').order('created_at', { ascending: false })
         if (data && data.length) {
@@ -960,7 +1034,7 @@ const API = {
   async getAllSites() {
     const mode = await this._init()
     let sites = []
-    if (mode === 'supabase' && SB.isReady()) {
+    if (mode === 'supabase' && isSbReady()) {
       try {
         const { data } = await SB.client.from('sites').select('*').order('created_at', { ascending: false })
         if (data && data.length) {
@@ -996,7 +1070,7 @@ const API = {
 
   async toggleSiteSuspension(siteId, isSuspended, reason = '') {
     LocalDB.toggleSiteSuspension(siteId, isSuspended, reason)
-    if (SB.isReady()) {
+    if (isSbReady()) {
       try {
         await SB.toggleSiteSuspension(siteId, isSuspended, reason)
       } catch (err) {
@@ -1015,7 +1089,7 @@ const API = {
 
   async getMaintenanceSettings() {
     let local = LocalDB.maintenanceSettings.get()
-    if (SB.isReady()) {
+    if (isSbReady()) {
       try {
         const sbSettings = await SB.getMaintenanceSettings()
         if (sbSettings) {
@@ -1029,7 +1103,7 @@ const API = {
 
   async setMaintenanceSettings(settings) {
     LocalDB.maintenanceSettings.save(settings)
-    if (SB.isReady()) {
+    if (isSbReady()) {
       try {
         await SB.setMaintenanceSettings(settings)
       } catch (err) {
@@ -1049,7 +1123,7 @@ const API = {
       u.plan = plan
       LocalDB.users.save(users)
     }
-    if (SB.isReady()) {
+    if (isSbReady()) {
       try {
         const cleanId = String(userId).replace('usr_', '')
         await SB.client.from('profiles').update({ plan: plan }).or(`id.eq.${userId},id.eq.${cleanId}`)
@@ -1070,7 +1144,7 @@ const API = {
     const users = LocalDB.users.get()
     const u = users.find(x => x.id === userId || x.email === userId)
     if (u) { u.isAdmin = isAdmin; LocalDB.users.save(users) }
-    if (SB.isReady()) {
+    if (isSbReady()) {
       try {
         const cleanId = String(userId).replace('usr_', '')
         await SB.client.from('profiles').update({ is_admin: isAdmin }).or(`id.eq.${userId},id.eq.${cleanId}`)

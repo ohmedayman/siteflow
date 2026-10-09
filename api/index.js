@@ -198,6 +198,27 @@ module.exports = async function handler(req, res) {
       return res.end(JSON.stringify(PLANS));
     }
 
+    // ── Domains / Slug Check ──
+    if (path === '/domains/check' && req.method === 'GET') {
+      const qSlug = sanitizeSlug(urlObj.searchParams.get('slug') || '');
+      const excludeId = (urlObj.searchParams.get('excludeId') || '').trim();
+      if (!qSlug || qSlug.length < 2) {
+        res.statusCode = 200;
+        return res.end(JSON.stringify({ available: false, slug: qSlug, error: 'الرابط قصير جداً (حرفان على الأقل باللغة الإنجليزية أو الأرقام).' }));
+      }
+      if (isReservedSlug(qSlug)) {
+        res.statusCode = 200;
+        return res.end(JSON.stringify({ available: false, slug: qSlug, error: 'هذا الاسم محجوز للنظام ولا يمكن استخدامه.' }));
+      }
+      const conflict = DB.sites.find(s => s.id !== excludeId && (s.slug === qSlug || (s.customDomain && s.customDomain.toLowerCase() === qSlug)));
+      if (conflict) {
+        res.statusCode = 200;
+        return res.end(JSON.stringify({ available: false, slug: qSlug, error: 'عذراً، هذا الدومين محجوز ومستخدم بالفعل لموقع آخر.' }));
+      }
+      res.statusCode = 200;
+      return res.end(JSON.stringify({ available: true, slug: qSlug, message: 'الدومين متاح للحجز!' }));
+    }
+
     // ── Auth: Signup ──
     if (path === '/auth/signup' && req.method === 'POST') {
       const body = await parseBody(req);

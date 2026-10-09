@@ -46,15 +46,19 @@ const SB = {
         });
       }
 
-      // Health ping check with timeout
+      // Quick health ping check with 1.5s timeout
       const pingPromise = this.client.from('sites').select('id', { head: true, count: 'exact' }).limit(1);
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase ping timeout (3.5s)')), 3500));
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase ping timeout')), 1500));
 
-      const { error } = await Promise.race([pingPromise, timeoutPromise]);
-      if (error && error.code !== 'PGRST116' && error.code !== '42P01') {
-        // Table exists or 42P01 (relation does not exist yet) means server is responding!
-        if (error.message && !error.message.includes('0 rows')) {
-          console.warn('[Supabase] Ping note:', error.message);
+      const res = await Promise.race([pingPromise, timeoutPromise]);
+      if (res && res.error) {
+        const err = res.error;
+        const msg = String(err.message || '').toLowerCase();
+        // If network failed (Failed to fetch, ENOTFOUND, timeout)
+        if (msg.includes('fetch') || msg.includes('network') || msg.includes('enotfound') || msg.includes('timeout')) {
+          this.ready = false;
+          this.lastError = err.message;
+          return false;
         }
       }
 
@@ -65,7 +69,6 @@ const SB = {
     } catch (e) {
       this.ready = false;
       this.lastError = e.message || 'Supabase unreachable';
-      console.warn('[Supabase] Unavailable:', this.lastError);
       return false;
     }
   },

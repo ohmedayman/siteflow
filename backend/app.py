@@ -217,6 +217,26 @@ def publish_site(user, site_id):
 
 # ─────────────── Health & Sync ───────────────
 
+@app.route('/api/domains/check', methods=['GET'])
+def check_domain():
+    raw_slug = request.args.get('slug', '')
+    exclude_id = request.args.get('excludeId', '')
+    s = slugify(raw_slug)
+    if not s or len(s) < 2:
+        return jsonify({'available': False, 'slug': s, 'error': 'الرابط قصير جداً (حرفان على الأقل)'})
+    reserved = {'admin', 'api', 'app', 'dashboard', 'login', 'signup', 'billing', 'settings', 'auth', 'help', 'plans', 'builder', 'preview', 'www', 'mail', 'ftp', 'pay', 'checkout'}
+    if s in reserved:
+        return jsonify({'available': False, 'slug': s, 'error': 'هذا الرابط محجوز للنظام ولا يمكن استخدامه'})
+    query = Site.query.filter(Site.slug == s)
+    if exclude_id:
+        try:
+            query = query.filter(Site.id != int(exclude_id))
+        except:
+            pass
+    if query.first():
+        return jsonify({'available': False, 'slug': s, 'error': 'عذراً، هذا الدومين محجوز ومستخدم بالفعل لموقع آخر'})
+    return jsonify({'available': True, 'slug': s, 'message': 'الدومين متاح للحجز'})
+
 @app.route('/api/health', methods=['GET'])
 def health():
     try:
