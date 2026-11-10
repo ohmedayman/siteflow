@@ -88,7 +88,98 @@ const T = {
       </div>
 
       <!-- Minimalist Product Mockup Window -->
-      <div class="lp-mockup-frame">
+      <!-- 🌟 Ultra-Professional Hero Video Slider Showcase -->
+      <div class="sf-hero-showcase-wrap">
+        <!-- Industry Selector Tabs -->
+        <div class="sf-industry-tabs" id="sfIndustryTabs">
+          <button class="sf-ind-tab active" data-ind="ecommerce">
+            <span>🛍️</span> <span>${isAr ? 'المتاجر الإلكترونية' : 'E-Commerce'}</span>
+          </button>
+          <button class="sf-ind-tab" data-ind="restaurant">
+            <span>🍔</span> <span>${isAr ? 'المطاعم والكافيهات' : 'Restaurants & Cafes'}</span>
+          </button>
+          <button class="sf-ind-tab" data-ind="agency">
+            <span>🏢</span> <span>${isAr ? 'الشركات والخدمات' : 'Agencies & Tech'}</span>
+          </button>
+          <button class="sf-ind-tab" data-ind="clinic">
+            <span>🏥</span> <span>${isAr ? 'العيادات والمراكز الطبية' : 'Clinics & Health'}</span>
+          </button>
+          <button class="sf-ind-tab" data-ind="realestate">
+            <span>🏙️</span> <span>${isAr ? 'العقارات والمقاولات' : 'Real Estate'}</span>
+          </button>
+        </div>
+
+        <!-- Video Player Frame -->
+        <div class="sf-hero-video-card">
+          <div class="sf-video-browser-bar">
+            <div class="sf-video-dots">
+              <span class="sf-vdot red"></span>
+              <span class="sf-vdot yellow"></span>
+              <span class="sf-vdot green"></span>
+            </div>
+            <div class="sf-video-url-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span id="sfVideoUrlText">store.siteflow.vexonet.online</span>
+            </div>
+            <div class="sf-video-status-tag">
+              <span class="sf-vlive-dot"></span>
+              <span>${isAr ? 'مباشر ⚡ 60 FPS' : 'Live Preview ⚡'}</span>
+            </div>
+          </div>
+
+          <!-- Video / Animated Showcase Container -->
+          <div class="sf-video-viewport">
+            <video id="sfHeroVideo" class="sf-hero-video-el" autoplay loop muted playsinline poster="assets/sitflow.svg">
+              <source src="https://assets.mixkit.co/videos/preview/mixkit-online-shopping-and-paying-by-card-42861-large.mp4" type="video/mp4">
+            </video>
+            <div class="sf-video-overlay-gradient"></div>
+
+            <!-- Floating Overlay Content on top of Video -->
+            <div class="sf-video-overlay-content" id="sfVideoOverlayContent">
+              <div class="sf-video-badge" id="sfVideoBadge">
+                <span>⚡</span>
+                <span id="sfVideoBadgeText">${isAr ? 'متجر إلكتروني متكامل • ربط دفع محلي' : 'Full E-Commerce • Local Payments'}</span>
+              </div>
+              <h3 class="sf-video-headline" id="sfVideoHeadline">
+                ${isAr ? 'متاجر إلكترونية فائقة السرعة مع ربط فوري لبوابات الدفع المحلية' : 'Ultra-Fast Online Stores with Instant Local Payment Gateways'}
+              </h3>
+              <p class="sf-video-subline" id="sfVideoSubline">
+                ${isAr ? 'أطلق متجرك بتصميم عصري عالمي يستقبل الطلبات على واتساب ويدير المخزون تلقائياً بدون تعقيد برمجي.' : 'Launch your store with modern UI, automated inventory, and WhatsApp checkout with zero code.'}
+              </p>
+
+              <div class="sf-video-metrics-row" id="sfVideoMetricsRow">
+                <div class="sf-vmetric">
+                  <span class="sf-vm-val">+140%</span>
+                  <span class="sf-vm-lbl">${isAr ? 'زيادة في المبيعات' : 'Sales Growth'}</span>
+                </div>
+                <div class="sf-vmetric">
+                  <span class="sf-vm-val">30 ثانية</span>
+                  <span class="sf-vm-lbl">${isAr ? 'سرعة إطلاق الموقع' : 'Instant Launch'}</span>
+                </div>
+                <div class="sf-vmetric">
+                  <span class="sf-vm-val">0% عمولة</span>
+                  <span class="sf-vm-lbl">${isAr ? 'أرباحك كاملة لك' : 'Zero Commission'}</span>
+                </div>
+              </div>
+
+              <div class="sf-video-cta-row">
+                <button class="btn btn-primary sf-video-launch-btn" id="sfVideoLaunchBtn" data-template="ecommerce">
+                  <span>🚀</span> <span id="sfVideoLaunchBtnText">${isAr ? 'أنشئ متجرك الإلكتروني الآن' : 'Create E-Commerce Store'}</span>
+                </button>
+                <button class="sf-video-toggle-play" id="sfVideoTogglePlayBtn" title="تشغيل / إيقاف الفيديو">
+                  ${ICONS.wrap(ICONS.pause, 16)}
+                </button>
+              </div>
+            </div>
+
+            <!-- Video Nav Controls -->
+            <button class="sf-vslider-arrow prev" id="sfVSliderPrev" title="المجال السابق">❮</button>
+            <button class="sf-vslider-arrow next" id="sfVSliderNext" title="المجال التالي">❯</button>
+          </div>
+        </div>
+      </div>
+      <!-- Legacy Mockup Hidden -->
+      <div class="lp-mockup-frame" style="display:none !important">
         <div class="lp-mockup-topbar">
           <div class="lp-mockup-dots">
             <span class="lp-dot-red"></span>
@@ -155,6 +246,51 @@ const T = {
       <p class="lp-partners-title">${isAr ? 'تكامل رسمي وسلس مع كبرى المنصات وبوابات الدفع العالمية والمحلية' : 'Seamless official integration with leading global & local platforms'}</p>
       <div class="lp-partners-grid">
         <div class="lp-partner-item" title="Google Search & SEO">
+          ${ICONS.wrap(ICONS.google, 28)} <span>Google</span>
+        </div>
+        <div class="lp-partner-item" title="Meta (Facebook & Instagram Ads)">
+          ${ICONS.wrap(ICONS.meta, 28)} <span>Meta</span>
+        </div>
+        <div class="lp-partner-item" title="WhatsApp Business API">
+          ${ICONS.wrap(ICONS.whatsapp, 28)} <span>WhatsApp</span>
+        </div>
+        <div class="lp-partner-item" title="InstaPay Egypt">
+          ${ICONS.wrap(ICONS.instapay, 28)} <span>InstaPay</span>
+        </div>
+        <div class="lp-partner-item" title="Vodafone Cash">
+          ${ICONS.wrap(ICONS.vodafone, 28)} <span>Vodafone Cash</span>
+        </div>
+        <div class="lp-partner-item" title="Fawry Pay">
+          ${ICONS.wrap(ICONS.fawry, 28)} <span>Fawry</span>
+        </div>
+        <div class="lp-partner-item" title="Meeza Cards">
+          ${ICONS.wrap(ICONS.meeza, 28)} <span>Meeza</span>
+        </div>
+        <div class="lp-partner-item" title="Stripe Payments">
+          ${ICONS.wrap(ICONS.stripe, 28)} <span>Stripe</span>
+        </div>
+        <div class="lp-partner-item" title="PayPal">
+          ${ICONS.wrap(ICONS.paypal, 28)} <span>PayPal</span>
+        </div>
+        <div class="lp-partner-item" title="Apple Pay">
+          ${ICONS.wrap(ICONS.apple, 28)} <span>Apple Pay</span>
+        </div>
+        <div class="lp-partner-item" title="Shopify Integration">
+          ${ICONS.wrap(ICONS.shopify, 28)} <span>Shopify</span>
+        </div>
+        <div class="lp-partner-item" title="TikTok Pixel & Ads">
+          ${ICONS.wrap(ICONS.tiktok, 28)} <span>TikTok</span>
+        </div>
+      </div>
+      <div style="display:none">
+          ${ICONS.wrap(ICONS.shopify, 28)} <span>Shopify</span>
+        </div>
+        <div class="lp-partner-item" title="TikTok Pixel & Ads">
+          ${ICONS.wrap(ICONS.tiktok, 28)} <span>TikTok</span>
+        </div>
+      </div>
+      <div style="display:none">
+        <div class="lp-partner-item" title="Google Search & SEO">
           ${ICONS.wrap(ICONS.google, 26)} <span>Google</span>
         </div>
         <div class="lp-partner-item" title="Meta (Facebook & Instagram Ads)">
@@ -176,7 +312,14 @@ const T = {
           ${ICONS.wrap(ICONS.apple, 26)} <span>Apple Pay</span>
         </div>
         <div class="lp-partner-item" title="Shopify Integration">
-          ${ICONS.wrap(ICONS.shopify, 26)} <span>Shopify</span>
+          ${ICONS.wrap(ICONS.shopify, 28)} <span>Shopify</span>
+        </div>
+        <div class="lp-partner-item" title="TikTok Pixel & Ads">
+          ${ICONS.wrap(ICONS.tiktok, 28)} <span>TikTok</span>
+        </div>
+      </div>
+      <div style="display:none">
+          <!-- closed --></div></div></div>
         </div>
       </div>
     </div>
@@ -673,6 +816,18 @@ const T = {
       <button class="btn btn-ghost btn-sm" onclick="document.getElementById('templateModal').classList.remove('open')" style="font-size:1.2rem">✕</button>
     </div>
     <p style="color:var(--gray-500);margin-bottom:20px">Start with a pre-built template or a blank canvas</p>
+    <div style="background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #c7d2fe;border-radius:14px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:1.6rem">📦</span>
+        <div>
+          <strong style="font-size:.9rem;color:#1e1b4b;display:block">لديك ملفات موقعك أو قالب خارجي (HTML / ZIP)؟</strong>
+          <span style="font-size:.76rem;color:#4338ca">ارفع ملفات موقعك وسنقوم باستضافتها وتشغيلها فوراً على دومينك الخاص!</span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="tplUploadSiteBtn" type="button" style="padding:8px 16px;border-radius:10px;font-weight:800">
+        ${ICONS.wrap(ICONS.upload, 14)} <span>رفع وتشغيل قالب خارجي 🚀</span>
+      </button>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="templateFilters">
       <button class="btn btn-sm filter-btn active" data-filter="all">All</button>
       <button class="btn btn-sm filter-btn" data-filter="business">Business</button>
@@ -723,6 +878,9 @@ const T = {
         <h1>${isAr ? 'أهلاً بك،' : 'Welcome,'} <span class="js-user-name"></span></h1>
       </div>
       <p class="dash-subtitle">${isAr ? 'إدارة ومتابعة أداء وتفاعل مواقعك ومتاجرك الإلكترونية' : 'Manage and monitor your websites, stores, and analytics'}</p>
+      <button class="btn btn-outline btn-sm dash-btn-outline" id="dashUploadSiteBtn" style="border-color:#6366f1;color:#4f46e5;font-weight:700;margin-top:8px">
+        ${ICONS.wrap(ICONS.upload, 14)} <span>${isAr ? 'رفع موقع خارجي / قالب' : 'Upload Custom Site'}</span>
+      </button>
     </div>
     <div class="dash-header-actions">
       <a href="#/plans" class="btn btn-outline btn-sm dash-btn-outline" id="upgradeBtn">
@@ -2493,6 +2651,23 @@ const T = {
         </footer>`
       }
 
+      case 'custom_html': {
+        const html = d.html || d.code || '<div style="padding:40px;text-align:center">محتوى مخصص فارغ</div>'
+        if (a) {
+          return `
+          <section class="sf-section sf-custom-html editable-section editing" data-section="custom_html" style="padding:20px;background:#f8fafc;border:2px dashed #6366f1;border-radius:16px;margin:20px 0;position:relative">
+            <div class="section-label">قالب خارجي مرفوع (Custom Uploaded HTML)</div>
+            <div style="text-align:center;padding:12px;margin-bottom:16px;background:#fff;border-radius:10px;border:1px solid #e2e8f0">
+              <span style="font-size:1.6rem">📦</span>
+              <h4 style="margin:4px 0 2px;font-weight:800;color:#0f172a">تم تشغيل القالب المرفوع بنجاح</h4>
+              <p style="font-size:.78rem;color:#64748b;margin:0">يتم عرض المحتوى بهويته وتنسيقاته الكاملة للزوار وعند المعاينة المباشرة.</p>
+            </div>
+            <div class="sf-custom-html-preview" style="all:revert;max-height:600px;overflow-y:auto;border-radius:8px;border:1px solid #cbd5e1;background:#fff;padding:16px">${html}</div>
+          </section>`
+        }
+        return `<section class="sf-section sf-custom-html" data-section="custom_html">${html}</section>`
+      }
+
       default: {
         return `<section class="sf-section editable-section ${a ? 'editing' : ''}" style="padding:40px;text-align:center;color:#94a3b8">قسم: ${type}</section>`
       }
@@ -2611,6 +2786,21 @@ const T = {
     // 8. Custom Body Code
     if (apps.custom_body_code) {
       injectedBody += `\n${apps.custom_body_code}\n`
+    }
+
+    // 🌟 If Custom Uploaded Site (full HTML document)
+    const customHtmlContent = page.custom_html || (page.sections && page.sections.length === 1 && page.sections[0].type === 'custom_html' ? page.sections[0].data?.html : '')
+    if (customHtmlContent && (customHtmlContent.includes('<!DOCTYPE') || customHtmlContent.includes('<html') || customHtmlContent.includes('<head>'))) {
+      let doc = customHtmlContent
+      if (injectedHead) {
+        if (doc.includes('<head>')) doc = doc.replace('<head>', '<head>' + injectedHead)
+        else doc = injectedHead + doc
+      }
+      if (injectedBody) {
+        if (doc.includes('</body>')) doc = doc.replace('</body>', injectedBody + '</body>')
+        else doc = doc + injectedBody
+      }
+      return doc
     }
 
     const jsonLd = {
@@ -3929,11 +4119,104 @@ const T = {
 
     <div style="border-top:1px solid #f1f5f9;padding-top:16px;text-align:center;display:flex;justify-content:space-between;font-size:.82rem">
       <span style="color:#94a3b8">SiteFlow Admin Secure Gateway</span>
-      <a href="#/" style="color:#4f46e5;font-weight:700;text-decoration:none">
-        ${isAr ? 'العودة للمنصة الرئيسية ↗' : 'Back to Main Site ↗'}
+    </div>
+  </div>
+</div>`
+  },
+
+}
+
+/*
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    const mainDom = window.MAIN_DOMAIN || 'siteflow.vexonet.online'
+    return `
+<div class="modal-overlay sf-upload-modal-overlay open" id="sfUploadSiteModalOverlay" dir="${isAr ? 'rtl' : 'ltr'}">
+  <div class="modal sf-upload-modal-card" style="max-width:620px;padding:32px;border-radius:24px;background:#ffffff">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:1.8rem;background:linear-gradient(135deg,#e0e7ff,#ede9fe);width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#4f46e5">
+          ${ICONS.wrap(ICONS.upload, 22)}
+        </span>
+        <div>
+          <h2 style="font-size:1.35rem;font-weight:900;margin:0;color:#0f172a">
+            ${isAr ? 'رفع موقع خارجي / قالب جاهز 📦' : 'Upload Custom Site or Template 📦'}
+          </h2>
+          <span style="font-size:.78rem;color:#64748b">
+            ${isAr ? 'ارفع ملفات موقعك وسنقوم باستضافتها وتشغيلها فوراً على دومينك' : 'Upload your HTML/ZIP files and host them instantly'}
+          </span>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="sfCloseUploadModal" style="font-size:1.2rem;border-radius:50%;width:36px;height:36px">✕</button>
+    </div>
+
+    <div class="sf-upload-tabs" style="display:flex;gap:8px;margin:20px 0 16px;border-bottom:1px solid #e2e8f0;padding-bottom:12px">
+      <button class="sf-up-tab active" data-uptab="file" type="button" style="background:#eef2ff;color:#4f46e5;border:none;padding:8px 16px;border-radius:10px;font-weight:800;font-size:.85rem;cursor:pointer">
+        📁 ${isAr ? 'رفع ملف (HTML / ZIP)' : 'Upload File (HTML / ZIP)'}
+      </button>
+      <button class="sf-up-tab" data-uptab="code" type="button" style="background:transparent;color:#64748b;border:none;padding:8px 16px;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer">
+        💻 ${isAr ? 'لصق كود HTML مباشرة' : 'Paste HTML Code'}
+      </button>
+    </div>
+
+    <form id="sfUploadSiteForm">
+      <div class="input-group" style="margin-bottom:16px">
+        <label style="font-size:.84rem;font-weight:700;color:#334155;display:block;margin-bottom:6px">
+          ${isAr ? 'اسم الموقع أو علامتك التجارية *' : 'Site or Brand Name *'}
+        </label>
+        <input class="input" id="sfUploadSiteTitle" placeholder="${isAr ? 'مثال: متجري للملابس، شركتي...' : 'e.g. My Custom Brand'}" required style="border-radius:10px;padding:12px;font-size:.9rem;width:100%">
+      </div>
+
+      <div class="input-group" style="margin-bottom:16px">
+        <label style="font-size:.84rem;font-weight:700;color:#334155;display:block;margin-bottom:6px">
+          ${isAr ? 'اسم الدومين الفرعي المطلوب (اختياري)' : 'Subdomain Slug (Optional)'}
+        </label>
+        <div style="display:flex;align-items:center;background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:0 12px;direction:ltr">
+          <span style="color:#94a3b8;font-size:.82rem">https://</span>
+          <input class="input" id="sfUploadSiteSlug" placeholder="my-brand" style="border:none;background:transparent;padding:10px 4px;font-weight:700;color:#4f46e5;flex:1;outline:none">
+          <span style="color:#64748b;font-size:.82rem">.${mainDom}</span>
+        </div>
+      </div>
+
+      <!-- Tab 1: File Dropzone -->
+      <div id="sfUploadTabFile">
+        <input type="file" id="sfUploadFileInput" accept=".html,.htm,.zip" style="display:none">
+        <div class="sf-file-dropzone" id="sfFileDropzone" style="border:2px dashed #818cf8;background:#f8faff;border-radius:16px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s">
+          <div style="font-size:2.4rem;margin-bottom:8px">📂</div>
+          <strong style="font-size:.95rem;color:#1e1b4b;display:block;margin-bottom:4px" id="sfUploadFileSelectedText">
+            ${isAr ? 'اضغط هنا لاختيار ملف الموقع أو اسحبه وأفلته هنا' : 'Click to select or drag & drop website file'}
+          </strong>
+          <span style="font-size:.78rem;color:#64748b">
+            ${isAr ? 'يدعم ملفات HTML المفردة أو أرشيف ZIP يحتوي على صفحة index.html' : 'Supports single .html file or .zip containing index.html'}
+          </span>
+        </div>
+      </div>
+
+      <!-- Tab 2: Code Textarea -->
+      <div id="sfUploadTabCode" style="display:none">
+        <label style="font-size:.84rem;font-weight:700;color:#334155;display:block;margin-bottom:6px">
+          ${isAr ? 'الصق كود HTML الكامل هنا' : 'Paste Full HTML Code'}
+        </label>
+        <textarea class="input textarea" id="sfUploadCodeText" rows="7" placeholder="<!DOCTYPE html><html><head><title>My Site</title></head><body>...</body></html>" style="direction:ltr;font-family:monospace;font-size:.78rem;border-radius:12px;width:100%"></textarea>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end">
+        <button type="button" class="btn btn-ghost" id="sfCancelUploadBtn" style="border-radius:10px">
+          ${isAr ? 'إلغاء' : 'Cancel'}
+        </button>
+        <button type="submit" class="btn btn-primary" id="sfSubmitUploadBtn" style="padding:12px 28px;border-radius:10px;font-weight:800">
+          <span>🚀</span> <span>${isAr ? 'رفع وتشغيل الموقع فوراً' : 'Upload & Launch Site'}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>`
+
+
       </a>
     </div>
   </div>
 </div>`
   }
 }
+
+*/

@@ -22,15 +22,30 @@ var RESERVED_SLUGS = new Set([
   'null', 'undefined', 'true', 'false', 'constructor', 'prototype', '__proto__'
 ]);
 
+/**
+ * Transliterates Arabic text into phonetic Latin characters
+ * e.g. "متجري للملابس" -> "matgry-llmlabs"
+ */
+function transliterateArabic(text) {
+  if (!text || typeof text !== 'string') return '';
+  const map = {
+    'أ': 'a', 'إ': 'e', 'آ': 'a', 'ا': 'a', 'ب': 'b', 'ت': 't', 'ث': 'th',
+    'ج': 'g', 'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'th', 'ر': 'r', 'ز': 'z',
+    'س': 's', 'ش': 'sh', 'ص': 's', 'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a',
+    'غ': 'gh', 'ف': 'f', 'ق': 'q', 'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n',
+    'ه': 'h', 'و': 'w', 'ي': 'y', 'ى': 'a', 'ة': 'h', 'ء': '', 'ئ': 'e', 'ؤ': 'o',
+    'پ': 'p', 'چ': 'ch', 'ڤ': 'v', 'گ': 'g'
+  };
+  return text.split('').map(c => map[c] !== undefined ? map[c] : c).join('');
+}
+
 function sanitizeSlug(slug) {
   if (!slug || typeof slug !== 'string') return '';
-  return slug
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 32);
+  let s = transliterateArabic(slug.toLowerCase().trim());
+  s = s.replace(/[^a-z0-9-]/g, '-');
+  s = s.replace(/-+/g, '-');
+  s = s.replace(/^-|-$/g, '');
+  return s.slice(0, 32);
 }
 
 function isReservedSlug(slug) {
@@ -40,12 +55,24 @@ function isReservedSlug(slug) {
 
 function isValidSlug(slug) {
   if (!slug || typeof slug !== 'string') return false;
-  const s = slug.toLowerCase().trim();
+  const s = sanitizeSlug(slug);
   if (s.length < 2 || s.length > 32) return false;
   if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(s)) return false;
   if (s.includes('--')) return false;
   if (isReservedSlug(s)) return false;
   return true;
+}
+
+function getShareableUrls(slug) {
+  const clean = sanitizeSlug(slug) || 'site';
+  const mainDomain = window.MAIN_DOMAIN || 'siteflow.vexonet.online';
+  const origin = window.location.origin;
+  return {
+    slug: clean,
+    subdomain: `https://${clean}.${mainDomain}`,
+    preview: `${origin}/#/p/${clean}`,
+    direct: `${origin}/#/p/${clean}`
+  };
 }
 
 function subdomainUrl(slug) {
@@ -61,6 +88,7 @@ function subdomainHostUrl(slug) {
 function internalPreviewUrl(slug) {
   return `${window.location.origin}/#/p/${sanitizeSlug(slug)}`;
 }
+
 function getDaysLeft(item, plan = 'free') {
   if (plan && plan !== 'free') return 999;
   const createdStr = item?.createdAt || item?.created_at;
@@ -135,17 +163,26 @@ const LocalDB = {
       template_type: t.id || 'blank',
       sections: this.clone(t.sections || []),
       seo: this.clone(t.seo || {title:'',description:''}),
-      theme: this.clone(t.theme || {color:'#6366f1',font:'Inter'})
+      theme: this.clone(t.theme || {color:'#6366f1',font:'Cairo'}),
+      custom_html: t.custom_html || ''
     })
   },
 
   addPage(pg) {
-    const pages = this.pages.get(); const p = this.clone(pg)
-    p.id = this.genId()
-    p.slug = (p.title||'site').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,30) || 'site'
-    p.slug += '-' + this.genId().slice(0,4)
-    p.createdAt = new Date().toISOString(); p.updatedAt = new Date().toISOString()
-    pages.push(p); this.pages.save(pages); return p
+    const pages = this.pages.get();
+    const p = this.clone(pg)
+    if (!p.id) p.id = this.genId()
+    if (!p.slug) {
+      const base = sanitizeSlug(p.title || 'site') || 'site'
+      p.slug = base + '-' + this.genId().slice(0, 4)
+    } else {
+      p.slug = sanitizeSlug(p.slug)
+    }
+    p.createdAt = p.createdAt || new Date().toISOString()
+    p.updatedAt = new Date().toISOString()
+    pages.push(p)
+    this.pages.save(pages)
+    return p
   },
 
   updatePage(id, data) {
@@ -159,11 +196,17 @@ const LocalDB = {
   getPage(id) { return this.pages.get().find(p => p.id === id) || null },
   getPageBySlug(slug) {
     const s = (slug || '').toLowerCase();
-    return this.pages.get().find(p => (p.slug?.toLowerCase() === s || p.customDomain?.toLowerCase() === s || p.custom_domain?.toLowerCase() === s)) || null
+    const clean = sanitizeSlug(slug);
+    return this.pages.get().find(p => {
+      const pSlug = (p.slug || '').toLowerCase();
+      const pClean = sanitizeSlug(p.slug);
+      const pDom = (p.customDomain || p.custom_domain || '').toLowerCase();
+      return pSlug === s || pClean === clean || pDom === s || pDom === clean;
+    }) || null;
   },
-  getUserPages(uid) { return this.pages.get().filter(p => p.userId === uid) },
+  getUserPages(uid) { return this.pages.get().filter(p => p.userId === uid || p.user_id === uid) },
   duplicatePage(id) { const o=this.getPage(id); if(!o)return null; const c=this.clone(o); c.id=''; c.title=o.title+' (Copy)'; c.published=false; c.views=0; return this.addPage(c) },
-  incrementViews(slug) { const pages=this.pages.get(); const p=pages.find(x=>x.slug===slug); if(p){p.views=(p.views||0)+1;this.pages.save(pages)} }
+  incrementViews(slug) { const pages=this.pages.get(); const clean=sanitizeSlug(slug); const p=pages.find(x=>sanitizeSlug(x.slug)===clean || x.slug===slug); if(p){p.views=(p.views||0)+1;this.pages.save(pages)} }
 }
 
 // ── Seed demo data ──
@@ -172,18 +215,16 @@ if (LocalDB.users.get().length === 0) {
     {id:'demo1',name:'Ahmed Hassan',email:'demo@siteflow.app',password:'demo123',plan:'pro',lang:'ar',isAdmin:false},
     {id:'admin1',name:'Admin',email:'admin@siteflow.app',password:'admin123',plan:'business',lang:'en',isAdmin:true}
   ])
-  var _demo = LocalDB.addPage({...LocalDB.defaultPage('My Portfolio'), userId:'demo1', published:true, views:142, theme:{color:'#059669',font:'Inter'}, seo:{title:'Ahmed Hassan',description:'Portfolio'}})
-  // Ensure known slug for demo
+  var _demo = LocalDB.addPage({...LocalDB.defaultPage('My Portfolio'), userId:'demo1', published:true, views:142, theme:{color:'#059669',font:'Cairo'}, seo:{title:'Ahmed Hassan',description:'Portfolio'}})
   var _pages = LocalDB.pages.get(); var _dp = _pages.find(p => p.id === _demo.id); if (_dp) { _dp.slug = 'demo'; LocalDB.pages.save(_pages) }
 }
 
-// ── API Client (mode: Vercel Serverless API → LocalStorage) ──
+// ── API Client (mode: Supabase PostgreSQL → Vercel Serverless → LocalStorage) ──
 const API = {
   token: localStorage.getItem('sf_token') || '',
-  mode: null, // null | 'supabase' | 'api' | 'flask' | 'local'
+  mode: null,
   _saveToken(t) { this.token=t||''; if(t) localStorage.setItem('sf_token',t); else localStorage.removeItem('sf_token') },
 
-  // Try backends in order: Supabase (Real Postgres) → Vercel Serverless /api → LocalStorage
   async _init() {
     if (this.mode) return this.mode;
 
@@ -240,7 +281,6 @@ const API = {
         LocalDB.users.save([...LocalDB.users.get().filter(x => x.id !== user.id), { ...user, password }])
         return { user }
       } catch (e) {
-        // Fallback: If unconfirmed or rate limited, verify against profiles table
         try {
           const { data: prof } = await SB.client.from('profiles').select('*').eq('email', cleanEmail).maybeSingle()
           if (prof) {
@@ -259,13 +299,11 @@ const API = {
         } catch (dbErr) {
           console.warn('[Storage] Profile lookup notice:', dbErr)
         }
-        // Check LocalDB fallback
         const localMatch = LocalDB.users.get().find(x => x.email?.toLowerCase() === cleanEmail)
         if (localMatch) {
           this._saveToken('local_' + localMatch.id)
           return { user: localMatch }
         }
-        // Auto-create profile in Supabase so user is NEVER blocked
         const autoUser = {
           id: 'usr_' + Date.now().toString(36),
           name: cleanEmail.split('@')[0],
@@ -300,7 +338,6 @@ const API = {
         throw new Error(err.error || 'البريد الإلكتروني أو كلمة المرور غير صحيحة')
       }
     }
-    // localStorage fallback
     const users = LocalDB.users.get()
     const u = users.find(x => x.email.toLowerCase() === email.toLowerCase())
     if (u) {
@@ -393,7 +430,6 @@ const API = {
         throw new Error(err.error || 'فشل إنشاء الحساب')
       }
     }
-    // localStorage fallback
     const users = LocalDB.users.get()
     if (users.find(x => x.email.toLowerCase() === email.toLowerCase())) {
       throw new Error('هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول.')
@@ -459,7 +495,6 @@ const API = {
           return u
         }
 
-        // Query profiles by ID or by local user email to catch admin approvals immediately
         let prof = null
         if (rawId && !rawId.startsWith('usr_guest')) {
           const cleanId = rawId.replace('usr_', '')
@@ -570,9 +605,19 @@ const API = {
   async createSite(data) {
     const templateId = data.template_type || 'blank'
     const allPresets = typeof ALL_PRESETS !== 'undefined' ? ALL_PRESETS : PRESETS
-    const template = allPresets.find(p => p.id === templateId) || PRESETS[0]
+    const template = (templateId === 'custom_upload')
+      ? {
+          name: data.title || 'موقع خارجي مرفوع',
+          theme: data.theme || { color: '#6366f1', font: 'Cairo' },
+          seo: data.seo || { title: data.title || 'موقع خارجي مرفوع', description: '' },
+          sections: data.sections || []
+        }
+      : (allPresets.find(p => p.id === templateId) || PRESETS[0])
+
     const mode = await this._init()
     const uid = (this.token || '').replace('local_', '').replace('sb_', '')
+    const baseSlug = sanitizeSlug(data.slug || data.title || template.name || 'site') || 'site'
+    const finalSlug = (data.slug && isValidSlug(data.slug)) ? sanitizeSlug(data.slug) : (baseSlug + '-' + LocalDB.genId().slice(0, 4))
 
     if (mode === 'supabase') {
       const current = await SB.getCurrentUser()
@@ -580,12 +625,13 @@ const API = {
       const safeUserId = String(rawUid).startsWith('usr_') ? String(rawUid) : ('usr_' + rawUid)
       const sitePayload = {
         title: data.title || template.name,
-        slug: data.slug,
+        slug: finalSlug,
         template_type: templateId,
         user_id: safeUserId,
-        theme: template.theme || { color: '#6366f1', font: 'Cairo' },
-        seo: template.seo || { title: data.title || template.name, description: '' },
-        sections: template.sections || []
+        theme: data.theme || template.theme || { color: '#6366f1', font: 'Cairo' },
+        seo: data.seo || template.seo || { title: data.title || template.name, description: '' },
+        sections: data.sections || template.sections || [],
+        custom_html: data.custom_html || ''
       }
       try {
         const s = await SB.createSite(sitePayload)
@@ -595,9 +641,11 @@ const API = {
         }
       } catch (err) {
         console.warn('Supabase createSite failed, falling back to LocalDB:', err)
-        // If Supabase failed, save in LocalDB so user is never blocked
         const pageData = LocalDB.defaultPage(data.title || template.name, template)
+        pageData.slug = finalSlug
         pageData.userId = safeUserId
+        pageData.sections = data.sections || template.sections || []
+        pageData.custom_html = data.custom_html || ''
         return LocalDB.addPage(pageData)
       }
     }
@@ -607,11 +655,11 @@ const API = {
         method: 'POST',
         body: JSON.stringify({
           title: data.title || template.name,
-          slug: data.slug,
+          slug: finalSlug,
           template_type: templateId,
-          theme: template.theme || { color: '#6366f1', font: 'Cairo' },
-          seo: template.seo || { title: data.title || template.name, description: '' },
-          sections: template.sections || []
+          theme: data.theme || template.theme || { color: '#6366f1', font: 'Cairo' },
+          seo: data.seo || template.seo || { title: data.title || template.name, description: '' },
+          sections: data.sections || template.sections || []
         })
       })
       if (r.ok) {
@@ -622,12 +670,18 @@ const API = {
     }
 
     const pageData = LocalDB.defaultPage(data.title || template.name, template)
+    pageData.slug = finalSlug
     pageData.userId = uid
+    pageData.sections = data.sections || template.sections || []
+    pageData.custom_html = data.custom_html || ''
     return LocalDB.addPage(pageData)
   },
 
   async updateSite(id, data) {
     const mode = await this._init()
+    if (data.slug) {
+      data.slug = sanitizeSlug(data.slug)
+    }
     if (mode === 'supabase') {
       const s = await SB.updateSite(id, data)
       if (s) {
@@ -647,37 +701,41 @@ const API = {
   },
 
   async checkSlugAvailability(rawSlug, currentSiteId) {
-    const slug = (rawSlug || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '')
-    if (!slug || slug.length < 3) {
-      return { available: false, slug, error: 'الرابط قصير جداً (3 أحرف على الأقل باللغة الإنجليزية والأرقام بدون مسافات)' }
+    let clean = sanitizeSlug(rawSlug)
+    if (!clean || clean.length < 2) {
+      return { available: false, slug: clean, error: 'الاسم المدخل قصير جداً، يرجى كتابة اسم مكون من حرفين أو رقمين على الأقل.' }
     }
-    const reserved = ['admin', 'api', 'app', 'dashboard', 'login', 'signup', 'billing', 'settings', 'auth', 'help', 'plans', 'builder', 'preview', 'www', 'mail', 'ftp', 'pay', 'checkout', 'showcase']
-    if (reserved.includes(slug)) {
-      return { available: false, slug, error: 'هذا الاسم محجوز للنظام ولا يمكن استخدامه' }
+    if (isReservedSlug(clean)) {
+      return { available: false, slug: clean, error: 'هذا الاسم محجوز للنظام ولا يمكن استخدامه، يرجى اختيار اسم آخر.' }
     }
 
     // Check LocalDB
     const localSites = LocalDB.pages.get()
-    const localConflict = localSites.find(s => s.slug?.toLowerCase() === slug && s.id !== currentSiteId)
+    const localConflict = localSites.find(s => (sanitizeSlug(s.slug) === clean || s.slug?.toLowerCase() === clean) && s.id !== currentSiteId)
     if (localConflict) {
-      return { available: false, slug, error: 'هذا الدومين محجوز مسبقاً لموقع آخر! يرجى تجربة اسم مختلف' }
+      return { available: false, slug: clean, error: 'هذا الدومين محجوز مسبقاً لموقع آخر! يرجى تجربة اسم مختلف' }
     }
 
     // Check Supabase
     if (SB.isReady()) {
       try {
-        const { data } = await SB.client.from('sites').select('id, slug').eq('slug', slug)
+        const { data } = await SB.client.from('sites').select('id, slug').eq('slug', clean)
         if (data && data.length > 0) {
           const remoteConflict = data.find(s => s.id !== currentSiteId)
           if (remoteConflict) {
-            return { available: false, slug, error: 'هذا الدومين محجوز مسبقاً لموقع آخر! يرجى تجربة اسم مختلف' }
+            return { available: false, slug: clean, error: 'هذا الدومين محجوز مسبقاً لموقع آخر! يرجى تجربة اسم مختلف' }
           }
         }
       } catch {}
     }
 
     const mainDomain = window.MAIN_DOMAIN || 'siteflow.vexonet.online'
-    return { available: true, slug, message: `✓ الدومين (${slug}.${mainDomain}) متاح للحجز الآن!` }
+    return {
+      available: true,
+      slug: clean,
+      urls: getShareableUrls(clean),
+      message: `✓ الدومين (${clean}.${mainDomain}) متاح للحجز الآن!`
+    }
   },
 
   async deleteSite(id) {
@@ -715,20 +773,21 @@ const API = {
   },
 
   async getPublicPage(slug) {
+    const clean = sanitizeSlug(slug)
     const mode = await this._init()
     if (mode === 'supabase') {
       try {
-        const s = await SB.getPublicPage(slug)
+        const s = await SB.getPublicPage(clean) || await SB.getPublicPage(slug)
         if (s) return s
       } catch {}
     }
     if (mode === 'api' || mode === 'flask') {
       try {
-        const r = await this._fetch('/p/' + encodeURIComponent(slug))
+        const r = await this._fetch('/p/' + encodeURIComponent(clean))
         if (r.ok) return await r.json()
       } catch {}
     }
-    return LocalDB.getPageBySlug(slug)
+    return LocalDB.getPageBySlug(clean) || LocalDB.getPageBySlug(slug)
   },
 
   async getPlans() {
@@ -737,10 +796,10 @@ const API = {
       try { const r = await this._fetch('/plans'); if (r.ok) return (await r.json()) } catch {}
     }
     return {
-      free: { name:'مجاني', name_en:'Free', price:0, yearly_price:0, currency:'EGP', max_sites:1, pages:2, custom_domain:false, analytics:false, premium_themes:false, priority_support:false, remove_branding:false, ecommerce:false, payment_gateway:false, whatsapp_support:false, features:['دومين فرعي','صفحتين','علامة Made with Site Flow','استضافة مجانية'] },
+      free: { name:'مجاني', name_en:'Free', price:0, yearly_price:0, currency:'EGP', max_sites:1, pages:2, custom_domain:false, analytics:false, premium_themes:false, priority_support:false, remove_branding:false, ecommerce:false, payment_gateway:false, whatsapp_support:false, features:['دومين فرعي سريع','موقع كامل','محرر سحب وإفلات','استضافة سحابية SSL'] },
       basic: { name:'أساسي', name_en:'Basic', price:129, yearly_price:999, currency:'EGP', max_sites:3, pages:10, custom_domain:true, analytics:true, premium_themes:false, priority_support:false, remove_branding:true, ecommerce:false, payment_gateway:false, whatsapp_support:false, features:['دومين خاص (.com)','10 صفحات','إزالة العلامة','SSL مجاني','تحليلات أساسية'] },
-      pro: { name:'احترافي', name_en:'Pro', price:299, yearly_price:2499, currency:'EGP', max_sites:-1, pages:-1, custom_domain:true, analytics:true, premium_themes:true, priority_support:true, remove_branding:true, ecommerce:true, payment_gateway:true, whatsapp_support:true, features:['صفحات غير محدودة','ربط فوري/إنستاباي/فودافون كاش','متجر بسيط (50 منتج)','دعم واتساب','بكسل فيسبوك/إنستجرام','جميع القوالب'] },
-      business: { name:'بيزنس', name_en:'Business', price:599, yearly_price:4999, currency:'EGP', max_sites:-1, pages:-1, custom_domain:true, analytics:true, premium_themes:true, priority_support:true, remove_branding:true, ecommerce:true, payment_gateway:true, whatsapp_support:true, features:['متجر كامل بدون حدود','تكامل شحن محلي','تقارير مبيعات','دعم مخصص','API доступ','White Label'] }
+      pro: { name:'احترافي', name_en:'Pro', price:299, yearly_price:2499, currency:'EGP', max_sites:-1, pages:-1, custom_domain:true, analytics:true, premium_themes:true, priority_support:true, remove_branding:true, ecommerce:true, payment_gateway:true, whatsapp_support:true, features:['صفحات غير محدودة','ربط إنستاباي وفودافون كاش وميزة','متجر إلكتروني وقبول الطلبات','دعم واتساب','بكسل فيسبوك وإنستجرام وتيك توك','جميع القوالب'] },
+      business: { name:'بيزنس', name_en:'Business', price:599, yearly_price:4999, currency:'EGP', max_sites:-1, pages:-1, custom_domain:true, analytics:true, premium_themes:true, priority_support:true, remove_branding:true, ecommerce:true, payment_gateway:true, whatsapp_support:true, features:['متجر كامل بدون حدود','تكامل شحن محلي','تقارير مبيعات وتحليلات','دعم مخصص 24/7','تخصيص الكود ورفع القوالب'] }
     }
   },
 
@@ -779,7 +838,6 @@ const API = {
       }
     }
 
-    // LocalDB persistence
     const payments = LocalDB.payments.get()
     payments.unshift(paymentData)
     LocalDB.payments.save(payments)
@@ -791,7 +849,6 @@ const API = {
     let payments = LocalDB.payments.get()
     let p = payments.find(x => x.id === id)
 
-    // If not found in LocalDB, fetch it from Supabase
     if (!p && SB.isReady()) {
       try {
         const { data: sbP } = await SB.client.from('payments').select('*').eq('id', id).maybeSingle()
@@ -835,7 +892,6 @@ const API = {
       LocalDB.users.save(users)
     }
 
-    // Update in Supabase (payments table and profiles table)
     if (SB.isReady()) {
       try {
         await SB.confirmPayment(id, p?.plan, p?.userId || p?.user_id, p?.user_email)
@@ -844,7 +900,6 @@ const API = {
       }
     }
 
-    // Broadcast update across tabs
     try {
       localStorage.setItem('sf_plan_updated', Date.now().toString())
     } catch {}
@@ -1133,15 +1188,15 @@ const API = {
   },
 
   async submitForm(slug, name, email, message) {
+    const clean = sanitizeSlug(slug)
     if (this.mode !== 'local') {
       try {
-        const r = await this._fetch(`/p/${slug}/submit`, {method:'POST', body:JSON.stringify({name, email, message})})
+        const r = await this._fetch(`/p/${clean}/submit`, {method:'POST', body:JSON.stringify({name, email, message})})
         if (r.ok) return {ok: true}
       } catch {}
     }
-    // LocalDB fallback
     const pages = LocalDB.pages.get()
-    const page = pages.find(p => p.slug === slug)
+    const page = pages.find(p => sanitizeSlug(p.slug) === clean || p.slug === slug)
     if (page) {
       if (!page.submissions) page.submissions = []
       page.submissions.push({id: Date.now(), name, email, message, read: false, created_at: new Date().toISOString()})
@@ -1158,7 +1213,6 @@ const API = {
         if (r.ok) return await r.json()
       }
     } catch {}
-    // LocalDB fallback
     const page = LocalDB.getPage(siteId)
     return (page && page.submissions) ? page.submissions.sort((a,b)=>b.id-a.id) : []
   },
@@ -1215,7 +1269,6 @@ const API = {
     return {totalViews: 0, viewsByDay: [], uniqueIPs: 0}
   },
 
-  // ── Sync local sites to Flask backend ──
   async syncToBackend() {
     const mode = await this._init()
     if (mode !== 'flask') return
@@ -1235,10 +1288,8 @@ const API = {
     }
   },
 
-  // ── Cloudinary Upload ──
   async uploadImage(file) {
     const mode = await this._init()
-    // Try Flask backend with Cloudinary
     if (mode === 'flask') {
       const formData = new FormData()
       formData.append('file', file)
@@ -1251,7 +1302,6 @@ const API = {
         if (r.ok) return (await r.json()).url
       } catch {}
     }
-    // Fallback: direct base64 (works offline)
     return new Promise((resolve) => {
       const reader = new FileReader()
       reader.onload = (ev) => resolve(ev.target.result)

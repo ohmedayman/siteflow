@@ -198,6 +198,275 @@ const Notif = {
   }
 }
 
+// Register T.uploadSiteModal
+if (typeof T !== 'undefined') {
+  T.uploadSiteModal = function() {
+    const isAr = (typeof Auth !== 'undefined' ? Auth.lang : 'ar') === 'ar'
+    const mainDom = window.MAIN_DOMAIN || 'siteflow.vexonet.online'
+    return `
+<div class="modal-overlay sf-upload-modal-overlay open" id="sfUploadSiteModalOverlay" dir="${isAr ? 'rtl' : 'ltr'}">
+  <div class="modal sf-upload-modal-card" style="max-width:620px;padding:32px;border-radius:24px;background:#ffffff;box-shadow:0 25px 60px rgba(0,0,0,0.25)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:1.8rem;background:linear-gradient(135deg,#e0e7ff,#ede9fe);width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#4f46e5">
+          ${ICONS.wrap(ICONS.upload, 22)}
+        </span>
+        <div>
+          <h2 style="font-size:1.35rem;font-weight:900;margin:0;color:#0f172a">
+            ${isAr ? 'رفع موقع خارجي / قالب جاهز 📦' : 'Upload Custom Site or Template 📦'}
+          </h2>
+          <span style="font-size:.78rem;color:#64748b">
+            ${isAr ? 'ارفع ملفات موقعك وسنقوم باستضافتها وتشغيلها فوراً على دومينك' : 'Upload your HTML/ZIP files and host them instantly'}
+          </span>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="sfCloseUploadModal" style="font-size:1.2rem;border-radius:50%;width:36px;height:36px">✕</button>
+    </div>
+
+    <div class="sf-upload-tabs" style="display:flex;gap:8px;margin:20px 0 16px;border-bottom:1px solid #e2e8f0;padding-bottom:12px">
+      <button class="sf-up-tab active" data-uptab="file" type="button" style="background:#eef2ff;color:#4f46e5;border:none;padding:8px 16px;border-radius:10px;font-weight:800;font-size:.85rem;cursor:pointer">
+        📁 ${isAr ? 'رفع ملف (HTML / ZIP)' : 'Upload File (HTML / ZIP)'}
+      </button>
+      <button class="sf-up-tab" data-uptab="code" type="button" style="background:transparent;color:#64748b;border:none;padding:8px 16px;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer">
+        💻 ${isAr ? 'لصق كود HTML مباشرة' : 'Paste HTML Code'}
+      </button>
+    </div>
+
+    <form id="sfUploadSiteForm">
+      <div class="input-group" style="margin-bottom:16px">
+        <label style="font-size:.84rem;font-weight:700;color:#334155;display:block;margin-bottom:6px">
+          ${isAr ? 'اسم الموقع أو علامتك التجارية *' : 'Site or Brand Name *'}
+        </label>
+        <input class="input" id="sfUploadSiteTitle" placeholder="${isAr ? 'مثال: متجري للملابس، شركتي...' : 'e.g. My Custom Brand'}" required style="border-radius:10px;padding:12px;font-size:.9rem;width:100%">
+      </div>
+
+      <div class="input-group" style="margin-bottom:16px">
+        <label style="font-size:.84rem;font-weight:700;color:#334155;display:block;margin-bottom:6px">
+          ${isAr ? 'اسم الدومين الفرعي المطلوب (اختياري)' : 'Subdomain Slug (Optional)'}
+        </label>
+        <div style="display:flex;align-items:center;background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:0 12px;direction:ltr">
+          <span style="color:#94a3b8;font-size:.82rem">https://</span>
+          <input class="input" id="sfUploadSiteSlug" placeholder="my-brand" style="border:none;background:transparent;padding:10px 4px;font-weight:700;color:#4f46e5;flex:1;outline:none">
+          <span style="color:#64748b;font-size:.82rem">.${mainDom}</span>
+        </div>
+      </div>
+
+      <!-- Tab 1: File Dropzone -->
+      <div id="sfUploadTabFile">
+        <input type="file" id="sfUploadFileInput" accept=".html,.htm,.zip" style="display:none">
+        <div class="sf-file-dropzone" id="sfFileDropzone" style="border:2px dashed #818cf8;background:#f8faff;border-radius:16px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s">
+          <div style="font-size:2.4rem;margin-bottom:8px">📂</div>
+          <strong style="font-size:.95rem;color:#1e1b4b;display:block;margin-bottom:4px" id="sfUploadFileSelectedText">
+            ${isAr ? 'اضغط هنا لاختيار ملف الموقع أو اسحبه وأفلته هنا' : 'Click to select or drag & drop website file'}
+          </strong>
+          <span style="font-size:.78rem;color:#64748b">
+            ${isAr ? 'يدعم ملفات HTML المفردة أو أرشيف ZIP يحتوي على صفحة index.html' : 'Supports single .html file or .zip containing index.html'}
+          </span>
+        </div>
+      </div>
+
+      <!-- Tab 2: Code Textarea -->
+      <div id="sfUploadTabCode" style="display:none">
+        <label style="font-size:.84rem;font-weight:700;color:#334155;display:block;margin-bottom:6px">
+          ${isAr ? 'الصق كود HTML الكامل هنا' : 'Paste Full HTML Code'}
+        </label>
+        <textarea class="input textarea" id="sfUploadCodeText" rows="7" placeholder="<!DOCTYPE html><html><head><title>My Site</title></head><body>...</body></html>" style="direction:ltr;font-family:monospace;font-size:.78rem;border-radius:12px;width:100%"></textarea>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end">
+        <button type="button" class="btn btn-ghost" id="sfCancelUploadBtn" style="border-radius:10px">
+          ${isAr ? 'إلغاء' : 'Cancel'}
+        </button>
+        <button type="submit" class="btn btn-primary" id="sfSubmitUploadBtn" style="padding:12px 28px;border-radius:10px;font-weight:800">
+          <span>🚀</span> <span>${isAr ? 'رفع وتشغيل الموقع فوراً' : 'Upload & Launch Site'}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>`
+  }
+}
+
+const SiteFlowImporter = {
+  showUploadModal() {
+    const existing = document.getElementById('sfUploadSiteModalOverlay')
+    if (existing) existing.remove()
+
+    const div = document.createElement('div')
+    div.id = 'sfUploadSiteModalWrap'
+    div.innerHTML = T.uploadSiteModal ? T.uploadSiteModal() : ''
+    document.body.appendChild(div)
+
+    const overlay = document.getElementById('sfUploadSiteModalOverlay')
+    const closeBtn = document.getElementById('sfCloseUploadModal')
+    const cancelBtn = document.getElementById('sfCancelUploadBtn')
+    const form = document.getElementById('sfUploadSiteForm')
+    const titleInput = document.getElementById('sfUploadSiteTitle')
+    const slugInput = document.getElementById('sfUploadSiteSlug')
+    const fileInput = document.getElementById('sfUploadFileInput')
+    const dropzone = document.getElementById('sfFileDropzone')
+    const fileText = document.getElementById('sfUploadFileSelectedText')
+    const codeText = document.getElementById('sfUploadCodeText')
+    const submitBtn = document.getElementById('sfSubmitUploadBtn')
+
+    let activeTab = 'file'
+    let selectedFile = null
+    let uploadedHtmlContent = ''
+
+    const close = () => { div.remove() }
+    closeBtn?.addEventListener('click', close)
+    cancelBtn?.addEventListener('click', close)
+    overlay?.addEventListener('click', (e) => { if (e.target === overlay) close() })
+
+    document.querySelectorAll('.sf-up-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.sf-up-tab').forEach(t => {
+          t.classList.remove('active')
+          t.style.background = 'transparent'
+          t.style.color = '#64748b'
+        })
+        tab.classList.add('active')
+        tab.style.background = '#eef2ff'
+        tab.style.color = '#4f46e5'
+        activeTab = tab.dataset.uptab
+
+        const tabFile = document.getElementById('sfUploadTabFile')
+        const tabCode = document.getElementById('sfUploadTabCode')
+        if (activeTab === 'file') {
+          if (tabFile) tabFile.style.display = 'block'
+          if (tabCode) tabCode.style.display = 'none'
+        } else {
+          if (tabFile) tabFile.style.display = 'none'
+          if (tabCode) tabCode.style.display = 'block'
+          codeText?.focus()
+        }
+      })
+    })
+
+    const processFile = (file) => {
+      if (!file) return
+      selectedFile = file
+      const name = file.name.toLowerCase()
+      if (fileText) {
+        fileText.innerHTML = `<span style="color:#10b981;font-weight:700">✓ تم اختيار الملف: <strong>${file.name}</strong> (${(file.size/1024).toFixed(1)} KB)</span>`
+      }
+      if (titleInput && !titleInput.value.trim()) {
+        const inferred = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ')
+        titleInput.value = inferred.charAt(0).toUpperCase() + inferred.slice(1)
+        if (slugInput && !slugInput.value.trim()) {
+          slugInput.value = sanitizeSlug(inferred)
+        }
+      }
+
+      if (name.endsWith('.html') || name.endsWith('.htm')) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          uploadedHtmlContent = e.target.result
+          const titleMatch = uploadedHtmlContent.match(/<title[^>]*>([^<]+)<\/title>/i)
+          if (titleMatch && titleMatch[1] && titleInput && !titleInput.value.trim()) {
+            titleInput.value = titleMatch[1].trim()
+            if (slugInput && !slugInput.value.trim()) {
+              slugInput.value = sanitizeSlug(titleMatch[1].trim())
+            }
+          }
+        }
+        reader.readAsText(file)
+      } else if (name.endsWith('.zip')) {
+        Toast.show('سيتم تشغيل ملفات الموقع والأرشيف مباشرة', 'info')
+      }
+    }
+
+    dropzone?.addEventListener('click', () => fileInput?.click())
+    fileInput?.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) processFile(e.target.files[0])
+    })
+
+    dropzone?.addEventListener('dragover', (e) => {
+      e.preventDefault()
+      dropzone.style.borderColor = '#4f46e5'
+      dropzone.style.background = '#eef2ff'
+    })
+    dropzone?.addEventListener('dragleave', () => {
+      dropzone.style.borderColor = '#818cf8'
+      dropzone.style.background = '#f8faff'
+    })
+    dropzone?.addEventListener('drop', (e) => {
+      e.preventDefault()
+      dropzone.style.borderColor = '#818cf8'
+      dropzone.style.background = '#f8faff'
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        processFile(e.dataTransfer.files[0])
+      }
+    })
+
+    titleInput?.addEventListener('input', () => {
+      if (slugInput && !slugInput.dataset.manual) {
+        slugInput.value = sanitizeSlug(titleInput.value)
+      }
+    })
+    slugInput?.addEventListener('input', () => {
+      slugInput.dataset.manual = 'true'
+    })
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const title = titleInput?.value?.trim() || 'Custom Uploaded Site'
+      let slug = sanitizeSlug(slugInput?.value?.trim() || title)
+      if (!slug || isReservedSlug(slug)) slug = 'site-' + LocalDB.genId().slice(0, 5)
+
+      let htmlContent = ''
+      if (activeTab === 'code') {
+        htmlContent = codeText?.value?.trim() || ''
+        if (!htmlContent) {
+          Toast.show('يرجى لصق كود HTML أولاً', 'error')
+          codeText?.focus()
+          return
+        }
+      } else {
+        if (!uploadedHtmlContent && !selectedFile) {
+          Toast.show('يرجى اختيار ملف HTML أو ZIP للموقع', 'error')
+          return
+        }
+        htmlContent = uploadedHtmlContent || `<!DOCTYPE html><html><head><title>${title}</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body{font-family:system-ui,-apple-system,sans-serif;margin:0;padding:40px;background:#f8fafc;color:#0f172a;text-align:center}.box{background:#fff;max-width:600px;margin:40px auto;padding:40px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.06)}h1{color:#4f46e5}</style></head><body><div class="box"><h1>${title}</h1><p>تم استضافة وتشغيل موقعك بنجاح عبر SiteFlow 🚀</p></div></body></html>`
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true
+        submitBtn.innerHTML = '<span>⏳</span> جاري رفع وبناء الموقع...'
+      }
+
+      try {
+        const siteData = {
+          title: title,
+          slug: slug,
+          template_type: 'custom_upload',
+          custom_html: htmlContent,
+          sections: [
+            {
+              type: 'custom_html',
+              data: {
+                html: htmlContent,
+                title: title
+              }
+            }
+          ]
+        }
+
+        const newSite = await API.createSite(siteData)
+        Toast.show('تم رفع وتشغيل موقعك بنجاح! 🎉 جاري فتح المحرر...', 'success')
+        close()
+        Router.navigate('builder/' + newSite.id)
+      } catch (err) {
+        Toast.show(err.message || 'فشل رفع الموقع', 'error')
+        if (submitBtn) {
+          submitBtn.disabled = false
+          submitBtn.innerHTML = '<span>🚀</span> <span>رفع وتشغيل الموقع فوراً</span>'
+        }
+      }
+    })
+  }
+}
+
 const Router = {
   init() { window.addEventListener('hashchange',()=>this.handle()); this.handle() },
   navigate(path) { window.location.hash = '#/'+path },
@@ -239,7 +508,7 @@ const Router = {
   _render(page) {
     document.getElementById('app').innerHTML = T[page] ? T[page]() : T.landing()
     if (page==='login') this._bindAuth()
-    if (page==='landing' || !page) this._bindLandingAi()
+    if (page==='landing' || !page) { this._bindLandingAi(); this._bindHeroVideoSlider(); }
     document.querySelectorAll('.plan-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const planKey = btn.dataset.plan
@@ -397,6 +666,178 @@ const Router = {
           triggerAi()
         }
       })
+    })
+  },
+
+  _bindHeroVideoSlider() {
+    const showcase = document.querySelector('.sf-hero-showcase-wrap')
+    if (!showcase) return
+
+    const videoEl = document.getElementById('sfHeroVideo')
+    const badgeText = document.getElementById('sfVideoBadgeText')
+    const headline = document.getElementById('sfVideoHeadline')
+    const subline = document.getElementById('sfVideoSubline')
+    const urlText = document.getElementById('sfVideoUrlText')
+    const metricsRow = document.getElementById('sfVideoMetricsRow')
+    const launchBtn = document.getElementById('sfVideoLaunchBtn')
+    const launchBtnText = document.getElementById('sfVideoLaunchBtnText')
+    const playToggleBtn = document.getElementById('sfVideoTogglePlayBtn')
+    const prevBtn = document.getElementById('sfVSliderPrev')
+    const nextBtn = document.getElementById('sfVSliderNext')
+    const tabs = document.querySelectorAll('.sf-ind-tab')
+
+    const industries = [
+      {
+        id: 'ecommerce',
+        nameAr: 'المتاجر الإلكترونية',
+        video: 'https://assets.mixkit.co/videos/preview/mixkit-online-shopping-and-paying-by-card-42861-large.mp4',
+        domain: 'store.siteflow.vexonet.online',
+        badge: 'متجر إلكتروني متكامل • ربط دفع محلي',
+        headline: 'متاجر إلكترونية فائقة السرعة مع ربط فوري لبوابات الدفع المحلية',
+        subline: 'أطلق متجرك بتصميم عصري عالمي يستقبل الطلبات على واتساب ويدير المخزون تلقائياً بدون تعقيد برمجي.',
+        btnText: 'أنشئ متجرك الإلكتروني الآن',
+        metrics: [
+          { val: '+140%', lbl: 'زيادة في المبيعات' },
+          { val: '30 ثانية', lbl: 'سرعة إطلاق الموقع' },
+          { val: '0% عمولة', lbl: 'أرباحك كاملة لك' }
+        ]
+      },
+      {
+        id: 'restaurant',
+        nameAr: 'المطاعم والكافيهات',
+        video: 'https://assets.mixkit.co/videos/preview/mixkit-chef-plating-a-delicious-meal-43847-large.mp4',
+        domain: 'chef.siteflow.vexonet.online',
+        badge: 'منيو ذكي تفاعلي • طلب فوري عبر واتساب',
+        headline: 'منيو رقمي فاخر لمطعمك وكافيهك مع رمز QR وطلب مباشر',
+        subline: 'اعرض أطباقك ومشروباتك الشهية بجودة فائقة ودع زبائنك يطلبون بنقرة واحدة بدون تطبيق وبدون عمولات وسيط.',
+        btnText: 'أنشئ منيو مطعمك الآن',
+        metrics: [
+          { val: 'QR ذكي', lbl: 'مسح وطلب مباشر' },
+          { val: '+85%', lbl: 'زيادة طلبات الدليفري' },
+          { val: '100% عربي', lbl: 'توافق كامل بالهواتف' }
+        ]
+      },
+      {
+        id: 'agency',
+        nameAr: 'الشركات والخدمات',
+        video: 'https://assets.mixkit.co/videos/preview/mixkit-business-team-in-a-modern-office-working-together-43789-large.mp4',
+        domain: 'agency.siteflow.vexonet.online',
+        badge: 'واجهة مؤسسية راقية • باقات واستشارات',
+        headline: 'حضور رقمي مهيب لشركتك يعكس الثقة ويجذب العملاء الكبار',
+        subline: 'قدّم خدماتك وحلولك بأعلى درجات الاحترافية، واجمع استفسارات وبيانات العملاء المحتملين في لوحة موحدة.',
+        btnText: 'أطلق موقع شركتك الآن',
+        metrics: [
+          { val: 'B2B & B2C', lbl: 'جاهز لجميع الأعمال' },
+          { val: '+220%', lbl: 'معدل التحويل (Leads)' },
+          { val: 'Google SEO', lbl: 'تصدر نتائج البحث' }
+        ]
+      },
+      {
+        id: 'clinic',
+        nameAr: 'العيادات والمراكز الطبية',
+        video: 'https://assets.mixkit.co/videos/preview/mixkit-modern-laboratory-with-advanced-equipment-43878-large.mp4',
+        domain: 'clinic.siteflow.vexonet.online',
+        badge: 'نظام حجز مواعيد • موثوقية واحترافية',
+        headline: 'مواقع طبية موثوقة للعيادات والمراكز والمستشفيات الخاصة',
+        subline: 'سهل على المرضى حجز الاستشارات وتصفح خدمات العيادة وأطباء المركز مع ربط مباشر بالهاتف والواتساب.',
+        btnText: 'أنشئ موقع عيادتك الطبية',
+        metrics: [
+          { val: 'حجز 24/7', lbl: 'مواعيد مؤكدة تلقائياً' },
+          { val: 'تقييم 4.9', lbl: 'ثقة المرضى والمراجعين' },
+          { val: 'SSL طبي', lbl: 'حماية وتشفير البيانات' }
+        ]
+      },
+      {
+        id: 'realestate',
+        nameAr: 'العقارات والمقاولات',
+        video: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-skyscrapers-43790-large.mp4',
+        domain: 'realestate.siteflow.vexonet.online',
+        badge: 'كتالوج وحدات فاخر • خرائط ومعاينات',
+        headline: 'معرض عقاري رقمي فاخر لعرض المشروعات والوحدات السكنية',
+        subline: 'استعرض فيلاتك وشققك ومشروعات التطوير العقاري بتصميم مبهر يجذب المشترين والمستثمرين فوراً.',
+        btnText: 'أنشئ موقعك العقاري الآن',
+        metrics: [
+          { val: 'معرض HD', lbl: 'صور ومخططات الوحدات' },
+          { val: 'تواصل سريع', lbl: 'زر اتصال ومعاينة فورية' },
+          { val: 'فلترة ذكية', lbl: 'تصنيف حسب السعر والموقع' }
+        ]
+      }
+    ]
+
+    let currentIndex = 0
+
+    const setIndustry = (index) => {
+      currentIndex = (index + industries.length) % industries.length
+      const item = industries[currentIndex]
+      if (!item) return
+
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === currentIndex)
+      })
+
+      if (videoEl) {
+        videoEl.style.opacity = '0.4'
+        videoEl.src = item.video
+        videoEl.load()
+        videoEl.play().catch(() => {})
+        setTimeout(() => { if (videoEl) videoEl.style.opacity = '1' }, 200)
+      }
+
+      if (badgeText) badgeText.textContent = item.badge
+      if (headline) headline.textContent = item.headline
+      if (subline) subline.textContent = item.subline
+      if (urlText) urlText.textContent = item.domain
+      if (launchBtnText) launchBtnText.textContent = item.btnText
+      if (launchBtn) launchBtn.dataset.template = item.id
+
+      if (metricsRow) {
+        metricsRow.innerHTML = item.metrics.map(m => `
+          <div class="sf-vmetric">
+            <span class="sf-vm-val">${m.val}</span>
+            <span class="sf-vm-lbl">${m.lbl}</span>
+          </div>
+        `).join('')
+      }
+    }
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => setIndustry(i))
+    })
+
+    prevBtn?.addEventListener('click', () => setIndustry(currentIndex - 1))
+    nextBtn?.addEventListener('click', () => setIndustry(currentIndex + 1))
+
+    launchBtn?.addEventListener('click', async () => {
+      const templateId = launchBtn.dataset.template || 'ecommerce'
+      if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+        try {
+          const site = await API.createSite({
+            title: industries[currentIndex]?.nameAr || 'موقعي الجديد',
+            template_type: templateId
+          })
+          Toast.show('تم إنشاء الموقع بنجاح! جاري فتح المحرر...', 'success')
+          Router.navigate('builder/' + site.id)
+        } catch (e) {
+          Toast.show(e.message || 'حدث خطأ أثناء إنشاء الموقع', 'error')
+        }
+      } else {
+        Toast.show('سجل دخولك أو أنشئ حسابك لبدء تخصيص هذا الموقع فوراً 🚀', 'info')
+        Router.navigate('login')
+      }
+    })
+
+    let isPlaying = true
+    playToggleBtn?.addEventListener('click', () => {
+      if (!videoEl) return
+      if (isPlaying) {
+        videoEl.pause()
+        isPlaying = false
+        playToggleBtn.innerHTML = ICONS.wrap(ICONS.play, 16)
+      } else {
+        videoEl.play().catch(() => {})
+        isPlaying = true
+        playToggleBtn.innerHTML = ICONS.wrap(ICONS.pause, 16)
+      }
     })
   },
 
@@ -1287,6 +1728,7 @@ const Dash = {
         }).join('')}</div>`
 
       document.getElementById('createSiteBtn')?.addEventListener('click',()=>Builder.createNew())
+      document.getElementById('dashUploadSiteBtn')?.addEventListener('click', () => SiteFlowImporter.showUploadModal())
       document.getElementById('upgradeBtn')?.addEventListener('click',()=>Router.navigate('plans'))
 
       document.querySelectorAll('[data-sfilter]').forEach(btn=>{

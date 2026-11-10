@@ -28,7 +28,7 @@ const Builder = {
     try {
       this.page = await API.getSite(id)
       if (!this.page) throw new Error('Site not found')
-      if (!this.page.theme) this.page.theme = { color: '#6366f1', font: 'Inter', bgColor: '#ffffff', textColor: '#111827' }
+      if (!this.page.theme) this.page.theme = { color: '#6366f1', font: 'Cairo', bgColor: '#ffffff', textColor: '#111827' }
       if (!this.page.seo) this.page.seo = { title: '', description: '', keywords: '' }
       if (!this.page.apps) this.page.apps = (this.page.seo?.apps || {})
       this.editingIdx = 0; this.mobileMode = false; this.undoStack = []; this.redoStack = []
@@ -52,9 +52,9 @@ const Builder = {
   _renderSections() {
     const list = document.getElementById('sectionList')
     if (!list) return
-    const icons = { hero: ICONS.home, about: ICONS.user, gallery: ICONS.image, contact: ICONS.mail, services: ICONS.briefcase, testimonials: ICONS.message, pricing: ICONS.dollar, faq: ICONS.helpCircle, team: ICONS.users, footer: ICONS.file, cta: ICONS.target, features: ICONS.sparkles, stats: ICONS.chart, menu: ICONS.utensils, location: ICONS.mapPin, hours: ICONS.clock, blog: ICONS.pen, portfolio: ICONS.folder, counters: ICONS.chart, timeline: ICONS.calendar }
-    const names = { hero: 'الواجهة الرئيسية (Hero)', about: 'من نحن (About)', gallery: 'معرض الصور', contact: 'تواصل معنا', services: 'الخدمات والمنتجات', testimonials: 'آراء العملاء', pricing: 'خطط الأسعار', faq: 'الأسئلة الشائعة', team: 'فريق العمل', footer: 'التذييل (Footer)', cta: 'دعوة لاتخاذ إجراء (CTA)', features: 'المميزات الرئيسية', stats: 'الإحصائيات بالأرقام', menu: 'قائمة الطعام / المنتجات', location: 'الموقع والخريطة', hours: 'ساعات العمل', blog: 'المقالات والأخبار', portfolio: 'معرض الأعمال', counters: 'عدادات الأرقام', timeline: 'مسيرة الشركة' }
-    const descs = { hero: 'العنوان الرئيسي والصورة والزر التفاعلي', about: 'نبذة عن شركتك ورسالتكم', gallery: 'شبكة صور عالية الجودة', contact: 'نموذج اتصل بنا ومعلومات التواصل', services: 'عروض خدماتك بطريقة جذابة', testimonials: 'تقييمات وآراء مشجعيك', pricing: 'باقات وأسعار اشتراكاتك', faq: 'إجابات على أسئلة العملاء', team: 'أعضاء ومؤسسي المشروع', footer: 'حقوق النشر والروابط السريعة', cta: 'زر قوي لزيادة التحويلات', features: 'أبرز نقاط قوة منتجك', stats: 'أرقام وإنجازات موثقة', menu: 'عرض الأطباق والأسعار', location: 'موقعك التجاري وهاتفك', hours: 'مواعيد الاستقبال والدوام' }
+    const icons = { hero: ICONS.home, about: ICONS.user, gallery: ICONS.image, contact: ICONS.mail, services: ICONS.briefcase, testimonials: ICONS.message, pricing: ICONS.dollar, faq: ICONS.helpCircle, team: ICONS.users, footer: ICONS.file, cta: ICONS.target, features: ICONS.sparkles, stats: ICONS.chart, menu: ICONS.utensils, location: ICONS.mapPin, hours: ICONS.clock, blog: ICONS.pen, portfolio: ICONS.folder, counters: ICONS.chart, timeline: ICONS.calendar, custom_html: ICONS.fileCode || ICONS.code }
+    const names = { hero: 'الواجهة الرئيسية (Hero)', about: 'من نحن (About)', gallery: 'معرض الصور', contact: 'تواصل معنا', services: 'الخدمات والمنتجات', testimonials: 'آراء العملاء', pricing: 'خطط الأسعار', faq: 'الأسئلة الشائعة', team: 'فريق العمل', footer: 'التذييل (Footer)', cta: 'دعوة لاتخاذ إجراء (CTA)', features: 'المميزات الرئيسية', stats: 'الإحصائيات بالأرقام', menu: 'قائمة الطعام / المنتجات', location: 'الموقع والخريطة', hours: 'ساعات العمل', blog: 'المقالات والأخبار', portfolio: 'معرض الأعمال', counters: 'عدادات الأرقام', timeline: 'مسيرة الشركة', custom_html: 'قالب خارجي مرفوع (HTML)' }
+    const descs = { hero: 'العنوان الرئيسي والصورة والزر التفاعلي', about: 'نبذة عن شركتك ورسالتكم', gallery: 'شبكة صور عالية الجودة', contact: 'نموذج اتصل بنا ومعلومات التواصل', services: 'عروض خدماتك بطريقة جذابة', testimonials: 'تقييمات وآراء مشجعيك', pricing: 'باقات وأسعار اشتراكاتك', faq: 'إجابات على أسئلة العملاء', team: 'أعضاء ومؤسسي المشروع', footer: 'حقوق النشر والروابط السريعة', cta: 'زر قوي لزيادة التحويلات', features: 'أبرز نقاط قوة منتجك', stats: 'أرقام وإنجازات موثقة', menu: 'عرض الأطباق والأسعار', location: 'موقعك التجاري وهاتفك', hours: 'مواعيد الاستقبال والدوام', custom_html: 'ملفات وكود موقع مخصص مرفوع' }
 
     list.innerHTML = this.page.sections.map((s, i) => `
       <div class="section-item ${i === this.editingIdx ? 'active' : ''}" data-index="${i}" draggable="true" data-type="${s.type}">
@@ -292,7 +292,7 @@ const Builder = {
     if (!f) return
     const t = this.page.theme || {}
     f.style.setProperty('--p-color', t.color || '#6366f1')
-    f.style.fontFamily = `${t.font || 'Inter'},sans-serif`
+    f.style.fontFamily = `${t.font || 'Cairo'},sans-serif`
   },
 
   _initDrag() {
@@ -305,7 +305,6 @@ const Builder = {
         el.classList.add('dragging')
         e.dataTransfer.effectAllowed = 'move'
         e.dataTransfer.setData('text/plain', el.dataset.index)
-        // Ghost element
         const ghost = el.cloneNode(true)
         ghost.style.opacity = '0.7'
         ghost.style.position = 'absolute'
@@ -384,7 +383,7 @@ const Builder = {
     document.addEventListener('keydown', e => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) this._redo(); else this._undo() }
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); this._redo() }
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this._saveNow(); Toast.show('Saved!', 'success') }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this._saveNow(); Toast.show('تم الحفظ بنجاح!', 'success') }
     })
     document.getElementById('previewBtn')?.addEventListener('click', () => { this._saveNow(); window.open('#/preview/' + this.page.id, '_blank') })
     document.getElementById('exportBtn')?.addEventListener('click', () => this._exportHtml())
@@ -431,16 +430,16 @@ const Builder = {
       }
       if (del) {
         const idx = parseInt(del.dataset.del)
-        if (this.page.sections.length <= 1) { Toast.show('Cannot delete the last section', 'error'); return }
+        if (this.page.sections.length <= 1) { Toast.show('لا يمكن حذف القسم الأخير بالموقع', 'error'); return }
         this._pushUndo(); this.page.sections.splice(idx, 1)
         if (this.editingIdx >= this.page.sections.length) this.editingIdx = Math.max(0, this.page.sections.length - 1)
-        this._saveNow(); this._render(); Toast.show('Section deleted', 'info'); return
+        this._saveNow(); this._render(); Toast.show('تم حذف القسم', 'info'); return
       }
       if (dup) {
         const idx = parseInt(dup.dataset.dup); this._pushUndo()
         const copy = JSON.parse(JSON.stringify(this.page.sections[idx]))
         this.page.sections.splice(idx + 1, 0, copy)
-        this.editingIdx = idx + 1; this._saveNow(); this._render(); Toast.show('Section duplicated', 'info'); return
+        this.editingIdx = idx + 1; this._saveNow(); this._render(); Toast.show('تم نسخ القسم', 'info'); return
       }
       if (upBtn) {
         const idx = parseInt(upBtn.dataset.up); if (idx <= 0) return
@@ -496,13 +495,13 @@ const Builder = {
     const categories = [...new Set(types.map(t => t.cat))]
     panel.innerHTML = `
       <div class="asp-header">
-        <h3>Add Section</h3>
+        <h3>إضافة قسم جديد</h3>
         <button class="asp-close" id="closeAddPanel">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div class="asp-search">
-        <input type="text" placeholder="Search sections..." id="sectionSearchInput" />
+        <input type="text" placeholder="ابحث في الأقسام المتاحة..." id="sectionSearchInput" />
       </div>
       <div class="asp-grid" id="aspGrid">
         ${categories.map(cat => `
@@ -535,31 +534,31 @@ const Builder = {
       card.addEventListener('click', () => {
         const type = card.dataset.type
         const defs = {
-          hero: { heading: 'Welcome to Our Site', description: 'We build amazing things', buttonText: 'Get Started', image: '' },
-          about: { heading: 'About Us', content: 'We are a creative team passionate about building great products.' },
-          services: { heading: 'Our Services', items: [{ title: 'Web Design', desc: 'Beautiful, responsive websites' }, { title: 'Development', desc: 'Fast, reliable code' }, { title: 'SEO', desc: 'Rank higher on Google' }] },
-          features: { heading: 'Why Choose Us', items: [{ title: 'Fast', desc: 'Lightning quick performance' }, { title: 'Secure', desc: 'Enterprise-grade security' }, { title: 'Easy', desc: 'Simple to use' }] },
-          pricing: { heading: 'Pricing Plans', plans: [{ name: 'Starter', price: '$9/mo', features: ['5 Pages', 'Basic Support', 'Analytics'] }, { name: 'Pro', price: '$29/mo', features: ['Unlimited Pages', 'Priority Support', 'Advanced Analytics', 'Custom Domain'] }] },
-          testimonials: { heading: 'What Our Clients Say', items: [{ name: 'Sarah Johnson', text: 'Amazing service! Highly recommended.', role: 'CEO, TechCo' }, { name: 'Mike Chen', text: 'Best experience working with this team.', role: 'Founder, StartupX' }] },
-          gallery: { heading: 'Our Work', images: [] },
-          faq: { heading: 'Frequently Asked Questions', items: [{ q: 'How do I get started?', a: 'Simply sign up and choose a template!' }, { q: 'Can I cancel anytime?', a: 'Yes, no long-term contracts.' }] },
-          team: { heading: 'Meet Our Team', items: [{ name: 'John Doe', role: 'CEO & Founder' }, { name: 'Jane Smith', role: 'Lead Designer' }] },
-          stats: { heading: 'By the Numbers', items: [{ number: '10K+', label: 'Happy Clients' }, { number: '500+', label: 'Projects Done' }, { number: '99%', label: 'Satisfaction' }] },
-          cta: { heading: 'Ready to Get Started?', subheading: 'Join thousands of satisfied customers today.', buttonText: 'Start Free Trial' },
-          contact: { heading: 'Get In Touch', email: '', phone: '', address: '' },
-          footer: { copyright: '© 2026 Your Company. All rights reserved.', text: 'Built with SiteFlow' },
-          blog: { heading: 'Latest Posts', items: [{ title: 'Post Title', excerpt: 'Post excerpt goes here...', date: 'Jan 2026' }, { title: 'Another Post', excerpt: 'Another exciting post...', date: 'Feb 2026' }] },
-          portfolio: { heading: 'Our Work', items: [{ title: 'Project One', desc: 'Description of project', image: '' }, { title: 'Project Two', desc: 'Description of project', image: '' }, { title: 'Project Three', desc: 'Description of project', image: '' }] },
-          counters: { heading: 'By the Numbers', items: [{ number: '100+', label: 'Clients' }, { number: '500+', label: 'Projects' }, { number: '50+', label: 'Team' }] },
-          timeline: { heading: 'Our Journey', items: [{ title: 'Founded', desc: 'Company started', year: '2024' }, { title: 'Milestone', desc: 'Key achievement', year: '2025' }, { title: 'Growth', desc: 'Expanded globally', year: '2026' }] },
-          menu: { heading: 'Our Menu', items: [{ title: 'Item Name', desc: 'Description', price: '$15', category: 'Main' }, { title: 'Another Item', desc: 'Description', price: '$12', category: 'Main' }] },
-          location: { heading: 'Find Us', address: '123 Main St, City', phone: '+1 555-0000', hours: 'Mon-Fri 9AM-5PM' },
+          hero: { heading: 'أهلاً بكم في موقعنا العصري', description: 'نقدم حلولاً متكاملة بأعلى معايير الجودة والاحترافية والابتكار.', buttonText: 'تواصل معنا الآن', image: '' },
+          about: { heading: 'من نحن', content: 'نحن فريق شغوف نسعى لتقديم أفضل تجربة وخدمات مميزة لعملائنا في كافة المجالات.' },
+          services: { heading: 'خدماتنا المميزة', items: [{ title: 'تصميم احترافي', desc: 'مواقع عصرية وسريعة تلائم كافة الشاشات' }, { title: 'تطوير برمجي', desc: 'أداء فائق وكود نظيف مستقر' }, { title: 'تحسين محركات البحث', desc: 'ظهور قوي في النتائج الأولى لـ Google' }] },
+          features: { heading: 'لماذا تختارنا؟', items: [{ title: 'سرعة فائقة', desc: 'تحميل فوري واستجابة لحظية' }, { title: 'أمان كامل', desc: 'حماية وتشفير عالي المستوى' }, { title: 'سهولة الاستخدام', desc: 'واجهة بسيطة ومرنة للغاية' }] },
+          pricing: { heading: 'خطط الأسعار والعروض', plans: [{ name: 'الباقة الأساسية', price: '129 ج.م', features: ['دومين خاص', 'شهادة SSL مجانية', 'دعم فني مستمر'] }, { name: 'الباقة الاحترافية', price: '299 ج.م', features: ['ميزات غير محدودة', 'أولوية في الدعم', 'دفع إلكتروني مباشر', 'تحليلات زوار حية'] }] },
+          testimonials: { heading: 'ماذا يقول عملاؤنا؟', items: [{ name: 'أحمد محمود', text: 'تجربة رائعة وفريق عمل متعاون ومحترف جداً.', role: 'مدير تنفيذي' }, { name: 'سارة خالد', text: 'الموقع زاد من مبيعاتنا بشكل ملحوظ في وقت قياسي.', role: 'مؤسس متجر' }] },
+          gallery: { heading: 'معرض الصور والأعمال', images: [] },
+          faq: { heading: 'الأسئلة الشائعة', items: [{ q: 'كيف أبدأ؟', a: 'يمكنك اختيار الباقة والتواصل معنا مباشرة لبدء العمل فوراً!' }, { q: 'هل يمكنني الترقية لاحقاً؟', a: 'نعم بكل تأكيد، الترقية متاحة في أي وقت.' }] },
+          team: { heading: 'فريق العمل المبدع', items: [{ name: 'أحمد علي', role: 'المؤسس والمدير العام' }, { name: 'نور حسن', role: 'كبير المصممين' }] },
+          stats: { heading: 'إنجازاتنا بالأرقام', items: [{ number: '+12,000', label: 'عميل سعيد' }, { number: '99.9%', label: 'نسبة الرضا' }, { number: '100%', label: 'توافق كامل' }] },
+          cta: { heading: 'هل أنت جاهز لتطوير أعمالك اليوم؟', subheading: 'انضم إلى نخبة شركائنا واستمتع بتجربة رقمية فريدة.', buttonText: 'ابدأ الآن مجاناً 🚀' },
+          contact: { heading: 'تواصل معنا', email: '', phone: '', address: '' },
+          footer: { copyright: `© ${new Date().getFullYear()} جميع الحقوق محفوظة.`, text: 'مدعوم بمنصة SiteFlow' },
+          blog: { heading: 'أحدث المقالات والأخبار', items: [{ title: 'نصائح لزيادة مبيعات متجرك', excerpt: 'استراتيجيات مجربة لتحسين تجربة المستخدم...', date: '2026' }] },
+          portfolio: { heading: 'معرض أعمالنا', items: [{ title: 'مشروع مميز', desc: 'تفاصيل المشروع والنتائج المحققة', image: '' }] },
+          counters: { heading: 'أرقام وإحصائيات', items: [{ number: '500+', label: 'مشروع مكتمل' }, { number: '50+', label: 'خبير واستشاري' }] },
+          timeline: { heading: 'مسيرة النجاح', items: [{ title: 'التأسيس', desc: 'انطلاق الفكرة وبدء المشروع', year: '2024' }, { title: 'النمو والتوسع', desc: 'خدمة أكثر من 10,000 عميل', year: '2026' }] },
+          menu: { heading: 'قائمة الطعام والمنتجات', items: [{ title: 'منتج أو طبق خاص', desc: 'وصف المكونات والجودة', price: '95 ج.م', category: 'الرئيسية' }] },
+          location: { heading: 'موقعنا وساعات العمل', address: 'القاهرة، مصر', phone: '+20 102 870 7543', hours: 'يومياً: 9 ص - 10 م' },
         }
         this._pushUndo()
         this.page.sections.push({ type, data: defs[type] || {} })
         this.editingIdx = this.page.sections.length - 1
         this._saveNow(); this._render(); panel.remove()
-        Toast.show(`${type.charAt(0).toUpperCase() + type.slice(1)} section added`, 'success')
+        Toast.show(`تمت إضافة قسم ${type} بنجاح`, 'success')
       })
     })
   },
@@ -709,7 +708,6 @@ const Builder = {
   _bindApps() {
     if (!this.page.apps) this.page.apps = (this.page.seo?.apps || {})
 
-    // Toggle switch listeners to show/hide app configuration bodies
     const toggles = [
       { switchId: 'appGscEnabled', bodyId: 'appGscBody' },
       { switchId: 'appMetaPixelEnabled', bodyId: 'appMetaPixelBody' },
@@ -729,7 +727,6 @@ const Builder = {
       }
     })
 
-    // Save Apps button handler
     document.getElementById('saveAppsBtn')?.addEventListener('click', async () => {
       const saveBtn = document.getElementById('saveAppsBtn')
       if (saveBtn) {
@@ -755,7 +752,6 @@ const Builder = {
         custom_body_code: document.getElementById('appCustomBody')?.value || ''
       }
 
-      // Synchronize to seo.apps for resilient persistence across storage engines
       if (!this.page.seo) this.page.seo = {}
       this.page.seo.apps = this.page.apps
 
@@ -781,7 +777,6 @@ const Builder = {
       this._saveLater()
     })
 
-    // Subdomain Availability Search & Claim Handler
     const searchInput = document.getElementById('domainSearchInput')
     const checkBtn = document.getElementById('domainCheckBtn')
     const resultBox = document.getElementById('domainCheckResult')
@@ -831,6 +826,9 @@ const Builder = {
             await this._saveNow()
             Toast.show('تم حجز وتثبيت الدومين بنجاح! 🔒', 'success')
             this.render()
+            // Keep Settings tab active so the user directly sees their newly claimed locked domain!
+            const stTab = document.querySelector('[data-stab="settings"]')
+            if (stTab) stTab.click()
           })
         } else {
           resultBox.innerHTML = `
@@ -864,7 +862,6 @@ const Builder = {
   _bindAi() {
     let generatedData = null
 
-    // Voice Speech Recognition
     const voiceBtn = document.getElementById('builderAiVoiceBtn')
     const voiceText = document.getElementById('builderAiVoiceText')
     const promptInput = document.getElementById('aiPromptInput')
@@ -980,7 +977,8 @@ const Builder = {
         seo: this.page.seo,
         apps: this.page.apps,
         theme: this.page.theme,
-        customDomain: this.page.customDomain
+        customDomain: this.page.customDomain,
+        custom_html: this.page.custom_html || ''
       })
       if (ind) { ind.textContent = '✓ محفوظة'; ind.style.color = 'var(--gray-400)' }
     } catch (e) {
@@ -989,19 +987,125 @@ const Builder = {
     }
   },
 
+  _showPublishModal(slug) {
+    document.getElementById('sfPublishCelebrationModal')?.remove()
+    const urls = getShareableUrls(slug)
+    const waText = encodeURIComponent(`تفضل بزيارة موقعنا الإلكتروني الجديد الآن: ${urls.subdomain}\nرابط مباشر فوري: ${urls.direct}`)
+
+    const div = document.createElement('div')
+    div.id = 'sfPublishCelebrationModal'
+    div.className = 'sf-modal-overlay'
+    div.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.75);backdrop-filter:blur(8px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;direction:rtl'
+    div.innerHTML = `
+      <div class="sf-celebration-card" style="background:#fff;border-radius:24px;padding:36px 32px;max-width:540px;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.25);position:relative;text-align:center;animation:sfModalPop .3s ease">
+        <button id="sfClosePubModal" style="position:absolute;top:18px;left:18px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#94a3b8;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center">✕</button>
+
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:2.6rem;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 12px 30px rgba(16,185,129,0.35)">
+          🚀
+        </div>
+
+        <h2 style="font-size:1.6rem;font-weight:900;color:#0f172a;margin-bottom:8px">
+          تهانينا! تم نشر موقعك بنجاح 🎉
+        </h2>
+        <p style="font-size:.92rem;color:#64748b;line-height:1.6;margin-bottom:24px">
+          موقعك الآن متاح لجميع الزوار على شبكة الإنترنت واستضافتك السحابية تعمل بكفاءة فائقة.
+        </p>
+
+        <!-- Official Subdomain Box -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;text-align:right">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:.82rem;font-weight:800;color:#0f172a">🌐 رابط الدومين الرسمي:</span>
+            <span style="background:#dcfce7;color:#16a34a;font-size:.72rem;font-weight:800;padding:2px 8px;border-radius:10px">SSL مفعل 🔒</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:8px 12px;direction:ltr">
+            <input type="text" readonly value="${urls.subdomain}" style="border:none;background:transparent;flex:1;font-weight:700;color:#4f46e5;font-size:.88rem;outline:none" id="pubSubdomainInput">
+            <button class="btn btn-sm btn-ghost" id="copySubdomainBtn" style="padding:4px 10px;font-size:.78rem;font-weight:700">نسخ 📋</button>
+            <a href="${urls.subdomain}" target="_blank" class="btn btn-sm btn-primary" style="padding:4px 12px;font-size:.78rem;font-weight:700;text-decoration:none">فتح ↗</a>
+          </div>
+        </div>
+
+        <!-- Instant Direct Live Link Box -->
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:16px;padding:16px;margin-bottom:20px;text-align:right">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:.82rem;font-weight:800;color:#1e40af">⚡ الرابط المباشر الفوري (يعمل دائماً بدون انتظار DNS):</span>
+            <span style="background:#dbeafe;color:#1e40af;font-size:.72rem;font-weight:800;padding:2px 8px;border-radius:10px">فوري 100%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #93c5fd;border-radius:10px;padding:8px 12px;direction:ltr">
+            <input type="text" readonly value="${urls.direct}" style="border:none;background:transparent;flex:1;font-weight:700;color:#2563eb;font-size:.88rem;outline:none" id="pubDirectInput">
+            <button class="btn btn-sm btn-ghost" id="copyDirectBtn" style="padding:4px 10px;font-size:.78rem;font-weight:700">نسخ 📋</button>
+            <a href="${urls.direct}" target="_blank" class="btn btn-sm btn-primary" style="padding:4px 12px;font-size:.78rem;font-weight:700;background:#2563eb;border-color:#2563eb;text-decoration:none">فتح ↗</a>
+          </div>
+        </div>
+
+        <!-- Social Share Row -->
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:12px;flex-wrap:wrap">
+          <a href="https://wa.me/?text=${waText}" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff;font-weight:800;border-radius:10px;padding:10px 18px;display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+            ${ICONS.wrap(ICONS.whatsapp, 16)} <span>مشاركة عبر واتساب</span>
+          </a>
+          <button id="sfPubModalDoneBtn" class="btn btn-outline btn-sm" style="border-radius:10px;padding:10px 20px;font-weight:700">
+            تم، إغلاق النافذة
+          </button>
+        </div>
+      </div>
+    `
+    document.body.appendChild(div)
+
+    const close = () => div.remove()
+    div.querySelector('#sfClosePubModal')?.addEventListener('click', close)
+    div.querySelector('#sfPubModalDoneBtn')?.addEventListener('click', close)
+    div.addEventListener('click', (e) => { if (e.target === div) close() })
+
+    div.querySelector('#copySubdomainBtn')?.addEventListener('click', async (e) => {
+      try {
+        await navigator.clipboard.writeText(urls.subdomain)
+        e.currentTarget.textContent = 'تم النسخ! ✓'
+        Toast.show('تم نسخ رابط الدومين الرسمي بنجاح!', 'success')
+        setTimeout(() => { if (e.currentTarget) e.currentTarget.textContent = 'نسخ 📋' }, 2000)
+      } catch {
+        Toast.show('رابط الموقع: ' + urls.subdomain, 'info')
+      }
+    })
+
+    div.querySelector('#copyDirectBtn')?.addEventListener('click', async (e) => {
+      try {
+        await navigator.clipboard.writeText(urls.direct)
+        e.currentTarget.textContent = 'تم النسخ! ✓'
+        Toast.show('تم نسخ الرابط المباشر الفوري بنجاح!', 'success')
+        setTimeout(() => { if (e.currentTarget) e.currentTarget.textContent = 'نسخ 📋' }, 2000)
+      } catch {
+        Toast.show('رابط الموقع: ' + urls.direct, 'info')
+      }
+    })
+  },
+
   async _publish() {
-    if (!isValidSlug(this.page.slug) || isReservedSlug(this.page.slug)) {
-      Toast.show('اسم الرابط غير متاح أو محجوز للنظام. يرجى تعديله في إعدادات الموقع قبل النشر.', 'error')
-      return
+    let cleanSlug = sanitizeSlug(this.page.slug)
+    if (!cleanSlug || !isValidSlug(cleanSlug) || isReservedSlug(cleanSlug)) {
+      const base = sanitizeSlug(this.page.title) || 'site'
+      cleanSlug = base + '-' + LocalDB.genId().slice(0, 4)
+      this.page.slug = cleanSlug
     }
+
+    const pubBtn = document.getElementById('publishBtn')
+    if (pubBtn) {
+      pubBtn.disabled = true
+      pubBtn.innerHTML = '<span>⏳</span> جاري النشر...'
+    }
+
     try {
       await this._saveNow()
       this.page = await API.publishSite(this.page.id)
-      const liveUrl = subdomainUrl(this.page.slug)
-      Toast.show(`تم نشر موقعك بنجاح! 🚀 رابط الموقع: <a href="${liveUrl}" target="_blank" style="color:#fff;text-decoration:underline;font-weight:700">${liveUrl}</a>`, 'success')
-      const b = document.querySelector('.badge-status'); if (b) { b.textContent = 'Published'; b.style.background = '#d1fae5'; b.style.color = '#065f46' }
-      const btn = document.getElementById('publishBtn'); if (btn) btn.textContent = 'Update'
-    } catch (e) { Toast.show(e.message, 'error') }
+
+      const b = document.querySelector('.badge-status')
+      if (b) { b.textContent = 'منشور (Live)'; b.style.background = '#d1fae5'; b.style.color = '#065f46' }
+      if (pubBtn) { pubBtn.disabled = false; pubBtn.textContent = 'تحديث النشر' }
+
+      Toast.show('تم نشر موقعك بنجاح! 🚀', 'success')
+      this._showPublishModal(this.page.slug)
+    } catch (e) {
+      if (pubBtn) { pubBtn.disabled = false; pubBtn.textContent = this.page.published ? 'تحديث النشر' : 'نشر الموقع' }
+      Toast.show(e.message || 'فشل نشر الموقع', 'error')
+    }
   },
 
   async createNew() {
@@ -1011,6 +1115,14 @@ const Builder = {
     const div = document.createElement('div'); div.id = 'templateModalWrap'
     div.innerHTML = T.templatePicker()
     document.body.appendChild(div)
+
+    // Bind upload custom site button if present inside template picker
+    div.querySelector('#tplUploadSiteBtn')?.addEventListener('click', () => {
+      div.remove()
+      if (typeof SiteFlowImporter !== 'undefined') {
+        SiteFlowImporter.showUploadModal()
+      }
+    })
 
     const allTemplates = typeof ALL_PRESETS !== 'undefined' ? ALL_PRESETS : PRESETS
     const ITEMS_PER_PAGE = 24
@@ -1037,22 +1149,24 @@ const Builder = {
       const gridEl = document.getElementById('templateGrid')
       const pagEl = document.getElementById('tplPagination')
 
-      countEl.textContent = `${filtered.length} template${filtered.length !== 1 ? 's' : ''} found`
+      if (countEl) countEl.textContent = `${filtered.length} قالب متاح`
 
-      gridEl.innerHTML = items.map(t => {
-        const iconSvg = t.icon && t.icon.includes('<svg') ? t.icon : (ICONS[t.theme?.icon] || ICONS.globe)
-        const color = t.theme?.color || 'var(--primary)'
-        return `
-        <div class="card card-hover template-card" data-template="${t.id}" data-category="${t.category || 'other'}" style="padding:20px;cursor:pointer;text-align:center;transition:all .2s">
-          <div style="font-size:2rem;margin-bottom:10px;color:${color}">${ICONS.wrap(iconSvg, 32)}</div>
-          <h4 style="font-size:.88rem;margin-bottom:4px;font-weight:700">${t.name}</h4>
-          <p style="font-size:.75rem;color:var(--gray-500);line-height:1.4">${t.desc}</p>
-        </div>`
-      }).join('')
+      if (gridEl) {
+        gridEl.innerHTML = items.map(t => {
+          const iconSvg = t.icon && t.icon.includes('<svg') ? t.icon : (ICONS[t.theme?.icon] || ICONS.globe)
+          const color = t.theme?.color || 'var(--primary)'
+          return `
+          <div class="card card-hover template-card" data-template="${t.id}" data-category="${t.category || 'other'}" style="padding:20px;cursor:pointer;text-align:center;transition:all .2s">
+            <div style="font-size:2rem;margin-bottom:10px;color:${color}">${ICONS.wrap(iconSvg, 32)}</div>
+            <h4 style="font-size:.88rem;margin-bottom:4px;font-weight:700">${t.name}</h4>
+            <p style="font-size:.75rem;color:var(--gray-500);line-height:1.4">${t.desc}</p>
+          </div>`
+        }).join('')
+      }
 
-      if (totalPages > 1) {
+      if (totalPages > 1 && pagEl) {
         let pag = ''
-        if (currentPage > 1) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage - 1}">← Prev</button>`
+        if (currentPage > 1) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage - 1}">← السابق</button>`
         for (let i = 1; i <= totalPages; i++) {
           if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
             pag += `<button class="btn btn-sm tpl-page ${i === currentPage ? 'btn-primary' : 'btn-ghost'}" data-page="${i}">${i}</button>`
@@ -1060,19 +1174,19 @@ const Builder = {
             pag += `<span style="color:var(--gray-400)">...</span>`
           }
         }
-        if (currentPage < totalPages) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage + 1}">Next →</button>`
+        if (currentPage < totalPages) pag += `<button class="btn btn-ghost btn-sm tpl-page" data-page="${currentPage + 1}">التالي →</button>`
         pagEl.innerHTML = pag
         pagEl.querySelectorAll('.tpl-page').forEach(b => b.addEventListener('click', () => { currentPage = parseInt(b.dataset.page); renderTemplates() }))
-      } else {
+      } else if (pagEl) {
         pagEl.innerHTML = ''
       }
 
-      gridEl.querySelectorAll('.template-card').forEach(card => {
+      gridEl?.querySelectorAll('.template-card').forEach(card => {
         card.addEventListener('click', async () => {
           try {
             div.remove()
             const site = await API.createSite({ title: card.querySelector('h4')?.textContent || 'My New Site', template_type: card.dataset.template })
-            Toast.show('Site created!', 'success'); Router.navigate('builder/' + site.id)
+            Toast.show('تم إنشاء الموقع بنجاح! جاري فتح المحرر...', 'success'); Router.navigate('builder/' + site.id)
           } catch (e) { Toast.show(e.message, 'error') }
         })
       })
